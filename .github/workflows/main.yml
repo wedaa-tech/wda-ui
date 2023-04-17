@@ -4,7 +4,7 @@ name: Build and Push to s3
 on:
   # Triggers the workflow on push event but only for the branch specified with in []
   push:
-    branches: [ pipeline/s3_bucket ]
+    branches: [ main ]
 
 jobs:
   build:
@@ -18,7 +18,7 @@ jobs:
           aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region:            ap-south-1
-          
+
        # Treating warnings as errors because process.env.CI = true
        # set CI=false to treat warnings as warnings
       - name: Build React App
