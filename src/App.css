@@ -1,0 +1,16 @@
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* ensure body takes up full viewport height */
+  }
+  
+  .wrapper {
+    flex: 1; /* make wrapper take up remaining vertical space */
+  }
+  
+  .footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+  }
+  
