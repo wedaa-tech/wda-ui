@@ -18,9 +18,11 @@ jobs:
           aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region:            ap-south-1
-
+          
+       # Treating warnings as errors because process.env.CI = true
+       # set CI=false to treat warnings as warnings
       - name: Build React App
-        run:  npm install && npm run build
+        run:  npm install && CI=false npm run build
 
       - name: Deploy app build to S3 bucket
         run:  aws s3 sync ./build/ s3://wda-ui --delete
