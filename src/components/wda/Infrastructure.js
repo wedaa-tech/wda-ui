@@ -63,11 +63,10 @@ function Infrastructure({ wdi, setWdi }) {
           type="text"
           placeholder="379605592402"
           marginBottom="10px"
-          // onChange={(e) => setAccountId(e.target.value)}
           onChange={({ target }) =>
-          handleInputChange("accountId", target.value)
+          handleInputChange("awsAccountId", target.value)
         }
-          value={inputs.accountId}
+          value={inputs.awsAccountId}
         />
         <FormLabel>Select region</FormLabel>
         <Select

@@ -68,15 +68,36 @@ function Application({ application, setApplication, id, entity }) {
       <h2>
         <AccordionButton>
           <Box as="span" flex="1" textAlign="left">
-            <Editable defaultValue={"Application"}>
-              <EditablePreview />
-              <EditableInput
+          <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                height: "40px",
+              }}
+            >
+              <FormLabel style={{ width: "250px" }}>Application Name</FormLabel>
+              <Input
+                placeholder="Application"
                 key="applicationName"
                 name="applicationName"
-                onChange={({ target }) => handleInputChange('applicationName', target.value)}
+                onChange={({ target }) =>
+                  handleInputChange("applicationName", target.value)
+                }
+                marginBottom="10px"
                 value={inputs.applicationName}
+                type="text"
+                sx={{
+                  border: "none",
+                  boxShadow: "none",
+                  outline: "none",
+                  "&:focus": {
+                    outline: "none",
+                    boxShadow: "none",
+                  },
+                }}
               />
-            </Editable>
+            </div>
           </Box>
           <AccordionIcon />
         </AccordionButton>
