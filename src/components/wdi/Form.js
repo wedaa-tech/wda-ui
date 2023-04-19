@@ -31,7 +31,7 @@ function FormWdi(props) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    fetch("http://localhost:3001/generate", {
+    fetch(process.env.REACT_APP_API_BASE_URL + "/generate", {
       method: "post",
       headers: {
         "Content-Type": "application/json",

@@ -44,13 +44,13 @@ function FormWda() {
   const handleSubmitWda = (e) => {
     e.preventDefault();
     fetch(
-      "http://localhost:3001/generateJDL?username=" +
-        username +
-        "&projectName=" +
-        projectName +
-        "&generateInfra=" +
-        generateInfrastructure +
-        "",
+      process.env.REACT_APP_API_BASE_URL + "/generateJDL?username=" +
+      username +
+      "&projectName=" +
+      projectName +
+      "&generateInfra=" +
+      generateInfrastructure +
+      "",
       {
         method: "post",
         headers: {
@@ -72,27 +72,27 @@ function FormWda() {
       .finally(() => {
         setTimeout(() => setParty(true));
       });
-      // This will reload the page before the generation of zip file!
+    // This will reload the page before the generation of zip file!
 
-      // localStorage.removeItem("entity")
-      // localStorage.removeItem("application")
-      // localStorage.removeItem("communication")
-      // localStorage.removeItem("deployment")
+    // localStorage.removeItem("entity")
+    // localStorage.removeItem("application")
+    // localStorage.removeItem("communication")
+    // localStorage.removeItem("deployment")
 
-      // window.location.reload();
+    // window.location.reload();
 
   };
-    
+
   const handleSubmitWdi = (e) => {
     e.preventDefault();
     fetch(
-      "http://localhost:3001/generateJDL?username=" +
-        username +
-        "&projectName=" +
-        projectName +
-        "&generateInfra=" +
-        generateInfrastructure +
-        "",
+      process.env.REACT_APP_API_BASE_URL +  "/generateJDL?username=" +
+      username +
+      "&projectName=" +
+      projectName +
+      "&generateInfra=" +
+      generateInfrastructure +
+      "",
       {
         method: "post",
         headers: {
@@ -115,15 +115,15 @@ function FormWda() {
       .finally(() => {
         setTimeout(() => setParty(true));
       });
-      // This will reload the page before the generation of zip file!
+    // This will reload the page before the generation of zip file!
 
-      // localStorage.removeItem("entity")
-      // localStorage.removeItem("application")
-      // localStorage.removeItem("communication")
-      // localStorage.removeItem("deployment")
-      // localStorage.removeItem("wdi")
+    // localStorage.removeItem("entity")
+    // localStorage.removeItem("application")
+    // localStorage.removeItem("communication")
+    // localStorage.removeItem("deployment")
+    // localStorage.removeItem("wdi")
 
-      // window.location.reload();
+    // window.location.reload();
   };
   const [entityCounter, setEntityCounter] = useState(1);
   const [communicationCounter, setCommunicationCounter] = useState(1);
@@ -374,16 +374,16 @@ function FormWda() {
                   deployment={deployment}
                   setDeployment={setDeployment}
                 />
-                {!generateInfrastructure &&  (
-                <Button
-                  width="100px"
-                  border="2px"
-                  borderColor="green.500"
-                  onClick={handleSubmitWda}
-                  marginTop="10px"
-                >
-                  Submit
-                </Button>
+                {!generateInfrastructure && (
+                  <Button
+                    width="100px"
+                    border="2px"
+                    borderColor="green.500"
+                    onClick={handleSubmitWda}
+                    marginTop="10px"
+                  >
+                    Submit
+                  </Button>
                 )}
               </TabPanel>
               {generateInfrastructure && (
