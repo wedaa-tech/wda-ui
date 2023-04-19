@@ -111,7 +111,7 @@ function Infrastructure({ wdi, setWdi }) {
             }
             defaultValue={wdi.clusterName}
           />
-          <FormLabel>Enter Kubernetes Namespace</FormLabel>
+          {/* <FormLabel>Enter Kubernetes Namespace</FormLabel>
           <Input
             type="text"
             placeholder="K8s"
@@ -122,7 +122,7 @@ function Infrastructure({ wdi, setWdi }) {
               handleInputChange("namespace", target.value)
             }
             defaultValue={wdi.namespace}
-          />
+          /> */}
           <FormLabel>Select Ingress type:</FormLabel>
           <Select
             key="ingress"
