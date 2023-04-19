@@ -11,7 +11,7 @@ export default function DocHome() {
   useEffect(() => {
     const timeout = setTimeout(() => {
      
-      window.location.replace('http://127.0.0.1:8000/');
+      window.location.replace(process.env.REACT_APP_DOCS_URL);
     }, 10);
 
     return () => clearTimeout(timeout);
