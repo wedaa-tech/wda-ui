@@ -68,6 +68,7 @@ function FormWdi(props) {
       .catch((error) => console.error(error))
       .finally(() => {
         setTimeout(() => setParty(true));
+        window.location.replace('../../')
       });
   };
 

@@ -10,7 +10,6 @@ import {
 } from "@chakra-ui/react";
 
 function Deployment({ application, deployment, setDeployment }) {
-
   const handleInputChange = (field, value) => {
     setDeployment((app) => ({
       ...app,
@@ -98,15 +97,21 @@ function Deployment({ application, deployment, setDeployment }) {
         <option value="false">False</option>
       </Select>
 
-      {deployment.kubernetesUseDynamicStorage === "true" &&(
-      <><FormLabel>Enter Kubernetes Storage Class Name</FormLabel><Input
-          placeholder="demoStorageClass"
-          type="text"
-          key="kubernetesStorageClassName"
-          name="kubernetesStorageClassName"
-          onChange={({ target }) => handleInputChange("kubernetesStorageClassName", target.value)}
-          marginBottom="10px"
-          defaultValue={deployment.kubernetesStorageClassName} /></>
+      {deployment.kubernetesUseDynamicStorage === "true" && (
+        <>
+          <FormLabel>Enter Kubernetes Storage Class Name</FormLabel>
+          <Input
+            placeholder="demoStorageClass"
+            type="text"
+            key="kubernetesStorageClassName"
+            name="kubernetesStorageClassName"
+            onChange={({ target }) =>
+              handleInputChange("kubernetesStorageClassName", target.value)
+            }
+            marginBottom="10px"
+            defaultValue={deployment.kubernetesStorageClassName}
+          />
+        </>
       )}
       {/* <FormLabel>Kubernetes Storage Provisioner</FormLabel>
       <Input
@@ -144,7 +149,6 @@ function Deployment({ application, deployment, setDeployment }) {
       >
         <option value="istio">ISTIO</option>
         <option value="nginx">Nginx</option>
-
       </Select>
       <FormLabel>Service Discovery Type</FormLabel>
       <Select

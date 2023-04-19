@@ -26,15 +26,15 @@ const communicationPreFlightTemplate = {
 };
 
 const deploymentPreFlightTemplate = {
-  deploymentType: "Kubernetes",
+  deploymentType: "kubernetes",
   dockerRepositoryName: "",
   ingressDomain: "",
-  ingressType: "Nginx",
+  ingressType: "istio",
   kubernetesNamespace: "Wdi",
   kubernetesServiceType: "Ingress",
   kubernetesStorageClassName: "demosc",
-  kubernetesUseDynamicStorage: "True",
-  serviceDiscoveryType: "Eureka",
+  kubernetesUseDynamicStorage: "true",
+  serviceDiscoveryType: "eureka",
 };
 
 const wdiPreFlightTemplate = {
