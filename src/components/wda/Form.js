@@ -68,6 +68,7 @@ function FormWda() {
       .catch((error) => console.error(error))
       .finally(() => {
         setTimeout(() => setParty(true));
+        window.location.replace('../../')
       });
   };
 
@@ -102,6 +103,7 @@ function FormWda() {
       .catch((error) => console.error(error))
       .finally(() => {
         setTimeout(() => setParty(true));
+        window.location.replace('../../')
       });
   };
   const [entityCounter, setEntityCounter] = useState(1);
