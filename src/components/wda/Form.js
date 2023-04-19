@@ -41,13 +41,13 @@ function FormWda() {
   const handleSubmitWda = (e) => {
     e.preventDefault();
     fetch(
-      "http://localhost:3001/generateJDL?username=" +
-        username +
-        "&projectName=" +
-        projectName +
-        "&generateInfra=" +
-        generateInfrastructure +
-        "",
+      process.env.REACT_APP_API_BASE_URL + "/generateJDL?username=" +
+      username +
+      "&projectName=" +
+      projectName +
+      "&generateInfra=" +
+      generateInfrastructure +
+      "",
       {
         method: "post",
         headers: {
@@ -70,17 +70,17 @@ function FormWda() {
         setTimeout(() => setParty(true));
       });
   };
-    
+
   const handleSubmitWdi = (e) => {
     e.preventDefault();
     fetch(
-      "http://localhost:3001/generateJDL?username=" +
-        username +
-        "&projectName=" +
-        projectName +
-        "&generateInfra=" +
-        generateInfrastructure +
-        "",
+      process.env.REACT_APP_API_BASE_URL +  "/generateJDL?username=" +
+      username +
+      "&projectName=" +
+      projectName +
+      "&generateInfra=" +
+      generateInfrastructure +
+      "",
       {
         method: "post",
         headers: {
@@ -353,16 +353,16 @@ function FormWda() {
                   deployment={deployment}
                   setDeployment={setDeployment}
                 />
-                {!generateInfrastructure &&  (
-                <Button
-                  width="100px"
-                  border="2px"
-                  borderColor="green.500"
-                  onClick={handleSubmitWda}
-                  marginTop="10px"
-                >
-                  Submit
-                </Button>
+                {!generateInfrastructure && (
+                  <Button
+                    width="100px"
+                    border="2px"
+                    borderColor="green.500"
+                    onClick={handleSubmitWda}
+                    marginTop="10px"
+                  >
+                    Submit
+                  </Button>
                 )}
               </TabPanel>
               {generateInfrastructure && (
