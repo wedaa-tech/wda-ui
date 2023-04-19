@@ -3,30 +3,11 @@ import { FormControl, FormLabel, Input, Select } from "@chakra-ui/react";
 import { wdiPreFlightTemplate } from "./assert";
 
 function Infrastructure({ wdi, setWdi }) {
-  const [inputs, setInputs] = useState(
-    JSON.parse(localStorage.getItem("wdi")) || {wdiPreFlightTemplate}
-  );
-
-  useEffect(() => {
-    localStorage.getItem("wdi", JSON.stringify(inputs));
-  }, [inputs]);
-
   const handleInputChange = (field, value) => {
-    setInputs(() => ({
-      ...inputs,
-      [field]: value,
-    }));
     setWdi((app) => ({
       ...app,
       [field]: value,
     }));
-    localStorage.setItem(
-      "wdi",
-      JSON.stringify({
-        ...inputs,
-        [field]: value,
-      })
-    );
   };
 
   return (
@@ -39,7 +20,7 @@ function Infrastructure({ wdi, setWdi }) {
         key="domain"
         name="domain"
         onChange={({ target }) => handleInputChange("domain", target.value)}
-        value={inputs.domain}
+        defaultValue={wdi.domain}
       />
       <FormLabel>Select Cloud Provider</FormLabel>
       <Select
@@ -49,14 +30,14 @@ function Infrastructure({ wdi, setWdi }) {
         onChange={({ target }) =>
           handleInputChange("cloudProvider", target.value)
         }
-        value={inputs.cloudProvider}
+        defaultValue={wdi.cloudProvider}
       >
         <option value="aws">Aws Cloud</option>
         <option value="azure">Azure Cloud</option>
         <option value="gcp">Google Cloud Platform</option>
       </Select>
 
-      {inputs.cloudProvider === "aws" && (
+      {wdi.cloudProvider === "aws" && (
         <>
         <FormLabel>Account ID</FormLabel>
         <Input
@@ -66,7 +47,7 @@ function Infrastructure({ wdi, setWdi }) {
           onChange={({ target }) =>
           handleInputChange("awsAccountId", target.value)
         }
-          value={inputs.awsAccountId}
+          defaultValue={wdi.awsAccountId}
         />
         <FormLabel>Select region</FormLabel>
         <Select
@@ -74,7 +55,7 @@ function Infrastructure({ wdi, setWdi }) {
           onChange={({ target }) =>
           handleInputChange("awsRegion", target.value)
         }
-          value={inputs.awsRegion}
+          defaultValue={wdi.awsRegion}
         >
           <option value="ap-south-1">Asia Pacific (Mumbai)</option>
           <option value="us-east-2">US East (Ohio)</option>
@@ -90,7 +71,7 @@ function Infrastructure({ wdi, setWdi }) {
         onChange={({ target }) =>
           handleInputChange("orchestration", target.value)
         }
-        value={inputs.orchestration}
+        defaultValue={wdi.orchestration}
         marginBottom="10px"
       >
         <option value="kubernetes">Kubernetes</option>
@@ -98,7 +79,7 @@ function Infrastructure({ wdi, setWdi }) {
         <option value="mesos">Apache MESOS</option>
       </Select>
 
-      {/* {inputs.cloudProvider === "aws" && inputs.orchestration === "kubernetes" && (
+      {/* {wdi.cloudProvider === "aws" && wdi.orchestration === "kubernetes" && (
         <div>
           <FormLabel>Select instance type</FormLabel>
           <Select
@@ -108,7 +89,7 @@ function Infrastructure({ wdi, setWdi }) {
             onChange={({ target }) =>
               handleInputChange("instanceType", target.value)
             }
-            value={inputs.instanceType}
+            defaultValue={wdi.instanceType}
           >
             <option value="t3.medium">t3.medium</option>
             <option value="t3.large">t3.large</option>
@@ -117,7 +98,7 @@ function Infrastructure({ wdi, setWdi }) {
         </div>
       )} */}
 
-      {inputs.orchestration === "kubernetes" && (
+      {wdi.orchestration === "kubernetes" && (
         <div>
           <FormLabel>Enter Cluster Name</FormLabel>
           <Input
@@ -129,7 +110,7 @@ function Infrastructure({ wdi, setWdi }) {
             onChange={({ target }) =>
               handleInputChange("clusterName", target.value)
             }
-            value={inputs.clusterName}
+            defaultValue={wdi.clusterName}
           />
           <FormLabel>Enter Kubernetes Namespace</FormLabel>
           <Input
@@ -141,7 +122,7 @@ function Infrastructure({ wdi, setWdi }) {
             onChange={({ target }) =>
               handleInputChange("namespace", target.value)
             }
-            value={inputs.namespace}
+            defaultValue={wdi.namespace}
           />
           <FormLabel>Select Ingress type:</FormLabel>
           <Select
@@ -150,7 +131,7 @@ function Infrastructure({ wdi, setWdi }) {
             onChange={({ target }) =>
               handleInputChange("ingress", target.value)
             }
-            value={inputs.ingress}
+            defaultValue={wdi.ingress}
             marginBottom="10px"
           >
             <option value="istio">Istio</option>

@@ -293,7 +293,7 @@ function FormWda() {
             <TabPanels>
               {/* <TabPanel>
                 <Accordion allowToggle>
-                  {Object.keys(entity).map((entity, id) => {
+                  {Object.values(entity).map((entity, id) => {
                     return (
                       <Entity
                         key={id}
@@ -318,16 +318,16 @@ function FormWda() {
               </TabPanel> */}
               <TabPanel>
                 <Accordion allowToggle>
-                  {Object.keys(application).map((app, id) => {
+                  {Object.values(application).map((application, id) => {
                     return (
                       <Application
                         key={id}
                         id={id}
                         application={application}
                         setApplication={setApplication}
-                        entity={entity}
-                        Client
-                        Name
+                        // entity={entity}
+                        // Client
+                        // Name
                       />
                     );
                   })}
@@ -345,7 +345,7 @@ function FormWda() {
               </TabPanel>
               <TabPanel>
                 <Accordion allowToggle>
-                  {Object.keys(communication).map((communication, id) => {
+                  {Object.values(communication).map((communication, id) => {
                     return (
                       <Communication
                         key={id}
