@@ -1,17 +1,10 @@
-import {
-  Container,
-  Heading,
-  Stack,
-  Text,
-  Button
-} from '@chakra-ui/react';
 import { useEffect } from 'react';
 
 export default function DocHome() {
   useEffect(() => {
     const timeout = setTimeout(() => {
      
-      window.location.replace('http://127.0.0.1:8000/');
+      window.location.replace('https://comakeit-tic.github.io/');
     }, 10);
 
     return () => clearTimeout(timeout);
@@ -19,9 +12,4 @@ export default function DocHome() {
 
   return <>Redirecting..</>;
 
-  return (
-    <Container maxW="2xl" marginTop="16px">
-     
-    </Container>
-  );
 }
