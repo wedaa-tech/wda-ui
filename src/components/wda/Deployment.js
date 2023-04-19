@@ -1,25 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   FormControl,
   FormLabel,
-  // FormErrorMessage,
-  // FormHelperText,
   Input,
   Select,
   Editable,
   EditableInput,
   EditablePreview,
 } from "@chakra-ui/react";
-import { deploymentPreFlightTemplate } from "./assert";
 
-function Deployment({ id, application, deployment, setDeployment }) {
-  // const [inputs, setInputs] = useState(
-  //   JSON.parse(localStorage.getItem("deployment")) || { deploymentPreFlightTemplate }
-  // );
-
-  // useEffect(() => {
-  //   localStorage.getItem("deployment", JSON.stringify(inputs));
-  // }, [inputs]);
+function Deployment({ application, deployment, setDeployment }) {
 
   const handleInputChange = (field, value) => {
     setDeployment((app) => ({

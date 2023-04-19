@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {
   AccordionItem,
   AccordionButton,
@@ -9,12 +9,6 @@ import {
   FormLabel,
   Input,
   Select,
-  Editable,
-  EditableInput,
-  EditablePreview,
-  Checkbox,
-  CheckboxGroup,
-  Stack,
   Button,
 } from "@chakra-ui/react";
 import { DeleteIcon } from "@chakra-ui/icons";

@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { FormControl, FormLabel, Input, Select } from "@chakra-ui/react";
-import { wdiPreFlightTemplate } from "./assert";
 
 function Infrastructure({ wdi, setWdi }) {
   const handleInputChange = (field, value) => {
