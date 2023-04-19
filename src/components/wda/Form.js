@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
   Accordion,
-  // FormErrorMessage,
-  // FormHelperText,
   Container,
   Button,
   Tabs,
@@ -22,7 +20,7 @@ import {
 } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 import Application from "./Application";
-import Entity from "./Entity";
+// import Entity from "./Entity";
 import Deployment from "./Deployment";
 import { saveAs } from "file-saver";
 import Confetti from "react-confetti";
@@ -34,7 +32,6 @@ import {
   deploymentPreFlightTemplate,
   wdiPreFlightTemplate,
 } from "./assert";
-import FormWdi from "../wdi/Form";
 import Communication from "./communication";
 import Infrastructure from "./Infrastructure";
 
@@ -71,16 +68,8 @@ function FormWda() {
       .catch((error) => console.error(error))
       .finally(() => {
         setTimeout(() => setParty(true));
+        window.location.replace('../../')
       });
-    // This will reload the page before the generation of zip file!
-
-    // localStorage.removeItem("entity")
-    // localStorage.removeItem("application")
-    // localStorage.removeItem("communication")
-    // localStorage.removeItem("deployment")
-
-    // window.location.reload();
-
   };
 
   const handleSubmitWdi = (e) => {
@@ -114,16 +103,8 @@ function FormWda() {
       .catch((error) => console.error(error))
       .finally(() => {
         setTimeout(() => setParty(true));
+        window.location.replace('../../')
       });
-    // This will reload the page before the generation of zip file!
-
-    // localStorage.removeItem("entity")
-    // localStorage.removeItem("application")
-    // localStorage.removeItem("communication")
-    // localStorage.removeItem("deployment")
-    // localStorage.removeItem("wdi")
-
-    // window.location.reload();
   };
   const [entityCounter, setEntityCounter] = useState(1);
   const [communicationCounter, setCommunicationCounter] = useState(1);
@@ -293,7 +274,7 @@ function FormWda() {
             <TabPanels>
               {/* <TabPanel>
                 <Accordion allowToggle>
-                  {Object.keys(entity).map((entity, id) => {
+                  {Object.values(entity).map((entity, id) => {
                     return (
                       <Entity
                         key={id}
@@ -318,16 +299,16 @@ function FormWda() {
               </TabPanel> */}
               <TabPanel>
                 <Accordion allowToggle>
-                  {Object.keys(application).map((app, id) => {
+                  {Object.values(application).map((application, id) => {
                     return (
                       <Application
                         key={id}
                         id={id}
                         application={application}
                         setApplication={setApplication}
-                        entity={entity}
-                        Client
-                        Name
+                        // entity={entity}
+                        // Client
+                        // Name
                       />
                     );
                   })}
@@ -345,7 +326,7 @@ function FormWda() {
               </TabPanel>
               <TabPanel>
                 <Accordion allowToggle>
-                  {Object.keys(communication).map((communication, id) => {
+                  {Object.values(communication).map((communication, id) => {
                     return (
                       <Communication
                         key={id}

@@ -22,9 +22,9 @@ function FormWdi(props) {
   const [awsRegion, setAwsRegion] = useState("ap-south-1");
   const [awsAccountId, setAwsAccountId] = useState("379605592402");
   const [orchestration, setOrchestration] = useState("kubernetes");
-  const [instanceType, setInstanceType] = useState("t3.medium");
+  // const [instanceType, setInstanceType] = useState("t3.medium");
   const [clusterName, setClusterName] = useState("demo-cluster");
-  const [nameSpace, setNameSpace] = useState("k8s");
+  // const [nameSpace, setNameSpace] = useState("k8s");
   const [ingress, setIngress] = useState("istio");
   const [monitoring, setMonitoring] = useState("true");
   const [k8sWebUI, setK8sWebUI] = useState("true");

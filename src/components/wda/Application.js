@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {
   AccordionItem,
   AccordionButton,
@@ -9,38 +9,12 @@ import {
   FormLabel,
   Input,
   Select,
-  Editable,
-  EditableInput,
-  EditablePreview,
-  Checkbox,
-  CheckboxGroup,
-  Stack,
   Button,
 } from "@chakra-ui/react";
 import { DeleteIcon } from "@chakra-ui/icons";
-import { useState } from "react";
-import { applicationPreFlightTemplate } from "./assert";
 
 function Application({ application, setApplication, id, entity }) {
-  const [inputs, setInputs] = useState(applicationPreFlightTemplate);
-
-  useEffect(() => {
-    const storedData = localStorage.getItem("application");
-      if (storedData) {
-        const applicationData = JSON.parse(storedData);
-        const componentData = applicationData[id];
-        if (componentData) {
-          setInputs(componentData);
-        }
-      }
-    }, [id]);
-    
     const handleInputChange = (field, value) => {
-      setInputs((state) => ({
-        ...state,
-        [field]: value,
-      }));
-    
       setApplication((state) => ({
         ...state,
         [id]: {
@@ -48,19 +22,6 @@ function Application({ application, setApplication, id, entity }) {
           [field]: value,
         },
       }));
-    
-      const storedData = localStorage.getItem("application");
-      const applicationData = storedData ? JSON.parse(storedData) : {};
-      localStorage.setItem(
-        "application",
-        JSON.stringify({
-          ...applicationData,
-          [id]: {
-            ...applicationData[id],
-            [field]: value,
-          },
-        })
-      );
     };
 
   return (
@@ -68,15 +29,36 @@ function Application({ application, setApplication, id, entity }) {
       <h2>
         <AccordionButton>
           <Box as="span" flex="1" textAlign="left">
-            <Editable defaultValue={"Application"}>
-              <EditablePreview />
-              <EditableInput
+          <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                height: "40px",
+              }}
+            >
+              <FormLabel style={{ width: "250px" }}>Application Name</FormLabel>
+              <Input
+                placeholder="Application"
                 key="applicationName"
                 name="applicationName"
-                onChange={({ target }) => handleInputChange('applicationName', target.value)}
-                value={inputs.applicationName}
+                onChange={({ target }) =>
+                  handleInputChange("applicationName", target.value)
+                }
+                marginBottom="10px"
+                defaultValue={application.applicationName}
+                type="text"
+                sx={{
+                  border: "none",
+                  boxShadow: "none",
+                  outline: "none",
+                  "&:focus": {
+                    outline: "none",
+                    boxShadow: "none",
+                  },
+                }}
               />
-            </Editable>
+            </div>
           </Box>
           <AccordionIcon />
         </AccordionButton>
@@ -89,7 +71,7 @@ function Application({ application, setApplication, id, entity }) {
             name="applicationType"
             onChange={({ target }) => handleInputChange('applicationType', target.value)}
             marginBottom="10px"
-            value={inputs.applicationType}
+            defaultValue={application.applicationType}
           >
             <option value="gateway">Gateway</option>
             <option value="microservices">Microservices</option>
@@ -102,7 +84,7 @@ function Application({ application, setApplication, id, entity }) {
             name="packageName"
             onChange={({ target }) => handleInputChange('packageName', target.value)}
             marginBottom="10px"
-            value={inputs.packageName}
+            defaultValue={application.packageName}
             type="text"
           />
           <FormLabel>Authentication Type</FormLabel>
@@ -111,7 +93,7 @@ function Application({ application, setApplication, id, entity }) {
             name="authenticationType"
             onChange={({ target }) => handleInputChange('authenticationType', target.value)}
             marginBottom="10px"
-            value={inputs.authenticationType}
+            defaultValue={application.authenticationType}
           >
             <option value="oauth2">OAuth2</option>
             <option value="jwt">JWT</option>
@@ -123,7 +105,7 @@ function Application({ application, setApplication, id, entity }) {
             name="databaseType"
             onChange={({ target }) => handleInputChange('databaseType', target.value)}
             marginBottom="10px"
-            value={inputs.databaseType}
+            defaultValue={application.databaseType}
           >
             <option value="sql">SQL</option>
             <option value="mongodb">Mongodb</option>
@@ -137,7 +119,7 @@ function Application({ application, setApplication, id, entity }) {
             name="prodDatabaseType"
             onChange={({ target }) => handleInputChange('prodDatabaseType', target.value)}
             marginBottom="10px"
-            value={inputs.prodDatabaseType}
+            defaultValue={application.prodDatabaseType}
           >
             <option value="postgresql">PostgreSQL</option>
             <option value="mysql">MySQL</option>
@@ -152,7 +134,7 @@ function Application({ application, setApplication, id, entity }) {
             name="clientFramework"
             onChange={({ target }) => handleInputChange('clientFramework', target.value)}
             marginBottom="10px"
-            value={inputs.clientFramework}
+            defaultValue={application.clientFramework}
           >
             <option value="react">React</option>
             <option value="angular">Angular</option>
@@ -166,7 +148,7 @@ function Application({ application, setApplication, id, entity }) {
             name="serviceDiscoveryType"
             onChange={({ target }) => handleInputChange('serviceDiscoveryType', target.value)}
             marginBottom="10px"
-            value={inputs.serviceDiscoveryType}
+            defaultValue={application.serviceDiscoveryType}
           >
             <option value="eureka">Eureka</option>
             <option value="consul">Consul</option>
@@ -179,7 +161,7 @@ function Application({ application, setApplication, id, entity }) {
             name="serverPort"
             onChange={({ target }) => handleInputChange('serverPort', target.value)}
             marginBottom="10px"
-            value={inputs.serverPort}
+            defaultValue={application.serverPort}
             type="number"
             min={3000} 
             max={9000}
@@ -197,7 +179,7 @@ function Application({ application, setApplication, id, entity }) {
               // }
               onChange={({ target }) => handleInputChange('serverPort', target.value)}
               marginBottom="10px"
-              value={inputs.serverPort}
+              defaultValue={application.serverPort}
             />
             <NumberInputStepper>
               <NumberIncrementStepper />

@@ -1,10 +1,3 @@
-import {
-  Container,
-  Heading,
-  Stack,
-  Text,
-  Button
-} from '@chakra-ui/react';
 import { useEffect } from 'react';
 
 export default function DocHome() {
@@ -19,9 +12,4 @@ export default function DocHome() {
 
   return <>Redirecting..</>;
 
-  return (
-    <Container maxW="2xl" marginTop="16px">
-     
-    </Container>
-  );
 }

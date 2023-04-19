@@ -1,42 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   FormControl,
   FormLabel,
-  // FormErrorMessage,
-  // FormHelperText,
   Input,
   Select,
   Editable,
   EditableInput,
   EditablePreview,
 } from "@chakra-ui/react";
-import { deploymentPreFlightTemplate } from "./assert";
 
-function Deployment({ id, application, deployment, setDeployment }) {
-  const [inputs, setInputs] = useState(
-    JSON.parse(localStorage.getItem("deployment")) || { deploymentPreFlightTemplate }
-  );
-
-  useEffect(() => {
-    localStorage.getItem("deployment", JSON.stringify(inputs));
-  }, [inputs]);
+function Deployment({ application, deployment, setDeployment }) {
 
   const handleInputChange = (field, value) => {
-    setInputs(() => ({
-      ...inputs,
-      [field]: value,
-    }));
     setDeployment((app) => ({
       ...app,
       [field]: value,
     }));
-    localStorage.setItem(
-      "deployment",
-      JSON.stringify({
-        ...inputs,
-        [field]: value,
-      })
-    );
   };
 
   return (
@@ -49,7 +28,7 @@ function Deployment({ id, application, deployment, setDeployment }) {
           handleInputChange("deploymentType", target.value)
         }
         marginBottom="10px"
-        value={inputs.deploymentType}
+        defaultValue={deployment.deploymentType}
       >
         <option value="kubernetes">Kubernetes</option>
         <option value="compose">Docker-Compose</option>
@@ -77,7 +56,7 @@ function Deployment({ id, application, deployment, setDeployment }) {
           handleInputChange("dockerRepositoryName", target.value)
         }
         marginBottom="10px"
-        value={inputs.dockerRepositoryName}
+        defaultValue={deployment.dockerRepositoryName}
       />
       <FormLabel>Kubernetes Namespace</FormLabel>
       <Input
@@ -89,7 +68,7 @@ function Deployment({ id, application, deployment, setDeployment }) {
           handleInputChange("kubernetesNamespace", target.value)
         }
         marginBottom="10px"
-        value={inputs.kubernetesNamespace}
+        defaultValue={deployment.kubernetesNamespace}
       />
       {/* <FormLabel>Kubernetes Service Type</FormLabel>
       <Select
@@ -99,7 +78,7 @@ function Deployment({ id, application, deployment, setDeployment }) {
           handleInputChange("kubernetesServiceType", target.value)
         }
         marginBottom="10px"
-        value={inputs.kubernetesServiceType}
+        defaultValue={deployment.kubernetesServiceType}
       >
         <option value="loadBalancer">LoadBalancer</option>
         <option value="nodePort">NodePort</option>
@@ -113,13 +92,13 @@ function Deployment({ id, application, deployment, setDeployment }) {
           handleInputChange("kubernetesUseDynamicStorage", target.value)
         }
         marginBottom="10px"
-        value={inputs.kubernetesUseDynamicStorage}
+        defaultValue={deployment.kubernetesUseDynamicStorage}
       >
         <option value="true">True</option>
         <option value="false">False</option>
       </Select>
 
-      {inputs.kubernetesUseDynamicStorage === "true" &&(
+      {deployment.kubernetesUseDynamicStorage === "true" &&(
       <><FormLabel>Enter Kubernetes Storage Class Name</FormLabel><Input
           placeholder="demoStorageClass"
           type="text"
@@ -127,7 +106,7 @@ function Deployment({ id, application, deployment, setDeployment }) {
           name="kubernetesStorageClassName"
           onChange={({ target }) => handleInputChange("kubernetesStorageClassName", target.value)}
           marginBottom="10px"
-          value={inputs.kubernetesStorageClassName} /></>
+          defaultValue={deployment.kubernetesStorageClassName} /></>
       )}
       {/* <FormLabel>Kubernetes Storage Provisioner</FormLabel>
       <Input
@@ -139,7 +118,7 @@ function Deployment({ id, application, deployment, setDeployment }) {
           handleInputChange("kubernetesStorageClassName", target.value)
         }
         marginBottom="10px"
-        value={inputs.kubernetesStorageClassName}
+        defaultValue={deployment.kubernetesStorageClassName}
       /> */}
       <FormLabel>Ingress Domain</FormLabel>
       <Input
@@ -151,7 +130,7 @@ function Deployment({ id, application, deployment, setDeployment }) {
           handleInputChange("ingressDomain", target.value)
         }
         marginBottom="10px"
-        value={inputs.ingressDomain}
+        defaultValue={deployment.ingressDomain}
       />
       <FormLabel>Ingress Type</FormLabel>
       <Select
@@ -161,7 +140,7 @@ function Deployment({ id, application, deployment, setDeployment }) {
           handleInputChange("ingressType", target.value)
         }
         marginBottom="10px"
-        value={inputs.ingressType}
+        defaultValue={deployment.ingressType}
       >
         <option value="istio">ISTIO</option>
         <option value="nginx">Nginx</option>
@@ -175,7 +154,7 @@ function Deployment({ id, application, deployment, setDeployment }) {
           handleInputChange("serviceDiscoveryType", target.value)
         }
         marginBottom="10px"
-        value={inputs.serviceDiscoveryType}
+        defaultValue={deployment.serviceDiscoveryType}
       >
         <option value="eureka">Eureka</option>
         <option value="consul">Consul</option>
@@ -187,7 +166,7 @@ function Deployment({ id, application, deployment, setDeployment }) {
         name="monitoring"
         onChange={({ target }) => handleInputChange("monitoring", target.value)}
         marginBottom="10px"
-        value={inputs.monitoring}
+        defaultValue={deployment.monitoring}
       >
         <option value="yes">Yes</option>
         <option value="no">No</option>

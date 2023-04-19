@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   AccordionItem,
   AccordionButton,
@@ -12,28 +12,10 @@ import {
   FormLabel,
 } from "@chakra-ui/react";
 import { DeleteIcon } from "@chakra-ui/icons";
-import { communicationPreFlightTemplate } from "./assert";
 
 function Communication({ id, communication, setCommunication }) {
-  const [inputs, setInputs] = useState(communicationPreFlightTemplate);
-  
-  useEffect(() => {
-  const storedData = localStorage.getItem("communication");
-    if (storedData) {
-      const communicationData = JSON.parse(storedData);
-      const componentData = communicationData[id];
-      if (componentData) {
-        setInputs(componentData);
-      }
-    }
-  }, [id]);
   
   const handleInputChange = (field, value) => {
-    setInputs((state) => ({
-      ...state,
-      [field]: value,
-    }));
-  
     setCommunication((state) => ({
       ...state,
       [id]: {
@@ -41,19 +23,6 @@ function Communication({ id, communication, setCommunication }) {
         [field]: value,
       },
     }));
-  
-    const storedData = localStorage.getItem("communication");
-    const communicationData = storedData ? JSON.parse(storedData) : {};
-    localStorage.setItem(
-      "communication",
-      JSON.stringify({
-        ...communicationData,
-        [id]: {
-          ...communicationData[id],
-          [field]: value,
-        },
-      })
-    );
   };
   
 
@@ -78,7 +47,7 @@ function Communication({ id, communication, setCommunication }) {
             name="clientName"
             onChange={({ target }) => handleInputChange('clientName', target.value)}
             marginBottom="10px"
-            value={inputs.clientName}
+            defaultValue={communication.clientName}
             type="text"
           />
         </FormControl>
@@ -92,7 +61,7 @@ function Communication({ id, communication, setCommunication }) {
             name="serverName"
             onChange={({ target }) => handleInputChange('serverName', target.value)}
             marginBottom="10px"
-            value={inputs.serverName}
+            defaultValue={communication.serverName}
             type="text"
           />
         </FormControl>
