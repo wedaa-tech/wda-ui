@@ -123,7 +123,7 @@ function FormWda() {
       .catch((error) => console.error(error))
       .finally(() => {
         setTimeout(() => setParty(true));
-        window.location.replace("../../");
+        // window.location.replace("../../");
       });
   };
 
@@ -159,7 +159,7 @@ function FormWda() {
       .catch((error) => console.error(error))
       .finally(() => {
         setTimeout(() => setParty(true));
-        window.location.replace("../../");
+        // window.location.replace("../../");
       });
   };
 
