@@ -38,74 +38,7 @@ import Infrastructure from "./Infrastructure";
 function FormWda() {
   const { height, width } = useWindowDimensions();
   const [party, setParty] = useState(false);
-  const handleSubmitWda = (e) => {
-    e.preventDefault();
-    fetch(
-      process.env.REACT_APP_API_BASE_URL + "/generateJDL?username=" +
-      username +
-      "&projectName=" +
-      projectName +
-      "&generateInfra=" +
-      generateInfrastructure +
-      "",
-      {
-        method: "post",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          application,
-          entity,
-          deployment,
-          communication,
-        }),
-      }
-    )
-      .then((response) => response.blob())
-      .then((blob) => {
-        saveAs(blob, `${projectName}.zip`); // Edit the name or ask the user for the project Name
-      })
-      .catch((error) => console.error(error))
-      .finally(() => {
-        setTimeout(() => setParty(true));
-        window.location.replace('../../')
-      });
-  };
 
-  const handleSubmitWdi = (e) => {
-    e.preventDefault();
-    fetch(
-      process.env.REACT_APP_API_BASE_URL +  "/generateJDL?username=" +
-      username +
-      "&projectName=" +
-      projectName +
-      "&generateInfra=" +
-      generateInfrastructure +
-      "",
-      {
-        method: "post",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          application,
-          entity,
-          deployment,
-          communication,
-          wdi
-        }),
-      }
-    )
-      .then((response) => response.blob())
-      .then((blob) => {
-        saveAs(blob, `${projectName}.zip`);
-      })
-      .catch((error) => console.error(error))
-      .finally(() => {
-        setTimeout(() => setParty(true));
-        window.location.replace('../../')
-      });
-  };
   const [entityCounter, setEntityCounter] = useState(1);
   const [communicationCounter, setCommunicationCounter] = useState(1);
   const [entity, setEntity] = useState([entityPreFlightTemplate]);
@@ -117,12 +50,27 @@ function FormWda() {
   const [communication, setCommunication] = useState({
     0: communicationPreFlightTemplate,
   });
-
-  /*
-  TODO :use setWdi when the generateInfra is true
-  */
   const [wdi, setWdi] = useState(wdiPreFlightTemplate);
+  const [isOpen, setIsOpen] = useState(true);
+  const [isContainerVisible, setIsContainerVisible] = useState(true);
+  const [generateInfrastructure, setGenerateInfrastructure] = useState(false);
+  const [username, setUsername] = useState("");
+  const [projectName, setProjectName] = useState("");
+  useEffect(() => {
+    if (party) {
+      setTimeout(() => {
+        setParty(false);
+      }, 5000);
+    }
+  }, [party]);
 
+  const handleContainerClose = () => {
+    setIsOpen(false);
+    setIsContainerVisible(false);
+  };
+  const handleCheckboxChange = (e) => {
+    setGenerateInfrastructure(e.target.checked);
+  };
   const addEntity = () => {
     setEntityCounter((state) => state + 1);
     setEntity((prev) => ({
@@ -144,26 +92,75 @@ function FormWda() {
       [communicationCounter]: communicationPreFlightTemplate,
     }));
   };
-
-  useEffect(() => {
-    if (party) {
-      setTimeout(() => {
-        setParty(false);
-      }, 5000);
-    }
-  }, [party]);
-  const [isOpen, setIsOpen] = useState(true);
-  const [isContainerVisible, setIsContainerVisible] = useState(true);
-  const [generateInfrastructure, setGenerateInfrastructure] = useState(false);
-  const [username, setUsername] = useState("");
-  const [projectName, setProjectName] = useState("");
-
-  const handleContainerClose = () => {
-    setIsOpen(false);
-    setIsContainerVisible(false);
+  const handleSubmitWda = (e) => {
+    e.preventDefault();
+    fetch(
+      process.env.REACT_APP_API_BASE_URL +
+        "/generateJDL?username=" +
+        username +
+        "&projectName=" +
+        projectName +
+        "&generateInfra=" +
+        generateInfrastructure +
+        "",
+      {
+        method: "post",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          application,
+          entity,
+          deployment,
+          communication,
+        }),
+      }
+    )
+      .then((response) => response.blob())
+      .then((blob) => {
+        saveAs(blob, `${projectName}.zip`); // Edit the name or ask the user for the project Name
+      })
+      .catch((error) => console.error(error))
+      .finally(() => {
+        setTimeout(() => setParty(true));
+        window.location.replace("../../");
+      });
   };
-  const handleCheckboxChange = (e) => {
-    setGenerateInfrastructure(e.target.checked);
+
+  const handleSubmitWdi = (e) => {
+    e.preventDefault();
+    fetch(
+      process.env.REACT_APP_API_BASE_URL +
+        "/generateJDL?username=" +
+        username +
+        "&projectName=" +
+        projectName +
+        "&generateInfra=" +
+        generateInfrastructure +
+        "",
+      {
+        method: "post",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          application,
+          entity,
+          deployment,
+          communication,
+          wdi,
+        }),
+      }
+    )
+      .then((response) => response.blob())
+      .then((blob) => {
+        saveAs(blob, `${projectName}.zip`);
+      })
+      .catch((error) => console.error(error))
+      .finally(() => {
+        setTimeout(() => setParty(true));
+        window.location.replace("../../");
+      });
   };
 
   return (
