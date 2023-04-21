@@ -17,13 +17,13 @@ function FormWdi(props) {
   const { height, width } = useWindowDimensions();
   const [party, setParty] = useState(false);
   const [projectName, setProjectName] = useState("example");
-  const [domain, setDomain] = useState("example.com");
+  const [domain, setDomain] = useState("");
   const [cloudProvider, setCloudProvider] = useState("aws");
   const [awsRegion, setAwsRegion] = useState("ap-south-1");
-  const [awsAccountId, setAwsAccountId] = useState("379605592402");
+  const [awsAccountId, setAwsAccountId] = useState("");
   const [orchestration, setOrchestration] = useState("kubernetes");
   // const [instanceType, setInstanceType] = useState("t3.medium");
-  const [clusterName, setClusterName] = useState("demo-cluster");
+  const [clusterName, setClusterName] = useState("");
   // const [nameSpace, setNameSpace] = useState("k8s");
   const [ingress, setIngress] = useState("istio");
   const [monitoring, setMonitoring] = useState("true");
@@ -129,7 +129,7 @@ function FormWdi(props) {
                 <FormLabel>Account ID</FormLabel>
                 <Input
                   type="text"
-                  placeholder="379605592402"
+                  placeholder="123456789"
                   marginBottom="10px"
                   onChange={(e) => setAwsAccountId(e.target.value)}
                   value={awsAccountId}
