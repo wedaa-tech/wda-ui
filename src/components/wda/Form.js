@@ -94,6 +94,12 @@ function FormWda() {
   };
   const handleSubmitWda = (e) => {
     e.preventDefault();
+
+    // Wait for 3 min 
+    const timeoutId = setTimeout(() => {
+      console.log('Request timed out');
+    }, 300000);
+
     fetch(
       process.env.REACT_APP_API_BASE_URL +
         "/generateJDL?username=" +
@@ -122,6 +128,8 @@ function FormWda() {
       })
       .catch((error) => console.error(error))
       .finally(() => {
+        // clear the wait time of 3 min 
+        clearTimeout(timeoutId);
         setTimeout(() => setParty(true));
         // window.location.replace("../../");
       });
@@ -129,11 +137,6 @@ function FormWda() {
 
   const handleSubmitWdi = (e) => {
     e.preventDefault();
-
-    const timeoutId = setTimeout(() => {
-      console.log('Request timed out');
-    }, 300000);
-
     fetch(
       process.env.REACT_APP_API_BASE_URL +
         "/generateJDL?username=" +
@@ -163,7 +166,6 @@ function FormWda() {
       })
       .catch((error) => console.error(error))
       .finally(() => {
-        clearTimeout(timeoutId);
         setTimeout(() => setParty(true));
         // window.location.replace("../../");
       });
