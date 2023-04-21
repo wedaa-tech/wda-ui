@@ -114,7 +114,7 @@ function FormWda() {
           deployment,
           communication,
         }),
-      }
+      }, { timeout: 300000 }
     )
       .then((response) => response.blob())
       .then((blob) => {
