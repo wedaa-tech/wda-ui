@@ -38,17 +38,18 @@ const deploymentPreFlightTemplate = {
 };
 
 const wdiPreFlightTemplate = {
-  domain : "example.com",
+  domain : "",
   cloudProvider : "aws",
-  awsAccountId  : "379605592402", // This is our AWS account ID, has to be passed by the end user. Discard this value later!
+  awsAccountId  : "", // This is our AWS account ID, has to be passed by the end user. Discard this value later!
   orchestration : "kubernetes",
   awsRegion : "ap-south-1",
   awsAccessKey : "<awsAccessKey>",
   awsSecretKey : "<awsSecretKey>",
   instanceType: "t3.medium",
-  clusterName : "demo-cluster",
+  clusterName : "",
   ingress: "istio",
   monitoring: "true",
+  enableECK: "true",
   k8sWebUI:  "true"
 };
 

@@ -27,6 +27,7 @@ function FormWdi(props) {
   // const [nameSpace, setNameSpace] = useState("k8s");
   const [ingress, setIngress] = useState("istio");
   const [monitoring, setMonitoring] = useState("true");
+  const [ enableECK, setEnableECK ] = useState("true")
   const [k8sWebUI, setK8sWebUI] = useState("true");
 
   const handleSubmit = (e) => {
@@ -50,6 +51,7 @@ function FormWdi(props) {
         clusterName: clusterName,
         ingress: ingress,
         monitoring: monitoring,
+        enableECK: enableECK,
         k8sWebUI: k8sWebUI,
       }),
     })
@@ -203,6 +205,15 @@ function FormWdi(props) {
                 <Select
                   onChange={(e) => setMonitoring(e.target.value)}
                   value={monitoring}
+                  marginBottom="10px"
+                >
+                  <option value="true">Yes</option>
+                  <option value="false">No</option>
+                </Select>
+                <FormLabel>Enable Elastic Cloud:</FormLabel>
+                <Select
+                  onChange={(e) => setEnableECK(e.target.value)}
+                  value={enableECK}
                   marginBottom="10px"
                 >
                   <option value="true">Yes</option>

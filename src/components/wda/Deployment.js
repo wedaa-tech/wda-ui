@@ -93,8 +93,8 @@ function Deployment({ application, deployment, setDeployment }) {
         marginBottom="10px"
         defaultValue={deployment.kubernetesUseDynamicStorage}
       >
-        <option value="true">True</option>
-        <option value="false">False</option>
+        <option value="true">Yes</option>
+        <option value="false">No</option>
       </Select>
 
       {deployment.kubernetesUseDynamicStorage === "true" && (

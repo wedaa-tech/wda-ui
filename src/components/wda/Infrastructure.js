@@ -10,7 +10,7 @@ function Infrastructure({ wdi, setWdi }) {
   };
 
   return (
-    <FormControl>
+    <FormControl isRequired>
      <FormLabel>Enter your Domain Name</FormLabel>
       <Input
         type="text"
@@ -41,7 +41,7 @@ function Infrastructure({ wdi, setWdi }) {
         <FormLabel>Account ID</FormLabel>
         <Input
           type="text"
-          placeholder="379605592402"
+          placeholder="123456789"
           marginBottom="10px"
           onChange={({ target }) =>
           handleInputChange("awsAccountId", target.value)
@@ -137,6 +137,39 @@ function Infrastructure({ wdi, setWdi }) {
             <option value="nginx">Nginx</option>
             <option value="traefik">Traefik</option>
           </Select>
+          <FormLabel>Enable Monitoring:</FormLabel>
+                <Select
+                  onChange={({ target }) =>
+                  handleInputChange("monitoring", target.value)
+                }
+                defaultValue={wdi.monitoring}
+                  marginBottom="10px"
+                >
+                  <option value="true">Yes</option>
+                  <option value="false">No</option>
+                </Select>
+                <FormLabel>Enable Elastic Cloud:</FormLabel>
+                <Select
+                   onChange={({ target }) =>
+                   handleInputChange("enableECK", target.value)
+                 }
+                  defaultValue={wdi.enableECK}
+                  marginBottom="10px"
+                >
+                  <option value="true">Yes</option>
+                  <option value="false">No</option>
+                </Select>
+                <FormLabel>Enable Web UI:</FormLabel>
+                <Select
+                   onChange={({ target }) =>
+                   handleInputChange("k8sWebUI", target.value)
+                 }
+                 defaultValue={wdi.k8sWebUI}
+                  marginBottom="10px"
+                >
+                  <option value="true">Yes</option>
+                  <option value="false">No</option>
+                </Select>
         </div>
       )}
     </FormControl>
