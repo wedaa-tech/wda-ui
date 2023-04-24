@@ -32,7 +32,7 @@ import {
   deploymentPreFlightTemplate,
   wdiPreFlightTemplate,
 } from "./assert";
-import Communication from "./communication";
+import Communication from "./Communication";
 import Infrastructure from "./Infrastructure";
 
 function FormWda() {

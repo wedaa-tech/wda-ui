@@ -1,7 +1,18 @@
 import React from "react";
-import { FormControl, FormLabel, Input, Select } from "@chakra-ui/react";
+import {
+  FormControl,
+  FormLabel,
+  Input,
+  Select,
+  FormErrorMessage,
+} from "@chakra-ui/react";
+import { WarningIcon } from "@chakra-ui/icons";
 
 function Infrastructure({ wdi, setWdi }) {
+  const isErrorDomain = wdi.domain === "";
+  const isErrorAccId = wdi.awsAccountId === "";
+  const isErrorCluster = wdi.clusterName === "";
+
   const handleInputChange = (field, value) => {
     setWdi((app) => ({
       ...app,
@@ -10,17 +21,26 @@ function Infrastructure({ wdi, setWdi }) {
   };
 
   return (
-    <FormControl isRequired>
-     <FormLabel>Enter your Domain Name</FormLabel>
-      <Input
-        type="text"
-        placeholder="Example.com"
-        marginBottom="10px"
-        key="domain"
-        name="domain"
-        onChange={({ target }) => handleInputChange("domain", target.value)}
-        defaultValue={wdi.domain}
-      />
+    <FormControl>
+      <FormControl isInvalid={isErrorDomain}>
+        <FormLabel>Enter your Domain Name</FormLabel>
+        <Input
+          type="text"
+          placeholder="example.com"
+          key="domain"
+          name="domain"
+          onChange={({ target }) => handleInputChange("domain", target.value)}
+          defaultValue={wdi.domain}
+        />
+        {!isErrorDomain ? (
+          <div style={{ marginBottom: "10px" }}></div>
+        ) : (
+          <FormErrorMessage marginBottom="10px" fontSize="10px" marginTop="5px">
+            <WarningIcon marginRight="5px" />
+            Required
+          </FormErrorMessage>
+        )}
+      </FormControl>
       <FormLabel>Select Cloud Provider</FormLabel>
       <Select
         marginBottom="10px"
@@ -38,29 +58,42 @@ function Infrastructure({ wdi, setWdi }) {
 
       {wdi.cloudProvider === "aws" && (
         <>
-        <FormLabel>Account ID</FormLabel>
-        <Input
-          type="text"
-          placeholder="123456789"
-          marginBottom="10px"
-          onChange={({ target }) =>
-          handleInputChange("awsAccountId", target.value)
-        }
-          defaultValue={wdi.awsAccountId}
-        />
-        <FormLabel>Select region</FormLabel>
-        <Select
-          marginBottom="10px"
-          onChange={({ target }) =>
-          handleInputChange("awsRegion", target.value)
-        }
-          defaultValue={wdi.awsRegion}
-        >
-          <option value="ap-south-1">Asia Pacific (Mumbai)</option>
-          <option value="us-east-2">US East (Ohio)</option>
-          <option value="ap-east-1">Asia Pacific (Hong Kong)</option>
-        </Select>
-      </>
+          <FormControl isInvalid={isErrorAccId}>
+            <FormLabel>Account ID</FormLabel>
+            <Input
+              type="number"
+              placeholder="123456789"
+              onChange={({ target }) =>
+                handleInputChange("awsAccountId", target.value)
+              }
+              defaultValue={wdi.awsAccountId}
+            />
+            {!isErrorAccId ? (
+              <div style={{ marginBottom: "10px" }}></div>
+            ) : (
+              <FormErrorMessage
+                marginBottom="10px"
+                fontSize="10px"
+                marginTop="5px"
+              >
+                <WarningIcon marginRight="5px" />
+                Required
+              </FormErrorMessage>
+            )}
+          </FormControl>
+          <FormLabel>Select region</FormLabel>
+          <Select
+            marginBottom="10px"
+            onChange={({ target }) =>
+              handleInputChange("awsRegion", target.value)
+            }
+            defaultValue={wdi.awsRegion}
+          >
+            <option value="ap-south-1">Asia Pacific (Mumbai)</option>
+            <option value="us-east-2">US East (Ohio)</option>
+            <option value="ap-east-1">Asia Pacific (Hong Kong)</option>
+          </Select>
+        </>
       )}
 
       <FormLabel>Select Orchestration Provider:</FormLabel>
@@ -99,18 +132,31 @@ function Infrastructure({ wdi, setWdi }) {
 
       {wdi.orchestration === "kubernetes" && (
         <div>
-          <FormLabel>Enter Cluster Name</FormLabel>
-          <Input
-            type="text"
-            placeholder="Demo-cluster"
-            marginBottom="10px"
-            key="clusterName"
-            name="clusterName"
-            onChange={({ target }) =>
-              handleInputChange("clusterName", target.value)
-            }
-            defaultValue={wdi.clusterName}
-          />
+          <FormControl isInvalid={isErrorCluster}>
+            <FormLabel>Enter Cluster Name</FormLabel>
+            <Input
+              type="text"
+              placeholder="demo-cluster"
+              key="clusterName"
+              name="clusterName"
+              onChange={({ target }) =>
+                handleInputChange("clusterName", target.value)
+              }
+              defaultValue={wdi.clusterName}
+            />
+            {!isErrorCluster ? (
+              <div style={{ marginBottom: "10px" }}></div>
+            ) : (
+              <FormErrorMessage
+                marginBottom="10px"
+                fontSize="10px"
+                marginTop="5px"
+              >
+                <WarningIcon marginRight="5px" />
+                Required
+              </FormErrorMessage>
+            )}
+          </FormControl>
           {/* <FormLabel>Enter Kubernetes Namespace</FormLabel>
           <Input
             type="text"
@@ -138,38 +184,38 @@ function Infrastructure({ wdi, setWdi }) {
             <option value="traefik">Traefik</option>
           </Select>
           <FormLabel>Enable Monitoring:</FormLabel>
-                <Select
-                  onChange={({ target }) =>
-                  handleInputChange("monitoring", target.value)
-                }
-                defaultValue={wdi.monitoring}
-                  marginBottom="10px"
-                >
-                  <option value="true">Yes</option>
-                  <option value="false">No</option>
-                </Select>
-                <FormLabel>Enable Elastic Cloud:</FormLabel>
-                <Select
-                   onChange={({ target }) =>
-                   handleInputChange("enableECK", target.value)
-                 }
-                  defaultValue={wdi.enableECK}
-                  marginBottom="10px"
-                >
-                  <option value="true">Yes</option>
-                  <option value="false">No</option>
-                </Select>
-                <FormLabel>Enable Web UI:</FormLabel>
-                <Select
-                   onChange={({ target }) =>
-                   handleInputChange("k8sWebUI", target.value)
-                 }
-                 defaultValue={wdi.k8sWebUI}
-                  marginBottom="10px"
-                >
-                  <option value="true">Yes</option>
-                  <option value="false">No</option>
-                </Select>
+          <Select
+            onChange={({ target }) =>
+              handleInputChange("monitoring", target.value)
+            }
+            defaultValue={wdi.monitoring}
+            marginBottom="10px"
+          >
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+          </Select>
+          <FormLabel>Enable Elastic Cloud:</FormLabel>
+          <Select
+            onChange={({ target }) =>
+              handleInputChange("enableECK", target.value)
+            }
+            defaultValue={wdi.enableECK}
+            marginBottom="10px"
+          >
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+          </Select>
+          <FormLabel>Enable Web UI:</FormLabel>
+          <Select
+            onChange={({ target }) =>
+              handleInputChange("k8sWebUI", target.value)
+            }
+            defaultValue={wdi.k8sWebUI}
+            marginBottom="10px"
+          >
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+          </Select>
         </div>
       )}
     </FormControl>

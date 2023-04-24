@@ -11,18 +11,18 @@ const entityPreFlightTemplate = {
 const applicationPreFlightTemplate = {
   applicationName: "",
   applicationType: "Gateway",
-  packageName: "com.mycompany.myapp",
+  packageName: "",
   authenticationType: "OAuth2",
   databaseType: "Sql",
   prodDatabaseType: "PostgreSQL",
   clientFramework: "React",
   serviceDiscoveryType: "Eureka",
-  serverPort: "9000",
+  serverPort: "",
   entities: [],
 };
 const communicationPreFlightTemplate = {
-  clientName:"Client",
-  serverName:"Server"
+  clientName:"",
+  serverName:""
 };
 
 const deploymentPreFlightTemplate = {
@@ -30,9 +30,9 @@ const deploymentPreFlightTemplate = {
   dockerRepositoryName: "",
   ingressDomain: "",
   ingressType: "istio",
-  kubernetesNamespace: "Wdi",
+  kubernetesNamespace: "",
   kubernetesServiceType: "Ingress",
-  kubernetesStorageClassName: "demosc",
+  kubernetesStorageClassName: "",
   kubernetesUseDynamicStorage: "true",
   serviceDiscoveryType: "eureka",
 };

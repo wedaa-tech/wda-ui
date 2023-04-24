@@ -10,13 +10,15 @@ import {
   Input,
   Button,
   Heading,
+  FormErrorMessage,
 } from "@chakra-ui/react";
+import { WarningIcon } from "@chakra-ui/icons";
 
 function FormWdi(props) {
   const { generateInfrastructure, isContainerVisible, wdi } = props;
   const { height, width } = useWindowDimensions();
   const [party, setParty] = useState(false);
-  const [projectName, setProjectName] = useState("example");
+  const [projectName, setProjectName] = useState("");
   const [domain, setDomain] = useState("");
   const [cloudProvider, setCloudProvider] = useState("aws");
   const [awsRegion, setAwsRegion] = useState("ap-south-1");
@@ -27,8 +29,13 @@ function FormWdi(props) {
   // const [nameSpace, setNameSpace] = useState("k8s");
   const [ingress, setIngress] = useState("istio");
   const [monitoring, setMonitoring] = useState("true");
-  const [ enableECK, setEnableECK ] = useState("true")
+  const [enableECK, setEnableECK] = useState("true");
   const [k8sWebUI, setK8sWebUI] = useState("true");
+
+  const isErrorProject = projectName === "";
+  const isErrorDomain = domain === "";
+  const isErrorAccId = awsAccountId === "";
+  const isErrorCluster = clusterName === "";
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -70,7 +77,7 @@ function FormWdi(props) {
       .catch((error) => console.error(error))
       .finally(() => {
         setTimeout(() => setParty(true));
-        window.location.replace('../../')
+        window.location.replace("../../");
       });
   };
 
@@ -94,25 +101,51 @@ function FormWdi(props) {
           WDI
         </Heading>
       )}
-      <FormControl isRequired>
+      <FormControl>
         {!isContainerVisible && !generateInfrastructure && (
           <>
-            <FormLabel>Enter Project Name</FormLabel>
-            <Input
-              type="text"
-              placeholder="example"
-              marginBottom="10px"
-              onChange={(e) => setProjectName(e.target.value)}
-              value={projectName}
-            />
-            <FormLabel>Enter your Domain Name</FormLabel>
-            <Input
-              type="text"
-              placeholder="example.com"
-              marginBottom="10px"
-              onChange={(e) => setDomain(e.target.value)}
-              value={domain}
-            />
+            <FormControl isInvalid={isErrorProject}>
+              <FormLabel>Enter Project Name</FormLabel>
+              <Input
+                type="text"
+                placeholder="example"
+                onChange={(e) => setProjectName(e.target.value)}
+                value={projectName}
+              />
+              {!isErrorProject ? (
+                <div style={{ marginBottom: "10px" }}></div>
+              ) : (
+                <FormErrorMessage
+                  marginBottom="10px"
+                  fontSize="10px"
+                  marginTop="5px"
+                >
+                  <WarningIcon marginRight="5px" />
+                  Required
+                </FormErrorMessage>
+              )}
+            </FormControl>
+            <FormControl isInvalid={isErrorDomain}>
+              <FormLabel>Enter your Domain Name</FormLabel>
+              <Input
+                type="text"
+                placeholder="example.com"
+                onChange={(e) => setDomain(e.target.value)}
+                value={domain}
+              />
+              {!isErrorDomain ? (
+                <div style={{ marginBottom: "10px" }}></div>
+              ) : (
+                <FormErrorMessage
+                  marginBottom="10px"
+                  fontSize="10px"
+                  marginTop="5px"
+                >
+                  <WarningIcon marginRight="5px" />
+                  Required
+                </FormErrorMessage>
+              )}
+            </FormControl>
             <FormLabel>Select Cloud Provider</FormLabel>
             <Select
               marginBottom="10px"
@@ -126,14 +159,27 @@ function FormWdi(props) {
 
             {cloudProvider === "aws" && (
               <>
-                <FormLabel>Account ID</FormLabel>
-                <Input
-                  type="text"
-                  placeholder="123456789"
-                  marginBottom="10px"
-                  onChange={(e) => setAwsAccountId(e.target.value)}
-                  value={awsAccountId}
-                />
+                <FormControl isInvalid={isErrorAccId}>
+                  <FormLabel>Account ID</FormLabel>
+                  <Input
+                    type="number"
+                    placeholder="123456789"
+                    onChange={(e) => setAwsAccountId(e.target.value)}
+                    value={awsAccountId}
+                  />
+                  {!isErrorAccId ? (
+                    <div style={{ marginBottom: "10px" }}></div>
+                  ) : (
+                    <FormErrorMessage
+                      marginBottom="10px"
+                      fontSize="10px"
+                      marginTop="5px"
+                    >
+                      <WarningIcon marginRight="5px" />
+                      Required
+                    </FormErrorMessage>
+                  )}
+                </FormControl>
                 <FormLabel>Select region</FormLabel>
                 <Select
                   marginBottom="10px"
@@ -175,14 +221,27 @@ function FormWdi(props) {
 
             {orchestration === "kubernetes" && (
               <div>
-                <FormLabel>Enter Cluster Name</FormLabel>
-                <Input
-                  type="text"
-                  placeholder="demo-cluster"
-                  marginBottom="10px"
-                  onChange={(e) => setClusterName(e.target.value)}
-                  value={clusterName}
-                />
+                <FormControl isInvalid={isErrorCluster}>
+                  <FormLabel>Enter Cluster Name</FormLabel>
+                  <Input
+                    type="text"
+                    placeholder="demo-cluster"
+                    onChange={(e) => setClusterName(e.target.value)}
+                    value={clusterName}
+                  />
+                  {!isErrorCluster ? (
+                    <div style={{ marginBottom: "10px" }}></div>
+                  ) : (
+                    <FormErrorMessage
+                      marginBottom="10px"
+                      fontSize="10px"
+                      marginTop="5px"
+                    >
+                      <WarningIcon marginRight="5px" />
+                      Required
+                    </FormErrorMessage>
+                  )}
+                </FormControl>
                 {/* <FormLabel>Enter Kubernetes Namespace</FormLabel>
                   <Input
                     type="text"
