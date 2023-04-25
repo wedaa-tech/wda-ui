@@ -35,14 +35,6 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: deploy
 
-      - if: github.event_name == 'workflow_dispatch'     
-        name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          force: true
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: main
-
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
