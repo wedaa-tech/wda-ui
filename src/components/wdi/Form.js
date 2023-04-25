@@ -37,6 +37,19 @@ function FormWdi(props) {
   const isErrorAccId = awsAccountId === "";
   const isErrorCluster = clusterName === "";
 
+  const validateInputs = () => {
+    if (
+      projectName === "" ||
+      domain === "" ||
+      awsAccountId === "" ||
+      clusterName === ""
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     fetch(process.env.REACT_APP_API_BASE_URL + "/generate", {
@@ -109,7 +122,9 @@ function FormWdi(props) {
               <Input
                 type="text"
                 placeholder="example"
-                onChange={(e) => setProjectName(e.target.value)}
+                onChange={(e) => {
+                  setProjectName(e.target.value);
+                }}
                 value={projectName}
               />
               {!isErrorProject ? (
@@ -130,7 +145,9 @@ function FormWdi(props) {
               <Input
                 type="text"
                 placeholder="example.com"
-                onChange={(e) => setDomain(e.target.value)}
+                onChange={(e) => {
+                  setDomain(e.target.value);
+                }}
                 value={domain}
               />
               {!isErrorDomain ? (
@@ -164,7 +181,9 @@ function FormWdi(props) {
                   <Input
                     type="number"
                     placeholder="123456789"
-                    onChange={(e) => setAwsAccountId(e.target.value)}
+                    onChange={(e) => {
+                      setAwsAccountId(e.target.value);
+                    }}
                     value={awsAccountId}
                   />
                   {!isErrorAccId ? (
@@ -226,7 +245,9 @@ function FormWdi(props) {
                   <Input
                     type="text"
                     placeholder="demo-cluster"
-                    onChange={(e) => setClusterName(e.target.value)}
+                    onChange={(e) => {
+                      setClusterName(e.target.value);
+                    }}
                     value={clusterName}
                   />
                   {!isErrorCluster ? (
@@ -292,16 +313,30 @@ function FormWdi(props) {
           </>
         )}
         {!generateInfrastructure && !isContainerVisible && !wdi && (
-          <Button
-            onClick={handleSubmit}
-            mt={4}
-            border="2px"
-            borderColor="green.500"
-            width="100px"
-            type="submit"
-          >
-            Submit
-          </Button>
+          <>
+            <Button
+              onClick={handleSubmit}
+              mt={4}
+              border="2px"
+              borderColor="green.500"
+              width="100px"
+              type="submit"
+              isDisabled={validateInputs()}
+            >
+              Submit
+            </Button>
+            {validateInputs() ? (
+              <p
+                style={{
+                  fontSize: "10px",
+                  color: "red",
+                  marginTop: "5px",
+                }}
+              >
+                Please ensure all the mandatory fields are filled
+              </p>
+            ) : null}
+          </>
         )}
       </FormControl>
 

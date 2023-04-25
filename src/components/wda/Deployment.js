@@ -167,7 +167,7 @@ function Deployment({ application, deployment, setDeployment }) {
       <FormControl isInvalid={isErrorIngressDomain}>
         <FormLabel>Ingress Domain</FormLabel>
         <Input
-          placeholder=""
+          placeholder="example.com"
           type="text"
           key="ingressDomain"
           name="ingressDomain"

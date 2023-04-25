@@ -17,7 +17,9 @@ import {
   ModalFooter,
   ModalBody,
   Checkbox,
+  CloseButton,
 } from "@chakra-ui/react";
+import { Link } from "react-router-dom";
 import { AddIcon } from "@chakra-ui/icons";
 import Application from "./Application";
 // import Entity from "./Entity";
@@ -92,6 +94,45 @@ function FormWda() {
       [communicationCounter]: communicationPreFlightTemplate,
     }));
   };
+  const validateInputsWda = () => {
+    let invalidInput = false;
+    Object.values(application).forEach((app) => {
+      if (
+        app.applicationName === "" ||
+        app.packageName === "" ||
+        app.serverPort === ""
+      ) {
+        invalidInput = true;
+      }
+    });
+    Object.values(communication).forEach((comm) => {
+      if (comm.clientName === "" || comm.serverName === "") {
+        invalidInput = true;
+      }
+    });
+    if (
+      invalidInput ||
+      deployment.dockerRepositoryName === "" ||
+      deployment.kubernetesNamespace === "" ||
+      deployment.kubernetesStorageClassName === "" ||
+      deployment.ingressDomain === ""
+    ) {
+      return true;
+    }
+    return false;
+  };
+  const validateInputsWdi = () => {
+    if (
+      validateInputsWda() ||
+      wdi.domain === "" ||
+      wdi.awsAccountId === "" ||
+      wdi.clusterName === ""
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  };
   const handleSubmitWda = (e) => {
     e.preventDefault();
     fetch(
@@ -114,7 +155,7 @@ function FormWda() {
           deployment,
           communication,
         }),
-      },
+      }
     )
       .then((response) => response.blob())
       .then((blob) => {
@@ -168,7 +209,16 @@ function FormWda() {
       <Modal isOpen={isOpen}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Please enter your details</ModalHeader>
+          <ModalHeader>
+            <h2 style={{ display: "inline-block" }}>
+              Please enter your details
+            </h2>
+            <span style={{ float: "right" }}>
+              <Link to="/">
+                <CloseButton style={{ background: "none" }} />
+              </Link>
+            </span>
+          </ModalHeader>
           <ModalBody>
             Enter username
             <Input
@@ -353,15 +403,29 @@ function FormWda() {
                   setDeployment={setDeployment}
                 />
                 {!generateInfrastructure && (
-                  <Button
-                    width="100px"
-                    border="2px"
-                    borderColor="green.500"
-                    onClick={handleSubmitWda}
-                    marginTop="10px"
-                  >
-                    Submit
-                  </Button>
+                  <>
+                    <Button
+                      width="100px"
+                      border="2px"
+                      borderColor="green.500"
+                      onClick={handleSubmitWda}
+                      marginTop="10px"
+                      isDisabled={validateInputsWda()}
+                    >
+                      Submit
+                    </Button>
+                    {validateInputsWda() ? (
+                      <p
+                        style={{
+                          fontSize: "10px",
+                          color: "red",
+                          marginTop: "5px",
+                        }}
+                      >
+                        Please ensure all the mandatory fields are filled
+                      </p>
+                    ) : null}
+                  </>
                 )}
               </TabPanel>
               {generateInfrastructure && (
@@ -377,9 +441,21 @@ function FormWda() {
                     borderColor="green.500"
                     onClick={handleSubmitWdi}
                     marginTop="10px"
+                    isDisabled={validateInputsWdi()}
                   >
                     Submit
                   </Button>
+                  {validateInputsWdi ? (
+                    <p
+                      style={{
+                        fontSize: "10px",
+                        color: "red",
+                        marginTop: "5px",
+                      }}
+                    >
+                      Please ensure all the mandatory fields are filled
+                    </p>
+                  ) : null}
                 </TabPanel>
               )}
             </TabPanels>
