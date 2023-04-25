@@ -1,0 +1,59 @@
+name: Build and Push to s3
+
+# Controls when the workflow will run
+on:
+  workflow_dispatch:
+    inputs:
+      dNSName:
+        description: 'alb dns name'
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - if: github.event_name == 'workflow_dispatch'
+
+        name: Update DNS name 
+        run: |
+          echo "Updating DNS Name in .env.production..."
+
+          sed -i '/REACT_APP_API_BASE_URL/d' .env.production && echo 'REACT_APP_API_BASE_URL = "https://${{ github.event.inputs.dNSName }}"' >> .env.production
+          
+          git config --local user.email "tic.dev@comakeit.com"
+          git config --local user.name "comakeit-tic"
+          git commit -a -m "updated DNS name in env"
+
+      - if: github.event_name == 'workflow_dispatch'
+        name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          force: true
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: deploy
+
+      - if: github.event_name == 'workflow_dispatch'     
+        name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          force: true
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: main
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region:            ap-south-1
+
+       # Treating warnings as errors because process.env.CI = true
+       # set CI=false to treat warnings as warnings
+      - name: Build React App
+        run:  npm install && CI=false npm run build
+
+      - name: Deploy app build to S3 bucket
+        run:  aws s3 sync ./build/ s3://wda-ui --delete
