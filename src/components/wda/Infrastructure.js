@@ -31,6 +31,7 @@ function Infrastructure({ wdi, setWdi }) {
           name="domain"
           onChange={({ target }) => handleInputChange("domain", target.value)}
           defaultValue={wdi.domain}
+          style={{ border: "1px solid #cfcfcf", boxShadow: "none" }}
         />
         {!isErrorDomain ? (
           <div style={{ marginBottom: "10px" }}></div>
@@ -67,6 +68,7 @@ function Infrastructure({ wdi, setWdi }) {
                 handleInputChange("awsAccountId", target.value)
               }
               defaultValue={wdi.awsAccountId}
+              style={{ border: "1px solid #cfcfcf", boxShadow: "none" }}
             />
             {!isErrorAccId ? (
               <div style={{ marginBottom: "10px" }}></div>
@@ -143,6 +145,7 @@ function Infrastructure({ wdi, setWdi }) {
                 handleInputChange("clusterName", target.value)
               }
               defaultValue={wdi.clusterName}
+              style={{ border: "1px solid #cfcfcf", boxShadow: "none" }}
             />
             {!isErrorCluster ? (
               <div style={{ marginBottom: "10px" }}></div>

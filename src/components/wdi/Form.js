@@ -126,6 +126,7 @@ function FormWdi(props) {
                   setProjectName(e.target.value);
                 }}
                 value={projectName}
+                style={{ border: "1px solid #cfcfcf", boxShadow: "none" }}
               />
               {!isErrorProject ? (
                 <div style={{ marginBottom: "10px" }}></div>
@@ -149,6 +150,7 @@ function FormWdi(props) {
                   setDomain(e.target.value);
                 }}
                 value={domain}
+                style={{ border: "1px solid #cfcfcf", boxShadow: "none" }}
               />
               {!isErrorDomain ? (
                 <div style={{ marginBottom: "10px" }}></div>
@@ -185,6 +187,7 @@ function FormWdi(props) {
                       setAwsAccountId(e.target.value);
                     }}
                     value={awsAccountId}
+                    style={{ border: "1px solid #cfcfcf", boxShadow: "none" }}
                   />
                   {!isErrorAccId ? (
                     <div style={{ marginBottom: "10px" }}></div>
@@ -249,6 +252,7 @@ function FormWdi(props) {
                       setClusterName(e.target.value);
                     }}
                     value={clusterName}
+                    style={{ border: "1px solid #cfcfcf", boxShadow: "none" }}
                   />
                   {!isErrorCluster ? (
                     <div style={{ marginBottom: "10px" }}></div>
@@ -331,11 +335,14 @@ function FormWdi(props) {
                   fontSize: "10px",
                   color: "red",
                   marginTop: "5px",
+                  marginBottom: "20px",
                 }}
               >
                 Please ensure all the mandatory fields are filled
               </p>
-            ) : null}
+            ) : (
+              <p style={{ marginBottom: "20px" }}></p>
+            )}
           </>
         )}
       </FormControl>

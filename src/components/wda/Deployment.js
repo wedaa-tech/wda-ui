@@ -63,6 +63,7 @@ function Deployment({ application, deployment, setDeployment }) {
             handleInputChange("dockerRepositoryName", target.value)
           }
           defaultValue={deployment.dockerRepositoryName}
+          style={{ border: "1px solid #cfcfcf", boxShadow: "none" }}
         />
         {!isErrorRepoName ? (
           <div style={{ marginBottom: "10px" }}></div>
@@ -85,6 +86,7 @@ function Deployment({ application, deployment, setDeployment }) {
           }
           marginBottom="10px"
           defaultValue={deployment.kubernetesNamespace}
+          style={{ border: "1px solid #cfcfcf", boxShadow: "none" }}
         />
         {!isErrorNamespace ? (
           <div style={{ marginBottom: "10px" }}></div>
@@ -136,6 +138,7 @@ function Deployment({ application, deployment, setDeployment }) {
                 handleInputChange("kubernetesStorageClassName", target.value)
               }
               defaultValue={deployment.kubernetesStorageClassName}
+              style={{ border: "1px solid #cfcfcf", boxShadow: "none" }}
             />
             {!isErrorStorage ? (
               <div style={{ marginBottom: "10px" }}></div>
@@ -175,6 +178,7 @@ function Deployment({ application, deployment, setDeployment }) {
             handleInputChange("ingressDomain", target.value)
           }
           defaultValue={deployment.ingressDomain}
+          style={{ border: "1px solid #cfcfcf", boxShadow: "none" }}
         />
         {!isErrorIngressDomain ? (
           <div style={{ marginBottom: "10px" }}></div>

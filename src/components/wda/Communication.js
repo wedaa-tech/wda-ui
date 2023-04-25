@@ -65,6 +65,7 @@ function Communication({ id, communication, setCommunication }) {
                 }
                 value={communication.clientName}
                 type="text"
+                style={{ border: "1px solid #cfcfcf", boxShadow: "none" }}
               />
             </div>
             <Box>
@@ -102,6 +103,7 @@ function Communication({ id, communication, setCommunication }) {
               }
               defaultValue={communication.serverName}
               type="text"
+              style={{ border: "1px solid #cfcfcf", boxShadow: "none" }}
             />
             </div>
             <Box>
