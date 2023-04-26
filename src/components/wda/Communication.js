@@ -12,11 +12,11 @@ import {
   CloseButton,
   FormErrorMessage,
 } from "@chakra-ui/react";
-import { WarningIcon } from "@chakra-ui/icons";
+// import { WarningIcon } from "@chakra-ui/icons";
 
 function Communication({ id, communication, setCommunication }) {
-  const isErrorClient = communication.clientName === "";
-  const isErrorServer = communication.serverName === "";
+  // const isErrorClient = communication.clientName === "";
+  // const isErrorServer = communication.serverName === "";
 
   const handleInputChange = (field, value) => {
     setCommunication((state) => ({
@@ -46,7 +46,9 @@ function Communication({ id, communication, setCommunication }) {
       </div>
       <AccordionPanel pb={4}>
         <FormControl display="flex" flexDirection="column">
-          <FormControl isInvalid={isErrorClient}>
+          <FormControl 
+          // isInvalid={isErrorClient}
+          >
             <div
               style={{
                 display: "flex",
@@ -65,10 +67,11 @@ function Communication({ id, communication, setCommunication }) {
                 }
                 value={communication.clientName}
                 type="text"
+                marginBottom="10px"
                 style={{ border: "1px solid #cfcfcf", boxShadow: "none" }}
               />
             </div>
-            <Box>
+            {/* <Box>
               {!isErrorClient ? (
                 <div style={{ marginBottom: "10px" }}></div>
               ) : (
@@ -81,12 +84,14 @@ function Communication({ id, communication, setCommunication }) {
                   Required
                 </FormErrorMessage>
               )}
-            </Box>
+            </Box> */}
           </FormControl>
         </FormControl>
         {communication.clientName !== "" && (
           <FormControl display="flex" flexDirection="column">
-          <FormControl isInvalid={isErrorServer}>
+          <FormControl 
+          // isInvalid={isErrorServer}
+          >
             <div
               style={{
                 display: "flex",
@@ -106,7 +111,7 @@ function Communication({ id, communication, setCommunication }) {
               style={{ border: "1px solid #cfcfcf", boxShadow: "none" }}
             />
             </div>
-            <Box>
+            {/* <Box>
             {!isErrorServer ? (
               <div style={{ marginBottom: "10px" }}></div>
             ) : (
@@ -119,7 +124,7 @@ function Communication({ id, communication, setCommunication }) {
                 Required
               </FormErrorMessage>
             )}
-            </Box>
+            </Box> */}
             </FormControl>
           </FormControl>
         )}

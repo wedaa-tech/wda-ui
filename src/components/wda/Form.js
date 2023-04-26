@@ -58,6 +58,9 @@ function FormWda() {
   const [generateInfrastructure, setGenerateInfrastructure] = useState(false);
   const [username, setUsername] = useState("");
   const [projectName, setProjectName] = useState("");
+  const [applicationNames, setApplicationNames] = useState([]);
+  const [isDuplicateAppName, setIsDuplicateAppName] = useState(false);
+
   useEffect(() => {
     if (party) {
       setTimeout(() => {
@@ -86,6 +89,7 @@ function FormWda() {
       ...prev,
       [applicationCounter]: applicationPreFlightTemplate,
     }));
+    setApplicationNames((prev) => [...prev, ""]);
   };
   const addCommunication = () => {
     setCommunicationCounter((state) => state + 1);
@@ -94,22 +98,36 @@ function FormWda() {
       [communicationCounter]: communicationPreFlightTemplate,
     }));
   };
+  const checkDuplicateAppName = (id, field, value) => {
+    if (field === "applicationName") {
+      const isDuplicate = applicationNames.some(
+        (name, i) => name === value.trim() && i !== id
+      );
+      setIsDuplicateAppName(isDuplicate);
+      setApplicationNames((names) => {
+        const newNames = [...names];
+        newNames[id] = value.trim();
+        return newNames;
+      });
+    }
+  };
   const validateInputsWda = () => {
     let invalidInput = false;
     Object.values(application).forEach((app) => {
       if (
         app.applicationName === "" ||
+        // isDuplicateAppName ||
         app.packageName === "" ||
         app.serverPort === ""
       ) {
         invalidInput = true;
       }
     });
-    Object.values(communication).forEach((comm) => {
-      if (comm.clientName === "" || comm.serverName === "") {
-        invalidInput = true;
-      }
-    });
+    // Object.values(communication).forEach((comm) => {
+    //   if (comm.clientName === "" || comm.serverName === "") {
+    //     invalidInput = true;
+    //   }
+    // });
     if (
       invalidInput ||
       deployment.dockerRepositoryName === "" ||
@@ -353,6 +371,8 @@ function FormWda() {
                         id={id}
                         application={application}
                         setApplication={setApplication}
+                        checkDuplicateAppName={checkDuplicateAppName}
+                        isDuplicateAppName={isDuplicateAppName}
                         // entity={entity}
                         // Client
                         // Name
@@ -410,10 +430,21 @@ function FormWda() {
                       borderColor="green.500"
                       onClick={handleSubmitWda}
                       marginTop="10px"
-                      isDisabled={validateInputsWda()}
+                      isDisabled={validateInputsWda() || isDuplicateAppName}
                     >
                       Submit
                     </Button>
+                    {isDuplicateAppName ? (
+                      <p
+                        style={{
+                          fontSize: "10px",
+                          color: "red",
+                          marginTop: "5px",
+                        }}
+                      >
+                        Make sure application names are unique
+                      </p>
+                    ) : null}
                     {validateInputsWda() ? (
                       <p
                         style={{
@@ -441,11 +472,22 @@ function FormWda() {
                     borderColor="green.500"
                     onClick={handleSubmitWdi}
                     marginTop="10px"
-                    isDisabled={validateInputsWdi()}
+                    isDisabled={validateInputsWdi() || isDuplicateAppName}
                   >
                     Submit
                   </Button>
-                  {validateInputsWdi ? (
+                  {isDuplicateAppName ? (
+                    <p
+                      style={{
+                        fontSize: "10px",
+                        color: "red",
+                        marginTop: "5px",
+                      }}
+                    >
+                      Make sure application names are unique
+                    </p>
+                  ) : null}
+                  {validateInputsWdi() ? (
                     <p
                       style={{
                         fontSize: "10px",

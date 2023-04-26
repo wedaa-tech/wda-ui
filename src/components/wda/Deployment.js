@@ -84,7 +84,6 @@ function Deployment({ application, deployment, setDeployment }) {
           onChange={({ target }) =>
             handleInputChange("kubernetesNamespace", target.value)
           }
-          marginBottom="10px"
           defaultValue={deployment.kubernetesNamespace}
           style={{ border: "1px solid #cfcfcf", boxShadow: "none" }}
         />

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   AccordionItem,
   AccordionButton,
@@ -14,12 +14,15 @@ import {
 } from "@chakra-ui/react";
 import { WarningIcon } from "@chakra-ui/icons";
 
-function Application({ application, setApplication, id, entity }) {
-  const isErrorAppName = application.applicationName === "";
-  const isErrorPackageName = application.packageName === "";
-  const isErrorServerPort = application.serverPort === "";
-
+function Application({
+  application,
+  setApplication,
+  id,
+  checkDuplicateAppName,
+  isDuplicateAppName,
+}) {
   const handleInputChange = (field, value) => {
+    checkDuplicateAppName(id, field, value);
     setApplication((state) => ({
       ...state,
       [id]: {
@@ -31,6 +34,10 @@ function Application({ application, setApplication, id, entity }) {
   const handleDelete = () => {
     console.log("delApp");
   };
+  const isErrorAppName =
+    isDuplicateAppName || application.applicationName === "";
+  const isErrorPackageName = application.packageName === "";
+  const isErrorServerPort = application.serverPort === "";
 
   return (
     <>
@@ -77,21 +84,19 @@ function Application({ application, setApplication, id, entity }) {
                         },
                       }}
                     />
-                    </div>
-                    <Box>
+                  </div>
+                  <Box>
                     {!isErrorAppName ? (
                       <div style={{ marginBottom: "0px" }}></div>
                     ) : (
-                      <FormErrorMessage
-                        fontSize="10px"
-                        marginTop="5px"
-                      >
-                        <WarningIcon marginRight="5px" marginLeft="180px"/>
-                        Required
+                      <FormErrorMessage fontSize="10px" marginTop="5px">
+                        <WarningIcon marginRight="5px" marginLeft="180px" />
+                        {isDuplicateAppName
+                          ? "Application name already exists"
+                          : "Required"}
                       </FormErrorMessage>
                     )}
-                    </Box>
-                  
+                  </Box>
                 </FormControl>
               </FormControl>
             </Box>
