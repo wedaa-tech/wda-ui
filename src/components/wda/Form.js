@@ -111,7 +111,7 @@ function FormWda() {
       });
     }
   };
-  const validateInputsWda = () => {
+  const validateApplication = () => {
     let invalidInput = false;
     Object.values(application).forEach((app) => {
       if (
@@ -123,13 +123,19 @@ function FormWda() {
         invalidInput = true;
       }
     });
-    // Object.values(communication).forEach((comm) => {
-    //   if (comm.clientName === "" || comm.serverName === "") {
-    //     invalidInput = true;
-    //   }
-    // });
+    if (invalidInput) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+  // Object.values(communication).forEach((comm) => {
+  //   if (comm.clientName === "" || comm.serverName === "") {
+  //     invalidInput = true;
+  //   }
+  // });
+  const validateDeployment = () => {
     if (
-      invalidInput ||
       deployment.dockerRepositoryName === "" ||
       deployment.kubernetesNamespace === "" ||
       deployment.kubernetesStorageClassName === "" ||
@@ -139,9 +145,8 @@ function FormWda() {
     }
     return false;
   };
-  const validateInputsWdi = () => {
+  const validateInfra = () => {
     if (
-      validateInputsWda() ||
       wdi.domain === "" ||
       wdi.awsAccountId === "" ||
       wdi.clusterName === ""
@@ -430,7 +435,11 @@ function FormWda() {
                       borderColor="green.500"
                       onClick={handleSubmitWda}
                       marginTop="10px"
-                      isDisabled={validateInputsWda() || isDuplicateAppName}
+                      isDisabled={
+                        isDuplicateAppName ||
+                        validateApplication() ||
+                        validateDeployment()
+                      }
                     >
                       Submit
                     </Button>
@@ -442,10 +451,10 @@ function FormWda() {
                           marginTop: "5px",
                         }}
                       >
-                        Make sure application names are unique
+                        Please ensure Application names are unique
                       </p>
                     ) : null}
-                    {validateInputsWda() ? (
+                    {validateApplication() ? (
                       <p
                         style={{
                           fontSize: "10px",
@@ -453,7 +462,20 @@ function FormWda() {
                           marginTop: "5px",
                         }}
                       >
-                        Please ensure all the mandatory fields are filled
+                        Please ensure all the mandatory fields in Application
+                        are filled
+                      </p>
+                    ) : null}
+                    {validateDeployment() ? (
+                      <p
+                        style={{
+                          fontSize: "10px",
+                          color: "red",
+                          marginTop: "5px",
+                        }}
+                      >
+                        Please ensure all the mandatory fields in Deployment are
+                        filled
                       </p>
                     ) : null}
                   </>
@@ -472,7 +494,12 @@ function FormWda() {
                     borderColor="green.500"
                     onClick={handleSubmitWdi}
                     marginTop="10px"
-                    isDisabled={validateInputsWdi() || isDuplicateAppName}
+                    isDisabled={
+                      isDuplicateAppName ||
+                      validateApplication() ||
+                      validateDeployment() ||
+                      validateInfra()
+                    }
                   >
                     Submit
                   </Button>
@@ -484,10 +511,10 @@ function FormWda() {
                         marginTop: "5px",
                       }}
                     >
-                      Make sure application names are unique
+                      Please ensure Application names are unique
                     </p>
                   ) : null}
-                  {validateInputsWdi() ? (
+                  {validateApplication() ? (
                     <p
                       style={{
                         fontSize: "10px",
@@ -495,7 +522,32 @@ function FormWda() {
                         marginTop: "5px",
                       }}
                     >
-                      Please ensure all the mandatory fields are filled
+                      Please ensure all the mandatory fields in Application are
+                      filled
+                    </p>
+                  ) : null}
+                  {validateDeployment() ? (
+                    <p
+                      style={{
+                        fontSize: "10px",
+                        color: "red",
+                        marginTop: "5px",
+                      }}
+                    >
+                      Please ensure all the mandatory fields in Deployment are
+                      filled
+                    </p>
+                  ) : null}
+                  {validateInfra() ? (
+                    <p
+                      style={{
+                        fontSize: "10px",
+                        color: "red",
+                        marginTop: "5px",
+                      }}
+                    >
+                      Please ensure all the mandatory fields in Infrastruture
+                      are filled
                     </p>
                   ) : null}
                 </TabPanel>
