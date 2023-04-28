@@ -111,6 +111,16 @@ function FormWdi(props) {
     }
   }, [party]);
 
+  const handleKeyPress = (event) => {
+    const charCode = event.which ? event.which : event.keyCode;
+    if ((charCode >= 48 && charCode <= 57) || charCode === 8) {
+      return true;
+    } else {
+      event.preventDefault();
+      return false;
+    }
+  };
+
   /**
    * NOTE:- don't add default value option for the select component
    * as it wont work , we are handling it with defining the values at useState
@@ -191,12 +201,12 @@ function FormWdi(props) {
                   <FormLabel>Account ID</FormLabel>
                   <Input
                     type="text"
-                    pattern="[0-9]*"
                     placeholder="123456789"
                     onChange={(e) => {
                       validateInputValue(e.target.value);
                       setAwsAccountId(e.target.value);
                     }}
+                    onKeyPress={handleKeyPress}
                     value={awsAccountId}
                     maxLength="12"
                     style={{ border: "1px solid #cfcfcf", boxShadow: "none" }}

@@ -15,6 +15,15 @@ function Infrastructure({ wdi, setWdi }) {
   const isErrorAccId = wdi.awsAccountId === "" || checkLength;
   const isErrorCluster = wdi.clusterName === "";
 
+  const handleKeyPress = (event) => {
+    const charCode = event.which ? event.which : event.keyCode;
+    if ((charCode >= 48 && charCode <= 57) || charCode === 8) {
+      return true;
+    } else {
+      event.preventDefault();
+      return false;
+    }
+  };
   const handleInputChange = (field, value) => {
     validateInputValue(value);
     setWdi((app) => ({
@@ -73,11 +82,11 @@ function Infrastructure({ wdi, setWdi }) {
             <FormLabel>Account ID</FormLabel>
             <Input
               type="text"
-              pattern="[0-9]*"
               placeholder="123456789"
               onChange={({ target }) =>
                 handleInputChange("awsAccountId", target.value)
               }
+              onKeyPress={handleKeyPress}
               defaultValue={wdi.awsAccountId}
               maxLength="12"
               style={{ border: "1px solid #cfcfcf", boxShadow: "none" }}
