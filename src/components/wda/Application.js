@@ -130,9 +130,7 @@ function Application({
               marginBottom="10px"
               defaultValue={application.applicationType}
             >
-              {application.applicationType !== "gateway" && (
-                <option value="gateway">UI + Gateway</option>
-              )}
+              <option value="gateway">UI + Gateway</option>
               <option value="microservice">Microservice</option>
               {/* <option value="monolithic">Monolithic</option> */}
             </Select>
