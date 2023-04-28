@@ -32,9 +32,17 @@ function FormWdi(props) {
   const [enableECK, setEnableECK] = useState("true");
   const [k8sWebUI, setK8sWebUI] = useState("true");
 
+  const [checkLength, setCheckLength] = useState(false);
+  const validateInputValue = (inputValue) => {
+    if (inputValue.length < 12) {
+      setCheckLength(true);
+    } else {
+      setCheckLength(false);
+    }
+  };
   const isErrorProject = projectName === "";
   const isErrorDomain = domain === "";
-  const isErrorAccId = awsAccountId === "";
+  const isErrorAccId = awsAccountId === "" || checkLength;
   const isErrorCluster = clusterName === "";
 
   const validateInputs = () => {
@@ -42,6 +50,7 @@ function FormWdi(props) {
       projectName === "" ||
       domain === "" ||
       awsAccountId === "" ||
+      checkLength ||
       clusterName === ""
     ) {
       return true;
@@ -101,6 +110,16 @@ function FormWdi(props) {
       }, 5000);
     }
   }, [party]);
+
+  const handleKeyPress = (event) => {
+    const charCode = event.which ? event.which : event.keyCode;
+    if ((charCode >= 48 && charCode <= 57) || charCode === 8) {
+      return true;
+    } else {
+      event.preventDefault();
+      return false;
+    }
+  };
 
   /**
    * NOTE:- don't add default value option for the select component
@@ -181,12 +200,15 @@ function FormWdi(props) {
                 <FormControl isInvalid={isErrorAccId} isRequired>
                   <FormLabel>Account ID</FormLabel>
                   <Input
-                    type="number"
+                    type="text"
                     placeholder="123456789"
                     onChange={(e) => {
+                      validateInputValue(e.target.value);
                       setAwsAccountId(e.target.value);
                     }}
+                    onKeyPress={handleKeyPress}
                     value={awsAccountId}
+                    maxLength="12"
                     style={{ border: "1px solid #cfcfcf", boxShadow: "none" }}
                   />
                   {!isErrorAccId ? (
@@ -198,7 +220,9 @@ function FormWdi(props) {
                       marginTop="5px"
                     >
                       <WarningIcon marginRight="5px" />
-                      Required
+                      {checkLength
+                        ? "Input value must be at least 12 digits"
+                        : "Required"}
                     </FormErrorMessage>
                   )}
                 </FormControl>

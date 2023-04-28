@@ -21,6 +21,19 @@ function Application({
   checkDuplicateAppName,
   isDuplicateAppName,
 }) {
+  const handleKeyPress = (event) => {
+    const charCode = event.which ? event.which : event.keyCode;
+    if (
+      (charCode >= 65 && charCode <= 90) ||
+      (charCode >= 97 && charCode <= 122) ||
+      charCode === 8
+    ) {
+      return true;
+    } else {
+      event.preventDefault();
+      return false;
+    }
+  };
   const handleInputChange = (field, value) => {
     checkDuplicateAppName(id, field, value);
     setApplication((state) => ({
@@ -70,6 +83,7 @@ function Application({
                       onChange={({ target }) =>
                         handleInputChange("applicationName", target.value)
                       }
+                      onKeyPress={handleKeyPress}
                       defaultValue={application.applicationName}
                       type="text"
                       marginRight="10px"
@@ -116,8 +130,7 @@ function Application({
               marginBottom="10px"
               defaultValue={application.applicationType}
             >
-               {application.applicationType !== "gateway" && (
-    <option value="gateway">UI + Gateway</option>)}
+              <option value="gateway">UI + Gateway</option>
               <option value="microservice">Microservice</option>
               {/* <option value="monolithic">Monolithic</option> */}
             </Select>

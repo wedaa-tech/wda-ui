@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   FormControl,
   FormLabel,
@@ -9,15 +9,34 @@ import {
 import { WarningIcon } from "@chakra-ui/icons";
 
 function Infrastructure({ wdi, setWdi }) {
+  const [checkLength, setCheckLength] = useState(false);
+
   const isErrorDomain = wdi.domain === "";
-  const isErrorAccId = wdi.awsAccountId === "";
+  const isErrorAccId = wdi.awsAccountId === "" || checkLength;
   const isErrorCluster = wdi.clusterName === "";
 
+  const handleKeyPress = (event) => {
+    const charCode = event.which ? event.which : event.keyCode;
+    if ((charCode >= 48 && charCode <= 57) || charCode === 8) {
+      return true;
+    } else {
+      event.preventDefault();
+      return false;
+    }
+  };
   const handleInputChange = (field, value) => {
+    validateInputValue(value);
     setWdi((app) => ({
       ...app,
       [field]: value,
     }));
+  };
+  const validateInputValue = (inputValue) => {
+    if (inputValue.length < 12) {
+      setCheckLength(true);
+    } else {
+      setCheckLength(false);
+    }
   };
 
   return (
@@ -62,12 +81,14 @@ function Infrastructure({ wdi, setWdi }) {
           <FormControl isInvalid={isErrorAccId} isRequired>
             <FormLabel>Account ID</FormLabel>
             <Input
-              type="number"
+              type="text"
               placeholder="123456789"
               onChange={({ target }) =>
                 handleInputChange("awsAccountId", target.value)
               }
+              onKeyPress={handleKeyPress}
               defaultValue={wdi.awsAccountId}
+              maxLength="12"
               style={{ border: "1px solid #cfcfcf", boxShadow: "none" }}
             />
             {!isErrorAccId ? (
@@ -79,7 +100,9 @@ function Infrastructure({ wdi, setWdi }) {
                 marginTop="5px"
               >
                 <WarningIcon marginRight="5px" />
-                Required
+                {checkLength
+                  ? "Input value must be at least 12 digits"
+                  : "Required"}
               </FormErrorMessage>
             )}
           </FormControl>
