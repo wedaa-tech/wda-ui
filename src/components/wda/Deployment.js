@@ -4,9 +4,7 @@ import {
   FormLabel,
   Input,
   Select,
-  Editable,
-  EditableInput,
-  EditablePreview,
+  Text,
   FormErrorMessage,
 } from "@chakra-ui/react";
 import { WarningIcon } from "@chakra-ui/icons";
@@ -41,17 +39,32 @@ function Deployment({ application, deployment, setDeployment }) {
         <option value="openshift">Openshift</option>
       </Select>
       <FormLabel>Application Folders</FormLabel>
-      {Object.keys(application).map((name, id) => {
-        return (
-          <Editable
-            key={id}
-            defaultValue={JSON.stringify(application[id].applicationName)}
-          >
-            <EditablePreview />
-            <EditableInput />
-          </Editable>
-        );
-      })}
+      {Object.values(application).filter(
+        (app) => app.applicationName !== ""
+      ) && (
+        <div
+          style={{
+            border: "1px dotted #cfcfcf",
+            marginBottom: "10px",
+            paddingLeft: "20px",
+          }}
+        >
+          {Object.keys(application).map((name, id) => {
+            return (
+              <Text
+                key={id}
+                value={application[id].applicationName}
+                marginTop="5px"
+                marginBottom="5px"
+                marginRight="20px"
+                paddingRight="20px"
+              >
+                {application[id].applicationName}
+              </Text>
+            );
+          })}
+        </div>
+      )}
       <FormControl isInvalid={isErrorRepoName}>
         <FormLabel>Docker Repository Name</FormLabel>
         <Input
