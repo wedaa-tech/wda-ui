@@ -32,9 +32,17 @@ function FormWdi(props) {
   const [enableECK, setEnableECK] = useState("true");
   const [k8sWebUI, setK8sWebUI] = useState("true");
 
+  const [checkLength, setCheckLength] = useState(false);
+  const validateInputValue = (inputValue) => {
+    if (inputValue.length < 12) {
+      setCheckLength(true);
+    } else {
+      setCheckLength(false);
+    }
+  };
   const isErrorProject = projectName === "";
   const isErrorDomain = domain === "";
-  const isErrorAccId = awsAccountId === "";
+  const isErrorAccId = awsAccountId === "" || checkLength;
   const isErrorCluster = clusterName === "";
 
   const validateInputs = () => {
@@ -42,6 +50,7 @@ function FormWdi(props) {
       projectName === "" ||
       domain === "" ||
       awsAccountId === "" ||
+      checkLength ||
       clusterName === ""
     ) {
       return true;
@@ -181,12 +190,15 @@ function FormWdi(props) {
                 <FormControl isInvalid={isErrorAccId} isRequired>
                   <FormLabel>Account ID</FormLabel>
                   <Input
-                    type="number"
+                    type="text"
+                    pattern="[0-9]*"
                     placeholder="123456789"
                     onChange={(e) => {
+                      validateInputValue(e.target.value);
                       setAwsAccountId(e.target.value);
                     }}
                     value={awsAccountId}
+                    maxLength="12"
                     style={{ border: "1px solid #cfcfcf", boxShadow: "none" }}
                   />
                   {!isErrorAccId ? (
@@ -198,7 +210,9 @@ function FormWdi(props) {
                       marginTop="5px"
                     >
                       <WarningIcon marginRight="5px" />
-                      Required
+                      {checkLength
+                        ? "Input value must be at least 12 digits"
+                        : "Required"}
                     </FormErrorMessage>
                   )}
                 </FormControl>

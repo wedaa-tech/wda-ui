@@ -1,6 +1,5 @@
 import React from "react";
-import { Heading, Button, Container } from "@chakra-ui/react";
-import { Link } from "react-router-dom";
+import { Heading, Container } from "@chakra-ui/react";
 
 function About() {
   return (
