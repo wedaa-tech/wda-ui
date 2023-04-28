@@ -7,7 +7,7 @@ import {
   Text,
   FormErrorMessage,
 } from "@chakra-ui/react";
-import { WarningIcon } from "@chakra-ui/icons";
+import { MinusIcon, WarningIcon } from "@chakra-ui/icons";
 
 function Deployment({ application, deployment, setDeployment }) {
   const isErrorRepoName = deployment.dockerRepositoryName === "";
@@ -39,33 +39,36 @@ function Deployment({ application, deployment, setDeployment }) {
         <option value="openshift">Openshift</option>
       </Select>
       <FormLabel>Application Folders</FormLabel>
-      {Object.values(application).filter(
-        (app) => app.applicationName !== ""
-      ) && (
+      {Object.values(application).filter((app) => app.applicationName !== "")
+        .length > 0 && (
         <div
           style={{
-            border: "1px dotted #cfcfcf",
+            border: "1px solid #cfcfcf",
             marginBottom: "10px",
             paddingLeft: "20px",
+            backgroundColor: "#F5F5F5",
           }}
         >
           {Object.keys(application).map((name, id) => {
             return (
-              <Text
-                key={id}
-                value={application[id].applicationName}
-                marginTop="5px"
-                marginBottom="5px"
-                marginRight="20px"
-                paddingRight="20px"
-              >
-                {application[id].applicationName}
-              </Text>
+              <div style={{ display: "flex", flexDirection: "row" }}>
+                <MinusIcon fontSize="8px" marginTop="12px" marginRight="8px" />
+                <Text
+                  key={id}
+                  value={application[id].applicationName}
+                  marginTop="5px"
+                  marginBottom="5px"
+                  marginRight="20px"
+                  paddingRight="20px"
+                >
+                  {application[id].applicationName}
+                </Text>
+              </div>
             );
           })}
         </div>
       )}
-      <FormControl isInvalid={isErrorRepoName}>
+      <FormControl isInvalid={isErrorRepoName} isRequired>
         <FormLabel>Docker Repository Name</FormLabel>
         <Input
           placeholder=""
@@ -87,7 +90,7 @@ function Deployment({ application, deployment, setDeployment }) {
           </FormErrorMessage>
         )}
       </FormControl>
-      <FormControl isInvalid={isErrorNamespace}>
+      <FormControl isInvalid={isErrorNamespace} isRequired>
         <FormLabel>Kubernetes Namespace</FormLabel>
         <Input
           placeholder="Wdi"
@@ -139,7 +142,7 @@ function Deployment({ application, deployment, setDeployment }) {
 
       {deployment.kubernetesUseDynamicStorage === "true" && (
         <>
-          <FormControl isInvalid={isErrorStorage}>
+          <FormControl isInvalid={isErrorStorage} isRequired>
             <FormLabel>Kubernetes Storage Class Name</FormLabel>
             <Input
               placeholder="demoStorageClass"
@@ -179,7 +182,21 @@ function Deployment({ application, deployment, setDeployment }) {
         marginBottom="10px"
         defaultValue={deployment.kubernetesStorageClassName}
       /> */}
-      <FormControl isInvalid={isErrorIngressDomain}>
+
+      <FormLabel>Ingress Type</FormLabel>
+      <Select
+        key="ingressType"
+        name="ingressType"
+        onChange={({ target }) =>
+          handleInputChange("ingressType", target.value)
+        }
+        marginBottom="10px"
+        defaultValue={deployment.ingressType}
+      >
+        <option value="istio">ISTIO</option>
+        <option value="nginx">Nginx</option>
+      </Select>
+      <FormControl isInvalid={isErrorIngressDomain} isRequired>
         <FormLabel>Ingress Domain</FormLabel>
         <Input
           placeholder="example.com"
@@ -201,19 +218,6 @@ function Deployment({ application, deployment, setDeployment }) {
           </FormErrorMessage>
         )}
       </FormControl>
-      <FormLabel>Ingress Type</FormLabel>
-      <Select
-        key="ingressType"
-        name="ingressType"
-        onChange={({ target }) =>
-          handleInputChange("ingressType", target.value)
-        }
-        marginBottom="10px"
-        defaultValue={deployment.ingressType}
-      >
-        <option value="istio">ISTIO</option>
-        <option value="nginx">Nginx</option>
-      </Select>
       <FormLabel>Service Discovery Type</FormLabel>
       <Select
         key="serviceDiscoveryType"

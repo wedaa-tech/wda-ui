@@ -22,7 +22,7 @@ function Infrastructure({ wdi, setWdi }) {
 
   return (
     <FormControl>
-      <FormControl isInvalid={isErrorDomain}>
+      <FormControl isInvalid={isErrorDomain} isRequired>
         <FormLabel>Enter your Domain Name</FormLabel>
         <Input
           type="text"
@@ -59,7 +59,7 @@ function Infrastructure({ wdi, setWdi }) {
 
       {wdi.cloudProvider === "aws" && (
         <>
-          <FormControl isInvalid={isErrorAccId}>
+          <FormControl isInvalid={isErrorAccId} isRequired>
             <FormLabel>Account ID</FormLabel>
             <Input
               type="number"
@@ -134,7 +134,7 @@ function Infrastructure({ wdi, setWdi }) {
 
       {wdi.orchestration === "kubernetes" && (
         <div>
-          <FormControl isInvalid={isErrorCluster}>
+          <FormControl isInvalid={isErrorCluster} isRequired>
             <FormLabel>Enter Cluster Name</FormLabel>
             <Input
               type="text"
@@ -182,7 +182,7 @@ function Infrastructure({ wdi, setWdi }) {
             defaultValue={wdi.ingress}
             marginBottom="10px"
           >
-            <option value="istio">Istio</option>
+            <option value="istio">ISTIO</option>
             <option value="nginx">Nginx</option>
             <option value="traefik">Traefik</option>
           </Select>

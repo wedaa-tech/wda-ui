@@ -52,7 +52,7 @@ function Application({
           <AccordionButton>
             <Box as="span" flex="1" textAlign="left">
               <FormControl display="flex" flexDirection="column">
-                <FormControl isInvalid={isErrorAppName}>
+                <FormControl isInvalid={isErrorAppName} isRequired>
                   <div
                     style={{
                       display: "flex",
@@ -116,11 +116,12 @@ function Application({
               marginBottom="10px"
               defaultValue={application.applicationType}
             >
-              <option value="gateway">UI + Gateway</option>
+               {application.applicationType !== "gateway" && (
+    <option value="gateway">UI + Gateway</option>)}
               <option value="microservice">Microservice</option>
               {/* <option value="monolithic">Monolithic</option> */}
             </Select>
-            <FormControl isInvalid={isErrorPackageName}>
+            <FormControl isInvalid={isErrorPackageName} isRequired>
               <FormLabel>Package Name</FormLabel>
               <Input
                 placeholder="com.mycompany.myapp"
@@ -223,7 +224,7 @@ function Application({
               <option value="consul">Consul</option>
               <option value="no">No</option>
             </Select>
-            <FormControl isInvalid={isErrorServerPort}>
+            <FormControl isInvalid={isErrorServerPort} isRequired>
               <FormLabel>Service Port</FormLabel>
               <Input
                 placeholder="9000"

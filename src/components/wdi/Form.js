@@ -117,7 +117,7 @@ function FormWdi(props) {
       <FormControl>
         {!isContainerVisible && !generateInfrastructure && (
           <>
-            <FormControl isInvalid={isErrorProject}>
+            <FormControl isInvalid={isErrorProject} isRequired>
               <FormLabel>Enter Project Name</FormLabel>
               <Input
                 type="text"
@@ -141,7 +141,7 @@ function FormWdi(props) {
                 </FormErrorMessage>
               )}
             </FormControl>
-            <FormControl isInvalid={isErrorDomain}>
+            <FormControl isInvalid={isErrorDomain} isRequired>
               <FormLabel>Enter your Domain Name</FormLabel>
               <Input
                 type="text"
@@ -178,7 +178,7 @@ function FormWdi(props) {
 
             {cloudProvider === "aws" && (
               <>
-                <FormControl isInvalid={isErrorAccId}>
+                <FormControl isInvalid={isErrorAccId} isRequired>
                   <FormLabel>Account ID</FormLabel>
                   <Input
                     type="number"
@@ -243,7 +243,7 @@ function FormWdi(props) {
 
             {orchestration === "kubernetes" && (
               <div>
-                <FormControl isInvalid={isErrorCluster}>
+                <FormControl isInvalid={isErrorCluster} isRequired>
                   <FormLabel>Enter Cluster Name</FormLabel>
                   <Input
                     type="text"
