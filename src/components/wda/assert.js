@@ -10,6 +10,7 @@ const entityPreFlightTemplate = {
 
 const applicationPreFlightTemplate = {
   applicationName: "",
+  applicationFramework: "java",
   applicationType: "Gateway",
   packageName: "",
   authenticationType: "OAuth2",

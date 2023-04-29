@@ -120,6 +120,19 @@ function Application({
         </div>
         <AccordionPanel pb={4}>
           <FormControl>
+            <FormLabel>Application Framework</FormLabel>
+            <Select
+              key="applicationFramework"
+              name="applicationFramework"
+              onChange={({ target }) =>
+                handleInputChange("applicationFramework", target.value)
+              }
+              marginBottom="10px"
+              defaultValue={application.applicationFramework}
+            >
+              <option value="java">JAVA</option>
+              <option value="go">GO</option>
+            </Select>
             <FormLabel>Application Type</FormLabel>
             <Select
               key="applicationType"
