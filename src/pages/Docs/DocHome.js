@@ -1,5 +1,4 @@
-import { useEffect } from "react";
-import { Heading, Container } from "@chakra-ui/react";
+import { useEffect } from 'react';
 
 export default function DocHome() {
   useEffect(() => {
