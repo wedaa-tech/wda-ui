@@ -83,7 +83,7 @@ function Application({
                       onChange={({ target }) =>
                         handleInputChange("applicationName", target.value)
                       }
-                      onKeyPress={handleKeyPress}
+                      // onKeyPress={handleKeyPress}
                       defaultValue={application.applicationName}
                       type="text"
                       marginRight="10px"
