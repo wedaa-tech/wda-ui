@@ -120,19 +120,6 @@ function Application({
         </div>
         <AccordionPanel pb={4}>
           <FormControl>
-            <FormLabel>Application Framework</FormLabel>
-            <Select
-              key="applicationFramework"
-              name="applicationFramework"
-              onChange={({ target }) =>
-                handleInputChange("applicationFramework", target.value)
-              }
-              marginBottom="10px"
-              defaultValue={application.applicationFramework}
-            >
-              <option value="java">JAVA</option>
-              <option value="go">GO</option>
-            </Select>
             <FormLabel>Application Type</FormLabel>
             <Select
               key="applicationType"
@@ -147,6 +134,23 @@ function Application({
               <option value="microservice">Microservice</option>
               {/* <option value="monolithic">Monolithic</option> */}
             </Select>
+            { application.applicationType === "microservice" &&
+              (<>
+              <FormLabel>Application Framework</FormLabel>
+              <Select
+                key="applicationFramework"
+                name="applicationFramework"
+                onChange={({ target }) =>
+                  handleInputChange("applicationFramework", target.value)
+                }
+                marginBottom="10px"
+                defaultValue={application.applicationFramework}
+              >
+                <option value="java">JAVA</option>
+                <option value="go">GO</option>
+              </Select>
+            </>)
+            }
             <FormControl isInvalid={isErrorPackageName} isRequired>
               <FormLabel>Package Name</FormLabel>
               <Input
@@ -278,6 +282,23 @@ function Application({
                 </FormErrorMessage>
               )}
             </FormControl>
+            { application.applicationType === "gateway" &&
+              (<>
+              <FormLabel>Enable Reminder Example</FormLabel>
+              <Select
+                key="withExample"
+                name="withExample"
+                onChange={({ target }) =>
+                  handleInputChange("withExample", target.value)
+                }
+                marginBottom="10px"
+                defaultValue={application.withExample}
+              >
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+              </Select>
+            </>)
+            }
             {/* <NumberInput max={30000} min={9000}>
       <NumberInputField
         placeholder="9000"

@@ -11,15 +11,16 @@ const entityPreFlightTemplate = {
 const applicationPreFlightTemplate = {
   applicationName: "",
   applicationFramework: "java",
-  applicationType: "Gateway",
+  applicationType: "gateway",
   packageName: "",
-  authenticationType: "OAuth2",
-  databaseType: "Sql",
-  prodDatabaseType: "PostgreSQL",
-  clientFramework: "React",
-  serviceDiscoveryType: "Eureka",
+  authenticationType: "oauth2",
+  databaseType: "sql",
+  prodDatabaseType: "postgreSQL",
+  clientFramework: "react",
+  serviceDiscoveryType: "eureka",
   serverPort: "",
   entities: [],
+  withExample: "false"
 };
 const communicationPreFlightTemplate = {
   clientName:"",
