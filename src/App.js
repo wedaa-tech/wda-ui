@@ -6,7 +6,7 @@ import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
 import Products from "./pages/Products";
 import DocHome from "./pages/Docs/DocHome";
-import About from "./pages/About";
+// import About from "./pages/About";
 import Contact from "./pages/Contact";
 
 function App() {
@@ -29,9 +29,9 @@ function App() {
         <Route exact path="/docs">
           <DocHome />
         </Route>
-        <Route exact path="/about">
+        {/* <Route exact path="/about">
           <About />
-        </Route>
+        </Route> */}
         <Route exact path="/contact">
           <Contact />
         </Route>

@@ -107,7 +107,7 @@ export default function Header({ children }) {
               </MenuItem>
             </MenuList>
           </Menu>
-          <Link to="/about" onClick={() => handleAction("about")}>
+          {/* <Link to="/about" onClick={() => handleAction("about")}>
             <Text
               fontSize="md"
               color={color}
@@ -115,7 +115,7 @@ export default function Header({ children }) {
             >
               About
             </Text>
-          </Link>
+          </Link> */}
           <Link to="/contact" onClick={() => handleAction("contact")}>
             <Text
               fontSize="md"
