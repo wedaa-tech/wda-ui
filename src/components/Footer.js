@@ -24,7 +24,7 @@ function Footer() {
       <div>
           <div style={phantom} />
           <div style={style}>
-              Created ❤️ by TIC@coMakeIT 
+              Created by TIC@coMakeIT 
           </div>
       </div>
   )
