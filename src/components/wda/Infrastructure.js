@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   FormControl,
   FormLabel,
@@ -8,9 +8,7 @@ import {
 } from "@chakra-ui/react";
 import { WarningIcon } from "@chakra-ui/icons";
 
-function Infrastructure({ wdi, setWdi }) {
-  const [checkLength, setCheckLength] = useState(false);
-
+function Infrastructure({ wdi, setWdi, checkLength, validateInputValue }) {
   const isErrorDomain = wdi.domain === "";
   const isErrorAccId = wdi.awsAccountId === "" || checkLength;
   const isErrorCluster = wdi.clusterName === "";
@@ -25,18 +23,11 @@ function Infrastructure({ wdi, setWdi }) {
     }
   };
   const handleInputChange = (field, value) => {
-    validateInputValue(value);
+    validateInputValue(field, value);
     setWdi((app) => ({
       ...app,
       [field]: value,
     }));
-  };
-  const validateInputValue = (inputValue) => {
-    if (inputValue.length < 12) {
-      setCheckLength(true);
-    } else {
-      setCheckLength(false);
-    }
   };
 
   return (
@@ -83,7 +74,7 @@ function Infrastructure({ wdi, setWdi }) {
             <Input
               type="text"
               placeholder="123456789"
-              onChange={({ target }) =>
+              onChange={({ target }) => 
                 handleInputChange("awsAccountId", target.value)
               }
               onKeyPress={handleKeyPress}
