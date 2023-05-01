@@ -224,6 +224,7 @@ function Application({
               <option value="oracle">Oracle</option>
               <option value="no">No</option>
             </Select>
+            { application.applicationType === "gateway" && (<>
             <FormLabel>Client Framework</FormLabel>
             <Select
               key="clientFramework"
@@ -240,6 +241,8 @@ function Application({
               <option value="svelte">Svelte</option>
               <option value="no">No</option>
             </Select>
+            </>)
+            }
             <FormLabel>Service Discovery Type</FormLabel>
             <Select
               key="serviceDiscoveryType"

@@ -12,11 +12,12 @@ function Home() {
       >
         <Box flex="1">
           <Heading size="xl" fontWeight="extrabold" mb={4}>
-            Welcome to TechCo
+            Welcome to Technology Innovation Center (TIC)
           </Heading>
-          <Text fontSize="xl" mb={8}>
-            We are a technology company dedicated to building innovative
-            products that make people's lives easier.
+          <Text fontSize="l" mb={8}>
+          Technology Innovation Center (TIC) at coMakeIT is a facility that enables exploration of new ideas,
+          build technologies and solutions for its products and services. It helps the company to accelerate
+          product development by laying down strong foundations through innovation. TIC primarily focuses on technology for the future, being ready to adapt to latest advancements in the software industry.
           </Text>
           <Link to="/products">
             <Button size="lg" colorScheme="blue">
