@@ -14,7 +14,6 @@ function Deployment({ application, deployment, setDeployment }) {
   const isErrorNamespace = deployment.kubernetesNamespace === "";
   const isErrorStorage = deployment.kubernetesStorageClassName === "";
   const isErrorIngressDomain = deployment.ingressDomain === "";
-
   const handleInputChange = (field, value) => {
     setDeployment((app) => ({
       ...app,
@@ -38,35 +37,42 @@ function Deployment({ application, deployment, setDeployment }) {
         <option value="compose">Docker-Compose</option>
         <option value="openshift">Openshift</option>
       </Select>
-      <FormLabel>Application Folders</FormLabel>
+
       {Object.values(application).filter((app) => app.applicationName !== "")
         .length > 0 && (
-        <div
-          style={{
-            border: "1px solid #cfcfcf",
-            marginBottom: "10px",
-            paddingLeft: "20px",
-            backgroundColor: "#F5F5F5",
-          }}
-        >
-          {Object.keys(application).map((name, id) => {
-            return (
-              <div style={{ display: "flex", flexDirection: "row" }}>
-                <MinusIcon fontSize="8px" marginTop="12px" marginRight="8px" />
-                <Text
-                  key={id}
-                  value={application[id].applicationName}
-                  marginTop="5px"
-                  marginBottom="5px"
-                  marginRight="20px"
-                  paddingRight="20px"
-                >
-                  {application[id].applicationName}
-                </Text>
-              </div>
-            );
-          })}
-        </div>
+        <>
+          <FormLabel>Application Folders</FormLabel>
+          <div
+            style={{
+              border: "1px solid #cfcfcf",
+              marginBottom: "10px",
+              paddingLeft: "20px",
+              backgroundColor: "#F5F5F5",
+            }}
+          >
+            {Object.values(application).map((applicationItem, id) => {
+              return (
+                <div style={{ display: "flex", flexDirection: "row" }}>
+                  <MinusIcon
+                    fontSize="8px"
+                    marginTop="12px"
+                    marginRight="8px"
+                  />
+                  <Text
+                    key={id}
+                    value={applicationItem.applicationName}
+                    marginTop="5px"
+                    marginBottom="5px"
+                    marginRight="20px"
+                    paddingRight="20px"
+                  >
+                    {applicationItem.applicationName}
+                  </Text>
+                </div>
+              );
+            })}
+          </div>
+        </>
       )}
       <FormControl isInvalid={isErrorRepoName} isRequired>
         <FormLabel>Docker Repository Name</FormLabel>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   AccordionItem,
   AccordionButton,
@@ -20,6 +20,7 @@ function Application({
   id,
   checkDuplicateAppName,
   isDuplicateAppName,
+  handleDeleteApplication
 }) {
   const handleKeyPress = (event) => {
     const charCode = event.which ? event.which : event.keyCode;
@@ -44,8 +45,9 @@ function Application({
       },
     }));
   };
+
   const handleDelete = () => {
-    console.log("delApp");
+    handleDeleteApplication(id)
   };
   const isErrorAppName =
     isDuplicateAppName || application.applicationName === "";
@@ -78,7 +80,6 @@ function Application({
                     </FormLabel>
                     <Input
                       placeholder="Application"
-                      key="applicationName"
                       name="applicationName"
                       onChange={({ target }) =>
                         handleInputChange("applicationName", target.value)
@@ -122,7 +123,7 @@ function Application({
           <FormControl>
             <FormLabel>Application Type</FormLabel>
             <Select
-              key="applicationType"
+              key={application.applicationType}
               name="applicationType"
               onChange={({ target }) =>
                 handleInputChange("applicationType", target.value)
@@ -130,15 +131,15 @@ function Application({
               marginBottom="10px"
               defaultValue={application.applicationType}
             >
-              <option value="gateway">UI + Gateway</option>
               <option value="microservice">Microservice</option>
+              <option value="gateway">UI + Gateway</option>
               {/* <option value="monolithic">Monolithic</option> */}
             </Select>
             { application.applicationType === "microservice" &&
               (<>
               <FormLabel>Application Framework</FormLabel>
               <Select
-                key="applicationFramework"
+                
                 name="applicationFramework"
                 onChange={({ target }) =>
                   handleInputChange("applicationFramework", target.value)
@@ -155,7 +156,6 @@ function Application({
               <FormLabel>Package Name</FormLabel>
               <Input
                 placeholder="com.mycompany.myapp"
-                key="packageName"
                 name="packageName"
                 onChange={({ target }) =>
                   handleInputChange("packageName", target.value)
@@ -179,7 +179,6 @@ function Application({
             </FormControl>
             <FormLabel>Authentication Type</FormLabel>
             <Select
-              key="authenticationType"
               name="authenticationType"
               onChange={({ target }) =>
                 handleInputChange("authenticationType", target.value)
@@ -193,7 +192,6 @@ function Application({
             </Select>
             <FormLabel>Database Type</FormLabel>
             <Select
-              key="databaseType"
               name="databaseType"
               onChange={({ target }) =>
                 handleInputChange("databaseType", target.value)
@@ -209,7 +207,6 @@ function Application({
             </Select>
             <FormLabel>Production Database Type</FormLabel>
             <Select
-              key="prodDatabaseType"
               name="prodDatabaseType"
               onChange={({ target }) =>
                 handleInputChange("prodDatabaseType", target.value)
@@ -227,7 +224,6 @@ function Application({
             { application.applicationType === "gateway" && (<>
             <FormLabel>Client Framework</FormLabel>
             <Select
-              key="clientFramework"
               name="clientFramework"
               onChange={({ target }) =>
                 handleInputChange("clientFramework", target.value)
@@ -245,7 +241,6 @@ function Application({
             }
             <FormLabel>Service Discovery Type</FormLabel>
             <Select
-              key="serviceDiscoveryType"
               name="serviceDiscoveryType"
               onChange={({ target }) =>
                 handleInputChange("serviceDiscoveryType", target.value)
@@ -261,7 +256,6 @@ function Application({
               <FormLabel>Service Port</FormLabel>
               <Input
                 placeholder="9000"
-                key="serverPort"
                 name="serverPort"
                 onChange={({ target }) =>
                   handleInputChange("serverPort", target.value)
@@ -289,7 +283,6 @@ function Application({
               (<>
               <FormLabel>Enable Reminder Example</FormLabel>
               <Select
-                key="withExample"
                 name="withExample"
                 onChange={({ target }) =>
                   handleInputChange("withExample", target.value)

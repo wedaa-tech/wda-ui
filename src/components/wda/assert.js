@@ -11,7 +11,7 @@ const entityPreFlightTemplate = {
 const applicationPreFlightTemplate = {
   applicationName: "",
   applicationFramework: "java",
-  applicationType: "gateway",
+  applicationType: "microservice",
   packageName: "",
   authenticationType: "oauth2",
   databaseType: "sql",

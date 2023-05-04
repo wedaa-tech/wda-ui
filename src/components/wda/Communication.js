@@ -14,7 +14,7 @@ import {
 } from "@chakra-ui/react";
 import { WarningIcon } from "@chakra-ui/icons";
 
-function Communication({ id, communication, setCommunication, application }) {
+function Communication({ id, communication, setCommunication, application,handleDeleteCommunication }) {
   // const isErrorClient = communication.clientName === "";
   // const isErrorServer = communication.serverName === "";
 
@@ -28,9 +28,9 @@ function Communication({ id, communication, setCommunication, application }) {
     }));
   };
   const handleDelete = () => {
-    console.log("delCom");
+    handleDeleteCommunication(id);
   };
-
+  
   return (
     <FormControl>
       {Object.values(application).filter((app) => app.applicationName !== "")
@@ -49,7 +49,7 @@ function Communication({ id, communication, setCommunication, application }) {
               </Box>
               <AccordionIcon />
             </AccordionButton>
-            <CloseButton size="sm" bg="transparent" onClick={handleDelete} />
+            <CloseButton size="sm" bg="transparent" onClick={()=> handleDelete()} />
           </div>
           <AccordionPanel pb={4}>
             <FormControl display="flex" flexDirection="column">
@@ -66,7 +66,6 @@ function Communication({ id, communication, setCommunication, application }) {
                     Client App Name
                   </FormLabel>
                   <Select
-                    key="clientName"
                     name="clientName"
                     onChange={({ target }) =>
                       handleInputChange("clientName", target.value)
@@ -113,7 +112,6 @@ function Communication({ id, communication, setCommunication, application }) {
                     Server App Name
                   </FormLabel>
                   <Select
-                    key="serverName"
                     name="serverName"
                     onChange={({ target }) =>
                       handleInputChange("serverName", target.value)
