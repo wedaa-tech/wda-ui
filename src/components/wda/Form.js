@@ -157,7 +157,6 @@ function FormWda() {
   // });
   const validateDeployment = () => {
     if (
-      deployment.dockerRepositoryName === "" ||
       deployment.kubernetesNamespace === "" ||
       deployment.kubernetesStorageClassName === "" ||
       deployment.ingressDomain === ""
@@ -175,7 +174,6 @@ function FormWda() {
   };
   const validateInfra = () => {
     if (
-      wdi.domain === "" ||
       wdi.awsAccountId === "" ||
       wdi.clusterName === ""
     ) {
