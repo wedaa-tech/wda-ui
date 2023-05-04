@@ -10,7 +10,6 @@ import {
 import { MinusIcon, WarningIcon } from "@chakra-ui/icons";
 
 function Deployment({ application, deployment, setDeployment }) {
-  const isErrorRepoName = deployment.dockerRepositoryName === "";
   const isErrorNamespace = deployment.kubernetesNamespace === "";
   const isErrorStorage = deployment.kubernetesStorageClassName === "";
   const isErrorIngressDomain = deployment.ingressDomain === "";
@@ -34,10 +33,9 @@ function Deployment({ application, deployment, setDeployment }) {
         defaultValue={deployment.deploymentType}
       >
         <option value="kubernetes">Kubernetes</option>
-        <option value="compose">Docker-Compose</option>
-        <option value="openshift">Openshift</option>
+        {/* <option value="compose">Docker-Compose</option>
+        <option value="openshift">Openshift</option> */}
       </Select>
-
       {Object.values(application).filter((app) => app.applicationName !== "")
         .length > 0 && (
         <>
@@ -72,30 +70,8 @@ function Deployment({ application, deployment, setDeployment }) {
               );
             })}
           </div>
-        </>
+          </>
       )}
-      <FormControl isInvalid={isErrorRepoName} isRequired>
-        <FormLabel>Docker Repository Name</FormLabel>
-        <Input
-          placeholder=""
-          type="text"
-          key="dockerRepositoryName"
-          name="dockerRepositoryName"
-          onChange={({ target }) =>
-            handleInputChange("dockerRepositoryName", target.value)
-          }
-          defaultValue={deployment.dockerRepositoryName}
-          style={{ border: "1px solid #cfcfcf", boxShadow: "none" }}
-        />
-        {!isErrorRepoName ? (
-          <div style={{ marginBottom: "10px" }}></div>
-        ) : (
-          <FormErrorMessage marginBottom="10px" fontSize="10px" marginTop="5px">
-            <WarningIcon marginRight="5px" />
-            Required
-          </FormErrorMessage>
-        )}
-      </FormControl>
       <FormControl isInvalid={isErrorNamespace} isRequired>
         <FormLabel>Kubernetes Namespace</FormLabel>
         <Input
@@ -200,10 +176,10 @@ function Deployment({ application, deployment, setDeployment }) {
         defaultValue={deployment.ingressType}
       >
         <option value="istio">ISTIO</option>
-        <option value="nginx">Nginx</option>
+        {/* <option value="nginx">Nginx</option> */}
       </Select>
       <FormControl isInvalid={isErrorIngressDomain} isRequired>
-        <FormLabel>Ingress Domain</FormLabel>
+        <FormLabel>Domain name</FormLabel>
         <Input
           placeholder="example.com"
           type="text"

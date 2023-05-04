@@ -64,6 +64,7 @@ function FormWda() {
   const [isDuplicateAppName, setIsDuplicateAppName] = useState(false);
   const [checkLength, setCheckLength] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [checkGateway, setCheckGateway] = useState(false);
 
   useEffect(() => {
     if (party) {
@@ -116,7 +117,6 @@ function FormWda() {
       return newCommunication;
     });
   };
-
   const checkDuplicateAppName = (id, field, value) => {
     if (field === "applicationName") {
       const isDuplicate = applicationNames.some(
@@ -130,12 +130,14 @@ function FormWda() {
       });
     }
   };
+  const checkAppType = (value) => {
+    setCheckGateway(value);
+  };
   const validateApplication = () => {
     let invalidInput = false;
     Object.values(application).forEach((app) => {
       if (
         app.applicationName === "" ||
-        // isDuplicateAppName ||
         app.packageName === "" ||
         app.serverPort === ""
       ) {
@@ -408,6 +410,8 @@ function FormWda() {
                         checkDuplicateAppName={checkDuplicateAppName}
                         isDuplicateAppName={isDuplicateAppName}
                         handleDeleteApplication={handleDeleteApplication}
+                        checkGateway={checkGateway}
+                        checkAppType={checkAppType}
                         // entity={entity}
                         // Client
                         // Name

@@ -20,7 +20,9 @@ function Application({
   id,
   checkDuplicateAppName,
   isDuplicateAppName,
-  handleDeleteApplication
+  handleDeleteApplication,
+  checkGateway,
+  checkAppType,
 }) {
   const handleKeyPress = (event) => {
     const charCode = event.which ? event.which : event.keyCode;
@@ -37,6 +39,14 @@ function Application({
   };
   const handleInputChange = (field, value) => {
     checkDuplicateAppName(id, field, value);
+    if (field === "applicationType") {
+      if (
+        value === "gateway" &&
+        application.applicationType === "microservice"
+      ) {
+        checkAppType(true);
+      } else checkAppType(false);
+    }
     setApplication((state) => ({
       ...state,
       [id]: {
@@ -98,6 +108,7 @@ function Application({
                           boxShadow: "none",
                         },
                       }}
+                      autoComplete={false}
                     />
                   </div>
                   <Box>
@@ -129,29 +140,34 @@ function Application({
                 handleInputChange("applicationType", target.value)
               }
               marginBottom="10px"
-              defaultValue={application.applicationType}
+              // defaultValue={application.applicationType}
             >
-              <option value="microservice">Microservice</option>
-              <option value="gateway">UI + Gateway</option>
+              {!checkGateway || application.applicationType === "gateway" ? (
+                <>
+                  <option value="microservice">Microservice</option>
+                  <option value="gateway">UI + Gateway</option>
+                </>
+              ) : (
+                <option value="microservice">Microservice</option>
+              )}
               {/* <option value="monolithic">Monolithic</option> */}
             </Select>
-            { application.applicationType === "microservice" &&
-              (<>
-              <FormLabel>Application Framework</FormLabel>
-              <Select
-                
-                name="applicationFramework"
-                onChange={({ target }) =>
-                  handleInputChange("applicationFramework", target.value)
-                }
-                marginBottom="10px"
-                defaultValue={application.applicationFramework}
-              >
-                <option value="java">JAVA</option>
-                <option value="go">GO</option>
-              </Select>
-            </>)
-            }
+            {application.applicationType === "microservice" && (
+              <>
+                <FormLabel>Application Framework</FormLabel>
+                <Select
+                  name="applicationFramework"
+                  onChange={({ target }) =>
+                    handleInputChange("applicationFramework", target.value)
+                  }
+                  marginBottom="10px"
+                  defaultValue={application.applicationFramework}
+                >
+                  <option value="java">JAVA</option>
+                  <option value="go">GO</option>
+                </Select>
+              </>
+            )}
             <FormControl isInvalid={isErrorPackageName} isRequired>
               <FormLabel>Package Name</FormLabel>
               <Input
@@ -221,24 +237,25 @@ function Application({
               <option value="oracle">Oracle</option>
               <option value="no">No</option>
             </Select>
-            { application.applicationType === "gateway" && (<>
-            <FormLabel>Client Framework</FormLabel>
-            <Select
-              name="clientFramework"
-              onChange={({ target }) =>
-                handleInputChange("clientFramework", target.value)
-              }
-              marginBottom="10px"
-              defaultValue={application.clientFramework}
-            >
-              <option value="react">React</option>
-              <option value="angular">Angular</option>
-              <option value="vue">Vue</option>
-              <option value="svelte">Svelte</option>
-              <option value="no">No</option>
-            </Select>
-            </>)
-            }
+            {application.applicationType === "gateway" && (
+              <>
+                <FormLabel>Client Framework</FormLabel>
+                <Select
+                  name="clientFramework"
+                  onChange={({ target }) =>
+                    handleInputChange("clientFramework", target.value)
+                  }
+                  marginBottom="10px"
+                  defaultValue={application.clientFramework}
+                >
+                  <option value="react">React</option>
+                  <option value="angular">Angular</option>
+                  <option value="vue">Vue</option>
+                  <option value="svelte">Svelte</option>
+                  <option value="no">No</option>
+                </Select>
+              </>
+            )}
             <FormLabel>Service Discovery Type</FormLabel>
             <Select
               name="serviceDiscoveryType"
@@ -279,22 +296,22 @@ function Application({
                 </FormErrorMessage>
               )}
             </FormControl>
-            { application.applicationType === "gateway" &&
-              (<>
-              <FormLabel>Enable Reminder Example</FormLabel>
-              <Select
-                name="withExample"
-                onChange={({ target }) =>
-                  handleInputChange("withExample", target.value)
-                }
-                marginBottom="10px"
-                defaultValue={application.withExample}
-              >
-                <option value="true">Yes</option>
-                <option value="false">No</option>
-              </Select>
-            </>)
-            }
+            {application.applicationType === "gateway" && (
+              <>
+                <FormLabel>Enable Reminder Example</FormLabel>
+                <Select
+                  name="withExample"
+                  onChange={({ target }) =>
+                    handleInputChange("withExample", target.value)
+                  }
+                  marginBottom="10px"
+                  defaultValue={application.withExample}
+                >
+                  <option value="true">Yes</option>
+                  <option value="false">No</option>
+                </Select>
+              </>
+            )}
             {/* <NumberInput max={30000} min={9000}>
       <NumberInputField
         placeholder="9000"
