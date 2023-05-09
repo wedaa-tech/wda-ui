@@ -18,6 +18,7 @@ const applicationPreFlightTemplate = {
   prodDatabaseType: "postgreSQL",
   clientFramework: "react",
   serviceDiscoveryType: "eureka",
+  messageBroker: "no",
   serverPort: "",
   entities: [],
   withExample: "false"

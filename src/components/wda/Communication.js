@@ -14,13 +14,7 @@ import {
 } from "@chakra-ui/react";
 import { WarningIcon } from "@chakra-ui/icons";
 
-function Communication({
-  id,
-  communication,
-  setCommunication,
-  application,
-  handleDeleteCommunication,
-}) {
+function Communication({ id, communication, setCommunication, application,handleDeleteCommunication }) {
   // const isErrorClient = communication.clientName === "";
   // const isErrorServer = communication.serverName === "";
 
@@ -55,7 +49,7 @@ function Communication({
               </Box>
               <AccordionIcon />
             </AccordionButton>
-            <CloseButton size="sm" bg="transparent" onClick={handleDelete} />
+            <CloseButton size="sm" bg="transparent" onClick={()=> handleDelete()} />
           </div>
           <AccordionPanel pb={4}>
             <FormControl display="flex" flexDirection="column">

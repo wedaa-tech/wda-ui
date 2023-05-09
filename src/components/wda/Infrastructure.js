@@ -8,7 +8,8 @@ import {
 } from "@chakra-ui/react";
 import { WarningIcon } from "@chakra-ui/icons";
 
-function Infrastructure({ wdi, setWdi, checkLength, validateInputValue, projectName }) {
+function Infrastructure({ wdi, setWdi, checkLength, validateInputValue }) {
+  const isErrorDomain = wdi.domain === "";
   const isErrorAccId = wdi.awsAccountId === "" || checkLength;
   const isErrorCluster = wdi.clusterName === "";
 
@@ -31,7 +32,27 @@ function Infrastructure({ wdi, setWdi, checkLength, validateInputValue, projectN
 
   return (
     <FormControl>
-      <FormLabel>Cloud Provider</FormLabel>
+      <FormControl isInvalid={isErrorDomain} isRequired>
+        <FormLabel>Enter your Domain Name</FormLabel>
+        <Input
+          type="text"
+          placeholder="example.com"
+          key="domain"
+          name="domain"
+          onChange={({ target }) => handleInputChange("domain", target.value)}
+          defaultValue={wdi.domain}
+          style={{ border: "1px solid #cfcfcf", boxShadow: "none" }}
+        />
+        {!isErrorDomain ? (
+          <div style={{ marginBottom: "10px" }}></div>
+        ) : (
+          <FormErrorMessage marginBottom="10px" fontSize="10px" marginTop="5px">
+            <WarningIcon marginRight="5px" />
+            Required
+          </FormErrorMessage>
+        )}
+      </FormControl>
+      <FormLabel>Select Cloud Provider</FormLabel>
       <Select
         marginBottom="10px"
         key="cloudProvider"
@@ -42,8 +63,8 @@ function Infrastructure({ wdi, setWdi, checkLength, validateInputValue, projectN
         defaultValue={wdi.cloudProvider}
       >
         <option value="aws">Aws Cloud</option>
-        {/* <option value="azure">Azure Cloud</option>
-        <option value="gcp">Google Cloud Platform</option> */}
+        <option value="azure">Azure Cloud</option>
+        <option value="gcp">Google Cloud Platform</option>
       </Select>
 
       {wdi.cloudProvider === "aws" && (
@@ -76,7 +97,7 @@ function Infrastructure({ wdi, setWdi, checkLength, validateInputValue, projectN
               </FormErrorMessage>
             )}
           </FormControl>
-          <FormLabel>Region</FormLabel>
+          <FormLabel>Select region</FormLabel>
           <Select
             marginBottom="10px"
             onChange={({ target }) =>
@@ -91,7 +112,7 @@ function Infrastructure({ wdi, setWdi, checkLength, validateInputValue, projectN
         </>
       )}
 
-      <FormLabel>Orchestration Provider</FormLabel>
+      <FormLabel>Select Orchestration Provider:</FormLabel>
       <Select
         key="orchestration"
         name="orchestration"
@@ -102,8 +123,8 @@ function Infrastructure({ wdi, setWdi, checkLength, validateInputValue, projectN
         marginBottom="10px"
       >
         <option value="kubernetes">Kubernetes</option>
-        {/* <option value="swarm">Docker Swarm</option>
-        <option value="mesos">Apache MESOS</option> */}
+        <option value="swarm">Docker Swarm</option>
+        <option value="mesos">Apache MESOS</option>
       </Select>
 
       {/* {wdi.cloudProvider === "aws" && wdi.orchestration === "kubernetes" && (
@@ -128,7 +149,7 @@ function Infrastructure({ wdi, setWdi, checkLength, validateInputValue, projectN
       {wdi.orchestration === "kubernetes" && (
         <div>
           <FormControl isInvalid={isErrorCluster} isRequired>
-            <FormLabel>Cluster Name</FormLabel>
+            <FormLabel>Enter Cluster Name</FormLabel>
             <Input
               type="text"
               placeholder="demo-cluster"
@@ -165,7 +186,7 @@ function Infrastructure({ wdi, setWdi, checkLength, validateInputValue, projectN
             }
             defaultValue={wdi.namespace}
           /> */}
-          <FormLabel>Ingress type</FormLabel>
+          <FormLabel>Select Ingress type:</FormLabel>
           <Select
             key="ingress"
             name="ingress"
@@ -179,7 +200,7 @@ function Infrastructure({ wdi, setWdi, checkLength, validateInputValue, projectN
             <option value="nginx">Nginx</option>
             <option value="traefik">Traefik</option>
           </Select>
-          <FormLabel>Enable Monitoring</FormLabel>
+          <FormLabel>Enable Monitoring:</FormLabel>
           <Select
             onChange={({ target }) =>
               handleInputChange("monitoring", target.value)
@@ -190,7 +211,7 @@ function Infrastructure({ wdi, setWdi, checkLength, validateInputValue, projectN
             <option value="true">Yes</option>
             <option value="false">No</option>
           </Select>
-          <FormLabel>Enable Elastic Cloud</FormLabel>
+          <FormLabel>Enable Elastic Cloud:</FormLabel>
           <Select
             onChange={({ target }) =>
               handleInputChange("enableECK", target.value)
@@ -201,7 +222,7 @@ function Infrastructure({ wdi, setWdi, checkLength, validateInputValue, projectN
             <option value="true">Yes</option>
             <option value="false">No</option>
           </Select>
-          <FormLabel>Enable Web UI</FormLabel>
+          <FormLabel>Enable Web UI:</FormLabel>
           <Select
             onChange={({ target }) =>
               handleInputChange("k8sWebUI", target.value)

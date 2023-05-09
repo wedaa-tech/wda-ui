@@ -141,7 +141,7 @@ function FormWdi(props) {
         {!isContainerVisible && !generateInfrastructure && (
           <>
             <FormControl isInvalid={isErrorProject} isRequired>
-              <FormLabel>Project Name</FormLabel>
+              <FormLabel>Enter Project Name</FormLabel>
               <Input
                 type="text"
                 placeholder="example"
@@ -165,7 +165,7 @@ function FormWdi(props) {
               )}
             </FormControl>
             <FormControl isInvalid={isErrorDomain} isRequired>
-              <FormLabel>Domain Name</FormLabel>
+              <FormLabel>Enter your Domain Name</FormLabel>
               <Input
                 type="text"
                 placeholder="example.com"
@@ -188,7 +188,7 @@ function FormWdi(props) {
                 </FormErrorMessage>
               )}
             </FormControl>
-            <FormLabel>Cloud Provider</FormLabel>
+            <FormLabel>Select Cloud Provider</FormLabel>
             <Select
               marginBottom="10px"
               onChange={(e) => setCloudProvider(e.target.value)}
@@ -230,7 +230,7 @@ function FormWdi(props) {
                     </FormErrorMessage>
                   )}
                 </FormControl>
-                <FormLabel>Region</FormLabel>
+                <FormLabel>Select region</FormLabel>
                 <Select
                   marginBottom="10px"
                   onChange={(e) => setAwsRegion(e.target.value)}
@@ -243,7 +243,7 @@ function FormWdi(props) {
               </>
             )}
 
-            <FormLabel>Orchestration Provider</FormLabel>
+            <FormLabel>Select Orchestration Provider:</FormLabel>
             <Select
               onChange={(e) => setOrchestration(e.target.value)}
               value={orchestration}
@@ -272,7 +272,7 @@ function FormWdi(props) {
             {orchestration === "kubernetes" && (
               <div>
                 <FormControl isInvalid={isErrorCluster} isRequired>
-                  <FormLabel>Cluster Name</FormLabel>
+                  <FormLabel>Enter Cluster Name</FormLabel>
                   <Input
                     type="text"
                     placeholder="demo-cluster"
@@ -303,7 +303,7 @@ function FormWdi(props) {
                     onChange={(e) => setNameSpace(e.target.value)}
                     value={nameSpace}
                   /> */}
-                <FormLabel>Ingress type</FormLabel>
+                <FormLabel>Select Ingress type:</FormLabel>
                 <Select
                   onChange={(e) => setIngress(e.target.value)}
                   value={ingress}
@@ -313,7 +313,7 @@ function FormWdi(props) {
                   <option value="nginx">Nginx</option>
                   <option value="traefik">Traefik</option>
                 </Select>
-                <FormLabel>Enable Monitoring</FormLabel>
+                <FormLabel>Enable Monitoring:</FormLabel>
                 <Select
                   onChange={(e) => setMonitoring(e.target.value)}
                   value={monitoring}
@@ -322,7 +322,7 @@ function FormWdi(props) {
                   <option value="true">Yes</option>
                   <option value="false">No</option>
                 </Select>
-                <FormLabel>Enable Elastic Cloud</FormLabel>
+                <FormLabel>Enable Elastic Cloud:</FormLabel>
                 <Select
                   onChange={(e) => setEnableECK(e.target.value)}
                   value={enableECK}
@@ -331,7 +331,7 @@ function FormWdi(props) {
                   <option value="true">Yes</option>
                   <option value="false">No</option>
                 </Select>
-                <FormLabel>Enable Web UI</FormLabel>
+                <FormLabel>Enable Web UI:</FormLabel>
                 <Select
                   onChange={(e) => setK8sWebUI(e.target.value)}
                   value={k8sWebUI}
