@@ -21,11 +21,11 @@ const applicationPreFlightTemplate = {
   messageBroker: "no",
   serverPort: "",
   entities: [],
-  withExample: "false"
+  withExample: "false",
 };
 const communicationPreFlightTemplate = {
-  clientName:"",
-  serverName:""
+  clientName: "",
+  serverName: "",
 };
 
 const deploymentPreFlightTemplate = {
@@ -41,21 +41,20 @@ const deploymentPreFlightTemplate = {
 };
 
 const wdiPreFlightTemplate = {
-  domain : "",
-  cloudProvider : "aws",
-  awsAccountId  : "", // This is our AWS account ID, has to be passed by the end user. Discard this value later!
-  orchestration : "kubernetes",
-  awsRegion : "ap-south-1",
-  awsAccessKey : "<awsAccessKey>",
-  awsSecretKey : "<awsSecretKey>",
+  domain: "",
+  cloudProvider: "aws",
+  awsAccountId: "", // This is our AWS account ID, has to be passed by the end user. Discard this value later!
+  orchestration: "kubernetes",
+  awsRegion: "ap-south-1",
+  awsAccessKey: "<awsAccessKey>",
+  awsSecretKey: "<awsSecretKey>",
   instanceType: "t3.medium",
-  clusterName : "",
+  clusterName: "",
   ingress: "istio",
   monitoring: "true",
   enableECK: "true",
-  k8sWebUI:  "true"
+  k8sWebUI: "true",
 };
-
 
 export {
   entityTuplesPreFlightTemplate,
@@ -63,13 +62,12 @@ export {
   applicationPreFlightTemplate,
   communicationPreFlightTemplate,
   deploymentPreFlightTemplate,
-  wdiPreFlightTemplate
+  wdiPreFlightTemplate,
 };
-
 
 // {
 //   "0": {
-     
+
 //       "tupleType": "BigDecimal",
 //       "tupleName": "asdf"
 //   },

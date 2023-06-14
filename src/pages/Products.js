@@ -31,7 +31,11 @@ function Products() {
         </div>
         <br />
         <Link to="/wdi">
-          <Button size="lg" colorScheme="blue" style={{ minWidth: "120px", marginBottom:"20px" }}>
+          <Button
+            size="lg"
+            colorScheme="blue"
+            style={{ minWidth: "120px", marginBottom: "20px" }}
+          >
             WDI
           </Button>
         </Link>

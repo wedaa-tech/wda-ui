@@ -114,7 +114,7 @@ function Entity({ id, entity, setEntity }) {
         >
           Add
         </Button>
-    
+
         <Button size="xs" leftIcon={<DeleteIcon />} marginTop="10px">
           Delete
         </Button>
@@ -208,11 +208,10 @@ function EntityInput({ entityTuples, setEntityTuples, id }) {
       <Button
         size={"xs"}
         leftIcon={<DeleteIcon />}
-        style={{marginTop:"5px"}}
+        style={{ marginTop: "5px" }}
       >
         Delete
       </Button>
-
     </Stack>
   );
 }

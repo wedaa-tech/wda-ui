@@ -20,14 +20,26 @@ function Contact() {
         <p style={{ fontStyle: "italic", fontWeight: "bold" }}>Phone:</p>
         <p> 040 4035 1000</p>
         <br />
-        <p style={{ fontStyle: "italic", fontWeight: "bold" ,marginBottom:"0px"}}>Social Media:</p>
+        <p
+          style={{
+            fontStyle: "italic",
+            fontWeight: "bold",
+            marginBottom: "0px",
+          }}
+        >
+          Social Media:
+        </p>
         <p>Twitter: @tic-dev_support</p>
         <p>Facebook: facebook.com/tic-dev_support</p>
         <br />
         <p style={{ fontStyle: "italic", fontWeight: "bold" }}>Address:</p>
-        <p>9th Floor, Aurobindo Galaxy Plot No. 1, Forming part of Sy. No. 83/1, Hyderabad Knowledge City, TSIIC Raidurgam (Panmaktha) Village, Serilingampally, Hyderabad, Telangana 500019</p>
-        <br/>
-        
+        <p>
+          9th Floor, Aurobindo Galaxy Plot No. 1, Forming part of Sy. No. 83/1,
+          Hyderabad Knowledge City, TSIIC Raidurgam (Panmaktha) Village,
+          Serilingampally, Hyderabad, Telangana 500019
+        </p>
+        <br />
+
         <Heading size="s" fontWeight="extrabold" mb={4} marginBottom="10px">
           Feel free to contact us using any of the methods above, and we'll get
           back to you as soon as possible. Thank you for using our app!

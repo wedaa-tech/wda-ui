@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect } from "react";
 
 export default function DocHome() {
   useEffect(() => {
@@ -10,5 +10,5 @@ export default function DocHome() {
     return () => clearTimeout(timeout);
   }, []);
 
-  return <></>
+  return <></>;
 }

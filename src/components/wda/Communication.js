@@ -30,7 +30,7 @@ function Communication({ id, communication, setCommunication, application,handle
   const handleDelete = () => {
     handleDeleteCommunication(id);
   };
-  
+
   return (
     <FormControl>
       {Object.values(application).filter((app) => app.applicationName !== "")
@@ -49,7 +49,11 @@ function Communication({ id, communication, setCommunication, application,handle
               </Box>
               <AccordionIcon />
             </AccordionButton>
-            <CloseButton size="sm" bg="transparent" onClick={()=> handleDelete()} />
+            <CloseButton
+              size="sm"
+              bg="transparent"
+              onClick={() => handleDelete()}
+            />
           </div>
           <AccordionPanel pb={4}>
             <FormControl display="flex" flexDirection="column">

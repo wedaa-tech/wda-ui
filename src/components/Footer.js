@@ -8,26 +8,23 @@ const style = {
   bottom: "0",
   height: "60px",
   width: "100%",
-  color: "#FFFFFF"
-}
+  color: "#FFFFFF",
+};
 
 const phantom = {
-display: 'block',
-padding: '20px',
-height: '60px',
-width: '100%',
-}
-
+  display: "block",
+  padding: "20px",
+  height: "60px",
+  width: "100%",
+};
 
 function Footer() {
   return (
-      <div>
-          <div style={phantom} />
-          <div style={style}>
-              Created by TIC@coMakeIT 
-          </div>
-      </div>
-  )
+    <div>
+      <div style={phantom} />
+      <div style={style}>Created by TIC@coMakeIT</div>
+    </div>
+  );
 }
 
-export default Footer
+export default Footer;

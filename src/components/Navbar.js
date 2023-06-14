@@ -13,10 +13,13 @@ import {
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import logo from "../assets/TIC.png";
+import { useKeycloak } from "@react-keycloak/web";
+import { useHistory } from "react-router-dom";
 
 export default function Header({ children }) {
   const color = "#ffffff";
   const bg = "#3182CE";
+  const { keycloak, initialized } = useKeycloak();
   const [action, setAction] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const handleAction = (action) => {
@@ -25,6 +28,14 @@ export default function Header({ children }) {
   const handleClose = () => {
     setIsOpen(false);
   };
+  const Logout = () => {
+    const { keycloak } = useKeycloak();
+    const history = useHistory();
+  
+    const handleLogout = () => {
+      keycloak.logout();
+      history.push("/"); // Redirect to the home page
+    };}
 
   return (
     <Box bg={bg} py={4} px={6} shadow="md">
@@ -35,18 +46,23 @@ export default function Header({ children }) {
         mx="auto"
       >
         <Flex alignItems="center">
-        <Link to="/">
-          <Image
-            src={logo}
-            alt="App Logo"
-            style={{ width: "18px", height: "15px", marginRight: "30px", transform: "scale(3.5)" }}
-          />
+          <Link to="/">
+            <Image
+              src={logo}
+              alt="App Logo"
+              style={{
+                width: "18px",
+                height: "15px",
+                marginRight: "30px",
+                transform: "scale(3.5)",
+              }}
+            />
           </Link>
           <Link to="/">
-          <Text fontSize="xl" fontWeight="bold" color={color}>
-            TIC@coMakeIT
-          </Text>
-        </Link>
+            <Text fontSize="xl" fontWeight="bold" color={color}>
+              TIC@coMakeIT
+            </Text>
+          </Link>
         </Flex>
         <HStack spacing={4} display={{ base: "none", md: "flex" }}>
           <Link to="/" onClick={() => handleAction("home")}>
@@ -105,6 +121,14 @@ export default function Header({ children }) {
               >
                 WDI
               </MenuItem>
+              <MenuItem
+                backgroundColor={bg}
+                as={Link}
+                to="/designer"
+                onClick={() => handleClose()}
+              >
+                Designer
+              </MenuItem>
             </MenuList>
           </Menu>
           {/* <Link to="/about" onClick={() => handleAction("about")}>
@@ -125,6 +149,18 @@ export default function Header({ children }) {
               Contact
             </Text>
           </Link>
+          {!keycloak.authenticated && (
+            <Text fontSize="md" color={color} onClick={() => keycloak.login()}>
+              Login
+            </Text>
+          )}
+
+          {keycloak.authenticated && (
+            <Text fontSize="md" color={color} onClick={() => keycloak.logout({ redirectUri: process.env.REACT_APP_UI_BASE_URL })}>
+              Logout 
+              ({keycloak.tokenParsed.preferred_username})
+            </Text>
+          )}
         </HStack>
         <Box display={{ base: "block", md: "none" }}>
           <Button variant="ghost" colorScheme="blue" size="sm">

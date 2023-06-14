@@ -20,7 +20,7 @@ function Application({
   id,
   checkDuplicateAppName,
   isDuplicateAppName,
-  handleDeleteApplication
+  handleDeleteApplication,
 }) {
   const handleKeyPress = (event) => {
     const charCode = event.which ? event.which : event.keyCode;
@@ -123,7 +123,6 @@ function Application({
           <FormControl>
             <FormLabel>Application Type</FormLabel>
             <Select
-              key={application.applicationType}
               name="applicationType"
               onChange={({ target }) =>
                 handleInputChange("applicationType", target.value)
@@ -252,23 +251,24 @@ function Application({
               <option value="consul">Consul</option>
               <option value="no">No</option>
             </Select>
-            { application.applicationType === "microservice" && (<>
-            <FormLabel>Message Broker</FormLabel>
-            <Select
-              name="messageBroker"
-              onChange={({ target }) =>
-                handleInputChange("messageBroker", target.value)
-              }
-              marginBottom="10px"
-              defaultValue={application.messageBroker}
-            >
-              <option value="rabbitmq">RabbitMQ</option>
-              <option value="kafka">Kafka</option>
-              <option value="pulsar">Pulsar</option>
-              <option value="no">No</option>
-            </Select>
-            </>)
-            }
+            {application.applicationType === "microservice" && (
+              <>
+                <FormLabel>Message Broker</FormLabel>
+                <Select
+                  name="messageBroker"
+                  onChange={({ target }) =>
+                    handleInputChange("messageBroker", target.value)
+                  }
+                  marginBottom="10px"
+                  defaultValue={application.messageBroker}
+                >
+                  <option value="rabbitmq">RabbitMQ</option>
+                  <option value="kafka">Kafka</option>
+                  <option value="pulsar">Pulsar</option>
+                  <option value="no">No</option>
+                </Select>
+              </>
+            )}
             <FormControl isInvalid={isErrorServerPort} isRequired>
               <FormLabel>Service Port</FormLabel>
               <Input

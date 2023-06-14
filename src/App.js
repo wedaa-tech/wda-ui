@@ -8,36 +8,66 @@ import Products from "./pages/Products";
 import DocHome from "./pages/Docs/DocHome";
 // import About from "./pages/About";
 import Contact from "./pages/Contact";
+import Login from "./pages/Login";
+import SignUp from "./pages/SignUp";
+import Designer from "./pages/Designer";
+import React from "react";
+import { BrowserRouter } from "react-router-dom";
+import { ReactKeycloakProvider } from "@react-keycloak/web";
+import keycloak from "./Keycloak";
+import PrivateRoute from "./helpers/PrivateRoute";
 
 function App() {
   return (
-    <Router className="flex h-screen">
-      <Navbar />
-      <Switch>
-        <Route exact path="/wda">
-          <FormWda />
-        </Route>
-        <Route exact path="/wdi">
-          <FormWdi />
-        </Route>
-        <Route exact path="/">
-          <Home />
-        </Route>
-        <Route exact path="/products">
-          <Products />
-        </Route>
-        <Route exact path="/docs">
-          <DocHome />
-        </Route>
-        {/* <Route exact path="/about">
+    <ReactKeycloakProvider authClient={keycloak}>
+      <BrowserRouter>
+        <Router className="flex h-screen">
+          <Navbar />
+          <Switch>
+            <Route exact path="/wda">
+            <PrivateRoute>
+              <FormWda />
+              </PrivateRoute>
+            </Route>
+            <Route exact path="/wdi">
+            <PrivateRoute>
+              <FormWdi />
+              </PrivateRoute>
+            </Route>
+            <Route exact path="/">
+              <Home />
+            </Route>
+           
+            <Route exact path="/products">
+           
+                <Products />
+            
+            </Route>
+            <Route exact path="/designer">
+            <PrivateRoute>
+            <Designer />
+            </PrivateRoute>
+           </Route>
+            <Route exact path="/docs">
+              <DocHome />
+            </Route>
+            {/* <Route exact path="/about">
           <About />
         </Route> */}
-        <Route exact path="/contact">
-          <Contact />
-        </Route>
-      </Switch>
-      <Footer />
-    </Router>
+            <Route exact path="/contact">
+              <Contact />
+            </Route>
+            <Route exact path="/login">
+              <Login />
+            </Route>
+            <Route exact path="/signup">
+              <SignUp />
+            </Route>      
+          </Switch>
+          <Footer />
+        </Router>
+      </BrowserRouter>
+    </ReactKeycloakProvider>
   );
 }
 

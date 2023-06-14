@@ -370,8 +370,7 @@ function FormWdi(props) {
                 zIndex="9999"
                 display="flex"
                 flexDirection="column"
-              >
-              </Flex>
+              ></Flex>
             )}
             {validateInputs() ? (
               <p

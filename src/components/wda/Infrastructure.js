@@ -74,7 +74,7 @@ function Infrastructure({ wdi, setWdi, checkLength, validateInputValue }) {
             <Input
               type="text"
               placeholder="123456789"
-              onChange={({ target }) => 
+              onChange={({ target }) =>
                 handleInputChange("awsAccountId", target.value)
               }
               onKeyPress={handleKeyPress}
