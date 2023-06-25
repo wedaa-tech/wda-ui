@@ -9,6 +9,24 @@ function Products() {
         <Heading size="xl" fontWeight="extrabold" mb={4} marginBottom="50px">
           Products
         </Heading>
+        <Link to="/mindmap">
+          <Button
+            size="lg"
+            colorScheme="blue"
+            style={{ minWidth: "120px", marginBottom: "20px" }}
+          >
+            Mind Map
+          </Button>
+        </Link>
+        <br />
+        <Heading size="md" fontWeight="extrabold" mb={4}>
+          Mind Map
+        </Heading>
+        <div>
+          The Mindmap is a tool that allows you to visualize and plan your
+          project architecture using draggable nodes and edges.
+        </div>
+        <br />
         <Link to="/wda">
           <Button
             size="lg"

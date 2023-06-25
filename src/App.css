@@ -42,7 +42,7 @@ body,
   flex-direction: column;
   display: flex;
   flex-grow: 1;
-  height: 100%;
+  height: 87.5%;
 }
 
 .dndflow aside {
@@ -74,7 +74,7 @@ body,
 }
 
 .dndflow .dndnode.output {
-  border-color: #ff0072;
+  border-color: #3182CE;
   padding: 20px;
   font-size: 20px;
 }

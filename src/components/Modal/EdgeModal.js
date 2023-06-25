@@ -100,7 +100,7 @@ const EdgeModal = ({
                   <option value="" disabled>
                     Select an option
                   </option>
-                  <option value="rest">REST</option>
+                  <option value="rest-api">REST</option>
                 </Select>
               </FormControl>
             )}

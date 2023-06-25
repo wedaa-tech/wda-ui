@@ -23,6 +23,9 @@ export default function Header({ children }) {
   const [action, setAction] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const handleAction = (action) => {
+    if (action === "docs") {
+      window.open(process.env.REACT_APP_DOCS_URL);
+    }
     setAction(action);
   };
   const handleClose = () => {
@@ -31,11 +34,12 @@ export default function Header({ children }) {
   const Logout = () => {
     const { keycloak } = useKeycloak();
     const history = useHistory();
-  
+
     const handleLogout = () => {
       keycloak.logout();
       history.push("/"); // Redirect to the home page
-    };}
+    };
+  };
 
   return (
     <Box bg={bg} py={4} px={6} shadow="md">
@@ -74,11 +78,14 @@ export default function Header({ children }) {
               Home
             </Text>
           </Link>
-          <Link to="/docs" onClick={() => handleAction("docs")}>
+          <Link
+            // to="/docs"
+            onClick={() => handleAction("docs")}
+          >
             <Text
               fontSize="md"
               color={color}
-              fontWeight={action === "docs" ? "bold" : ""}
+              // fontWeight={action === "docs" ? "bold" : ""}
             >
               Docs
             </Text>
@@ -124,13 +131,22 @@ export default function Header({ children }) {
               <MenuItem
                 backgroundColor={bg}
                 as={Link}
-                to="/designer"
+                to="/mindmap"
                 onClick={() => handleClose()}
               >
-                Designer
+                Mind Map
               </MenuItem>
             </MenuList>
           </Menu>
+          <Link to="/projects" onClick={() => handleAction("projects")}>
+            <Text
+              fontSize="md"
+              color={color}
+              fontWeight={action === "projects" ? "bold" : ""}
+            >
+              Projects
+            </Text>
+          </Link>
           {/* <Link to="/about" onClick={() => handleAction("about")}>
             <Text
               fontSize="md"
@@ -150,15 +166,28 @@ export default function Header({ children }) {
             </Text>
           </Link>
           {!keycloak.authenticated && (
-            <Text fontSize="md" color={color} onClick={() => keycloak.login()}>
+            <Text
+              fontSize="md"
+              color={color}
+              onClick={() => keycloak.login()}
+              cursor="pointer"
+            >
               Login
             </Text>
           )}
 
           {keycloak.authenticated && (
-            <Text fontSize="md" color={color} onClick={() => keycloak.logout({ redirectUri: process.env.REACT_APP_UI_BASE_URL })}>
-              Logout 
-              ({keycloak.tokenParsed.preferred_username})
+            <Text
+              fontSize="md"
+              color={color}
+              cursor="pointer"
+              onClick={() =>
+                keycloak.logout({
+                  redirectUri: process.env.REACT_APP_UI_BASE_URL,
+                })
+              }
+            >
+              Logout ({keycloak.tokenParsed.preferred_username})
             </Text>
           )}
         </HStack>

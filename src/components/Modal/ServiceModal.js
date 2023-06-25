@@ -116,8 +116,8 @@ const ServiceModal = ({
                 <option value="" disabled>
                   Select an option
                 </option>
-                <option value="java">Java</option>
-                <option value="go">Go</option>
+                <option value="java">Spring Boot</option>
+                <option value="gomicro">Go Micro</option>
               </Select>
             </FormControl>
 

@@ -1,19 +1,19 @@
+import React, { useEffect } from "react";
 import { useKeycloak } from "@react-keycloak/web";
-import { useHistory } from "react-router-dom";
+import { Route } from "react-router-dom";
 
-const PrivateRoute = ({ children }) => {
-const { keycloak } = useKeycloak();
-const history = useHistory();
+const PrivateRoute = ({ children, ...rest }) => {
+  const { initialized, keycloak } = useKeycloak();
 
-const isLoggedIn = keycloak.authenticated;
-
-if (!isLoggedIn) {
-alert("Please login to continue.");
-history.replace("/");
-return null;
-}
-
-return children;
+  useEffect(() => {
+    if(initialized){
+      if (!keycloak.authenticated) {
+         keycloak.login()
+      }}});
+  if (keycloak.authenticated) {
+     return <Route {...rest}>{children}</Route>;
+  }
+  return null;
 };
 
 export default PrivateRoute;

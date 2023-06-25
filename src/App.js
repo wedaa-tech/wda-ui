@@ -11,6 +11,8 @@ import Contact from "./pages/Contact";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import Designer from "./pages/Designer";
+import Projects from "./pages/Projects";
+import Project from "./pages/Project";
 import React from "react";
 import { BrowserRouter } from "react-router-dom";
 import { ReactKeycloakProvider } from "@react-keycloak/web";
@@ -20,34 +22,41 @@ import PrivateRoute from "./helpers/PrivateRoute";
 function App() {
   return (
     <ReactKeycloakProvider authClient={keycloak}>
-      <BrowserRouter>
         <Router className="flex h-screen">
           <Navbar />
           <Switch>
             <Route exact path="/wda">
-            <PrivateRoute>
-              <FormWda />
+              <PrivateRoute>
+                <FormWda />
               </PrivateRoute>
             </Route>
             <Route exact path="/wdi">
-            <PrivateRoute>
-              <FormWdi />
+              <PrivateRoute>
+                <FormWdi />
               </PrivateRoute>
             </Route>
             <Route exact path="/">
               <Home />
             </Route>
-           
+
             <Route exact path="/products">
-           
-                <Products />
-            
+              <Products />
             </Route>
-            <Route exact path="/designer">
+            <Route exact path="/mindmap">
+              <PrivateRoute>
+                <Designer />
+              </PrivateRoute>
+            </Route>
+            <Route exact path="/projects">
+              <PrivateRoute>
+                  <Projects/>
+              </PrivateRoute>
+            </Route>
+            <Route exact path="/projects/:id">
             <PrivateRoute>
-            <Designer />
-            </PrivateRoute>
-           </Route>
+                  <Project/>
+              </PrivateRoute>
+            </Route>
             <Route exact path="/docs">
               <DocHome />
             </Route>
@@ -66,7 +75,6 @@ function App() {
           </Switch>
           <Footer />
         </Router>
-      </BrowserRouter>
     </ReactKeycloakProvider>
   );
 }

@@ -20,7 +20,7 @@ const UiDataModal = ({ isOpen, onClose, onSubmit, CurrentNode }) => {
     clientFramework: "react",
     packageName: "",
     serverPort: "",
-    withExample: "",
+    withExample: "false",
     applicationType: "gateway",
     ...CurrentNode,
   };
@@ -40,7 +40,6 @@ const UiDataModal = ({ isOpen, onClose, onSubmit, CurrentNode }) => {
       }));
     }
   };
-
   return (
     <Modal isOpen={isOpen} onClose={() => onClose(false)} isCentered={true}>
       <ModalOverlay />
@@ -139,5 +138,4 @@ const UiDataModal = ({ isOpen, onClose, onSubmit, CurrentNode }) => {
     </Modal>
   );
 };
-
 export default UiDataModal;
