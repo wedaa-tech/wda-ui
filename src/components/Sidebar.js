@@ -298,7 +298,7 @@ export default ({
             isChecked={saveMetadata}
             onChange={Togglesave}
           >
-            Save Metadata
+            Save Project
           </Checkbox>
           {/* <div style={{ display:'flex', justifyContent:'center'}}> */}
           <Button

@@ -444,7 +444,8 @@ const Designer = () => {
     let logManagementData = nodes["logManagement"]?.data;
     if (logManagementData && Data?.deployment)
       Data.deployment.enableECK = "true";
-
+    if(Data.deployment && Service_Discovery_Data?.serviceDiscoveryType)
+      Data.deployment = {...Data.deployment,...Service_Discovery_Data}
     for (const key in NewNodes) {
       const Node = NewNodes[key];
       if (Node.id.startsWith("Service") || Node.id === "UI")
@@ -467,7 +468,8 @@ const Designer = () => {
         }
       }
     }
-    if (Object.values(NewEdges).some((edge) => edge.data)) {
+    if (Object.values(NewEdges).some((edge) => edge.data  && JSON.stringify(edge.data) !== "{}")) {
+      console.log("object")
       Data["communications"] = {};
       let communicationIndex = 0;
       for (const edgeInfo in NewEdges) {
@@ -488,7 +490,7 @@ const Designer = () => {
       Data["metadata"] = {
         nodes: nodes,
         edges: edges,
-        deployment: Data.deployment,
+        deployment: Data?.deployment,
       };
     } else delete Data?.metadata;
     console.log(Data, "Finaaal Dataaaaaaaaaa");
@@ -582,19 +584,16 @@ const Designer = () => {
     params.type = "straight";
     params.data = {};
     const targetNode = Nodes[params.target]
-    if (
-      !(
-        params.target.startsWith("Database") &&
-        Nodes[params.source]?.data["prodDatabaseType"]
-      )
-    ) {
-      console.log(targetNode,'Target')
-      // Validation of service Node to check if it has database or not
-      if(!targetNode.data.isConnected){
+
+    if(targetNode.id.startsWith('Database')){
+      if( !Nodes[params.source]?.data["prodDatabaseType"] && !targetNode.data.isConnected){
         targetNode.data.isConnected = true
         setEdges((eds) => addEdge(params, eds,Nodes));
         MergeData(params.source, params.target, Nodes);
       }
+    }
+    else{
+      setEdges((eds) => addEdge(params, eds,Nodes));
     }
   }, []);
 
@@ -605,12 +604,12 @@ const Designer = () => {
   const [uniqueApplicationNames, setUniqueApplicationNames] = useState([]);
 
   return (
-    <div className="dndflow">
+    <div className="dndflow" style={{overflow:'hidden !important'}}>
       <ReactFlowProvider>
         <div
           className="reactflow-wrapper"
           ref={reactFlowWrapper}
-          style={{ width: "100%", height: "90%" }}
+          style={{ width: "100%", height: "90vh" }}
         >
           <ReactFlow
             nodes={Object.values(nodes)}

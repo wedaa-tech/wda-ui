@@ -115,6 +115,14 @@ export default function Header({ children }) {
               <MenuItem
                 backgroundColor={bg}
                 as={Link}
+                to="/mindmap"
+                onClick={() => handleClose()}
+              >
+                Mind Map
+              </MenuItem>
+              <MenuItem
+                backgroundColor={bg}
+                as={Link}
                 to="/wda"
                 onClick={() => handleClose()}
               >
@@ -127,14 +135,6 @@ export default function Header({ children }) {
                 onClick={() => handleClose()}
               >
                 WDI
-              </MenuItem>
-              <MenuItem
-                backgroundColor={bg}
-                as={Link}
-                to="/mindmap"
-                onClick={() => handleClose()}
-              >
-                Mind Map
               </MenuItem>
             </MenuList>
           </Menu>
