@@ -13,21 +13,20 @@ const AlertModal = ({ isOpen, onClose, name }) => {
     <Modal isOpen={isOpen} onClose={onClose} isCentered={true}>
       <ModalOverlay />
       <ModalContent backgroundColor="#A7C7E7">
-        <ModalHeader style={{ fontSize: "14px" }}>
-          You have already selected one from this category, Please delete the
-          first one if you wish to change your choice.
+        <ModalHeader
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            fontSize: "14px",
+          }}
+        >
+          <span>
+            {"Already selected,Please delete existing to change your choice."}
+          </span>
+          <ModalCloseButton />
         </ModalHeader>
-        <ModalCloseButton />
-        <ModalBody>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "Left",
-              backgroundColor: "#3182CE",
-            }}
-          ></div>
-        </ModalBody>
+        <ModalBody></ModalBody>
       </ModalContent>
     </Modal>
   );
