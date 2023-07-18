@@ -1,8 +1,4 @@
 import {
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
   Box,
   Flex,
   HStack,
@@ -12,33 +8,19 @@ import {
 } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import logo from "../assets/TIC.png";
+import logo from "../assets/TIC_logo.png";
 import { useKeycloak } from "@react-keycloak/web";
-import { useHistory } from "react-router-dom";
 
 export default function Header({ children }) {
   const color = "#ffffff";
   const bg = "#3182CE";
   const { keycloak, initialized } = useKeycloak();
   const [action, setAction] = useState(null);
-  const [isOpen, setIsOpen] = useState(false);
   const handleAction = (action) => {
     if (action === "docs") {
       window.open(process.env.REACT_APP_DOCS_URL);
     }
     setAction(action);
-  };
-  const handleClose = () => {
-    setIsOpen(false);
-  };
-  const Logout = () => {
-    const { keycloak } = useKeycloak();
-    const history = useHistory();
-
-    const handleLogout = () => {
-      keycloak.logout();
-      history.push("/"); // Redirect to the home page
-    };
   };
 
   return (
@@ -50,7 +32,7 @@ export default function Header({ children }) {
         mx="auto"
       >
         <Flex alignItems="center">
-          <Link to="/">
+          <Link to="/" onClick={() => handleAction()}>
             <Image
               src={logo}
               alt="App Logo"
@@ -62,20 +44,20 @@ export default function Header({ children }) {
               }}
             />
           </Link>
-          <Link to="/">
+          <Link to="/" onClick={() => handleAction()}>
             <Text fontSize="xl" fontWeight="bold" color={color}>
               TIC@coMakeIT
             </Text>
           </Link>
         </Flex>
         <HStack spacing={4} display={{ base: "none", md: "flex" }}>
-          <Link to="/" onClick={() => handleAction("home")}>
+          <Link to="/canvasToCode" onClick={() => handleAction("canvasToCode")}>
             <Text
               fontSize="md"
               color={color}
-              fontWeight={action === "home" || !action ? "bold" : ""}
+              fontWeight={action === "canvasToCode" ? "bold" : ""}
             >
-              Home
+              CanvasToCode
             </Text>
           </Link>
           <Link
@@ -90,63 +72,17 @@ export default function Header({ children }) {
               Docs
             </Text>
           </Link>
-          <Menu isOpen={isOpen} onClose={handleClose}>
-            <MenuButton
-              as={Link}
-              to="#"
-              color="white"
-              onClick={() => {
-                setIsOpen(!isOpen);
-                handleAction("products");
-              }}
-              style={{
-                color: color,
-                fontWeight: action === "products" ? "bold" : "normal",
-              }}
-            >
-              Products
-            </MenuButton>
-            <MenuList
-              borderColor={bg}
-              color={color}
-              backgroundColor={bg}
-              minWidth="75px"
-            >
-              <MenuItem
-                backgroundColor={bg}
-                as={Link}
-                to="/mindmap"
-                onClick={() => handleClose()}
+          {initialized && keycloak.authenticated && (
+            <Link to="/projects" onClick={() => handleAction("projects")}>
+              <Text
+                fontSize="md"
+                color={color}
+                fontWeight={action === "projects" ? "bold" : ""}
               >
-                Mind Map
-              </MenuItem>
-              <MenuItem
-                backgroundColor={bg}
-                as={Link}
-                to="/wda"
-                onClick={() => handleClose()}
-              >
-                WDA
-              </MenuItem>
-              <MenuItem
-                backgroundColor={bg}
-                as={Link}
-                to="/wdi"
-                onClick={() => handleClose()}
-              >
-                WDI
-              </MenuItem>
-            </MenuList>
-          </Menu>
-          <Link to="/projects" onClick={() => handleAction("projects")}>
-            <Text
-              fontSize="md"
-              color={color}
-              fontWeight={action === "projects" ? "bold" : ""}
-            >
-              Projects
-            </Text>
-          </Link>
+                Projects
+              </Text>
+            </Link>
+          )}
           {/* <Link to="/about" onClick={() => handleAction("about")}>
             <Text
               fontSize="md"
@@ -169,7 +105,11 @@ export default function Header({ children }) {
             <Text
               fontSize="md"
               color={color}
-              onClick={() => keycloak.login()}
+              onClick={() =>
+                keycloak.login({
+                  redirectUri: process.env.REACT_APP_UI_BASE_URL + "projects",
+                })
+              }
               cursor="pointer"
             >
               Login

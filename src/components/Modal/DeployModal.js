@@ -28,6 +28,121 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose }) => {
   const [checkLength, setCheckLength] = useState(false);
   const [DeploymentData, setDeploymentData] = useState({});
 
+  const isCheckEmpty = () => {
+    if (DeploymentData.cloudProvider === "azure") {
+      return (
+        DeploymentData.deploymentType === "" ||
+        DeploymentData.clusterName === "" ||
+        DeploymentData.kubernetesNamespace === "" ||
+        DeploymentData.monitoring === "" ||
+        // DeploymentData.ingressDomain === "" ||
+        DeploymentData.k8sWebUI === ""
+      );
+    } else if (DeploymentData.cloudProvider === "aws") {
+      return (
+        DeploymentData.awsRegion === "" ||
+        DeploymentData.kubernetesStorageClassName === "" ||
+        DeploymentData.deploymentType === "" ||
+        DeploymentData.clusterName === "" ||
+        DeploymentData.kubernetesNamespace === "" ||
+        DeploymentData.monitoring === "" ||
+        // DeploymentData.ingressDomain === "" ||
+        DeploymentData.k8sWebUI === ""
+      );
+    } else {
+      return (
+        DeploymentData.dockerRepositoryName === "" ||
+        DeploymentData.kubernetesNamespace === "" ||
+        DeploymentData.monitoring === ""
+      );
+    }
+  };
+
+  const forbiddenWords = [
+    "admin",
+    "adfs",
+    "adsync",
+    "api",
+    "appgateway",
+    "appservice",
+    "archive",
+    "arm",
+    "automation",
+    "autoscale",
+    "az",
+    "azure",
+    "batch",
+    "bing",
+    "biztalk",
+    "bot",
+    "cdn",
+    "cloud",
+    "container",
+    "cosmos",
+    "data",
+    "dev",
+    "diagnostics",
+    "dns",
+    "documentdb",
+    "edge",
+    "eventhub",
+    "express",
+    "fabric",
+    "frontdoor",
+    "gateway",
+    "graph",
+    "hana",
+    "health",
+    "host",
+    "hybrid",
+    "insight",
+    "iot",
+    "keyvault",
+    "lab",
+    "machinelearning",
+    "management",
+    "market",
+    "media",
+    "mobile",
+    "ms",
+    "msit",
+    "my",
+    "mysql",
+    "network",
+    "notification",
+    "oms",
+    "orchestration",
+    "portal",
+    "recovery",
+    "redis",
+    "scheduling",
+    "search",
+    "server",
+    "service",
+    "shop",
+    "sql",
+    "stack",
+    "storage",
+    "store",
+    "stream",
+    "support",
+    "syndication",
+    "trafficmanager",
+    "user",
+    "virtualnetwork",
+    "visualstudio",
+    "vm",
+    "vpn",
+    "vsts",
+    "web",
+    "webservices",
+    "worker",
+  ];
+
+  const azureClusterNameCheck =
+    DeploymentData.cloudProvider === "azure" &&
+    forbiddenWords.includes(DeploymentData.clusterName);
+
   const handleImageClick = (image) => {
     setSelectedImage(image);
 
@@ -44,6 +159,10 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose }) => {
         subscriptionId: "",
         tenantId: "",
       };
+    } else if (image === "minikube") {
+      ProviderStates = {
+        dockerRepositoryName: "",
+      };
     }
     ProviderStates = {
       ...ProviderStates,
@@ -57,25 +176,7 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose }) => {
       ingressDomain: "",
       k8sWebUI: "",
     };
-    setDeploymentData((prevState) => ({
-      ...prevState,
-      cloudProvider: image,
-      ...ProviderStates,
-    }));
-  };
-  const handleImageClickMinikube = (image) => {
-    setSelectedImage(image);
 
-    let ProviderStates;
-    ProviderStates = {
-      ...ProviderStates,
-      kubernetesNamespace: "",
-      dockerRepositoryName: "",
-      ingressType: "istio",
-      enableECK: "false",
-      kubernetesUseDynamicStorage: "true",
-      monitoring: "",
-    };
     setDeploymentData((prevState) => ({
       ...prevState,
       cloudProvider: image,
@@ -93,24 +194,80 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose }) => {
     }
   };
 
-  const handleData = (column, value) => {
+  const handleBlur = (column, value) => {
     if (column === "awsAccountId") validateInputValue(value);
-    if (column === "tenantId") validateAzureInputValue(value);
-    if (column === "subscriptionId") validateAzureInputValue(value);
+    else if (column === "tenantId") {
+      validateAzureInputValue("tenantId", value);
+    } else if (column === "subscriptionId") {
+      validateAzureInputValue("subscriptionId", value);
+    }
+  };
+  const handleData = (column, value) => {
     setDeploymentData((prev) => ({ ...prev, [column]: value }));
   };
+  const namespaceCheck = /^[a-zA-Z][a-zA-Z0-9-]*$/.test(
+    DeploymentData.kubernetesNamespace
+  );
+  const clusterNameCheck = /^[a-zA-Z][a-zA-Z0-9-]*$/.test(
+    DeploymentData.clusterName
+  );
+  const storageClassCheck = /^[a-z0-9]([-a-z0-9]*[a-z0-9])?$/.test(
+    DeploymentData.kubernetesStorageClassName
+  );
 
+  let domainNameCheck = true;
+  if (DeploymentData.ingressDomain !== "") {
+    domainNameCheck = /^(?!:\/\/)(?:[a-zA-Z0-9-]{1,63}\.)+[a-zA-Z]{2,63}$/.test(
+      DeploymentData.ingressDomain
+    );
+  }
+
+  const checkValidation = () => {
+    if (selectedImage === "minikube") return !namespaceCheck;
+    else if (selectedImage === "aws") {
+      return (
+        !namespaceCheck ||
+        !domainNameCheck ||
+        !storageClassCheck ||
+        !clusterNameCheck
+      );
+    }
+    return (
+      !namespaceCheck ||
+      !domainNameCheck ||
+      !clusterNameCheck ||
+      azureClusterNameCheck ||
+      validateSubscriptionIdField ||
+      validateTenantIdField
+    );
+  };
   const validateInputValue = (value) => {
     if (value.length < 12) {
       setCheckLength(true);
     } else setCheckLength(false);
   };
-  const validateAzureInputValue = (value) => {
+  const [validateSubscriptionIdField, setValidateSubscriptionIdField] =
+    useState(false);
+  const [validateTenantIdField, setValidateTenantIdField] = useState(false);
+
+  const validateAzureInputValue = (column, value) => {
     const regexExp =
       /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
-    const isValidLength = value.length >= 36;
-    const isValidFormat = regexExp.test(value);
-    return isValidLength && isValidFormat;
+    let isValid = true;
+
+    if (column === "tenantId") {
+      const isValidLength = value.length === 36;
+      const isValidFormat = regexExp.test(value);
+      isValid = isValidLength && isValidFormat;
+      setValidateTenantIdField(!isValid);
+    } else if (column === "subscriptionId") {
+      const isValidLength = value.length === 36;
+      const isValidFormat = regexExp.test(value);
+      isValid = isValidLength && isValidFormat;
+      setValidateSubscriptionIdField(!isValid);
+    }
+
+    return isValid;
   };
 
   function handleSubmit(DeploymentData) {
@@ -122,6 +279,7 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose }) => {
       delete FinalData?.tenantId;
       delete FinalData?.dockerRepositoryName;
     } else if (FinalData.cloudProvider === "azure") {
+      console.log("hloooooo");
       delete FinalData?.awsAccountId;
       delete FinalData?.awsRegion;
       delete FinalData?.kubernetesStorageClassName;
@@ -144,15 +302,23 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose }) => {
       !checkLength && onSubmit({ ...projectData, deployment: FinalData });
     } else if (selectedImage === "azure") {
       const isAzureInputValid = validateAzureInputValue(
+        "subscriptionId",
         FinalData.subscriptionId
       );
-      if (isAzureInputValid) {
+      const isAzureInputValidField = validateAzureInputValue(
+        "tenantId",
+        FinalData.tenantId
+      );
+      setValidateSubscriptionIdField(!isAzureInputValid);
+      setValidateTenantIdField(!isAzureInputValidField);
+      if (isAzureInputValid && isAzureInputValidField) {
         onSubmit({ ...projectData, deployment: FinalData });
       }
     } else {
       onSubmit({ ...projectData, deployment: FinalData });
     }
   }
+
   const [isOpen, setIsOpen] = useState(true);
 
   return (
@@ -160,15 +326,18 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose }) => {
       <ModalOverlay />
       <ModalContent>
         <ModalHeader
-          style={{ display: "flex", justifyContent: "space-between" }}
+        // style={{ display: "flex", justifyContent: "space-between" }}
         >
-          <h2 style={{ display: "inline-block" }}>Deployment Infrastructure</h2>
+          <h2 style={{ display: "inline", marginRight: "10px" }}>
+            Deployment Infrastructure
+          </h2>
           <Tooltip
             hasArrow
-            label="Infrastructure deployment includes all the prerequisites for the network function to be successfully deployed and configured"
+            label="Select your infrastructure and provide required configuration"
             bg="gray.300"
             color="black"
-            placement="bottom-end"
+            placement="bottom"
+            width="250px"
           >
             <InfoIcon
               marginRight="20px"
@@ -225,11 +394,11 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose }) => {
                     : "2px solid #d9d9d9",
               }}
             />
-            <img
+            {/* <img
               width="170px"
               src={minikube}
               alt="minikubelogo"
-              onClick={() => handleImageClickMinikube("minikube")}
+              onClick={() => handleImageClick("minikube")}
               style={{
                 padding: "10px",
                 marginBottom: "10px",
@@ -240,7 +409,7 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose }) => {
                     ? "2px solid #3182CE"
                     : "2px solid #d9d9d9",
               }}
-            />
+            /> */}
           </div>
           {selectedImage === "azure" && (
             <div>
@@ -254,11 +423,12 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose }) => {
                   maxLength="36"
                   value={DeploymentData.subscriptionId}
                   onChange={(e) => handleData("subscriptionId", e.target.value)}
+                  onBlur={(e) => handleBlur("subscriptionId", e.target.value)}
                 ></Input>
               </FormControl>
-              {DeploymentData.subscriptionId && (
+              {validateSubscriptionIdField && (
                 <>
-                  {DeploymentData.subscriptionId.length < 36 && (
+                  {DeploymentData.subscriptionId.length < 36 ? (
                     <Alert
                       status="error"
                       height="12px"
@@ -269,8 +439,7 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose }) => {
                       <AlertIcon style={{ width: "14px", height: "14px" }} />
                       Input value must be at least 36 characters
                     </Alert>
-                  )}
-                  {!validateAzureInputValue(DeploymentData.subscriptionId) && (
+                  ) : (
                     <Alert
                       status="error"
                       height="12px"
@@ -294,11 +463,12 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose }) => {
                   maxLength="36"
                   value={DeploymentData.tenantId}
                   onChange={(e) => handleData("tenantId", e.target.value)}
+                  onBlur={(e) => handleBlur("tenantId", e.target.value)}
                 ></Input>
               </FormControl>
-              {DeploymentData.tenantId && (
+              {validateTenantIdField && (
                 <>
-                  {DeploymentData.tenantId.length < 36 && (
+                  {DeploymentData.tenantId.length < 36 ? (
                     <Alert
                       status="error"
                       height="12px"
@@ -309,8 +479,7 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose }) => {
                       <AlertIcon style={{ width: "14px", height: "14px" }} />
                       Input value must be at least 36 characters
                     </Alert>
-                  )}
-                  {!validateAzureInputValue(DeploymentData.tenantId) && (
+                  ) : (
                     <Alert
                       status="error"
                       height="12px"
@@ -419,11 +588,37 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose }) => {
                   variant="outline"
                   id="clusterName"
                   borderColor={"black"}
+                  maxLength="63"
                   value={DeploymentData.clusterName}
                   onChange={(e) => handleData("clusterName", e.target.value)}
-                ></Input>
+                />
               </FormControl>
-
+              {DeploymentData.clusterName && !clusterNameCheck ? (
+                <Alert
+                  status="error"
+                  height="12px"
+                  fontSize="12px"
+                  borderRadius="3px"
+                  mb={2}
+                >
+                  <AlertIcon style={{ width: "14px", height: "14px" }} />
+                  Cluster Name should not contain special characters.
+                </Alert>
+              ) : (
+                <></>
+              )}
+              {azureClusterNameCheck && (
+                <Alert
+                  status="error"
+                  height="12px"
+                  fontSize="12px"
+                  borderRadius="3px"
+                  mb={2}
+                >
+                  <AlertIcon style={{ width: "14px", height: "14px" }} />
+                  The input cannot contain this reserved word
+                </Alert>
+              )}
               <FormControl>
                 <FormLabel>Enable Dynamic Storage</FormLabel>
                 <Select
@@ -453,11 +648,28 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose }) => {
                       id="kubernetesStorageClassName"
                       placeholder="Kubernetes Storage Class Name"
                       borderColor={"black"}
+                      maxLength="63"
                       value={DeploymentData.kubernetesStorageClassName}
                       onChange={(e) =>
                         handleData("kubernetesStorageClassName", e.target.value)
                       }
                     />
+                    {DeploymentData.kubernetesStorageClassName &&
+                    !storageClassCheck ? (
+                      <Alert
+                        status="error"
+                        height="38px"
+                        fontSize="12px"
+                        borderRadius="3px"
+                        mb={2}
+                      >
+                        <AlertIcon style={{ width: "14px", height: "14px" }} />
+                        Storage Class Name should not contain special characters
+                        or start with uppercase.
+                      </Alert>
+                    ) : (
+                      <></>
+                    )}
                   </FormControl>
                 )}
 
@@ -467,6 +679,7 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose }) => {
                   mb={4}
                   variant="outline"
                   id="kubernetesnamespace"
+                  maxLength="63"
                   placeholder="Kubernetes Namespace"
                   borderColor={"black"}
                   value={DeploymentData.kubernetesNamespace}
@@ -475,6 +688,20 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose }) => {
                   }
                 />
               </FormControl>
+              {DeploymentData.kubernetesNamespace && !namespaceCheck ? (
+                <Alert
+                  status="error"
+                  height="12px"
+                  fontSize="12px"
+                  borderRadius="3px"
+                  mb={2}
+                >
+                  <AlertIcon style={{ width: "14px", height: "14px" }} />
+                  Namespace should not contain special characters.
+                </Alert>
+              ) : (
+                <></>
+              )}
               <FormControl>
                 <FormLabel>Ingress Type</FormLabel>
                 <Select
@@ -497,11 +724,26 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose }) => {
                     id="ingressDomain"
                     placeholder="Ingress Domain Name"
                     borderColor={"black"}
+                    maxLength="63"
                     value={DeploymentData.ingressDomain}
                     onChange={(e) =>
                       handleData("ingressDomain", e.target.value)
                     }
                   />
+                  {DeploymentData.ingressDomain && !domainNameCheck ? (
+                    <Alert
+                      status="error"
+                      height="12px"
+                      fontSize="12px"
+                      borderRadius="3px"
+                      mb={2}
+                    >
+                      <AlertIcon style={{ width: "14px", height: "14px" }} />
+                      Domain name validation is not satisfied.
+                    </Alert>
+                  ) : (
+                    <></>
+                  )}
                 </FormControl>
               )}
               <FormControl>
@@ -548,6 +790,7 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose }) => {
                   mb={4}
                   variant="outline"
                   id="kubernetesnamespace"
+                  maxLength="63"
                   placeholder="Kubernetes Namespace"
                   borderColor={"black"}
                   value={DeploymentData.kubernetesNamespace}
@@ -556,6 +799,20 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose }) => {
                   }
                 />
               </FormControl>
+              {DeploymentData.kubernetesNamespace && !namespaceCheck ? (
+                <Alert
+                  status="error"
+                  height="12px"
+                  fontSize="12px"
+                  borderRadius="3px"
+                  mb={2}
+                >
+                  <AlertIcon style={{ width: "14px", height: "14px" }} />
+                  Namespace should not contain special characters.
+                </Alert>
+              ) : (
+                <></>
+              )}
               <FormControl>
                 <FormLabel>Repository Name</FormLabel>
                 <Input
@@ -623,19 +880,6 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose }) => {
           )}
         </ModalBody>
         <ModalFooter>
-          <Tooltip
-            hasArrow
-            label="Skip button allows you to submit the form without infrastructure and if you want deployment infrastructure to be included in your project click on the desired deployement fill the details and click on submit"
-            bg="gray.300"
-            color="black"
-            placement="top"
-          >
-            <InfoIcon
-              marginRight="10px"
-              marginTop="10px"
-              style={{ fontSize: "16px", color: "#a6a6a6" }}
-            />
-          </Tooltip>
           <Button
             onClick={() => {
               onSubmit(projectData) || isLoading(true);
@@ -643,11 +887,10 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose }) => {
             mt={4}
             border="2px"
             borderColor="black.500"
-            width="100px"
             type="submit"
             marginRight="5px"
           >
-            Skip
+            Skip Infrastructure
           </Button>
           <Button
             onClick={() => {
@@ -658,7 +901,7 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose }) => {
             borderColor="green.500"
             width="100px"
             type="submit"
-            isDisabled={!selectedImage}
+            isDisabled={!selectedImage || isCheckEmpty() || checkValidation()}
           >
             Submit
           </Button>
@@ -671,7 +914,7 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose }) => {
               bottom="0"
               alignItems="center"
               justifyContent="center"
-              backgroundColor="rgba(240, 248, 255, 0.5)"
+              backgroundColor="rgba(240, 248, 255, 0.85)"
               zIndex="9999"
               display="flex"
               flexDirection="column"

@@ -47,6 +47,16 @@ const ServiceModal = ({
     }
   };
 
+  const handleKeyPress = (event) => {
+    const charCode = event.which ? event.which : event.keyCode;
+    if ((charCode >= 48 && charCode <= 57) || charCode === 8) {
+      return true;
+    } else {
+      event.preventDefault();
+      return false;
+    }
+  };
+
   const handleData = (column, value) => {
     if (column === "label") {
       ValidateName(value);
@@ -68,11 +78,23 @@ const ServiceModal = ({
       setApplicationData((prev) => ({ ...prev, [column]: value }));
     }
   };
+
+  const isSubmitDisabled =
+    ApplicationData.applicationName === "" ||
+    ApplicationData.packageName === "" ||
+    ApplicationData.serverPort === "";
+
+  const forbiddenPorts = ["8080", "5601", "9200"];
+  const serverPortCheck =
+    ApplicationData.serverPort && forbiddenPorts.includes(ApplicationData.serverPort);
+
+  const appNameCheck = /[0-9_-]/.test(ApplicationData.applicationName);
+
   return (
     <Modal isOpen={isOpen} onClose={() => onClose(false)} isCentered={true}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Service</ModalHeader>
+        <ModalHeader style={{ textAlign: "center" }}>Service</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <div
@@ -94,9 +116,27 @@ const ServiceModal = ({
                 onChange={(e) => handleData("label", e.target.value)}
               />
             </FormControl>
+            {appNameCheck && (
+              <Alert
+                status="error"
+                height="12px"
+                fontSize="12px"
+                borderRadius="3px"
+                mb={2}
+              >
+                <AlertIcon style={{ width: "14px", height: "14px" }} />
+                Application Name should not contain -, _ or number.
+              </Alert>
+            )}
             {duplicateApplicationNameError && (
-              <Alert status="error" mb={2}>
-                <AlertIcon />
+              <Alert
+                status="error"
+                height="12px"
+                fontSize="12px"
+                borderRadius="3px"
+                mb={2}
+              >
+                <AlertIcon style={{ width: "14px", height: "14px" }} />
                 Application name already exists. Please choose a unique name.
               </Alert>
             )}
@@ -140,18 +180,33 @@ const ServiceModal = ({
                 defaultValue={9000}
                 variant="outline"
                 id="serverport"
-                placeholder="ServerPort"
+                placeholder="9000"
                 borderColor={"black"}
                 value={ApplicationData.serverPort}
+                maxLength="4"
+                onKeyPress={handleKeyPress}
                 onChange={(e) => handleData("serverPort", e.target.value)}
               />
             </FormControl>
+            {serverPortCheck && (
+              <Alert
+                status="error"
+                height="12px"
+                fontSize="12px"
+                borderRadius="3px"
+                mb={2}
+              >
+                <AlertIcon style={{ width: "14px", height: "14px" }} />
+                The input contain cannot this reserved port number
+              </Alert>
+            )}
           </div>
           <Button
             onClick={() =>
               !duplicateApplicationNameError && onSubmit(ApplicationData)
             }
             style={{ display: "block", margin: "0 auto" }}
+            isDisabled={isSubmitDisabled || appNameCheck || serverPortCheck}
           >
             Submit
           </Button>

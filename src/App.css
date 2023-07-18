@@ -56,6 +56,15 @@ body,
   margin-bottom: 14px;
 }
 
+.dndflow aside .middleBlock::-webkit-scrollbar {
+  width: 0.1em;
+  background: transparent;
+}
+
+.dndflow aside .middleBlock::-webkit-scrollbar-thumb {
+  background-color: transparent;
+}
+
 .dndflow .dndnode {
   height: 40px;
   padding: 4px;
@@ -74,7 +83,7 @@ body,
 }
 
 .dndflow .dndnode.output {
-  border-color: #3182CE;
+  border-color: #3182ce;
   padding: 20px;
   font-size: 20px;
 }
@@ -87,6 +96,20 @@ body,
 
 .dndflow .selectall {
   margin-top: 10px;
+}
+.react-flow__node.react-flow__node-ResizableNode,
+.react-flow__node.react-flow__node-selectorNode,
+.react-flow__node.react-flow__node-selectorNode1,
+.react-flow__node.react-flow__node-selectorNode2,
+.react-flow__node.react-flow__node-selectorNode3,
+.react-flow__node.react-flow__node-selectorNode4,
+.react-flow__node.react-flow__node-selectorNode5,
+.react-flow__node.react-flow__node-selectorNode6,
+.react-flow__node.react-flow__node-selectorNode7 {
+  display: flex;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
 }
 
 @media screen and (min-width: 768px) {
@@ -104,7 +127,6 @@ body,
   padding: 0 !important;
 }
 
-.react-flow__node-default.selectable.selected,
 .react-flow__node-default.selectable.selected,
 .react-flow__node-input.selectable:focus {
   box-shadow: none !important;

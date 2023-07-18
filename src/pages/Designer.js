@@ -4,13 +4,16 @@ import ReactFlow, {
   Controls,
   MarkerType,
   MiniMap,
+  ConnectionLineType,
 } from "reactflow";
 import "reactflow/dist/style.css";
-
+import { Button } from "@chakra-ui/react";
+import { ArrowRightIcon } from "@chakra-ui/icons";
 import Sidebar from "./../components/Sidebar";
 import { saveAs } from "file-saver";
 import ServiceModal from "../components/Modal/ServiceModal";
 import UiDataModal from "../components/Modal/UIModal";
+import GroupDataModal from "../components/Modal/GroupDataModel";
 import CustomImageNode from "./Customnodes/CustomImageNode";
 import CustomServiceNode from "./Customnodes/CustomServiceNode";
 import CustomIngressNode from "./Customnodes/CustomIngressNode";
@@ -20,19 +23,24 @@ import CustomCloudNode from "./Customnodes/CustomCloudNode";
 import CustomLoadNode from "./Customnodes/CustomLoadNode";
 import CustomLocalenvironmentNode from "./Customnodes/CustomLocalenvironmentNode";
 import AlertModal from "../components/Modal/AlertModal";
+import resizeableNode from "./Customnodes/ResizeableNode";
+import groupNode from "./Customnodes/GroupNode";
 
 import "./../App.css";
 import EdgeModal from "../components/Modal/EdgeModal";
 import { useKeycloak } from "@react-keycloak/web";
+import { FiUploadCloud } from "react-icons/fi";
 
 let service_id = 1;
 let database_id = 1;
+let group_id = 1;
 
 const getId = (type = "") => {
   if (type === "Service") return `Service_${service_id++}`;
   else if (type === "Database") return `Database_${database_id++}`;
   else if (type === "Authentication") return "Authentication_1";
-  else if (type === "UI") return "UI";
+  else if (type === "UI+Gateway") return "UI";
+  else if (type === "Group") return `group_${group_id++}`;
   return "Id";
 };
 
@@ -45,6 +53,8 @@ const nodeTypes = {
   selectorNode5: CustomCloudNode,
   selectorNode6: CustomLoadNode,
   selectorNode7: CustomLocalenvironmentNode,
+  ResizableNode: resizeableNode,
+  GroupNode: groupNode,
 };
 
 const Designer = () => {
@@ -59,8 +69,12 @@ const Designer = () => {
   const [LogManagemntCount, setLogManagementCount] = useState(0);
   const [AuthProviderCount, setAuthProviderCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  console.log("Nodes", nodes);
+  const [isEmptyUiSubmit, setIsEmptyUiSubmit] = useState(false);
+  const [isEmptyServiceSubmit, setIsEmptyServiceSubmit] = useState(false);
 
+  const [serviceInputCheck, setServiceInputCheck] = useState({});
+
+  console.log("Nodes", nodes);
   const addEdge = (edgeParams, edges) => {
     console.log(edgeParams, "edgeee");
     const edgeId = `${edgeParams.source}-${edgeParams.target}`;
@@ -86,21 +100,26 @@ const Designer = () => {
     return updatedEdges;
   };
 
-  const onNodesChange = useCallback((edges, changes = []) => {
+  const onNodesChange = useCallback((setShowDiv, edges, changes = []) => {
     setNodes((oldNodes) => {
       const updatedNodes = { ...oldNodes };
+      const updatedEdges = { ...edges };
       const deletedApplicationNames = []; // Track deleted application names
 
       changes.forEach((change) => {
         switch (change.type) {
           case "dimensions":
-            updatedNodes[change.id] = {
-              ...updatedNodes[change.id],
-              position: {
-                ...updatedNodes[change.id].position,
-                ...change.dimensions,
-              },
-            };
+            if (change.resizing)
+              updatedNodes[change.id] = {
+                ...updatedNodes[change.id],
+                position: {
+                  ...updatedNodes[change.id].position,
+                },
+                style: {
+                  ...updatedNodes[change.id].style,
+                  ...change.dimensions,
+                },
+              };
             break;
           case "position":
             updatedNodes[change.id] = {
@@ -129,10 +148,25 @@ const Designer = () => {
               setIsMessageBroker(false);
               onCheckEdge(edges);
               setMessageBrokerCount(0);
-            } else if (change.id === "UI") setIsUINodeEnabled(false);
-            else if (change.id === "serviceDiscoveryType")
+            } else if (change.id === "UI") {
+              setIsUINodeEnabled(false);
+              setIsEmptyUiSubmit(false);
+            } else if (change.id.startsWith("Service")) {
+              setIsEmptyServiceSubmit(false);
+            } else if (change.id === "serviceDiscoveryType") {
+              setIsServiceDiscovery(false);
               setServiceDiscoveryCount(0);
-            else if (change.id === "cloudProvider") {
+              setIsServiceDiscovery(false);
+              for (let key in updatedEdges) {
+                let Edge = updatedEdges[key];
+                if (Edge?.data?.framework === "rest-api") {
+                  delete Edge?.data?.type;
+                  delete Edge?.data?.framework;
+                  delete Edge?.label;
+                }
+                setEdges(updatedEdges);
+              }
+            } else if (change.id === "cloudProvider") {
               setCloudProviderCount(0);
             } else if (change.id === "authenticationType") {
               setAuthProviderCount(0);
@@ -158,7 +192,7 @@ const Designer = () => {
             break;
         }
       });
-
+      if (Object.keys(updatedNodes).length === 0) setShowDiv(true);
       // Remove deleted application names from uniqueApplicationNames
       setUniqueApplicationNames((prev) =>
         prev.filter((appName) => !deletedApplicationNames.includes(appName))
@@ -214,12 +248,14 @@ const Designer = () => {
 
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
   const [Isopen, setopen] = useState(false);
+  const [nodeClick, setNodeClick] = useState(false);
   const [IsEdgeopen, setEdgeopen] = useState(false);
   const [CurrentNode, setCurrentNode] = useState({});
   const [CurrentEdge, setCurrentEdge] = useState({});
   const edgeUpdateSuccessful = useRef(true);
-  const [isUINodeEnabled, setIsUINodeEnabled] = useState(true);
+  const [isUINodeEnabled, setIsUINodeEnabled] = useState(false);
   const [isMessageBroker, setIsMessageBroker] = useState(false);
+  const [isServiceDiscovery, setIsServiceDiscovery] = useState(false);
   const [saveMetadata, setsaveMetadata] = useState(false);
 
   const onEdgeUpdateStart = useCallback(() => {
@@ -265,9 +301,8 @@ const Designer = () => {
     event.dataTransfer.dropEffect = "move";
   }, []);
 
-  const onclick = (e) => {
-    console.log(e);
-    const Id = e.target.dataset.id || e.target.name;
+  const onclick = (e, node) => {
+    const Id = e.target.dataset.id || e.target.name || node.id;
     console.log(Id);
     if (Id) {
       const type = Id.split("_")[0];
@@ -279,6 +314,12 @@ const Designer = () => {
     }
   };
 
+  const onSingleClick = (e, node) => {
+    const Id = e.target.dataset.id || e.target.name || node.id;
+    console.log(Id);
+    setNodeClick(Id);
+  };
+
   const onDrop = useCallback(
     (
       event,
@@ -288,6 +329,7 @@ const Designer = () => {
       authcount,
       Localenvcount
     ) => {
+      setShowDiv(false);
       event.preventDefault();
       console.log(event);
       const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
@@ -303,7 +345,26 @@ const Designer = () => {
         y: event.clientY - reactFlowBounds.top,
       });
 
-      if (name.startsWith("Database")) {
+      if (name === "Service") {
+        const newNode = {
+          id: getId("Service"),
+          type: "ResizableNode",
+          position,
+          data: { label: "Service" },
+          style: {
+            border: "1px solid",
+            width: "120px",
+            height: "40px",
+            borderRadius: "15px",
+          },
+        };
+        setNodes((nds) => ({ ...nds, [newNode.id]: newNode }));
+        setIsEmptyServiceSubmit(true);
+        setServiceInputCheck((prev) => ({
+          ...prev,
+          [newNode.id]: true,
+        }));
+      } else if (name.startsWith("Database")) {
         const prodDatabaseType = name.split("_").splice(1)[0];
         console.log(prodDatabaseType);
         const newNode = {
@@ -326,6 +387,7 @@ const Designer = () => {
           style: { border: "1px solid", padding: "4px 4px" },
         };
         setNodes((nds) => ({ ...nds, [newNode.id]: newNode }));
+        setIsServiceDiscovery(true);
         setServiceDiscoveryCount(1);
       } else if (name.startsWith("Discovery") && servicecount >= 1) {
         console.log("else", servicecount);
@@ -359,6 +421,21 @@ const Designer = () => {
         setNodes((nds) => ({ ...nds, [newNode.id]: newNode }));
         setIsMessageBroker(true);
         setMessageBrokerCount(1);
+      } else if (name.startsWith("Group")) {
+        const newNode = {
+          id: getId(name),
+          type: "GroupNode",
+          position,
+          data: { label: name },
+          style: {
+            border: "1px dashed",
+            borderRadius: "15px",
+            width: "120px",
+            height: "40px",
+            zIndex: -1,
+          },
+        };
+        setNodes((nds) => ({ ...nds, [newNode.id]: newNode }));
       } else if (name.startsWith("MessageBroker") && messagecount >= 1) {
         console.log("else", messagecount);
         setMessageBrokerCount(2);
@@ -394,20 +471,44 @@ const Designer = () => {
         setLocalenvironmentCount(2);
       } else {
         const newNode = {
-          id: getId(name),
-          type,
+          id: getId("UI+Gateway"),
+          type: "ResizableNode",
           position,
-          data: { label: name },
-          style: { border: "1px solid", padding: "4px 4px" },
+          data: { label: "UI+Gateway" },
+          style: {
+            border: "1px solid #8c8d8f",
+            width: "120px",
+            height: "40px",
+            borderRadius: "15px",
+          },
         };
-        if (name === "UI+Gateway") newNode.type = "input";
         setNodes((nds) => ({ ...nds, [newNode.id]: newNode }));
+        setIsUINodeEnabled(true);
+        setIsEmptyUiSubmit(true);
       }
     },
     [reactFlowInstance]
   );
 
   const onChange = (Data) => {
+    if (Data.applicationType === "gateway") {
+      setIsEmptyUiSubmit("false");
+    } else {
+      let flag = false;
+      for (let key in serviceInputCheck) {
+        if (key != Isopen && serviceInputCheck[key] === true) {
+          flag = true;
+          setIsEmptyServiceSubmit(true);
+        }
+      }
+      if (!flag) {
+        setIsEmptyServiceSubmit(false);
+      }
+      setServiceInputCheck((prev) => ({
+        ...prev,
+        [Isopen]: false,
+      }));
+    }
     let UpdatedNodes = { ...nodes };
     if (Data.applicationName) {
       Data.applicationName = Data.applicationName.trim();
@@ -423,25 +524,23 @@ const Designer = () => {
         "false"
       )
         delete UpdatedNodes["cloudProvider"].data.kubernetesStorageClassName;
-    } else {
+    } else if (Data?.type === "Group") {
       UpdatedNodes[Isopen].data = { ...UpdatedNodes[Isopen].data, ...Data };
+    } else {
       setUniqueApplicationNames((prev) => [...prev, Data.applicationName]);
+      UpdatedNodes[Isopen].style.backgroundColor = Data.color;
+      UpdatedNodes[Isopen].data = { ...UpdatedNodes[Isopen].data, ...Data };
+      UpdatedNodes[Isopen].selected = false;
     }
     setNodes(UpdatedNodes);
     setopen(false);
   };
 
+  const [showDiv, setShowDiv] = useState(false);
   useEffect(() => {
     document.title = "WDA";
-    setNodes({
-      UI: {
-        id: "UI",
-        type: "input",
-        data: { label: "UI+Gateway" },
-        style: { border: "1px solid #8c8d8f", padding: "4px 4px" },
-        position: { x: 250, y: 5 },
-      },
-    });
+    setShowDiv(true);
+    return () => setShowDiv(false);
   }, []);
 
   const MergeData = (sourceId, targetId, Nodes) => {
@@ -480,6 +579,7 @@ const Designer = () => {
       Data.deployment = { ...Data.deployment, ...Service_Discovery_Data };
     for (const key in NewNodes) {
       const Node = NewNodes[key];
+      delete Node.data?.color;
       if (Node.id.startsWith("Service") || Node.id === "UI")
         Node.data = {
           ...Node.data,
@@ -533,7 +633,7 @@ const Designer = () => {
     setNodes(NewNodes);
 
     setIsLoading(true);
-    fetch(process.env.REACT_APP_API_BASE_URL + "/api/generate", {
+    fetch(process.env.REACT_APP_API_BASE_URL + "/generate", {
       method: "post",
       headers: {
         "Content-Type": "application/json",
@@ -584,7 +684,7 @@ const Designer = () => {
     console.log(Data, IsEdgeopen);
     let UpdatedEdges = { ...edges };
 
-    if (Data.framework === "rest-api") {
+    if (Data.framework === "rest-api" && isServiceDiscovery) {
       UpdatedEdges[IsEdgeopen].label = "Rest";
     } else {
       UpdatedEdges[IsEdgeopen].label = "RabbitMQ";
@@ -601,7 +701,7 @@ const Designer = () => {
         color: "#e2e8f0",
         type: MarkerType.ArrowClosed,
       };
-      UpdatedEdges[IsEdgeopen].style = { stroke: "#e2e8f0" };
+      UpdatedEdges[IsEdgeopen].style = { stroke: "#bcbaba" };
     }
 
     UpdatedEdges[IsEdgeopen].data = {
@@ -617,7 +717,7 @@ const Designer = () => {
 
   const onConnect = useCallback((params, Nodes) => {
     params.markerEnd = { type: MarkerType.ArrowClosed };
-    params.type = "straight";
+    params.type = "smoothstep";
     params.data = {};
     const targetNode = Nodes[params.target];
 
@@ -641,19 +741,104 @@ const Designer = () => {
 
   const [uniqueApplicationNames, setUniqueApplicationNames] = useState([]);
 
+  const [selectedColor, setSelectedColor] = useState("");
+
+  const handleColorClick = (color) => {
+    let UpdatedNodes = { ...nodes };
+    setSelectedColor(color);
+    (UpdatedNodes[nodeClick].style ??= {}).backgroundColor = color;
+    setNodes(UpdatedNodes);
+  };
+
   return (
-    <div className="dndflow" style={{ overflow: "hidden !important" }}>
+    <div className="dndflow" style={{ overflow: "hidden !important", bottom:0 }}>
       <ReactFlowProvider>
         <div
           className="reactflow-wrapper"
           ref={reactFlowWrapper}
-          style={{ width: "100%", height: "90vh" }}
+          style={{
+            width: "100%",
+            height: "94vh",
+            backgroundImage:
+              "linear-gradient(to right, #f2f2f2 1px, transparent 1px), linear-gradient(to bottom, #f2f2f2 1px, transparent 1px)",
+            backgroundSize: "20px 20px",
+          }}
         >
+          {showDiv && (
+            <div
+              style={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-60%, -50%)",
+                display: "flex",
+                flexDirection: "column",
+                textAlign: "center",
+                padding: "50px",
+                justifyContent: "center",
+                border: "2px dashed #cfcfcf",
+                borderRadius: "8px",
+              }}
+            >
+              <div
+                style={{
+                  marginBottom: "20px",
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
+                <FiUploadCloud
+                  style={{
+                    fontSize: "62px",
+                    color: "#c3c3c3",
+                    marginBottom: "30px",
+                  }}
+                />
+              </div>
+              <div
+                style={{
+                  fontSize: "38px",
+                  fontWeight: "500",
+                  marginBottom: "10px",
+                }}
+              >
+                Drag and drop components here
+              </div>
+              <div
+                style={{
+                  fontSize: "24px",
+                  fontWeight: "300",
+                  marginBottom: "30px",
+                  color: "#c3c3c3",
+                }}
+              >
+                To design your architecture
+              </div>
+              <Button
+                mt={4}
+                border="2px"
+                borderColor="#3182CE"
+                alignContent="center"
+                color="#3182CE"
+                style={{ margin: "0 auto" }}
+              >
+                Drag & Drop{" "}
+                <ArrowRightIcon
+                  style={{ marginLeft: "10px", fontSize: "11px" }}
+                />
+              </Button>
+            </div>
+          )}
           <ReactFlow
             nodes={Object.values(nodes)}
             edges={Object.values(edges)}
             nodeTypes={nodeTypes}
-            onNodesChange={(changes) => onNodesChange(edges, changes)}
+            snapToGrid
+            connectionLineType={ConnectionLineType.Step}
+            snapGrid={[20, 20]}
+            onNodesChange={(changes) =>
+              onNodesChange(setShowDiv, edges, changes)
+            }
             onEdgesChange={(changes) => onEdgesChange(nodes, changes)}
             onConnect={(params) => onConnect(params, nodes)}
             onInit={setReactFlowInstance}
@@ -669,7 +854,8 @@ const Designer = () => {
             }
             onDragOver={onDragOver}
             onNodeDoubleClick={onclick}
-            deleteKeyCode={["Backspace", "Delete"]}
+            onNodeClick={onSingleClick}
+            deleteKeyCode={["Backspace","Delete"]}
             fitView
             onEdgeUpdate={(oldEdge, newConnection) =>
               onEdgeUpdate(nodes, oldEdge, newConnection)
@@ -685,7 +871,6 @@ const Designer = () => {
         </div>
         <Sidebar
           isUINodeEnabled={isUINodeEnabled}
-          setIsUINodeEnabled={setIsUINodeEnabled}
           Service_Discovery_Data={nodes["serviceDiscoveryType"]?.data}
           authenticationData={nodes["authenticationType"]?.data}
           nodes={nodes}
@@ -693,8 +878,22 @@ const Designer = () => {
           saveMetadata={saveMetadata}
           Togglesave={UpdateSave}
           isLoading={isLoading}
+          isEmptyUiSubmit={isEmptyUiSubmit}
+          isEmptyServiceSubmit={isEmptyServiceSubmit}
+          selectedColor={selectedColor}
+          handleColorClick={handleColorClick}
+          nodeClick={nodeClick}
+          edges={edges}
         />
 
+        {nodeType === "UI" && Isopen && (
+          <UiDataModal
+            isOpen={Isopen}
+            CurrentNode={CurrentNode}
+            onClose={setopen}
+            onSubmit={onChange}
+          />
+        )}
         {nodeType === "Service" && Isopen && (
           <ServiceModal
             isOpen={Isopen}
@@ -704,9 +903,8 @@ const Designer = () => {
             uniqueApplicationNames={uniqueApplicationNames}
           />
         )}
-
-        {nodeType === "UI" && Isopen && (
-          <UiDataModal
+        {nodeType === "group" && Isopen && (
+          <GroupDataModal
             isOpen={Isopen}
             CurrentNode={CurrentNode}
             onClose={setopen}
@@ -720,6 +918,7 @@ const Designer = () => {
             CurrentEdge={CurrentEdge}
             onClose={setEdgeopen}
             handleEdgeData={handleEdgeData}
+            isServiceDiscovery={isServiceDiscovery}
             isMessageBroker={isMessageBroker}
           />
         )}

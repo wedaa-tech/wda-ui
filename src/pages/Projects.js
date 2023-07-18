@@ -1,5 +1,4 @@
 import { useHistory } from "react-router-dom";
-import useFetch from "../Hooks/useFetch";
 import {
   Table,
   Thead,
@@ -15,6 +14,7 @@ import { useKeycloak } from "@react-keycloak/web";
 import azure from "../../src/assets/Azure.png";
 import aws from "../../src/assets/aws.png";
 import minikube from "../../src/assets/mini.jpeg";
+import Footer from "../components/Footer";
 
 function Projects() {
   const history = useHistory();
@@ -130,6 +130,7 @@ function Projects() {
           </Tbody>
         </Table>
       </TableContainer>
+      <Footer />
     </div>
   );
 }

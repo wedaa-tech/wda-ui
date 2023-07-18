@@ -20,6 +20,7 @@ const EdgeModal = ({
   CurrentEdge,
   onClose,
   handleEdgeData,
+  isServiceDiscovery,
   isMessageBroker,
 }) => {
   console.log(CurrentEdge, "edgeeeeee");
@@ -50,7 +51,7 @@ const EdgeModal = ({
       handleEdgeData(edgeData);
     } else if (edgeData.type === "synchronous") {
       // isMessageBroker &&
-       handleEdgeData(edgeData);
+      isServiceDiscovery && handleEdgeData(edgeData);
     }
   }
 
@@ -124,6 +125,22 @@ const EdgeModal = ({
                 </Select>
               </FormControl>
             )}
+            {console.log("servicefsdf", isServiceDiscovery)}
+            {edgeData.type === "synchronous" &&
+              edgeData.framework === "rest-api" &&
+              !isServiceDiscovery && (
+                <Alert
+                  status="error"
+                  // height="12px"
+                  fontSize="12px"
+                  borderRadius="3px"
+                  padding="4px"
+                  mb={2}
+                >
+                  <AlertIcon style={{ width: "14px", height: "14px" }} />
+                  Please select a service discovery to establish communication
+                </Alert>
+              )}
             {/* {edgeData.type === "synchronous" &&
               edgeData.framework === "rest" &&
               !isMessageBroker && (

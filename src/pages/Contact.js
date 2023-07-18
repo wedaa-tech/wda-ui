@@ -1,6 +1,7 @@
 import React from "react";
 import { Heading, Button, Container } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
+import Footer from "../components/Footer";
 
 function Contact() {
   return (
@@ -45,6 +46,7 @@ function Contact() {
           back to you as soon as possible. Thank you for using our app!
         </Heading>
       </Container>
+      <Footer/>
     </>
   );
 }

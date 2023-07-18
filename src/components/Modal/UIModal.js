@@ -11,6 +11,8 @@ import {
   Button,
   FormLabel,
   FormControl,
+  Alert,
+  AlertIcon,
 } from "@chakra-ui/react";
 
 const UiDataModal = ({ isOpen, onClose, onSubmit, CurrentNode }) => {
@@ -25,6 +27,28 @@ const UiDataModal = ({ isOpen, onClose, onSubmit, CurrentNode }) => {
     ...CurrentNode,
   };
   const [UiData, setUiDataData] = useState(IntialState);
+  const isEmptyUiSubmit =
+    UiData.applicationName === "" ||
+    UiData.packageName === "" ||
+    UiData.serverPort === "";
+
+  const forbiddenPorts = ["8080", "5601", "9200"];
+  const serverPortCheck =
+    UiData.serverPort && forbiddenPorts.includes(UiData.serverPort);
+
+  const appNameCheck = !/^[a-zA-Z](?:[a-zA-Z0-9_]*[a-zA-Z0-9])?$/g.test(
+    UiData.applicationName
+  );
+
+  const handleKeyPress = (event) => {
+    const charCode = event.which ? event.which : event.keyCode;
+    if ((charCode >= 48 && charCode <= 57) || charCode === 8) {
+      return true;
+    } else {
+      event.preventDefault();
+      return false;
+    }
+  };
 
   const handleData = (column, value) => {
     if (column === "label") {
@@ -40,11 +64,14 @@ const UiDataModal = ({ isOpen, onClose, onSubmit, CurrentNode }) => {
       }));
     }
   };
+
   return (
     <Modal isOpen={isOpen} onClose={() => onClose(false)} isCentered={true}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>UI</ModalHeader>
+        <ModalHeader style={{ textAlign: "center" }}>
+          User Interface
+        </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <div
@@ -65,6 +92,18 @@ const UiDataModal = ({ isOpen, onClose, onSubmit, CurrentNode }) => {
                 value={UiData.applicationName}
                 onChange={(e) => handleData("label", e.target.value)}
               />
+              {appNameCheck && (
+                <Alert
+                  status="error"
+                  height="12px"
+                  fontSize="12px"
+                  borderRadius="3px"
+                  mb={2}
+                >
+                  <AlertIcon style={{ width: "14px", height: "14px" }} />
+                  Enter a valid application name
+                </Alert>
+              )}
             </FormControl>
             <FormControl>
               <FormLabel>Client Framework</FormLabel>
@@ -103,33 +142,31 @@ const UiDataModal = ({ isOpen, onClose, onSubmit, CurrentNode }) => {
                 mb={4}
                 variant="outline"
                 id="serverPort"
-                placeholder="serverPort"
+                placeholder="9000"
                 borderColor={"black"}
                 value={UiData.serverPort}
+                maxLength="4"
+                onKeyPress={handleKeyPress}
                 onChange={(e) => handleData("serverPort", e.target.value)}
               />
             </FormControl>
-            <FormControl>
-              <FormLabel>Want to have an Example</FormLabel>
-              <Select
-                mb={4}
-                variant="outline"
-                id="withExample"
-                borderColor={"black"}
-                value={UiData.withExample}
-                onChange={(e) => handleData("withExample", e.target.value)}
+            {serverPortCheck && (
+              <Alert
+                status="error"
+                height="12px"
+                fontSize="12px"
+                borderRadius="3px"
+                mb={2}
               >
-                <option value="" disabled>
-                  Select an option
-                </option>
-                <option value="true">Yes</option>
-                <option value="false">No</option>
-              </Select>
-            </FormControl>
+                <AlertIcon style={{ width: "14px", height: "14px" }} />
+                The input contain cannot this reserved port number
+              </Alert>
+            )}
           </div>
           <Button
             onClick={() => onSubmit(UiData)}
             style={{ display: "block", margin: "0 auto" }}
+            isDisabled={isEmptyUiSubmit || appNameCheck || serverPortCheck}
           >
             Submit
           </Button>

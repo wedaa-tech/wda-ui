@@ -2,6 +2,7 @@ import React from "react";
 import { Box, Heading, Text, Button, Image, Stack } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import logo from "../assets/TIC.png";
+import Footer from "../components/Footer";
 
 function Home() {
   return (
@@ -23,9 +24,9 @@ function Home() {
             being ready to adapt to latest advancements in the software
             industry.
           </Text>
-          <Link to="/products">
+          <Link to="/canvasToCode">
             <Button size="lg" colorScheme="blue">
-              View Our Products
+              CanvasToCode
             </Button>
           </Link>
         </Box>
@@ -41,6 +42,7 @@ function Home() {
           />
         </Box>
       </Stack>
+      <Footer />
     </Box>
   );
 }

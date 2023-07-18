@@ -1,14 +1,18 @@
-import { Handle, Position } from "reactflow";
+import { Handle, Position, NodeResizer } from "reactflow";
 import postgres from "../../assets/pstgrc.jpeg";
 import sql from "../../assets/mongo.png";
 
-
-
-function CustomImageNode({ data, isConnectable }) {
-  console.log(data)
+function CustomImageNode({ data, isConnectable, selected }) {
+  console.log(data);
 
   return (
-    <div>
+    <>
+      <NodeResizer
+        nodeId={data.id}
+        isVisible={selected}
+        minWidth={60}
+        minHeight={60}
+      />
       <Handle
         type="target"
         position={Position.Top}
@@ -19,9 +23,8 @@ function CustomImageNode({ data, isConnectable }) {
           width="60px"
           src={data.prodDatabaseType == "postgresql" ? postgres : sql}
         />
-        
       </div>
-    </div>
+    </>
   );
 }
 
