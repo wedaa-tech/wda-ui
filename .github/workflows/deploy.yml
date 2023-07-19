@@ -1,13 +1,8 @@
-name: Build and Push to s3
+name: Deploy
 
 # Controls when the workflow will run
 on:
   workflow_dispatch:
-    inputs:
-      dNSName:
-        description: 'alb dns name'
-        required: true
-        type: string
 
 jobs:
   build:
@@ -15,32 +10,47 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - if: github.event_name == 'workflow_dispatch'
-
-        name: Update DNS name 
-        run: |
-          echo "Updating DNS Name in .env.production..."
-
-          sed -i '/REACT_APP_API_BASE_URL/d' .env.production && echo 'REACT_APP_API_BASE_URL = "https://${{ github.event.inputs.dNSName }}"' >> .env.production
-          
-          git config --local user.email "tic.dev@comakeit.com"
-          git config --local user.name "comakeit-tic"
-          git commit -a -m "updated DNS name in env"
-
-      - if: github.event_name == 'workflow_dispatch'
-        name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          force: true
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: deploy
-
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region:            ap-south-1
+
+      # - name: Update DNS name 
+      #   run: |
+      #     echo "Updating API URL in .env.production..."
+
+      #     # set KC_NEW_IP_ADDRESS with the keycloak task IP
+      #     kC_NEW_IP_ADDRESS=$(aws ecs describe-tasks --cluster wda --tasks $(aws ecs list-tasks --cluster wda --service-name kc-service --query 'taskArns' --output text) --query 'tasks[*].attachments[0].details[?name==`networkInterfaceId`].value' --output text | xargs -I {} aws ec2 describe-network-interfaces --network-interface-ids {} --query 'NetworkInterfaces[0].Association.PublicIp' --output text)
+          
+      #     # refactor the string representation, only with IP address
+      #     kC_NEW_IP_ADDRESS=$(echo "$kC_NEW_IP_ADDRESS" | sed 's/IP_ADDRESS=//g')
+
+      #     # set WDA_NEW_IP_ADDRESS with the keycloak task IP
+      #     WDA_NEW_IP_ADDRESS=$(aws ecs describe-tasks --cluster wda --tasks $(aws ecs list-tasks --cluster wda --service-name wda-service --query 'taskArns' --output text) --query 'tasks[*].attachments[0].details[?name==`networkInterfaceId`].value' --output text | xargs -I {} aws ec2 describe-network-interfaces --network-interface-ids {} --query 'NetworkInterfaces[0].Association.PublicIp' --output text)
+          
+      #     # refactor the string representation, only with IP address
+      #     WDA_NEW_IP_ADDRESS=$(echo "$WDA_NEW_IP_ADDRESS" | sed 's/IP_ADDRESS=//g')
+
+      #     # print the Keycloak/wda service IP address
+      #     echo -e "\e[1m\e[32mecho keycloak host address: http://$kC_NEW_IP_ADDRESS:8080\e[0m"
+      #     echo -e "\e[1m\e[32mecho wda host address:      http://$WDA_NEW_IP_ADDRESS:3001/health\e[0m"
+
+      #     sed -i 's#REACT_APP_API_BASE_URL = ".*"#REACT_APP_API_BASE_URL = "http://'"$WDA_NEW_IP_ADDRESS"':3001"#' .env.production
+      #     sed -i 's#REACT_APP_KEYCLOAK_URL = ".*"#REACT_APP_KEYCLOAK_URL = "http://'"$kC_NEW_IP_ADDRESS"':8080"#' .env.production
+          
+      #     git config --local user.email "tic.dev@comakeit.com"
+      #     git config --local user.name "comakeit-tic"
+      #     git add . 
+      #     git commit -a -m "updated API URL in env.production"
+
+      # - name: Push changes
+      #   uses: ad-m/github-push-action@master
+      #   with:
+      #     force: true
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      #     branch: deploy
 
        # Treating warnings as errors because process.env.CI = true
        # set CI=false to treat warnings as warnings
