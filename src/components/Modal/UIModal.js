@@ -89,6 +89,7 @@ const UiDataModal = ({ isOpen, onClose, onSubmit, CurrentNode }) => {
                 id="applicationName"
                 placeholder="Name"
                 borderColor={"black"}
+                maxLength="32"
                 value={UiData.applicationName}
                 onChange={(e) => handleData("label", e.target.value)}
               />
@@ -132,6 +133,7 @@ const UiDataModal = ({ isOpen, onClose, onSubmit, CurrentNode }) => {
                 id="packageName"
                 placeholder="packageName"
                 borderColor={"black"}
+                maxLength="32"
                 value={UiData.packageName}
                 onChange={(e) => handleData("packageName", e.target.value)}
               />

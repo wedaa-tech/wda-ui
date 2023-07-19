@@ -1,27 +1,15 @@
-import {
-  Box,
-  Flex,
-  HStack,
-  Button,
-  Text,
-  Image,
-} from "@chakra-ui/react";
+import { Box, Flex, HStack, Button, Text, Image } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import logo from "../assets/TIC_logo.png";
 import { useKeycloak } from "@react-keycloak/web";
+import { useLocation } from "react-router-dom/cjs/react-router-dom.min";
 
 export default function Header({ children }) {
   const color = "#ffffff";
   const bg = "#3182CE";
   const { keycloak, initialized } = useKeycloak();
-  const [action, setAction] = useState(null);
-  const handleAction = (action) => {
-    if (action === "docs") {
-      window.open(process.env.REACT_APP_DOCS_URL);
-    }
-    setAction(action);
-  };
+  const location = useLocation();
 
   return (
     <Box bg={bg} py={4} px={6} shadow="md">
@@ -32,7 +20,7 @@ export default function Header({ children }) {
         mx="auto"
       >
         <Flex alignItems="center">
-          <Link to="/" onClick={() => handleAction()}>
+          <Link to="/">
             <Image
               src={logo}
               alt="App Logo"
@@ -44,59 +32,56 @@ export default function Header({ children }) {
               }}
             />
           </Link>
-          <Link to="/" onClick={() => handleAction()}>
+          <Link to="/">
             <Text fontSize="xl" fontWeight="bold" color={color}>
               TIC@coMakeIT
             </Text>
           </Link>
         </Flex>
         <HStack spacing={4} display={{ base: "none", md: "flex" }}>
-          <Link to="/canvasToCode" onClick={() => handleAction("canvasToCode")}>
+          <Link to="/canvasToCode">
             <Text
               fontSize="md"
               color={color}
-              fontWeight={action === "canvasToCode" ? "bold" : ""}
+              fontWeight={
+                location.pathname === "/canvasToCode" ? "bold" : "normal"
+              }
             >
               CanvasToCode
             </Text>
           </Link>
-          <Link
-            // to="/docs"
-            onClick={() => handleAction("docs")}
-          >
-            <Text
-              fontSize="md"
-              color={color}
-              // fontWeight={action === "docs" ? "bold" : ""}
-            >
+          <Link onClick={() => window.open(process.env.REACT_APP_DOCS_URL)}>
+            <Text fontSize="md" color={color}>
               Docs
             </Text>
           </Link>
           {initialized && keycloak.authenticated && (
-            <Link to="/projects" onClick={() => handleAction("projects")}>
+            <Link to="/projects">
               <Text
                 fontSize="md"
                 color={color}
-                fontWeight={action === "projects" ? "bold" : ""}
+                fontWeight={
+                  location.pathname === "/projects" ? "bold" : "normal"
+                }
               >
                 Projects
               </Text>
             </Link>
           )}
-          {/* <Link to="/about" onClick={() => handleAction("about")}>
+          {/* <Link to="/about">
             <Text
               fontSize="md"
               color={color}
-              fontWeight={action === "about" ? "bold" : ""}
+              fontWeight={location.pathname === "/about" ? "bold" : "normal"}
             >
               About
             </Text>
           </Link> */}
-          <Link to="/contact" onClick={() => handleAction("contact")}>
+          <Link to="/contact">
             <Text
               fontSize="md"
               color={color}
-              fontWeight={action === "contact" ? "bold" : ""}
+              fontWeight={location.pathname === "/contact" ? "bold" : "normal"}
             >
               Contact
             </Text>

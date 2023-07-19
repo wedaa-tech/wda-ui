@@ -57,6 +57,7 @@ const GroupDataModal = ({ isOpen, onClose, onSubmit, CurrentNode }) => {
                 id="applicationName"
                 placeholder="Name"
                 borderColor={"black"}
+                maxLength="32"
                 value={groupData.label}
                 onChange={(e) => handleData("label", e.target.value)}
               />

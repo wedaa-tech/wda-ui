@@ -7,7 +7,14 @@ import eck from "../assets/eck.png";
 import mini from "../assets/mini.jpeg";
 import docker from "../assets/docker.png";
 import "./../App.css";
-import { Input, FormLabel, Button, Checkbox } from "@chakra-ui/react";
+import {
+  Input,
+  FormLabel,
+  Button,
+  Checkbox,
+  Alert,
+  AlertIcon,
+} from "@chakra-ui/react";
 import DeployModal from "./Modal/DeployModal";
 import { useKeycloak } from "@react-keycloak/web";
 
@@ -40,10 +47,8 @@ export default ({
     projectName: "",
   };
   const [projectData, setprojectData] = useState(IntialState);
-  const [isEmpty, setIsEmpty] = useState(false);
 
   const handleProjectData = (column, value) => {
-    setIsEmpty(value === "");
     setprojectData((prev) => ({ ...prev, [column]: value }));
   };
   const [showModal, setShowModal] = useState(false);
@@ -59,6 +64,9 @@ export default ({
     nodes?.UI ||
     Object.values(nodes).some((node) => node.id.startsWith("Service"));
 
+  const projectNameCheck = !/^[a-zA-Z](?:[a-zA-Z0-9_-]*[a-zA-Z0-9])?$/g.test(
+    projectData.projectName
+  );
   return (
     <>
       <aside
@@ -72,62 +80,72 @@ export default ({
           flexDirection: "column",
         }}
       >
-        <FormLabel fontWeight="bold">Project Name</FormLabel>
-        <Input
-          mb={4}
-          variant="outline"
-          id="projectName"
-          borderColor={"#CFCFCF"}
-          value={projectData.projectName}
-          onChange={(e) => handleProjectData("projectName", e.target.value)}
-        ></Input>
-
-        <div className="description">
-          <h2
-            style={{
-              fontSize: "12px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            You can drag these nodes to the pane on the left.
-          </h2>
-        </div>
-
         <div
-          className={`dndnode output ${isUINodeEnabled ? "disabled" : ""}`}
-          onDragStart={(event) => onDragStart(event, "default", "UI+Gateway")}
-          draggable={!isUINodeEnabled}
-          style={{
-            backgroundColor: isUINodeEnabled ? "#CFCFCF" : "",
-            cursor: isUINodeEnabled ? "not-allowed" : "",
-          }}
-        >
-          UI+Gateway
-        </div>
-
-        <div
-          className="dndnode output"
-          onDragStart={(event) => onDragStart(event, "default", "Service")}
-          draggable
-        >
-          Service
-        </div>
-        <div
-          className="dndnode output"
-          onDragStart={(event) => onDragStart(event, "default", "Group")}
-          draggable
-        >
-          Group
-        </div>
-        <div class="middleBlock"
+          class="sideBlock"
           style={{
             position: "relative",
             flex: "1",
             overflowY: "auto",
           }}
         >
+          <FormLabel fontWeight="bold">Project Name</FormLabel>
+          <Input
+            mb={1}
+            variant="outline"
+            id="projectName"
+            borderColor={
+              !projectData.projectName || projectNameCheck ? "red" : "#CFCFCF"
+            }
+            maxLength="32"
+            value={projectData.projectName}
+            onChange={(e) => handleProjectData("projectName", e.target.value)}
+          ></Input>
+          {projectData.projectName && projectNameCheck && (
+            <span style={{ color: "red", fontSize: "10px" }}>
+              Enter a valid project name
+            </span>
+          )}
+
+          <div className="description">
+            <h2
+              style={{
+                marginTop: "8px",
+                fontSize: "12px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              You can drag these nodes to the pane on the left.
+            </h2>
+          </div>
+
+          <div
+            className={`dndnode output ${isUINodeEnabled ? "disabled" : ""}`}
+            onDragStart={(event) => onDragStart(event, "default", "UI+Gateway")}
+            draggable={!isUINodeEnabled}
+            style={{
+              backgroundColor: isUINodeEnabled ? "#CFCFCF" : "",
+              cursor: isUINodeEnabled ? "not-allowed" : "",
+            }}
+          >
+            UI+Gateway
+          </div>
+
+          <div
+            className="dndnode output"
+            onDragStart={(event) => onDragStart(event, "default", "Service")}
+            draggable
+          >
+            Service
+          </div>
+          <div
+            className="dndnode output"
+            onDragStart={(event) => onDragStart(event, "default", "Group")}
+            draggable
+          >
+            Group
+          </div>
           <h1
             style={{
               cursor: "pointer",
@@ -317,8 +335,8 @@ export default ({
             position: "sticky",
             bottom: "0",
             marginTop: "10px",
-            display:'flex',
-            flexDirection:'column'
+            display: "flex",
+            flexDirection: "column",
           }}
         >
           <div
@@ -423,7 +441,7 @@ export default ({
             isDisabled={
               !checkNodeExists ||
               !authenticationData ||
-              isEmpty ||
+              projectNameCheck ||
               projectData.projectName === "" ||
               isEmptyUiSubmit === true ||
               isEmptyServiceSubmit === true
@@ -450,19 +468,6 @@ export default ({
               }}
             >
               Please ensure there exists atleast one application
-            </p>
-          ) : (
-            <></>
-          )}
-          {isEmpty || projectData.projectName === "" ? (
-            <p
-              style={{
-                fontSize: "10px",
-                color: "red",
-                marginTop: "5px",
-              }}
-            >
-              Please enter Project Name
             </p>
           ) : (
             <></>

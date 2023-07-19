@@ -112,6 +112,7 @@ const ServiceModal = ({
                 id="applicationName"
                 placeholder="Name"
                 borderColor={duplicateApplicationNameError ? "red" : "black"}
+                maxLength="32"
                 value={ApplicationData.applicationName}
                 onChange={(e) => handleData("label", e.target.value)}
               />
@@ -169,6 +170,7 @@ const ServiceModal = ({
                 id="packagename"
                 placeholder="packageName"
                 borderColor={"black"}
+                maxLength="32"
                 value={ApplicationData.packageName}
                 onChange={(e) => handleData("packageName", e.target.value)}
               />

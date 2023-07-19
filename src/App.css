@@ -56,12 +56,12 @@ body,
   margin-bottom: 14px;
 }
 
-.dndflow aside .middleBlock::-webkit-scrollbar {
+.dndflow aside .sideBlock::-webkit-scrollbar {
   width: 0.1em;
   background: transparent;
 }
 
-.dndflow aside .middleBlock::-webkit-scrollbar-thumb {
+.dndflow aside .sideBlock::-webkit-scrollbar-thumb {
   background-color: transparent;
 }
 

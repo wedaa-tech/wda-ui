@@ -39,16 +39,19 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose }) => {
         DeploymentData.k8sWebUI === ""
       );
     } else if (DeploymentData.cloudProvider === "aws") {
-      return (
-        DeploymentData.awsRegion === "" ||
-        DeploymentData.kubernetesStorageClassName === "" ||
-        DeploymentData.deploymentType === "" ||
-        DeploymentData.clusterName === "" ||
-        DeploymentData.kubernetesNamespace === "" ||
-        DeploymentData.monitoring === "" ||
-        // DeploymentData.ingressDomain === "" ||
-        DeploymentData.k8sWebUI === ""
-      );
+      if (DeploymentData.kubernetesUseDynamicStorage === "true") {
+        return DeploymentData.kubernetesStorageClassName === "";
+      } else {
+        return (
+          DeploymentData.awsRegion === "" ||
+          DeploymentData.deploymentType === "" ||
+          DeploymentData.clusterName === "" ||
+          DeploymentData.kubernetesNamespace === "" ||
+          DeploymentData.monitoring === "" ||
+          // DeploymentData.ingressDomain === "" ||
+          DeploymentData.k8sWebUI === ""
+        );
+      }
     } else {
       return (
         DeploymentData.dockerRepositoryName === "" ||
@@ -225,12 +228,15 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose }) => {
   const checkValidation = () => {
     if (selectedImage === "minikube") return !namespaceCheck;
     else if (selectedImage === "aws") {
-      return (
-        !namespaceCheck ||
-        !domainNameCheck ||
-        !storageClassCheck ||
-        !clusterNameCheck
-      );
+      if (DeploymentData.kubernetesUseDynamicStorage === "true")
+        return !storageClassCheck;
+      else {
+        return (
+          !namespaceCheck ||
+          !domainNameCheck ||
+          !clusterNameCheck
+        );
+      }
     }
     return (
       !namespaceCheck ||
@@ -821,6 +827,7 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose }) => {
                   id="dockerRepositoryName"
                   placeholder="Docker Repository Name"
                   borderColor={"black"}
+                  maxLength="32"
                   value={DeploymentData.dockerRepositoryName}
                   onChange={(e) =>
                     handleData("dockerRepositoryName", e.target.value)

@@ -12,16 +12,18 @@ function Home() {
         spacing={{ base: 10, md: 4 }}
       >
         <Box flex="1">
-          <Heading size="xl" fontWeight="extrabold" mb={4}>
+          {/* <Heading size="xl" fontWeight="extrabold" mb={4}>
             Welcome to Technology Innovation Center (TIC)
-          </Heading>
+          </Heading> */}
           <Text fontSize="l" mb={8}>
-            Technology Innovation Center (TIC) at coMakeIT is a facility that
-            enables exploration of new ideas, build technologies and solutions
-            for its products and services. It helps the company to accelerate
-            product development by laying down strong foundations through
-            innovation. TIC primarily focuses on technology for the future,
-            being ready to adapt to latest advancements in the software
+            The Technology Innovation Center (TIC) at coMakeIT serves as a
+            dedicated facility for exploring new ideas, building cutting-edge
+            technologies, and developing innovative solutions for their products
+            and services. This center plays a vital role in accelerating the
+            company's product development process by establishing robust
+            foundations through continuous innovation. TIC's primary focus
+            revolves around pioneering technologies of the future, ensuring
+            adaptability to the latest advancements in the dynamic software
             industry.
           </Text>
           <Link to="/canvasToCode">
