@@ -84,11 +84,18 @@ const ServiceModal = ({
     ApplicationData.packageName === "" ||
     ApplicationData.serverPort === "";
 
-  const forbiddenPorts = ["8080", "5601", "9200"];
+  const reservedPorts = ["5601", "9200", "15021", "20001", "3000", "8080"];
   const serverPortCheck =
-    ApplicationData.serverPort && forbiddenPorts.includes(ApplicationData.serverPort);
+    ApplicationData.serverPort &&
+    reservedPorts.includes(ApplicationData.serverPort);
 
   const appNameCheck = /[0-9_-]/.test(ApplicationData.applicationName);
+
+  const packageNameCheck =
+    ApplicationData.packageName &&
+    !/^[a-zA-Z](?:[a-zA-Z0-9_.-]*[a-zA-Z0-9])?$/g.test(
+      ApplicationData.packageName
+    );
 
   return (
     <Modal isOpen={isOpen} onClose={() => onClose(false)} isCentered={true}>
@@ -175,6 +182,18 @@ const ServiceModal = ({
                 onChange={(e) => handleData("packageName", e.target.value)}
               />
             </FormControl>
+            {packageNameCheck && (
+              <Alert
+                status="error"
+                height="12px"
+                fontSize="12px"
+                borderRadius="3px"
+                mb={2}
+              >
+                <AlertIcon style={{ width: "14px", height: "14px" }} />
+                Enter a valid package name
+              </Alert>
+            )}
             <FormControl>
               <FormLabel>Server Port</FormLabel>
               <Input

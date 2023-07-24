@@ -1,6 +1,6 @@
 import React from "react";
-import { Heading, Button, Container } from "@chakra-ui/react";
-import { Link } from "react-router-dom";
+import { Heading, Container } from "@chakra-ui/react";
+// import { Link } from "react-router-dom";
 import Footer from "../components/Footer";
 
 function Contact() {
@@ -14,6 +14,19 @@ function Contact() {
           We're here to help! If you have any questions or need support, please
           don't hesitate to get in touch with us.
         </Heading>
+        <br />
+        <p style={{ fontStyle: "italic", fontWeight: "bold" }}>
+          Have a question?{" "}
+          <a
+            href="https://github.com/orgs/tic-oss/discussions"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ textDecoration: "underline", color: "blue" }}
+          >
+            Click here
+          </a>{" "}
+          to post it on our discussion forum.
+        </p>
         <br />
         <p style={{ fontStyle: "italic", fontWeight: "bold" }}>Email:</p>
         <p>tic.dev@comakeit.com</p>
@@ -46,7 +59,7 @@ function Contact() {
           back to you as soon as possible. Thank you for using our app!
         </Heading>
       </Container>
-      <Footer/>
+      <Footer />
     </>
   );
 }

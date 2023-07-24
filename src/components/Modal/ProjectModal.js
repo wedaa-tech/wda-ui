@@ -8,7 +8,6 @@ import {
   ModalBody,
   Input,
   Select,
-  Button,
   FormLabel,
   FormControl,
 } from "@chakra-ui/react";
@@ -23,7 +22,6 @@ const ProjectModal = ({
   packageName,
   serverPort,
   withExample,
- 
 }) => {
   return (
     <>

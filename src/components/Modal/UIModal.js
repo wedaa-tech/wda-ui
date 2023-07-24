@@ -32,13 +32,17 @@ const UiDataModal = ({ isOpen, onClose, onSubmit, CurrentNode }) => {
     UiData.packageName === "" ||
     UiData.serverPort === "";
 
-  const forbiddenPorts = ["8080", "5601", "9200"];
+  const reservedPorts = ["5601", "9200", "15021", "20001", "3000", "8080"];
   const serverPortCheck =
-    UiData.serverPort && forbiddenPorts.includes(UiData.serverPort);
+    UiData.serverPort && reservedPorts.includes(UiData.serverPort);
 
   const appNameCheck = !/^[a-zA-Z](?:[a-zA-Z0-9_]*[a-zA-Z0-9])?$/g.test(
     UiData.applicationName
   );
+
+  const packageNameCheck =
+    UiData.packageName &&
+    !/^[a-zA-Z](?:[a-zA-Z0-9_.-]*[a-zA-Z0-9])?$/g.test(UiData.packageName);
 
   const handleKeyPress = (event) => {
     const charCode = event.which ? event.which : event.keyCode;
@@ -138,6 +142,18 @@ const UiDataModal = ({ isOpen, onClose, onSubmit, CurrentNode }) => {
                 onChange={(e) => handleData("packageName", e.target.value)}
               />
             </FormControl>
+            {packageNameCheck && (
+              <Alert
+                status="error"
+                height="12px"
+                fontSize="12px"
+                borderRadius="3px"
+                mb={2}
+              >
+                <AlertIcon style={{ width: "14px", height: "14px" }} />
+                Enter a valid package name
+              </Alert>
+            )}
             <FormControl>
               <FormLabel>Server Port</FormLabel>
               <Input

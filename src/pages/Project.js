@@ -64,7 +64,7 @@ const Project = () => {
         setEdges(Object.values(metadata?.edges));
       }
     }
-  }, []);
+  }, [location?.state, metadata]);
 
   const reactFlowWrapper = useRef(null);
   const [serviceModal, setserviceModal] = useState(false);
@@ -103,7 +103,7 @@ const Project = () => {
     subscriptionId: "",
     tenantId: "",
 
-    dockerRepositoryName:"",
+    dockerRepositoryName: "",
   };
 
   const [appData, setAppData] = useState(DefaultAppData);

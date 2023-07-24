@@ -78,7 +78,19 @@ const Designer = () => {
   const addEdge = (edgeParams, edges) => {
     console.log(edgeParams, "edgeee");
     const edgeId = `${edgeParams.source}-${edgeParams.target}`;
-    return { ...edges, [edgeId]: { id: edgeId, ...edgeParams } };
+    if (!edges[edgeId]) {
+      edges[edgeId] = {
+        id: edgeId,
+        ...edgeParams,
+        markerEnd: {
+          color: "#ff0000",
+          type: MarkerType.ArrowClosed,
+        },
+        style: { stroke: "#ff0000" },
+      };
+    }
+    return { ...edges };
+    // return { ...edges, [edgeId]: { id: edgeId, ...edgeParams } };
   };
 
   const updateEdge = (oldEdge, newConnection, edges, Nodes) => {
@@ -189,6 +201,8 @@ const Designer = () => {
                 deletedNode.data.applicationName.trim()
               );
             }
+            break;
+          default:
             break;
         }
       });
@@ -496,7 +510,7 @@ const Designer = () => {
     } else {
       let flag = false;
       for (let key in serviceInputCheck) {
-        if (key != Isopen && serviceInputCheck[key] === true) {
+        if (key !== Isopen && serviceInputCheck[key] === true) {
           flag = true;
           setIsEmptyServiceSubmit(true);
         }
@@ -698,7 +712,7 @@ const Designer = () => {
       UpdatedEdges[IsEdgeopen].style = { stroke: "black" };
     } else {
       UpdatedEdges[IsEdgeopen].markerEnd = {
-        color: "#e2e8f0",
+        color: "#bcbaba",
         type: MarkerType.ArrowClosed,
       };
       UpdatedEdges[IsEdgeopen].style = { stroke: "#bcbaba" };
@@ -751,7 +765,10 @@ const Designer = () => {
   };
 
   return (
-    <div className="dndflow" style={{ overflow: "hidden !important", bottom:0 }}>
+    <div
+      className="dndflow"
+      style={{ overflow: "hidden !important", bottom: 0 }}
+    >
       <ReactFlowProvider>
         <div
           className="reactflow-wrapper"
@@ -802,7 +819,7 @@ const Designer = () => {
                   marginBottom: "10px",
                 }}
               >
-                Drag and drop components here
+                Design your application architecture here
               </div>
               <div
                 style={{
@@ -812,7 +829,7 @@ const Designer = () => {
                   color: "#c3c3c3",
                 }}
               >
-                To design your architecture
+                Click next to auto generate code and setup infrastructure
               </div>
               <Button
                 mt={4}
@@ -855,7 +872,7 @@ const Designer = () => {
             onDragOver={onDragOver}
             onNodeDoubleClick={onclick}
             onNodeClick={onSingleClick}
-            deleteKeyCode={["Backspace","Delete"]}
+            deleteKeyCode={["Backspace", "Delete"]}
             fitView
             onEdgeUpdate={(oldEdge, newConnection) =>
               onEdgeUpdate(nodes, oldEdge, newConnection)

@@ -97,6 +97,7 @@ body,
 .dndflow .selectall {
   margin-top: 10px;
 }
+
 .react-flow__node.react-flow__node-ResizableNode,
 .react-flow__node.react-flow__node-selectorNode,
 .react-flow__node.react-flow__node-selectorNode1,

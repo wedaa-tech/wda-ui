@@ -6,12 +6,14 @@ const PrivateRoute = ({ children, ...rest }) => {
   const { initialized, keycloak } = useKeycloak();
 
   useEffect(() => {
-    if(initialized){
+    if (initialized) {
       if (!keycloak.authenticated) {
-         keycloak.login()
-      }}});
+        keycloak.login();
+      }
+    }
+  });
   if (keycloak.authenticated) {
-     return <Route {...rest}>{children}</Route>;
+    return <Route {...rest}>{children}</Route>;
   }
   return null;
 };

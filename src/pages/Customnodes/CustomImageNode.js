@@ -21,7 +21,8 @@ function CustomImageNode({ data, isConnectable, selected }) {
       <div>
         <img
           width="60px"
-          src={data.prodDatabaseType == "postgresql" ? postgres : sql}
+          src={data.prodDatabaseType === "postgresql" ? postgres : sql}
+          alt="database"
         />
       </div>
     </>

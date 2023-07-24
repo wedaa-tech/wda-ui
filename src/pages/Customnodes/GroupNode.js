@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { Handle, Position, NodeResizer } from "reactflow";
+import { NodeResizer } from "reactflow";
 
 const GroupNode = ({ data, selected }) => {
   return (

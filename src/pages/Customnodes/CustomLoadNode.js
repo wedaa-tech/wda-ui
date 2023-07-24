@@ -15,7 +15,7 @@ function CustomLoadNode({ data, selected }) {
         minHeight={30}
       />
       <div>
-        <img width="60px" name={logManagementType} src={eck} />
+        <img width="60px" name={logManagementType} src={eck} alt="eck" />
       </div>
     </>
   );
