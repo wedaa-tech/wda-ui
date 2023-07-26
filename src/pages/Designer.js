@@ -5,6 +5,8 @@ import ReactFlow, {
   MarkerType,
   MiniMap,
   ConnectionLineType,
+  Background,
+  BackgroundVariant,
 } from "reactflow";
 import "reactflow/dist/style.css";
 import { Button } from "@chakra-ui/react";
@@ -43,6 +45,8 @@ const getId = (type = "") => {
   else if (type === "Group") return `group_${group_id++}`;
   return "Id";
 };
+
+const defaultViewport = { x: 0, y: 0, zoom: 10 };
 
 const nodeTypes = {
   selectorNode: CustomImageNode,
@@ -313,6 +317,13 @@ const Designer = () => {
   const onDragOver = useCallback((event) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = "move";
+    setShowDiv(false);
+  }, []);
+
+  const onDragStop = useCallback((event) => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "move";
+    setShowDiv(true);
   }, []);
 
   const onclick = (e, node) => {
@@ -343,7 +354,6 @@ const Designer = () => {
       authcount,
       Localenvcount
     ) => {
-      setShowDiv(false);
       event.preventDefault();
       console.log(event);
       const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
@@ -351,6 +361,7 @@ const Designer = () => {
       const name = event.dataTransfer.getData("Name");
 
       if (typeof type === "undefined" || !type) {
+        setShowDiv(true);
         return;
       }
 
@@ -770,17 +781,7 @@ const Designer = () => {
       style={{ overflow: "hidden !important", bottom: 0 }}
     >
       <ReactFlowProvider>
-        <div
-          className="reactflow-wrapper"
-          ref={reactFlowWrapper}
-          style={{
-            width: "100%",
-            height: "94vh",
-            backgroundImage:
-              "linear-gradient(to right, #f2f2f2 1px, transparent 1px), linear-gradient(to bottom, #f2f2f2 1px, transparent 1px)",
-            backgroundSize: "20px 20px",
-          }}
-        >
+        <div className="reactflow-wrapper" ref={reactFlowWrapper}>
           {showDiv && (
             <div
               style={{
@@ -795,6 +796,7 @@ const Designer = () => {
                 justifyContent: "center",
                 border: "2px dashed #cfcfcf",
                 borderRadius: "8px",
+                zIndex: 1,
               }}
             >
               <div
@@ -852,13 +854,14 @@ const Designer = () => {
             nodeTypes={nodeTypes}
             snapToGrid
             connectionLineType={ConnectionLineType.Step}
-            snapGrid={[20, 20]}
+            snapGrid={[10, 10]}
             onNodesChange={(changes) =>
               onNodesChange(setShowDiv, edges, changes)
             }
             onEdgesChange={(changes) => onEdgesChange(nodes, changes)}
             onConnect={(params) => onConnect(params, nodes)}
             onInit={setReactFlowInstance}
+            onNodeDrag={onSingleClick}
             onDrop={(e) =>
               onDrop(
                 e,
@@ -870,6 +873,7 @@ const Designer = () => {
               )
             }
             onDragOver={onDragOver}
+            onDragLeave={() => setShowDiv(Object.keys(nodes).length === 0)}
             onNodeDoubleClick={onclick}
             onNodeClick={onSingleClick}
             deleteKeyCode={["Backspace", "Delete"]}
@@ -881,9 +885,15 @@ const Designer = () => {
             onEdgeUpdateEnd={(_, edge) => onEdgeUpdateEnd(nodes, edge)}
             onEdgeDoubleClick={onEdgeClick}
             nodesFocusable={true}
+            defaultViewport={defaultViewport}
           >
             <Controls />
             <MiniMap style={{ backgroundColor: "#3182CE" }} />
+            <Background
+              gap={10}
+              color="#f2f2f2"
+              variant={BackgroundVariant.Lines}
+            />
           </ReactFlow>
         </div>
         <Sidebar
