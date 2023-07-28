@@ -82,7 +82,11 @@ const Designer = () => {
   const addEdge = (edgeParams, edges) => {
     console.log(edgeParams, "edgeee");
     const edgeId = `${edgeParams.source}-${edgeParams.target}`;
-    if (!edges[edgeId]) {
+    const databaseEdge = edgeParams?.target.startsWith("Database");
+    const groupEdge =
+      edgeParams?.target.startsWith("group") ||
+      edgeParams?.source.startsWith("group");
+    if (!edges[edgeId] && !databaseEdge && !groupEdge) {
       edges[edgeId] = {
         id: edgeId,
         ...edgeParams,
@@ -91,6 +95,17 @@ const Designer = () => {
           type: MarkerType.ArrowClosed,
         },
         style: { stroke: "#ff0000" },
+      };
+    }
+    if (databaseEdge || groupEdge) {
+      edges[edgeId] = {
+        id: edgeId,
+        ...edgeParams,
+        markerEnd: {
+          color: "black",
+          type: MarkerType.ArrowClosed,
+        },
+        style: { stroke: "black" },
       };
     }
     return { ...edges };
@@ -377,7 +392,7 @@ const Designer = () => {
           position,
           data: { label: "Service" },
           style: {
-            border: "1px solid",
+            border: "1px solid #ff0000",
             width: "120px",
             height: "40px",
             borderRadius: "15px",
@@ -501,7 +516,7 @@ const Designer = () => {
           position,
           data: { label: "UI+Gateway" },
           style: {
-            border: "1px solid #8c8d8f",
+            border: "1px solid #ff0000",
             width: "120px",
             height: "40px",
             borderRadius: "15px",
@@ -518,6 +533,11 @@ const Designer = () => {
   const onChange = (Data) => {
     if (Data.applicationType === "gateway") {
       setIsEmptyUiSubmit("false");
+      let updatedNodes = { ...nodes };
+      if (updatedNodes["UI"]?.style) {
+        updatedNodes["UI"].style.border = "1px solid black";
+      }
+      setNodes(updatedNodes);
     } else {
       let flag = false;
       for (let key in serviceInputCheck) {
@@ -525,9 +545,28 @@ const Designer = () => {
           flag = true;
           setIsEmptyServiceSubmit(true);
         }
+        if (key.startsWith("Service")) {
+          const styleData = serviceInputCheck[key]?.style;
+          if (styleData) {
+            let updatedNodes = { ...nodes };
+            updatedNodes[key].style = {
+              ...updatedNodes[key].style,
+              ...styleData,
+            };
+            setNodes(updatedNodes);
+          }
+        }
       }
+
       if (!flag) {
         setIsEmptyServiceSubmit(false);
+        let updatedNodes = { ...nodes };
+        for (let key in updatedNodes) {
+          if (key.startsWith("Service") && updatedNodes[key]?.style) {
+            updatedNodes[key].style.border = "1px solid black";
+          }
+        }
+        setNodes(updatedNodes);
       }
       setServiceInputCheck((prev) => ({
         ...prev,
@@ -553,7 +592,6 @@ const Designer = () => {
       UpdatedNodes[Isopen].data = { ...UpdatedNodes[Isopen].data, ...Data };
     } else {
       setUniqueApplicationNames((prev) => [...prev, Data.applicationName]);
-      UpdatedNodes[Isopen].style.backgroundColor = Data.color;
       UpdatedNodes[Isopen].data = { ...UpdatedNodes[Isopen].data, ...Data };
       UpdatedNodes[Isopen].selected = false;
     }

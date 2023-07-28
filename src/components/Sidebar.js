@@ -475,32 +475,6 @@ const Sidebar = ({
           ) : (
             <></>
           )}
-          {isEmptyUiSubmit === true ? (
-            <p
-              style={{
-                fontSize: "10px",
-                color: "red",
-                marginTop: "5px",
-              }}
-            >
-              Please ensure all mandatory fields in UI are filled
-            </p>
-          ) : (
-            <></>
-          )}
-          {isEmptyServiceSubmit === true ? (
-            <p
-              style={{
-                fontSize: "10px",
-                color: "red",
-                marginTop: "5px",
-              }}
-            >
-              Please ensure all mandatory fields in Service are filled
-            </p>
-          ) : (
-            <></>
-          )}
         </div>
       </aside>
     </>

@@ -10,6 +10,8 @@ import {
   Button,
   FormLabel,
   FormControl,
+  Alert,
+  AlertIcon,
 } from "@chakra-ui/react";
 
 const GroupDataModal = ({ isOpen, onClose, onSubmit, CurrentNode }) => {
@@ -26,7 +28,7 @@ const GroupDataModal = ({ isOpen, onClose, onSubmit, CurrentNode }) => {
       setGroupData((prev) => ({
         ...prev,
         [column]: value,
-        applicationName: value,
+        groupName: value,
       }));
     } else {
       setGroupData((prev) => ({
@@ -35,6 +37,10 @@ const GroupDataModal = ({ isOpen, onClose, onSubmit, CurrentNode }) => {
       }));
     }
   };
+  const groupNameCheck = !/^[a-zA-Z](?:[a-zA-Z0-9_]*[a-zA-Z0-9])?$/g.test(
+    groupData.label
+  );
+
   return (
     <Modal isOpen={isOpen} onClose={() => onClose(false)} isCentered={true}>
       <ModalOverlay />
@@ -52,9 +58,9 @@ const GroupDataModal = ({ isOpen, onClose, onSubmit, CurrentNode }) => {
             <FormControl>
               <FormLabel>Group name</FormLabel>
               <Input
-                mb={4}
+                mb={3}
                 variant="outline"
-                id="applicationName"
+                id="groupName"
                 placeholder="Name"
                 borderColor={"black"}
                 maxLength="32"
@@ -62,10 +68,23 @@ const GroupDataModal = ({ isOpen, onClose, onSubmit, CurrentNode }) => {
                 onChange={(e) => handleData("label", e.target.value)}
               />
             </FormControl>
+            {groupNameCheck && (
+              <Alert
+                status="error"
+                height="10px"
+                fontSize="10px"
+                borderRadius="3px"
+                mb={4}
+              >
+                <AlertIcon style={{ width: "14px", height: "14px" }} />
+                Enter valid group name
+              </Alert>
+            )}
           </div>
           <Button
             onClick={() => onSubmit(groupData)}
             style={{ display: "block", margin: "0 auto" }}
+            isDisabled={groupNameCheck}
           >
             Submit
           </Button>

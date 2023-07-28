@@ -94,6 +94,12 @@ body,
   padding: 2px;
 }
 
+.react-flow__attribution a {
+  text-decoration: none;
+  pointer-events: none;
+  color: #ffffff;
+}
+
 .dndflow .selectall {
   margin-top: 10px;
 }
@@ -111,6 +117,8 @@ body,
   text-align: center;
   align-items: center;
   justify-content: center;
+  width: 60px;
+  height: 60px;
 }
 
 @media screen and (min-width: 768px) {
@@ -133,3 +141,4 @@ body,
   box-shadow: none !important;
   border: 1.5px solid rgb(49, 130, 206) !important;
 }
+
