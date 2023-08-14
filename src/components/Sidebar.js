@@ -113,15 +113,19 @@ const Sidebar = ({
           </div>
 
           <div
-            className={`dndnode output ${isUINodeEnabled ? "disabled" : ""}`}
-            onDragStart={(event) => onDragStart(event, "default", "UI+Gateway")}
-            draggable={!isUINodeEnabled}
-            style={{
-              backgroundColor: isUINodeEnabled ? "#CFCFCF" : "",
-              cursor: isUINodeEnabled ? "not-allowed" : "",
-            }}
+            className={`dndnode output`}
+            onDragStart={(event) => onDragStart(event, "default", "UI")}
+            draggable 
           >
-            UI+Gateway
+            UI
+          </div>
+
+          <div
+            className={`dndnode output`}
+            onDragStart={(event) => onDragStart(event, "default", "Gateway")}
+            draggable 
+          >
+            Gateway
           </div>
 
           <div
