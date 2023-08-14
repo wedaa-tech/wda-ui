@@ -23,7 +23,6 @@ const containerStyles = {
 };
 const headingStyles = {
   fontWeight: "extrabold",
-  marginBottom: "4",
   marginBottom: "50px",
 };
 const marginStyle = {

@@ -5,6 +5,8 @@ import ReactFlow, {
   MarkerType,
   MiniMap,
   ConnectionLineType,
+  Background,
+  BackgroundVariant,
 } from "reactflow";
 import "reactflow/dist/style.css";
 import { Button } from "@chakra-ui/react";
@@ -44,6 +46,8 @@ const getId = (type = "") => {
   return "Id";
 };
 
+const defaultViewport = { x: 0, y: 0, zoom: 10 };
+
 const nodeTypes = {
   selectorNode: CustomImageNode,
   selectorNode1: CustomServiceNode,
@@ -78,7 +82,34 @@ const Designer = () => {
   const addEdge = (edgeParams, edges) => {
     console.log(edgeParams, "edgeee");
     const edgeId = `${edgeParams.source}-${edgeParams.target}`;
-    return { ...edges, [edgeId]: { id: edgeId, ...edgeParams } };
+    const databaseEdge = edgeParams?.target.startsWith("Database");
+    const groupEdge =
+      edgeParams?.target.startsWith("group") ||
+      edgeParams?.source.startsWith("group");
+    if (!edges[edgeId] && !databaseEdge && !groupEdge) {
+      edges[edgeId] = {
+        id: edgeId,
+        ...edgeParams,
+        markerEnd: {
+          color: "#ff0000",
+          type: MarkerType.ArrowClosed,
+        },
+        style: { stroke: "#ff0000" },
+      };
+    }
+    if (databaseEdge || groupEdge) {
+      edges[edgeId] = {
+        id: edgeId,
+        ...edgeParams,
+        markerEnd: {
+          color: "black",
+          type: MarkerType.ArrowClosed,
+        },
+        style: { stroke: "black" },
+      };
+    }
+    return { ...edges };
+    // return { ...edges, [edgeId]: { id: edgeId, ...edgeParams } };
   };
 
   const updateEdge = (oldEdge, newConnection, edges, Nodes) => {
@@ -190,6 +221,8 @@ const Designer = () => {
               );
             }
             break;
+          default:
+            break;
         }
       });
       if (Object.keys(updatedNodes).length === 0) setShowDiv(true);
@@ -299,6 +332,13 @@ const Designer = () => {
   const onDragOver = useCallback((event) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = "move";
+    setShowDiv(false);
+  }, []);
+
+  const onDragStop = useCallback((event) => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "move";
+    setShowDiv(true);
   }, []);
 
   const onclick = (e, node) => {
@@ -329,7 +369,6 @@ const Designer = () => {
       authcount,
       Localenvcount
     ) => {
-      setShowDiv(false);
       event.preventDefault();
       console.log(event);
       const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
@@ -337,6 +376,7 @@ const Designer = () => {
       const name = event.dataTransfer.getData("Name");
 
       if (typeof type === "undefined" || !type) {
+        setShowDiv(true);
         return;
       }
 
@@ -352,7 +392,7 @@ const Designer = () => {
           position,
           data: { label: "Service" },
           style: {
-            border: "1px solid",
+            border: "1px solid #ff0000",
             width: "120px",
             height: "40px",
             borderRadius: "15px",
@@ -476,7 +516,7 @@ const Designer = () => {
           position,
           data: { label: "UI+Gateway" },
           style: {
-            border: "1px solid #8c8d8f",
+            border: "1px solid #ff0000",
             width: "120px",
             height: "40px",
             borderRadius: "15px",
@@ -493,16 +533,40 @@ const Designer = () => {
   const onChange = (Data) => {
     if (Data.applicationType === "gateway") {
       setIsEmptyUiSubmit("false");
+      let updatedNodes = { ...nodes };
+      if (updatedNodes["UI"]?.style) {
+        updatedNodes["UI"].style.border = "1px solid black";
+      }
+      setNodes(updatedNodes);
     } else {
       let flag = false;
       for (let key in serviceInputCheck) {
-        if (key != Isopen && serviceInputCheck[key] === true) {
+        if (key !== Isopen && serviceInputCheck[key] === true) {
           flag = true;
           setIsEmptyServiceSubmit(true);
         }
+        if (key.startsWith("Service")) {
+          const styleData = serviceInputCheck[key]?.style;
+          if (styleData) {
+            let updatedNodes = { ...nodes };
+            updatedNodes[key].style = {
+              ...updatedNodes[key].style,
+              ...styleData,
+            };
+            setNodes(updatedNodes);
+          }
+        }
       }
+
       if (!flag) {
         setIsEmptyServiceSubmit(false);
+        let updatedNodes = { ...nodes };
+        for (let key in updatedNodes) {
+          if (key.startsWith("Service") && updatedNodes[key]?.style) {
+            updatedNodes[key].style.border = "1px solid black";
+          }
+        }
+        setNodes(updatedNodes);
       }
       setServiceInputCheck((prev) => ({
         ...prev,
@@ -528,7 +592,6 @@ const Designer = () => {
       UpdatedNodes[Isopen].data = { ...UpdatedNodes[Isopen].data, ...Data };
     } else {
       setUniqueApplicationNames((prev) => [...prev, Data.applicationName]);
-      UpdatedNodes[Isopen].style.backgroundColor = Data.color;
       UpdatedNodes[Isopen].data = { ...UpdatedNodes[Isopen].data, ...Data };
       UpdatedNodes[Isopen].selected = false;
     }
@@ -698,7 +761,7 @@ const Designer = () => {
       UpdatedEdges[IsEdgeopen].style = { stroke: "black" };
     } else {
       UpdatedEdges[IsEdgeopen].markerEnd = {
-        color: "#e2e8f0",
+        color: "#bcbaba",
         type: MarkerType.ArrowClosed,
       };
       UpdatedEdges[IsEdgeopen].style = { stroke: "#bcbaba" };
@@ -751,19 +814,12 @@ const Designer = () => {
   };
 
   return (
-    <div className="dndflow" style={{ overflow: "hidden !important", bottom:0 }}>
+    <div
+      className="dndflow"
+      style={{ overflow: "hidden !important", bottom: 0 }}
+    >
       <ReactFlowProvider>
-        <div
-          className="reactflow-wrapper"
-          ref={reactFlowWrapper}
-          style={{
-            width: "100%",
-            height: "94vh",
-            backgroundImage:
-              "linear-gradient(to right, #f2f2f2 1px, transparent 1px), linear-gradient(to bottom, #f2f2f2 1px, transparent 1px)",
-            backgroundSize: "20px 20px",
-          }}
-        >
+        <div className="reactflow-wrapper" ref={reactFlowWrapper}>
           {showDiv && (
             <div
               style={{
@@ -778,6 +834,7 @@ const Designer = () => {
                 justifyContent: "center",
                 border: "2px dashed #cfcfcf",
                 borderRadius: "8px",
+                zIndex: 1,
               }}
             >
               <div
@@ -802,7 +859,7 @@ const Designer = () => {
                   marginBottom: "10px",
                 }}
               >
-                Drag and drop components here
+                Design your application architecture here
               </div>
               <div
                 style={{
@@ -812,7 +869,7 @@ const Designer = () => {
                   color: "#c3c3c3",
                 }}
               >
-                To design your architecture
+                Click next to auto generate code and setup infrastructure
               </div>
               <Button
                 mt={4}
@@ -835,13 +892,14 @@ const Designer = () => {
             nodeTypes={nodeTypes}
             snapToGrid
             connectionLineType={ConnectionLineType.Step}
-            snapGrid={[20, 20]}
+            snapGrid={[10, 10]}
             onNodesChange={(changes) =>
               onNodesChange(setShowDiv, edges, changes)
             }
             onEdgesChange={(changes) => onEdgesChange(nodes, changes)}
             onConnect={(params) => onConnect(params, nodes)}
             onInit={setReactFlowInstance}
+            onNodeDrag={onSingleClick}
             onDrop={(e) =>
               onDrop(
                 e,
@@ -853,9 +911,10 @@ const Designer = () => {
               )
             }
             onDragOver={onDragOver}
+            onDragLeave={() => setShowDiv(Object.keys(nodes).length === 0)}
             onNodeDoubleClick={onclick}
             onNodeClick={onSingleClick}
-            deleteKeyCode={["Backspace","Delete"]}
+            deleteKeyCode={["Backspace", "Delete"]}
             fitView
             onEdgeUpdate={(oldEdge, newConnection) =>
               onEdgeUpdate(nodes, oldEdge, newConnection)
@@ -864,9 +923,15 @@ const Designer = () => {
             onEdgeUpdateEnd={(_, edge) => onEdgeUpdateEnd(nodes, edge)}
             onEdgeDoubleClick={onEdgeClick}
             nodesFocusable={true}
+            defaultViewport={defaultViewport}
           >
             <Controls />
             <MiniMap style={{ backgroundColor: "#3182CE" }} />
+            <Background
+              gap={10}
+              color="#f2f2f2"
+              variant={BackgroundVariant.Lines}
+            />
           </ReactFlow>
         </div>
         <Sidebar

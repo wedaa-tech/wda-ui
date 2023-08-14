@@ -1,7 +1,7 @@
-import { Handle, Position, NodeResizer } from "reactflow";
+import { NodeResizer } from "reactflow";
 import keycloak from "../../assets/keycloak.png";
 
-const handleStyle = { left: 25 };
+// const handleStyle = { left: 25 };
 
 function CustomAuthNode({ data, isConnectable, selected }) {
   const authenticationType = data.authenticationType;
@@ -15,7 +15,12 @@ function CustomAuthNode({ data, isConnectable, selected }) {
         minHeight={30}
       />
       <div>
-        <img width="60px" name={authenticationType} src={keycloak} />
+        <img
+          width="60px"
+          name={authenticationType}
+          src={keycloak}
+          alt="keycloak"
+        />
       </div>
     </>
   );

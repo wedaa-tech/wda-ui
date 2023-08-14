@@ -1,6 +1,5 @@
 import { Box, Flex, HStack, Button, Text, Image } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
-import { useState } from "react";
 import logo from "../assets/TIC_logo.png";
 import { useKeycloak } from "@react-keycloak/web";
 import { useLocation } from "react-router-dom/cjs/react-router-dom.min";

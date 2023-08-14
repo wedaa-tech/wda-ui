@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Heading, Text, Button, Image, Stack } from "@chakra-ui/react";
+import { Box, Text, Button, Image, Stack } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import logo from "../assets/TIC.png";
 import Footer from "../components/Footer";

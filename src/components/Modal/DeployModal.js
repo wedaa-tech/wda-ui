@@ -21,7 +21,7 @@ import {
 import azure from "../../../src/assets/Azure.png";
 import aws from "../../../src/assets/aws.png";
 import { InfoIcon } from "@chakra-ui/icons";
-import minikube from "../../assets/mini.png";
+// import minikube from "../../assets/mini.png";
 
 const DeployModal = ({ onSubmit, isLoading, projectData, onClose }) => {
   const [selectedImage, setSelectedImage] = useState(null);
@@ -40,18 +40,27 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose }) => {
       );
     } else if (DeploymentData.cloudProvider === "aws") {
       if (DeploymentData.kubernetesUseDynamicStorage === "true") {
-        return DeploymentData.kubernetesStorageClassName === "";
-      } else {
         return (
+          DeploymentData.kubernetesStorageClassName === "" ||
+          DeploymentData.awsAccountId === "" ||
           DeploymentData.awsRegion === "" ||
           DeploymentData.deploymentType === "" ||
           DeploymentData.clusterName === "" ||
           DeploymentData.kubernetesNamespace === "" ||
           DeploymentData.monitoring === "" ||
-          // DeploymentData.ingressDomain === "" ||
           DeploymentData.k8sWebUI === ""
         );
       }
+      return (
+        DeploymentData.awsAccountId === "" ||
+        DeploymentData.awsRegion === "" ||
+        DeploymentData.deploymentType === "" ||
+        DeploymentData.clusterName === "" ||
+        DeploymentData.kubernetesNamespace === "" ||
+        DeploymentData.monitoring === "" ||
+        // DeploymentData.ingressDomain === "" ||
+        DeploymentData.k8sWebUI === ""
+      );
     } else {
       return (
         DeploymentData.dockerRepositoryName === "" ||
@@ -229,7 +238,12 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose }) => {
     if (selectedImage === "minikube") return !namespaceCheck;
     else if (selectedImage === "aws") {
       if (DeploymentData.kubernetesUseDynamicStorage === "true")
-        return !storageClassCheck;
+        return (
+          !storageClassCheck ||
+          !namespaceCheck ||
+          !domainNameCheck ||
+          !clusterNameCheck
+        );
       else {
         return (
           !namespaceCheck ||

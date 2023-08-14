@@ -4,21 +4,14 @@ import db2 from "../assets/mongo.png";
 import eurkea from "../assets/eureka.jpg";
 import keycloakIcon from "../assets/keycloak.png";
 import eck from "../assets/eck.png";
-import mini from "../assets/mini.jpeg";
-import docker from "../assets/docker.png";
+// import mini from "../assets/mini.jpeg";
+// import docker from "../assets/docker.png";
 import "./../App.css";
-import {
-  Input,
-  FormLabel,
-  Button,
-  Checkbox,
-  Alert,
-  AlertIcon,
-} from "@chakra-ui/react";
+import { Input, FormLabel, Button, Checkbox } from "@chakra-ui/react";
 import DeployModal from "./Modal/DeployModal";
 import { useKeycloak } from "@react-keycloak/web";
 
-export default ({
+const Sidebar = ({
   isUINodeEnabled,
   Service_Discovery_Data,
   onSubmit,
@@ -31,7 +24,6 @@ export default ({
   isEmptyServiceSubmit,
   selectedColor,
   handleColorClick,
-  edges,
 }) => {
   const onDragStart = (event, nodeType, Name) => {
     event.dataTransfer.setData("Name", Name);
@@ -226,8 +218,6 @@ export default ({
               style={{
                 cursor: "pointer",
                 fontSize: "20px",
-                display: "flex",
-                alignItems: "center",
                 justifyContent: "space-between",
                 display: "flex",
                 alignItems: "center",
@@ -485,34 +475,10 @@ export default ({
           ) : (
             <></>
           )}
-          {isEmptyUiSubmit === true ? (
-            <p
-              style={{
-                fontSize: "10px",
-                color: "red",
-                marginTop: "5px",
-              }}
-            >
-              Please ensure all mandatory fields in UI are filled
-            </p>
-          ) : (
-            <></>
-          )}
-          {isEmptyServiceSubmit === true ? (
-            <p
-              style={{
-                fontSize: "10px",
-                color: "red",
-                marginTop: "5px",
-              }}
-            >
-              Please ensure all mandatory fields in Service are filled
-            </p>
-          ) : (
-            <></>
-          )}
         </div>
       </aside>
     </>
   );
 };
+
+export default Sidebar;

@@ -1,21 +1,21 @@
-import { Handle, Position } from "reactflow";
+// import { Handle, Position } from "reactflow";
 import azure from "../../assets/Azure.png";
 import aws from "../../assets/aws.png";
 import minikube from "../../assets/mini.jpeg";
 
-const handleStyle = { left: 25 };
+// const handleStyle = { left: 25 };
 
-function CustomCloudNode({ data, isConnectable }) {
+function CustomCloudNode({ data }) {
   const cloudProvider = data.data.cloudProvider;
 
   return (
     <div>
       {cloudProvider === "azure" ? (
-        <img width="60px" name={cloudProvider} src={azure} />
+        <img width="60px" name={cloudProvider} src={azure} alt="azure" />
       ) : cloudProvider === "aws" ? (
-        <img width="60px" name={cloudProvider} src={aws} />
+        <img width="60px" name={cloudProvider} src={aws} alt="aws" />
       ) : (
-        <img width="60px" name={cloudProvider} src={minikube} />
+        <img width="60px" name={cloudProvider} src={minikube} alt="minikube" />
       )}
     </div>
   );

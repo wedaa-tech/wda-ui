@@ -21,7 +21,6 @@ const EdgeModal = ({
   onClose,
   handleEdgeData,
   isServiceDiscovery,
-  isMessageBroker,
 }) => {
   console.log(CurrentEdge, "edgeeeeee");
   const initialState = {
@@ -30,6 +29,8 @@ const EdgeModal = ({
     ...CurrentEdge,
   };
   const [edgeData, setEdgeData] = useState(initialState);
+
+  const isEmpty = edgeData.type === "" || edgeData.framework === "";
 
   const handleData = (column, value) => {
     if (column === "type") {
@@ -105,7 +106,7 @@ const EdgeModal = ({
                 </Select>
               </FormControl>
             )}
-             {edgeData.type === "asynchronous" && (
+            {edgeData.type === "asynchronous" && (
               <FormControl>
                 <FormLabel>Framework</FormLabel>
                 <Select
@@ -158,7 +159,13 @@ const EdgeModal = ({
           </div>
         </ModalBody>
         <ModalFooter>
-          <Button onClick={() => handleSubmit(edgeData)}>Submit</Button>
+          <Button
+            style={{ display: "block", margin: "0 auto" }}
+            isDisabled={isEmpty}
+            onClick={() => handleSubmit(edgeData)}
+          >
+            Submit
+          </Button>
         </ModalFooter>
       </ModalContent>
     </Modal>
