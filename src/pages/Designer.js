@@ -35,16 +35,19 @@ import { useKeycloak } from "@react-keycloak/web";
 import { FiUploadCloud } from "react-icons/fi";
 import ActionModal from "../components/Modal/ActionModal";
 
-let service_id = 1;
-let database_id = 1;
-let group_id = 1;
+let serviceId = 1;
+let gatewayId = 1;
+let databaseId = 1;
+let groupId = 1;
+let uiId = 1;
 
 const getId = (type = "") => {
-  if (type === "Service") return `Service_${service_id++}`;
-  else if (type === "Database") return `Database_${database_id++}`;
+  if (type === "Service") return `Service_${serviceId++}`;
+  else if (type === "Database") return `Database_${databaseId++}`;
   else if (type === "Authentication") return "Authentication_1";
-  else if (type === "UI+Gateway") return "UI";
-  else if (type === "Group") return `group_${group_id++}`;
+  else if (type === "UI") return `UI_${uiId++}`;
+  else if (type === "Gateway") return `gateway_${gatewayId++}`;
+  else if (type === "Group") return `group_${groupId++}`;
   return "Id";
 };
 
@@ -535,12 +538,26 @@ const Designer = ({ update }) => {
         setLocalenvironmentCount(1);
       } else if (name.startsWith("Localenvironment") && Localenvcount >= 1) {
         setLocalenvironmentCount(2);
-      } else {
+      } else if (name.startsWith("Gateway")){
         const newNode = {
-          id: getId("UI+Gateway"),
+          id: getId("Gateway"),
           type: "ResizableNode",
           position,
-          data: { label: "UI+Gateway" },
+          data: { label: "Gateway" },
+          style: {
+            border: "1px solid #ff0000",
+            width: "120px",
+            height: "40px",
+            borderRadius: "15px",
+          },
+        };
+        setNodes((nds) => ({ ...nds, [newNode.id]: newNode }));
+      } else {
+        const newNode = {
+          id: getId("UI"),
+          type: "ResizableNode",
+          position,
+          data: { label: "UI" },
           style: {
             border: "1px solid #ff0000",
             width: "120px",
