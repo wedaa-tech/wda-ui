@@ -14,7 +14,6 @@ import { ArrowRightIcon, ArrowLeftIcon } from "@chakra-ui/icons";
 import { useLocation } from "react-router-dom";
 
 const Sidebar = ({
-  isUINodeEnabled,
   Service_Discovery_Data,
   onSubmit,
   authenticationData,
@@ -25,6 +24,7 @@ const Sidebar = ({
   edges,
   isEmptyUiSubmit,
   isEmptyServiceSubmit,
+  isEmptyGatewaySubmit,
   selectedColor,
   update,
   updated,
@@ -76,9 +76,12 @@ const Sidebar = ({
   const handleCloseModal = () => {
     setShowModal(false);
   };
-  const checkNodeExists =
-    nodes?.UI ||
-    Object.values(nodes).some((node) => node.id.startsWith("Service"));
+  const checkNodeExists = Object.values(nodes).some(
+    (node) =>
+      node.id.startsWith("Service") ||
+      node.id.startsWith("Gateway") ||
+      node.id.startsWith("UI")
+  );
 
   const projectNameCheck = !/^[a-zA-Z](?:[a-zA-Z0-9_-]*[a-zA-Z0-9])?$/g.test(
     projectData.projectName
@@ -120,7 +123,8 @@ const Sidebar = ({
       projectNameCheck ||
       projectData.projectName === "" ||
       isEmptyUiSubmit === true ||
-      isEmptyServiceSubmit === true
+      isEmptyServiceSubmit === true ||
+      isEmptyGatewaySubmit === true
     )
       return true;
     else return false;
@@ -216,7 +220,7 @@ const Sidebar = ({
           <div
             className={`dndnode output`}
             onDragStart={(event) => onDragStart(event, "default", "UI")}
-            draggable 
+            draggable
           >
             UI
           </div>
@@ -224,7 +228,7 @@ const Sidebar = ({
           <div
             className={`dndnode output`}
             onDragStart={(event) => onDragStart(event, "default", "Gateway")}
-            draggable 
+            draggable
           >
             Gateway
           </div>

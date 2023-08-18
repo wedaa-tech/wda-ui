@@ -15,6 +15,7 @@ import Sidebar from "./../components/Sidebar";
 import { saveAs } from "file-saver";
 import ServiceModal from "../components/Modal/ServiceModal";
 import UiDataModal from "../components/Modal/UIModal";
+import GatewayModal from "../components/Modal/GatewayModal";
 import GroupDataModal from "../components/Modal/GroupDataModel";
 import CustomImageNode from "./Customnodes/CustomImageNode";
 import CustomServiceNode from "./Customnodes/CustomServiceNode";
@@ -46,7 +47,7 @@ const getId = (type = "") => {
   else if (type === "Database") return `Database_${databaseId++}`;
   else if (type === "Authentication") return "Authentication_1";
   else if (type === "UI") return `UI_${uiId++}`;
-  else if (type === "Gateway") return `gateway_${gatewayId++}`;
+  else if (type === "Gateway") return `Gateway_${gatewayId++}`;
   else if (type === "Group") return `group_${groupId++}`;
   return "Id";
 };
@@ -82,7 +83,11 @@ const Designer = ({ update }) => {
   const [isEmptyServiceSubmit, setIsEmptyServiceSubmit] = useState(false);
   const location = useLocation();
   const [userData, setuserData] = useState({});
+  const [isEmptyGatewaySubmit, setIsEmptyGatewaySubmit] = useState(false);
+
   const [serviceInputCheck, setServiceInputCheck] = useState({});
+  const [uiInputCheck, setUiInputCheck] = useState({});
+  const [gatewayInputCheck, setGatewayInputCheck] = useState({});
 
   const [updated, setUpdated] = useState(false);
   const [isVisibleDialog, setVisibleDialog] = useState(false);
@@ -175,13 +180,13 @@ const Designer = ({ update }) => {
               updatedNodes[change.id] = {
                 ...updatedNodes[change.id],
                 position: {
-                  ...updatedNodes[change.id].position,
+                  ...updatedNodes[change.id]?.position,
                   ...change.position,
                 },
                 positionAbsolute: {
                   x: 0,
                   y: 0,
-                  ...updatedNodes[change.id].positionAbsolute,
+                  ...updatedNodes[change.id]?.positionAbsolute,
                   ...change.positionAbsolute,
                 },
                 dragging: change.dragging,
@@ -199,11 +204,12 @@ const Designer = ({ update }) => {
               setIsMessageBroker(false);
               onCheckEdge(edges);
               setMessageBrokerCount(0);
-            } else if (change.id === "UI") {
-              setIsUINodeEnabled(false);
+            } else if (change.id.startsWith("UI")) {
               setIsEmptyUiSubmit(false);
             } else if (change.id.startsWith("Service")) {
               setIsEmptyServiceSubmit(false);
+            } else if (change.id.startsWith("Gateway")) {
+              setIsEmptyGatewaySubmit(false);
             } else if (change.id === "serviceDiscoveryType") {
               setIsServiceDiscovery(false);
               setServiceDiscoveryCount(0);
@@ -307,7 +313,6 @@ const Designer = ({ update }) => {
   const [CurrentNode, setCurrentNode] = useState({});
   const [CurrentEdge, setCurrentEdge] = useState({});
   const edgeUpdateSuccessful = useRef(true);
-  const [isUINodeEnabled, setIsUINodeEnabled] = useState(false);
   const [isMessageBroker, setIsMessageBroker] = useState(false);
   const [isServiceDiscovery, setIsServiceDiscovery] = useState(false);
   const [saveMetadata, setsaveMetadata] = useState(false);
@@ -384,15 +389,14 @@ const Designer = ({ update }) => {
     setUniqueApplicationNames([]);
     setUniquePortNumbers([]);
     setServiceInputCheck([]);
-    database_id = 1;
-    group_id = 1;
-    service_id = 1;
+    databaseId = 1;
+    groupId = 1;
+    serviceId = 1;
     setAuthProviderCount(0);
     setIsMessageBroker(false);
     setMessageBrokerCount(0);
     setLogManagementCount(0);
     setLocalenvironmentCount(0);
-    setIsUINodeEnabled(false);
     setUpdated(false);
     setTriggerExit({
       onOk: false,
@@ -538,7 +542,7 @@ const Designer = ({ update }) => {
         setLocalenvironmentCount(1);
       } else if (name.startsWith("Localenvironment") && Localenvcount >= 1) {
         setLocalenvironmentCount(2);
-      } else if (name.startsWith("Gateway")){
+      } else if (name.startsWith("Gateway")) {
         const newNode = {
           id: getId("Gateway"),
           type: "ResizableNode",
@@ -552,6 +556,11 @@ const Designer = ({ update }) => {
           },
         };
         setNodes((nds) => ({ ...nds, [newNode.id]: newNode }));
+        setIsEmptyGatewaySubmit(true);
+        setGatewayInputCheck((prev) => ({
+          ...prev,
+          [newNode.id]: true,
+        }));
       } else {
         const newNode = {
           id: getId("UI"),
@@ -566,8 +575,11 @@ const Designer = ({ update }) => {
           },
         };
         setNodes((nds) => ({ ...nds, [newNode.id]: newNode }));
-        setIsUINodeEnabled(true);
         setIsEmptyUiSubmit(true);
+        setUiInputCheck((prev) => ({
+          ...prev,
+          [newNode.id]: true,
+        }));
       }
     },
     [reactFlowInstance]
@@ -621,7 +633,7 @@ const Designer = ({ update }) => {
           setIsServiceDiscovery(true);
           setServiceDiscoveryCount(1);
         } else if (key.toLowerCase().includes("service")) {
-          service_id++;
+          serviceId++;
           setUniqueApplicationNames((prev) => [
             ...prev,
             data.metadata.nodes[key].data.label,
@@ -635,9 +647,9 @@ const Designer = ({ update }) => {
             [key.id]: false,
           }));
         } else if (key.toLowerCase().includes("database")) {
-          database_id++;
+          databaseId++;
         } else if (key.toLowerCase().includes("group")) {
-          group_id++;
+          groupId++;
         } else if (key.toLowerCase().includes("auth")) {
           setAuthProviderCount(1);
         } else if (key.toLowerCase().includes("messagebroker")) {
@@ -652,15 +664,14 @@ const Designer = ({ update }) => {
             ...prev,
             data.metadata.nodes[key].data.serverPort,
           ]);
-          setIsUINodeEnabled(true);
         }
       }
     }
     return () => {
       localStorage.clear();
-      service_id = 1;
-      database_id = 1;
-      group_id = 1;
+      serviceId = 1;
+      databaseId = 1;
+      groupId = 1;
       setUpdated(false);
     };
   }, []);
@@ -733,38 +744,94 @@ const Designer = ({ update }) => {
 
   const onChange = (Data) => {
     setUpdated(true);
-    if (Data.applicationType === "gateway") {
-      setIsEmptyUiSubmit(false);
+    let flaggateway = false;
+    for (let key in gatewayInputCheck) {
+      if (key !== Isopen && gatewayInputCheck[key] === true) {
+        flaggateway = true;
+        setIsEmptyGatewaySubmit(true);
+      }
+      if (key.startsWith("Gateway")) {
+        const styleData = gatewayInputCheck[key]?.style;
+        if (styleData) {
+          let updatedNodes = { ...nodes };
+          updatedNodes[key].style = {
+            ...updatedNodes[key].style,
+            ...styleData,
+          };
+          setNodes(updatedNodes);
+        }
+      }
+    }
+    if (!flaggateway) {
+      setIsEmptyGatewaySubmit(false);
       let updatedNodes = { ...nodes };
-      if (updatedNodes["UI"]?.style) {
-        updatedNodes["UI"].style.border = "1px solid black";
+      for (let key in updatedNodes) {
+        if (key.startsWith("Gateway") && updatedNodes[key]?.style) {
+          updatedNodes[key].style.border = "1px solid black";
+        }
       }
       setNodes(updatedNodes);
-    } else {
-      let flag = false;
-      for (let key in serviceInputCheck) {
-        if (key !== Isopen && serviceInputCheck[key] === true) {
-          flag = true;
-          setIsEmptyServiceSubmit(true);
-        }
-        if (key.startsWith("Service") && Isopen === key) {
-          const styleData = serviceInputCheck[key];
-          if (styleData) {
-            let updatedNodes = { ...nodes };
-            updatedNodes[key].style.border = "1px solid black";
-            setNodes(updatedNodes);
-          }
-        }
-      }
-
-      if (!flag) {
-        setIsEmptyServiceSubmit(false);
-      }
-      setServiceInputCheck((prev) => ({
-        ...prev,
-        [Isopen]: false,
-      }));
     }
+    setGatewayInputCheck((prev) => ({
+      ...prev,
+      [Isopen]: false,
+    }));
+
+    let flagui = false;
+    for (let key in uiInputCheck) {
+      if (key !== Isopen && uiInputCheck[key] === true) {
+        flagui = true;
+        setIsEmptyUiSubmit(true);
+      }
+      if (key.startsWith("UI")) {
+        const styleData = uiInputCheck[key]?.style;
+        if (styleData) {
+          let updatedNodes = { ...nodes };
+          updatedNodes[key].style = {
+            ...updatedNodes[key].style,
+            ...styleData,
+          };
+          setNodes(updatedNodes);
+        }
+      }
+    }
+    if (!flagui) {
+      setIsEmptyUiSubmit(false);
+      let updatedNodes = { ...nodes };
+      for (let key in updatedNodes) {
+        if (key.startsWith("UI") && updatedNodes[key]?.style) {
+          updatedNodes[key].style.border = "1px solid black";
+        }
+      }
+      setNodes(updatedNodes);
+    }
+    setUiInputCheck((prev) => ({
+      ...prev,
+      [Isopen]: false,
+    }));
+    let flag = false;
+    for (let key in serviceInputCheck) {
+      if (key !== Isopen && serviceInputCheck[key] === true) {
+        flag = true;
+        setIsEmptyServiceSubmit(true);
+      }
+      if (key.startsWith("Service") && Isopen === key) {
+        const styleData = serviceInputCheck[key];
+        if (styleData) {
+          let updatedNodes = { ...nodes };
+          updatedNodes[key].style.border = "1px solid black";
+          setNodes(updatedNodes);
+        }
+      }
+    }
+    if (!flag) {
+      setIsEmptyServiceSubmit(false);
+    }
+    setServiceInputCheck((prev) => ({
+      ...prev,
+      [Isopen]: false,
+    }));
+
     let UpdatedNodes = { ...nodes };
     if (Data.applicationName) {
       Data.applicationName = Data.applicationName.trim();
@@ -842,7 +909,11 @@ const Designer = ({ update }) => {
     for (const key in NewNodes) {
       const Node = NewNodes[key];
       delete Node.data?.color;
-      if (Node.id.startsWith("Service") || Node.id === "UI")
+      if (
+        Node.id.startsWith("Service") ||
+        Node.id.startsWith("UI") ||
+        Node.id.startsWith("Gateway")
+      )
         Node.data = {
           ...Node.data,
           ...Service_Discovery_Data,
@@ -856,7 +927,11 @@ const Designer = ({ update }) => {
       for (const nodeInfo in NewNodes) {
         const Node = NewNodes[nodeInfo];
         if (Node.data) {
-          if (Node.id.startsWith("Service") || Node.id === "UI") {
+          if (
+            Node.id.startsWith("Service") ||
+            Node.id.startsWith("UI") ||
+            Node.id.startsWith("Gateway")
+          ) {
             Data["services"][serviceIndex++] = Node.data;
           }
         }
@@ -947,7 +1022,6 @@ const Designer = ({ update }) => {
 
   const handleEdgeData = (Data) => {
     let UpdatedEdges = { ...edges };
-
     if (Data.framework === "rest-api" && isServiceDiscovery) {
       UpdatedEdges[IsEdgeopen].label = "Rest";
     } else {
@@ -979,33 +1053,65 @@ const Designer = ({ update }) => {
     setEdgeopen(false);
   };
 
-  const onConnect = useCallback((params, Nodes) => {
-    setUpdated(true);
-    params.markerEnd = { type: MarkerType.ArrowClosed };
-    params.type = "smoothstep";
-    params.data = {};
-    const targetNode = Nodes[params.target];
-    const sourceNode = Nodes[params.source];
-    if (targetNode.id.startsWith("Database")) {
-      let isServiceConnected = Nodes[params.source]?.data["prodDatabaseType"];
-      if (!isServiceConnected && !targetNode.data.isConnected) {
-        targetNode.data.isConnected = true;
-        setEdges((eds) => addEdge(params, eds, Nodes));
-        MergeData(params.source, params.target, Nodes);
-      }
-      if (!isServiceConnected) {
-        let updatedNodes = { ...Nodes };
-        if (updatedNodes[targetNode?.id]?.style) {
-          updatedNodes[targetNode?.id].style.border = "1px solid black";
+  const onConnect = useCallback(
+    (params, Nodes) => {
+      setUpdated(true);
+      params.markerEnd = { type: MarkerType.ArrowClosed };
+      params.type = "smoothstep";
+      params.data = {};
+      const targetNode = Nodes[params.target];
+      const sourceNode = Nodes[params.source];
+      if (!targetNode.id.startsWith("UI")) {
+        if (targetNode.id.startsWith("Database")) {
+          let isServiceConnected =
+            Nodes[params.source]?.data["prodDatabaseType"];
+          if (
+            !isServiceConnected &&
+            !targetNode.data.isConnected &&
+            !sourceNode.id.startsWith("UI")
+          ) {
+            targetNode.data.isConnected = true;
+            setEdges((eds) => addEdge(params, eds, Nodes));
+            MergeData(params.source, params.target, Nodes);
+          }
+          if (!isServiceConnected) {
+            let updatedNodes = { ...Nodes };
+            if (updatedNodes[targetNode?.id]?.style) {
+              updatedNodes[targetNode?.id].style.border = "1px solid black";
+            }
+            setNodes(updatedNodes);
+          }
+        } else if (
+          targetNode.id.startsWith("Gateway") ||
+          sourceNode.id.startsWith("Gateway") ||
+          sourceNode.id.startsWith("UI")
+        ) {
+          const Data = {
+            type: "synchronous",
+            framework: "rest-api",
+          };
+          setEdges((eds) => addEdge(params, eds, Nodes));
+          const edgeName = sourceNode.id + "-" + targetNode.id;
+          let UpdatedEdges = { ...edges };
+          UpdatedEdges[edgeName].markerEnd = {
+            color: "black",
+            type: MarkerType.ArrowClosed,
+          };
+          UpdatedEdges[edgeName].style = { stroke: "black" };
+          UpdatedEdges[edgeName].data = {
+            client: UpdatedEdges[edgeName].source,
+            server: UpdatedEdges[edgeName].target,
+            ...UpdatedEdges[edgeName].data,
+            ...Data,
+          };
+          setEdges(UpdatedEdges);
+        } else {
+          setEdges((eds) => addEdge(params, eds, Nodes));
         }
-        setNodes(updatedNodes);
       }
-    } else if (
-      !(targetNode.id.startsWith("UI") && sourceNode.id.startsWith("Service"))
-    ) {
-      setEdges((eds) => addEdge(params, eds, Nodes));
-    }
-  }, []);
+    },
+    [edges]
+  );
 
   const UpdateSave = () => {
     setsaveMetadata((prev) => !prev);
@@ -1144,7 +1250,6 @@ const Designer = ({ update }) => {
           </ReactFlow>
         </div>
         <Sidebar
-          isUINodeEnabled={isUINodeEnabled}
           Service_Discovery_Data={nodes["serviceDiscoveryType"]?.data}
           authenticationData={nodes["authenticationType"]?.data}
           nodes={nodes}
@@ -1154,6 +1259,7 @@ const Designer = ({ update }) => {
           isLoading={isLoading}
           isEmptyUiSubmit={isEmptyUiSubmit}
           isEmptyServiceSubmit={isEmptyServiceSubmit}
+          isEmptyGatewaySubmit={isEmptyGatewaySubmit}
           selectedColor={selectedColor}
           nodeClick={nodeClick}
           edges={edges}
@@ -1176,6 +1282,17 @@ const Designer = ({ update }) => {
         )}
         {nodeType === "Service" && Isopen && (
           <ServiceModal
+            isOpen={Isopen}
+            CurrentNode={CurrentNode}
+            onClose={setopen}
+            onSubmit={onChange}
+            handleColorClick={handleColorClick}
+            uniqueApplicationNames={uniqueApplicationNames}
+            uniquePortNumbers={uniquePortNumbers}
+          />
+        )}
+        {nodeType === "Gateway" && Isopen && (
+          <GatewayModal
             isOpen={Isopen}
             CurrentNode={CurrentNode}
             onClose={setopen}
