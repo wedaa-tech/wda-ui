@@ -12,7 +12,6 @@ import DeployModal from "./Modal/DeployModal";
 import { useKeycloak } from "@react-keycloak/web";
 
 const Sidebar = ({
-  isUINodeEnabled,
   Service_Discovery_Data,
   onSubmit,
   authenticationData,
@@ -22,6 +21,7 @@ const Sidebar = ({
   nodes,
   isEmptyUiSubmit,
   isEmptyServiceSubmit,
+  isEmptyGatewaySubmit,
   selectedColor,
   handleColorClick,
 }) => {
@@ -52,9 +52,7 @@ const Sidebar = ({
   const handleCloseModal = () => {
     setShowModal(false);
   };
-  const checkNodeExists =
-    nodes?.UI ||
-    Object.values(nodes).some((node) => node.id.startsWith("Service"));
+  const checkNodeExists = Object.values(nodes).some((node) => node.id.startsWith("Service")|| node.id.startsWith("Gateway") || node.id.startsWith("UI"));
 
   const projectNameCheck = !/^[a-zA-Z](?:[a-zA-Z0-9_-]*[a-zA-Z0-9])?$/g.test(
     projectData.projectName
@@ -438,7 +436,8 @@ const Sidebar = ({
               projectNameCheck ||
               projectData.projectName === "" ||
               isEmptyUiSubmit === true ||
-              isEmptyServiceSubmit === true
+              isEmptyServiceSubmit === true ||
+              isEmptyGatewaySubmit === true
             }
           >
             Next

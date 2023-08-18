@@ -22,7 +22,6 @@ const EdgeModal = ({
   handleEdgeData,
   isServiceDiscovery,
 }) => {
-  console.log(CurrentEdge, "edgeeeeee");
   const initialState = {
     type: "",
     framework: "",
