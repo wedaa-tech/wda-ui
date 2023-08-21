@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useLocation } from 'react-router-dom'; 
 import {
   Modal,
   ModalOverlay,
@@ -23,11 +24,20 @@ import aws from "../../../src/assets/aws.png";
 import { InfoIcon } from "@chakra-ui/icons";
 // import minikube from "../../assets/mini.png";
 
-const DeployModal = ({ onSubmit, isLoading, projectData, onClose }) => {
+const DeployModal = ({ onSubmit, isLoading, projectData, onClose, update }) => {
+  const location = useLocation();
+  const [userData,setuserData] = useState(location?.state);
   const [selectedImage, setSelectedImage] = useState(null);
   const [checkLength, setCheckLength] = useState(false);
   const [DeploymentData, setDeploymentData] = useState({});
-
+  
+  useEffect(()=>{
+    if(update && userData && userData.metadata?.deployment){
+      setSelectedImage(userData.metadata.deployment.cloudProvider)
+      setDeploymentData(userData.metadata.deployment) 
+  }
+  },[userData,location?.state])
+  
   const isCheckEmpty = () => {
     if (DeploymentData.cloudProvider === "azure") {
       return (
@@ -767,7 +777,7 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose }) => {
                 </FormControl>
               )}
               <FormControl>
-                <FormLabel>Enable Monitoring</FormLabel>
+                <FormLabel>Enable Service Monitoring</FormLabel>
                 <Select
                   mb={4}
                   variant="outline"
@@ -784,7 +794,7 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose }) => {
                 </Select>
               </FormControl>
               <FormControl>
-                <FormLabel>Enable Web UI</FormLabel>
+                <FormLabel>Enable Kubernetes Dashboard</FormLabel>
                 <Select
                   mb={4}
                   variant="outline"
