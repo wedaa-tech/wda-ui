@@ -109,7 +109,9 @@ function Projects() {
       })
         .then((response) => response.json())
         .then((result) => {
-          setData(result.data);
+          if(result?.data){
+           setData(result.data);
+          }
         })
         .catch((error) => console.error(error));
     }
