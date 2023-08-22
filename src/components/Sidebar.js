@@ -10,6 +10,7 @@ import "./../App.css";
 import { Input, FormLabel, Button, Checkbox } from "@chakra-ui/react";
 import DeployModal from "./Modal/DeployModal";
 import { useKeycloak } from "@react-keycloak/web";
+import { ArrowRightIcon, ArrowLeftIcon } from "@chakra-ui/icons";
 
 const Sidebar = ({
   isUINodeEnabled,
@@ -20,6 +21,7 @@ const Sidebar = ({
   saveMetadata,
   Togglesave,
   nodes,
+  edges,
   isEmptyUiSubmit,
   isEmptyServiceSubmit,
   selectedColor,
@@ -63,29 +65,105 @@ const Sidebar = ({
   const projectNameCheck = !/^[a-zA-Z](?:[a-zA-Z0-9_-]*[a-zA-Z0-9])?$/g.test(
     projectData.projectName
   );
+  const [isContentVisible, setContentVisible] = useState(true);
+
+  const checkEdge = () => {
+    let updatedEdges = { ...edges };
+    let updatedNodes = { ...nodes };
+    if (Object.keys(updatedNodes).length !== 0) {
+      for (const key in updatedNodes) {
+        let databaseCheck = updatedNodes[key];
+        if (
+          databaseCheck?.id?.startsWith("Database") &&
+          !databaseCheck?.data?.isConnected
+        ) {
+          return true;
+        }
+      }
+    }
+    if (Object.keys(updatedEdges).length !== 0) {
+      for (const key in updatedEdges) {
+        let edgeCheck = updatedEdges[key];
+        if (
+          edgeCheck?.target?.startsWith("Service") &&
+          !edgeCheck?.data?.framework
+        ) {
+          return true;
+        }
+      }
+      return false;
+    }
+  };
+
+  const checkDisabled = () => {
+    if (
+      !checkNodeExists ||
+      !authenticationData ||
+      projectNameCheck ||
+      projectData.projectName === "" ||
+      isEmptyUiSubmit === true ||
+      isEmptyServiceSubmit === true
+    )
+      return true;
+    else return false;
+  };
+
+  const handleToggleContent = () => {
+    setContentVisible(!isContentVisible);
+  };
 
   return (
     <>
       <aside
         style={{
-          position: "relative",
+          position: "fixed",
+          left: 0,
           overflow: "hidden",
-          height: "94vh",
-          border: "1px Solid #CFCFCF",
-          backgroundColor: "#f7f7f7",
+          height: isContentVisible ? "91.5vh" : "50px",
+          width: isContentVisible ? "auto" : "40px",
+          backgroundColor: "fff",
+          border: "1px solid #e2e8f0",
+          boxShadow: "1px 1px 20px 1px #e2e8f0",
           display: "flex",
           flexDirection: "column",
+          margin: "10px",
         }}
       >
+        <ArrowRightIcon
+          style={{
+            fontSize: "18px",
+            cursor: "pointer",
+            marginBottom: "50px",
+            display: isContentVisible ? "none" : "block",
+          }}
+          onClick={handleToggleContent}
+        />
         <div
           class="sideBlock"
           style={{
             position: "relative",
             flex: "1",
             overflowY: "auto",
+            display: isContentVisible ? "block" : "none",
           }}
         >
-          <FormLabel fontWeight="bold">Project Name</FormLabel>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+              margin: "0px 8px 8px 0px",
+            }}
+          >
+            <FormLabel fontWeight="bold" style={{ margin: "0" }}>
+              Project Name
+            </FormLabel>
+            <ArrowLeftIcon
+              style={{ fontSize: "9px", cursor: "pointer" }}
+              onClick={handleToggleContent}
+            />
+          </div>
           <Input
             mb={1}
             variant="outline"
@@ -329,7 +407,7 @@ const Sidebar = ({
           style={{
             position: "sticky",
             bottom: "0",
-            marginTop: "10px",
+            marginTop: "35px",
             display: "flex",
             flexDirection: "column",
           }}
@@ -433,14 +511,7 @@ const Sidebar = ({
             borderColor="#3182CE"
             width="100px"
             type="submit"
-            isDisabled={
-              !checkNodeExists ||
-              !authenticationData ||
-              projectNameCheck ||
-              projectData.projectName === "" ||
-              isEmptyUiSubmit === true ||
-              isEmptyServiceSubmit === true
-            }
+            isDisabled={checkEdge() || checkDisabled()}
           >
             Next
           </Button>

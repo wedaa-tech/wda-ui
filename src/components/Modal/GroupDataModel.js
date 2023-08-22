@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Modal,
-  ModalOverlay,
   ModalContent,
   ModalHeader,
   ModalCloseButton,
@@ -23,6 +22,23 @@ const GroupDataModal = ({ isOpen, onClose, onSubmit, CurrentNode }) => {
   };
   const [groupData, setGroupData] = useState(IntialState);
 
+  useEffect(() => {
+    const handleDeleteKeyPress = (event) => {
+      if (
+        isOpen &&
+        (event.key === "Backspace" || event.key === "Delete") &&
+        event.target.tagName !== "INPUT"
+      ) {
+        onClose();
+      }
+    };
+
+    window.addEventListener("keydown", handleDeleteKeyPress);
+    return () => {
+      window.removeEventListener("keydown", handleDeleteKeyPress);
+    };
+  }, [isOpen, onClose]);
+
   const handleData = (column, value) => {
     if (column === "label") {
       setGroupData((prev) => ({
@@ -42,9 +58,15 @@ const GroupDataModal = ({ isOpen, onClose, onSubmit, CurrentNode }) => {
   );
 
   return (
-    <Modal isOpen={isOpen} onClose={() => onClose(false)} isCentered={true}>
-      <ModalOverlay />
-      <ModalContent>
+    <Modal isOpen={isOpen} onClose={() => onClose(false)}>
+      <ModalContent
+        style={{
+          position: "absolute",
+          top: "20px",
+          right: "10px",
+          width: "300px",
+        }}
+      >
         <ModalHeader>Group</ModalHeader>
         <ModalCloseButton />
         <ModalBody>

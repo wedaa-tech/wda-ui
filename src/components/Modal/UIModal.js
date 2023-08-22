@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Modal,
-  ModalOverlay,
   ModalContent,
   ModalHeader,
   ModalCloseButton,
@@ -15,7 +14,13 @@ import {
   AlertIcon,
 } from "@chakra-ui/react";
 
-const UiDataModal = ({ isOpen, onClose, onSubmit, CurrentNode,uniquePortNumbers }) => {
+const UiDataModal = ({
+  isOpen,
+  onClose,
+  onSubmit,
+  CurrentNode,
+  uniquePortNumbers,
+}) => {
   const IntialState = {
     label: "UI",
     applicationName: "UI",
@@ -27,8 +32,9 @@ const UiDataModal = ({ isOpen, onClose, onSubmit, CurrentNode,uniquePortNumbers 
     ...CurrentNode,
   };
   const [UiData, setUiDataData] = useState(IntialState);
-  const [PortNumberError, setPortNumberError] = useState(false);  
-  const isEmptyUiSubmit = UiData.applicationName === "" ||
+  const [PortNumberError, setPortNumberError] = useState(false);
+  const isEmptyUiSubmit =
+    UiData.applicationName === "" ||
     UiData.packageName === "" ||
     UiData.serverPort === "";
 
@@ -43,17 +49,21 @@ const UiDataModal = ({ isOpen, onClose, onSubmit, CurrentNode,uniquePortNumbers 
   const packageNameCheck =
     UiData.packageName &&
     !/^[a-zA-Z](?:[a-zA-Z0-9_.-]*[a-zA-Z0-9])?$/g.test(UiData.packageName);
-    
-    const ValidatePortNumber = (value) => {
-      const isDuplicatePort = uniquePortNumbers.includes(value);
-      if ((isDuplicatePort && value !== "") || Number(value) <= 1023 || Number(value) > 65535) {
-        setPortNumberError(true);
-        return false;
-      } else {
-          setPortNumberError(false);
-          return true;
-        }
-    };
+
+  const ValidatePortNumber = (value) => {
+    const isDuplicatePort = uniquePortNumbers.includes(value);
+    if (
+      (isDuplicatePort && value !== "") ||
+      Number(value) <= 1023 ||
+      Number(value) > 65535
+    ) {
+      setPortNumberError(true);
+      return false;
+    } else {
+      setPortNumberError(false);
+      return true;
+    }
+  };
 
   const handleKeyPress = (event) => {
     const charCode = event.which ? event.which : event.keyCode;
@@ -65,6 +75,23 @@ const UiDataModal = ({ isOpen, onClose, onSubmit, CurrentNode,uniquePortNumbers 
     }
   };
 
+  useEffect(() => {
+    const handleDeleteKeyPress = (event) => {
+      if (
+        isOpen &&
+        (event.key === "Backspace" || event.key === "Delete") &&
+        event.target.tagName !== "INPUT"
+      ) {
+        onClose();
+      }
+    };
+
+    window.addEventListener("keydown", handleDeleteKeyPress);
+    return () => {
+      window.removeEventListener("keydown", handleDeleteKeyPress);
+    };
+  }, [isOpen, onClose]);
+
   const handleData = (column, value) => {
     if (column === "label") {
       setUiDataData((prev) => ({
@@ -72,14 +99,14 @@ const UiDataModal = ({ isOpen, onClose, onSubmit, CurrentNode,uniquePortNumbers 
         [column]: value,
         applicationName: value,
       }));
-    }else if (column === "serverPort") {
+    } else if (column === "serverPort") {
       ValidatePortNumber(value);
       setUiDataData((prev) => ({
         ...prev,
         [column]: value,
         serverPort: value,
       }));
-    }  else {
+    } else {
       setUiDataData((prev) => ({
         ...prev,
         [column]: value,
@@ -88,9 +115,16 @@ const UiDataModal = ({ isOpen, onClose, onSubmit, CurrentNode,uniquePortNumbers 
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={() => onClose(false)} isCentered={true}>
-      <ModalOverlay />
-      <ModalContent>
+    <Modal isOpen={isOpen} onClose={() => onClose(false)}>
+      {/* <ModalOverlay /> */}
+      <ModalContent
+        style={{
+          position: "absolute",
+          top: "20px",
+          right: "10px",
+          width: "300px",
+        }}
+      >
         <ModalHeader style={{ textAlign: "center" }}>
           User Interface
         </ModalHeader>
@@ -110,7 +144,7 @@ const UiDataModal = ({ isOpen, onClose, onSubmit, CurrentNode,uniquePortNumbers 
                 variant="outline"
                 id="applicationName"
                 placeholder="Name"
-                borderColor={"black"}
+                borderColor={!UiData.applicationName ? "red" : "black"}
                 maxLength="32"
                 value={UiData.applicationName}
                 onChange={(e) => handleData("label", e.target.value)}
@@ -118,7 +152,7 @@ const UiDataModal = ({ isOpen, onClose, onSubmit, CurrentNode,uniquePortNumbers 
               {appNameCheck && (
                 <Alert
                   status="error"
-                  height="12px"
+                  padding="4px"
                   fontSize="12px"
                   borderRadius="3px"
                   mb={2}
@@ -154,7 +188,7 @@ const UiDataModal = ({ isOpen, onClose, onSubmit, CurrentNode,uniquePortNumbers 
                 variant="outline"
                 id="packageName"
                 placeholder="packageName"
-                borderColor={"black"}
+                borderColor={!UiData.packageName ? "red" : "black"}
                 maxLength="32"
                 value={UiData.packageName}
                 onChange={(e) => handleData("packageName", e.target.value)}
@@ -163,7 +197,7 @@ const UiDataModal = ({ isOpen, onClose, onSubmit, CurrentNode,uniquePortNumbers 
             {packageNameCheck && (
               <Alert
                 status="error"
-                height="12px"
+                padding="4px"
                 fontSize="12px"
                 borderRadius="3px"
                 mb={2}
@@ -178,8 +212,10 @@ const UiDataModal = ({ isOpen, onClose, onSubmit, CurrentNode,uniquePortNumbers 
                 mb={4}
                 variant="outline"
                 id="serverPort"
-                placeholder="9000"
-                borderColor={(serverPortCheck||PortNumberError) ? "red" : "black"}
+                placeholder="Port number"
+                borderColor={
+                  serverPortCheck || PortNumberError ? "red" : "black"
+                }
                 value={UiData.serverPort}
                 maxLength="5"
                 onKeyPress={handleKeyPress}
@@ -189,7 +225,7 @@ const UiDataModal = ({ isOpen, onClose, onSubmit, CurrentNode,uniquePortNumbers 
             {serverPortCheck && (
               <Alert
                 status="error"
-                height="12px"
+                padding="4px"
                 fontSize="12px"
                 borderRadius="3px"
                 mb={2}
@@ -201,22 +237,27 @@ const UiDataModal = ({ isOpen, onClose, onSubmit, CurrentNode,uniquePortNumbers 
             {PortNumberError && (
               <Alert
                 status="error"
-                height="12px"
+                padding="4px"
                 fontSize="12px"
                 borderRadius="3px"
                 mb={2}
               >
                 <AlertIcon style={{ width: "14px", height: "14px" }} />
-                Port Number Conflict
-                </Alert>
+                Port Number already exists. Please choose a unique Number.
+              </Alert>
             )}
           </div>
           <Button
             onClick={() => onSubmit(UiData)}
             style={{ display: "block", margin: "0 auto" }}
-            isDisabled={isEmptyUiSubmit || appNameCheck || serverPortCheck || PortNumberError}
+            isDisabled={
+              isEmptyUiSubmit ||
+              appNameCheck ||
+              serverPortCheck ||
+              PortNumberError
+            }
           >
-            Submit
+            Save
           </Button>
         </ModalBody>
       </ModalContent>

@@ -27,7 +27,7 @@ import CustomLocalenvironmentNode from "./Customnodes/CustomLocalenvironmentNode
 import AlertModal from "../components/Modal/AlertModal";
 import resizeableNode from "./Customnodes/ResizeableNode";
 import groupNode from "./Customnodes/GroupNode";
-import { useLocation } from 'react-router-dom'; 
+import { useLocation } from "react-router-dom";
 
 import "./../App.css";
 import EdgeModal from "../components/Modal/EdgeModal";
@@ -62,7 +62,7 @@ const nodeTypes = {
   GroupNode: groupNode,
 };
 
-const Designer = ({update}) => {
+const Designer = ({ update }) => {
   const reactFlowWrapper = useRef(null);
   const { keycloak, initialized } = useKeycloak();
   const [nodes, setNodes] = useState({});
@@ -77,7 +77,7 @@ const Designer = ({update}) => {
   const [isEmptyUiSubmit, setIsEmptyUiSubmit] = useState(false);
   const [isEmptyServiceSubmit, setIsEmptyServiceSubmit] = useState(false);
   const location = useLocation();
-  const [userData,setuserData] = useState(location?.state);
+  const [userData, setuserData] = useState(location?.state);
   const [serviceInputCheck, setServiceInputCheck] = useState({});
   const addEdge = (edgeParams, edges) => {
     const edgeId = `${edgeParams.source}-${edgeParams.target}`;
@@ -217,9 +217,7 @@ const Designer = ({update}) => {
               );
             }
             if (deletedNode?.data?.serverPort) {
-              deletedApplicationPorts.push(
-               deletedNode.data.serverPort.trim()
-              );
+              deletedApplicationPorts.push(deletedNode.data.serverPort.trim());
             }
             break;
           default:
@@ -228,8 +226,11 @@ const Designer = ({update}) => {
       });
       if (Object.keys(updatedNodes).length === 0) setShowDiv(true);
       // Remove deleted application names from uniqueApplicationNames
-      setUniquePortNumbers((prev)=>
-       prev.filter((portNumbers) => !deletedApplicationPorts.includes(portNumbers)));
+      setUniquePortNumbers((prev) =>
+        prev.filter(
+          (portNumbers) => !deletedApplicationPorts.includes(portNumbers)
+        )
+      );
       setUniqueApplicationNames((prev) =>
         prev.filter((appName) => !deletedApplicationNames.includes(appName))
       );
@@ -253,6 +254,9 @@ const Designer = ({update}) => {
             let [sourceId, targetId] = change.id.split("-");
             if (targetId.startsWith("Database")) {
               UpdatedNodes[targetId].data.isConnected = false;
+              if (UpdatedNodes[targetId]?.style) {
+                UpdatedNodes[targetId].style.border = "1px solid red";
+              }
               if (sourceId.startsWith("Service") || sourceId.startsWith("UI"))
                 delete UpdatedNodes[sourceId].data.prodDatabaseType;
               setNodes(UpdatedNodes);
@@ -319,6 +323,10 @@ const Designer = ({update}) => {
           let UpdatedNodes = { ...Nodes };
           delete UpdatedNodes[edge.source].data.prodDatabaseType;
           UpdatedNodes[edge.target].data.isConnected = false;
+          if(UpdatedNodes[edge.target]){
+            console.log(UpdatedNodes[edge.target].style.border,"iiiiiiiiiiiiiiiiiiii")
+            UpdatedNodes[edge.target].style.border = "1px solid red"
+          }
           setNodes(UpdatedNodes);
         }
         delete AllEdges[edge.id];
@@ -335,12 +343,6 @@ const Designer = ({update}) => {
     setShowDiv(false);
   }, []);
 
-  const onDragStop = useCallback((event) => {
-    event.preventDefault();
-    event.dataTransfer.dropEffect = "move";
-    setShowDiv(true);
-  }, []);
-
   const onclick = (e, node) => {
     const Id = e.target.dataset.id || e.target.name || node.id;
     console.log(Id);
@@ -352,11 +354,11 @@ const Designer = ({update}) => {
       } else setCurrentNode(nodes[Id].data);
       setopen(Id);
     }
-  };
+    // };
 
-  const onSingleClick = (e, node) => {
-    const Id = e.target.dataset.id || e.target.name || node.id;
-    console.log(Id);
+    // const onSingleClick = (e, node) => {
+    // const Id = e.target.dataset.id || e.target.name || node.id;
+    // console.log(Id);
     setNodeClick(Id);
   };
 
@@ -412,7 +414,7 @@ const Designer = ({update}) => {
           type: "selectorNode",
           position,
           data: { prodDatabaseType: prodDatabaseType, isConnected: false },
-          style: { border: "1px solid", padding: "4px 4px" },
+          style: { border: "1px solid red", padding: "4px 4px" },
         };
         setNodes((nds) => ({ ...nds, [newNode.id]: newNode }));
       } else if (name.startsWith("Discovery") && servicecount === 0) {
@@ -530,9 +532,9 @@ const Designer = ({update}) => {
     [reactFlowInstance]
   );
   useEffect(() => {
-      document.title = "WDA";
-      setShowDiv(true);
-      if(update){
+    document.title = "WDA";
+    setShowDiv(true);
+    if (update) {
       const data = location?.state;
       if (!data) {
         const data = JSON.parse(localStorage.data);
@@ -542,58 +544,59 @@ const Designer = ({update}) => {
           setEdges(data?.metadata.edges);
         }
       } else {
-          localStorage.data = JSON.stringify(userData);
-          if (userData?.metadata?.nodes) {
-            setNodes(userData?.metadata?.nodes);
-          }
-          if (userData?.metadata?.edges) {
-            setEdges(userData?.metadata?.edges);
-          }
+        localStorage.data = JSON.stringify(userData);
+        if (userData?.metadata?.nodes) {
+          setNodes(userData?.metadata?.nodes);
         }
-      const nodes =userData.metadata.nodes;
-      const edges =userData.metadata?.edges;
-      setShowDiv(false)
+        if (userData?.metadata?.edges) {
+          setEdges(userData?.metadata?.edges);
+        }
+      }
+      const nodes = userData.metadata.nodes;
+      const edges = userData.metadata?.edges;
+      setShowDiv(false);
       for (const key in nodes) {
-        if(key.toLowerCase().includes("servicediscovery")){
-           setIsServiceDiscovery(true);
-           setServiceDiscoveryCount(1);
-         } 
-         else if (key.toLowerCase().includes("service")) {
+        if (key.toLowerCase().includes("servicediscovery")) {
+          setIsServiceDiscovery(true);
+          setServiceDiscoveryCount(1);
+        } else if (key.toLowerCase().includes("service")) {
           service_id++;
-          setUniqueApplicationNames((prev) => [...prev, userData.metadata.nodes[key].data.label])
-          setUniquePortNumbers((prev) => [...prev, userData.metadata.nodes[key].data.serverPort]);
+          setUniqueApplicationNames((prev) => [
+            ...prev,
+            userData.metadata.nodes[key].data.label,
+          ]);
+          setUniquePortNumbers((prev) => [
+            ...prev,
+            userData.metadata.nodes[key].data.serverPort,
+          ]);
           setServiceInputCheck((prev) => ({
             ...prev,
             [key.id]: false,
           }));
-        } 
-        else if (key.toLowerCase().includes("database")) {
+        } else if (key.toLowerCase().includes("database")) {
           database_id++;
-        }
-        else if (key.toLowerCase().includes("group")) {
+        } else if (key.toLowerCase().includes("group")) {
           group_id++;
-        }
-        else if(key.toLowerCase().includes("auth")){
+        } else if (key.toLowerCase().includes("auth")) {
           setAuthProviderCount(1);
-        }
-        else if(key.toLowerCase().includes("messagebroker")){
+        } else if (key.toLowerCase().includes("messagebroker")) {
           setIsMessageBroker(true);
           setMessageBrokerCount(1);
-        }
-        else if(key.toLowerCase().includes("logmanagement")){
+        } else if (key.toLowerCase().includes("logmanagement")) {
           setLogManagementCount(1);
-        }
-        else if(key.toLowerCase().includes("localenvironment")){
+        } else if (key.toLowerCase().includes("localenvironment")) {
           setLocalenvironmentCount(1);
-        }
-        else if(key.toLowerCase().includes("ui")){
-          setUniquePortNumbers((prev) => [...prev, userData.metadata.nodes[key].data.serverPort]);
+        } else if (key.toLowerCase().includes("ui")) {
+          setUniquePortNumbers((prev) => [
+            ...prev,
+            userData.metadata.nodes[key].data.serverPort,
+          ]);
           setIsUINodeEnabled(true);
         }
       }
     }
     return () => setShowDiv(false);
-    }, [location?.state]);
+  }, [location?.state]);
 
   const onChange = (Data) => {
     if (Data.applicationType === "gateway") {
@@ -610,14 +613,11 @@ const Designer = ({update}) => {
           flag = true;
           setIsEmptyServiceSubmit(true);
         }
-        if (key.startsWith("Service")) {
-          const styleData = serviceInputCheck[key]?.style;
+        if (key.startsWith("Service") && Isopen === key) {
+          const styleData = serviceInputCheck[key];
           if (styleData) {
             let updatedNodes = { ...nodes };
-            updatedNodes[key].style = {
-              ...updatedNodes[key].style,
-              ...styleData,
-            };
+            updatedNodes[key].style.border = "1px solid black";
             setNodes(updatedNodes);
           }
         }
@@ -625,13 +625,6 @@ const Designer = ({update}) => {
 
       if (!flag) {
         setIsEmptyServiceSubmit(false);
-        let updatedNodes = { ...nodes };
-        for (let key in updatedNodes) {
-          if (key.startsWith("Service") && updatedNodes[key]?.style) {
-            updatedNodes[key].style.border = "1px solid black";
-          }
-        }
-        setNodes(updatedNodes);
       }
       setServiceInputCheck((prev) => ({
         ...prev,
@@ -669,7 +662,6 @@ const Designer = ({update}) => {
   };
 
   const [showDiv, setShowDiv] = useState(false);
-
 
   const MergeData = (sourceId, targetId, Nodes) => {
     const sourceType = sourceId.split("_")[0];
@@ -756,8 +748,8 @@ const Designer = ({update}) => {
         deployment: Data?.deployment,
       };
     } else delete Data?.metadata;
-    if(update && userData){
-     Data.projectId=userData?.project_id;
+    if (update && userData) {
+      Data.projectId = userData?.project_id;
     }
     console.log(Data, "Finaaal Dataaaaaaaaaa");
     setNodes(NewNodes);
@@ -781,7 +773,6 @@ const Designer = ({update}) => {
         window.location.replace("../../");
       });
   };
-
 
   const onCheckEdge = (edges) => {
     let NewEdges = { ...edges };
@@ -862,6 +853,11 @@ const Designer = ({update}) => {
         setEdges((eds) => addEdge(params, eds, Nodes));
         MergeData(params.source, params.target, Nodes);
       }
+      let updatedNodes = { ...Nodes };
+      if (updatedNodes[targetNode?.id]?.style) {
+        updatedNodes[targetNode?.id].style.border = "1px solid black";
+      }
+      setNodes(updatedNodes);
     } else {
       setEdges((eds) => addEdge(params, eds, Nodes));
     }
@@ -872,7 +868,7 @@ const Designer = ({update}) => {
   };
 
   const [uniqueApplicationNames, setUniqueApplicationNames] = useState([]);
-  const [uniquePortNumbers, setUniquePortNumbers]= useState([]);
+  const [uniquePortNumbers, setUniquePortNumbers] = useState([]);
   const [selectedColor, setSelectedColor] = useState("");
 
   const handleColorClick = (color) => {
@@ -894,7 +890,7 @@ const Designer = ({update}) => {
               style={{
                 position: "absolute",
                 top: "50%",
-                left: "50%",
+                left: "60%",
                 transform: "translate(-60%, -50%)",
                 display: "flex",
                 flexDirection: "column",
@@ -968,7 +964,7 @@ const Designer = ({update}) => {
             onEdgesChange={(changes) => onEdgesChange(nodes, changes)}
             onConnect={(params) => onConnect(params, nodes)}
             onInit={setReactFlowInstance}
-            onNodeDrag={onSingleClick}
+            onNodeDrag={onclick}
             onDrop={(e) =>
               onDrop(
                 e,
@@ -981,8 +977,8 @@ const Designer = ({update}) => {
             }
             onDragOver={onDragOver}
             onDragLeave={() => setShowDiv(Object.keys(nodes).length === 0)}
-            onNodeDoubleClick={onclick}
-            onNodeClick={onSingleClick}
+            onNodeClick={onclick}
+            // onNodeClick={onSingleClick}
             deleteKeyCode={["Backspace", "Delete"]}
             fitView
             onEdgeUpdate={(oldEdge, newConnection) =>
@@ -990,12 +986,12 @@ const Designer = ({update}) => {
             }
             onEdgeUpdateStart={onEdgeUpdateStart}
             onEdgeUpdateEnd={(_, edge) => onEdgeUpdateEnd(nodes, edge)}
-            onEdgeDoubleClick={onEdgeClick}
+            onEdgeClick={onEdgeClick}
             nodesFocusable={true}
             defaultViewport={defaultViewport}
           >
             <Controls />
-            <MiniMap style={{ backgroundColor: "#3182CE" }} />
+            {/* <MiniMap style={{ backgroundColor: "#3182CE" }} /> */}
             <Background
               gap={10}
               color="#f2f2f2"
@@ -1018,8 +1014,8 @@ const Designer = ({update}) => {
           handleColorClick={handleColorClick}
           nodeClick={nodeClick}
           edges={edges}
-          userData = {userData}
-          update ={update}
+          userData={userData}
+          update={update}
         />
 
         {nodeType === "UI" && Isopen && (

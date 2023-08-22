@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Modal,
-  ModalOverlay,
   ModalContent,
   ModalHeader,
   ModalCloseButton,
@@ -21,7 +20,7 @@ const ServiceModal = ({
   onSubmit,
   CurrentNode,
   uniqueApplicationNames,
-  uniquePortNumbers
+  uniquePortNumbers,
 }) => {
   const IntialState = {
     label: "Service",
@@ -33,10 +32,27 @@ const ServiceModal = ({
     ...CurrentNode,
   };
   const [ApplicationData, setApplicationData] = useState(IntialState);
+
+  useEffect(() => {
+    const handleDeleteKeyPress = (event) => {
+      if (
+        isOpen &&
+        (event.key === "Backspace" || event.key === "Delete") &&
+        event.target.tagName !== "INPUT"
+      ) {
+        onClose();
+      }
+    };
+
+    window.addEventListener("keydown", handleDeleteKeyPress);
+    return () => {
+      window.removeEventListener("keydown", handleDeleteKeyPress);
+    };
+  }, [isOpen, onClose]);
+
   const [duplicateApplicationNameError, setDuplicateApplicationNameError] =
     useState(false);
-  const [PortNumberError, setPortNumberError] =
-    useState(false);
+  const [PortNumberError, setPortNumberError] = useState(false);
   const ValidateName = (value) => {
     const isDuplicateName = uniqueApplicationNames.includes(value);
     if (isDuplicateName && value !== "") {
@@ -47,7 +63,7 @@ const ServiceModal = ({
       return true;
     }
   };
-  
+
   //check whether port number is unique and lies within the range
   const ValidatePortNumber = (value) => {
     const isDuplicatePort = uniquePortNumbers.includes(value);
@@ -55,9 +71,9 @@ const ServiceModal = ({
       setPortNumberError(true);
       return false;
     } else {
-        setPortNumberError(false);
-        return true;
-      }
+      setPortNumberError(false);
+      return true;
+    }
   };
 
   const handleKeyPress = (event) => {
@@ -78,8 +94,7 @@ const ServiceModal = ({
         [column]: value,
         applicationName: value,
       }));
-    } 
-    else if (column === "serverPort") {
+    } else if (column === "serverPort") {
       ValidatePortNumber(value);
       setApplicationData((prev) => ({
         ...prev,
@@ -109,10 +124,10 @@ const ServiceModal = ({
   const serverPortCheck =
     ApplicationData.serverPort &&
     (reservedPorts.includes(ApplicationData.serverPort) ||
-    (Number(ApplicationData.serverPort)<=1023));
+      Number(ApplicationData.serverPort) <= 1023);
 
   const PortNumberRangeCheck =
-    ApplicationData.serverPort && (Number(ApplicationData.serverPort)>65535);
+    ApplicationData.serverPort && Number(ApplicationData.serverPort) > 65535;
 
   const appNameCheck = /[0-9_-]/.test(ApplicationData.applicationName);
 
@@ -123,9 +138,16 @@ const ServiceModal = ({
     );
 
   return (
-    <Modal isOpen={isOpen} onClose={() => onClose(false)} isCentered={true}>
-      <ModalOverlay />
-      <ModalContent>
+    <Modal isOpen={isOpen} onClose={() => onClose(false)}>
+      {/* <ModalOverlay /> */}
+      <ModalContent
+        style={{
+          position: "absolute",
+          top: "20px",
+          right: "10px",
+          width: "300px",
+        }}
+      >
         <ModalHeader style={{ textAlign: "center" }}>Service</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
@@ -143,7 +165,12 @@ const ServiceModal = ({
                 variant="outline"
                 id="applicationName"
                 placeholder="Name"
-                borderColor={duplicateApplicationNameError ? "red" : "black"}
+                borderColor={
+                  duplicateApplicationNameError ||
+                  !ApplicationData.applicationName
+                    ? "red"
+                    : "black"
+                }
                 maxLength="32"
                 value={ApplicationData.applicationName}
                 onChange={(e) => handleData("label", e.target.value)}
@@ -152,8 +179,8 @@ const ServiceModal = ({
             {appNameCheck && (
               <Alert
                 status="error"
-                height="12px"
                 fontSize="12px"
+                padding="4px"
                 borderRadius="3px"
                 mb={2}
               >
@@ -164,7 +191,7 @@ const ServiceModal = ({
             {duplicateApplicationNameError && (
               <Alert
                 status="error"
-                height="12px"
+                padding="4px"
                 fontSize="12px"
                 borderRadius="3px"
                 mb={2}
@@ -201,7 +228,7 @@ const ServiceModal = ({
                 variant="outline"
                 id="packagename"
                 placeholder="packageName"
-                borderColor={"black"}
+                borderColor={!ApplicationData.packageName ? "red" : "black"}
                 maxLength="32"
                 value={ApplicationData.packageName}
                 onChange={(e) => handleData("packageName", e.target.value)}
@@ -210,7 +237,7 @@ const ServiceModal = ({
             {packageNameCheck && (
               <Alert
                 status="error"
-                height="12px"
+                padding="4px"
                 fontSize="12px"
                 borderRadius="3px"
                 mb={2}
@@ -226,8 +253,12 @@ const ServiceModal = ({
                 defaultValue={9000}
                 variant="outline"
                 id="serverport"
-                placeholder="9000"
-                borderColor={(PortNumberError||serverPortCheck||PortNumberRangeCheck) ? "red" : "black"}
+                placeholder="Port number"
+                borderColor={
+                  PortNumberError || serverPortCheck || PortNumberRangeCheck
+                    ? "red"
+                    : "black"
+                }
                 value={ApplicationData.serverPort}
                 maxLength="5"
                 onKeyPress={handleKeyPress}
@@ -237,7 +268,7 @@ const ServiceModal = ({
             {serverPortCheck && (
               <Alert
                 status="error"
-                height="12px"
+                padding="4px"
                 fontSize="12px"
                 borderRadius="3px"
                 mb={2}
@@ -249,37 +280,42 @@ const ServiceModal = ({
             {PortNumberError && (
               <Alert
                 status="error"
-                height="12px"
+                padding="4px"
                 fontSize="12px"
                 borderRadius="3px"
                 mb={2}
               >
                 <AlertIcon style={{ width: "14px", height: "14px" }} />
                 Port Number already exists. Please choose a unique Number.
-                </Alert>
+              </Alert>
             )}
-            {
-              PortNumberRangeCheck &&(
-                <Alert
+            {PortNumberRangeCheck && (
+              <Alert
                 status="error"
-                height="12px"
+                padding="4px"
                 fontSize="12px"
                 borderRadius="3px"
                 mb={2}
               >
                 <AlertIcon style={{ width: "14px", height: "14px" }} />
                 Port Number is out of the valid range.
-                </Alert>
-              )}
+              </Alert>
+            )}
           </div>
           <Button
             onClick={() =>
               !duplicateApplicationNameError && onSubmit(ApplicationData)
             }
             style={{ display: "block", margin: "0 auto" }}
-            isDisabled={isSubmitDisabled || appNameCheck || serverPortCheck || PortNumberError || PortNumberRangeCheck}
+            isDisabled={
+              isSubmitDisabled ||
+              appNameCheck ||
+              serverPortCheck ||
+              PortNumberError ||
+              PortNumberRangeCheck
+            }
           >
-            Submit
+            Save
           </Button>
         </ModalBody>
       </ModalContent>
