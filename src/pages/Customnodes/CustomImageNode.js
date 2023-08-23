@@ -1,5 +1,5 @@
 import { Handle, Position, NodeResizer } from "reactflow";
-import postgres from "../../assets/pstgrc.jpeg";
+import postgres from "../../assets/postgresql.png";
 import sql from "../../assets/mongo.png";
 
 function CustomImageNode({ data, isConnectable, selected }) {

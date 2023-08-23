@@ -323,9 +323,8 @@ const Designer = ({ update }) => {
           let UpdatedNodes = { ...Nodes };
           delete UpdatedNodes[edge.source].data.prodDatabaseType;
           UpdatedNodes[edge.target].data.isConnected = false;
-          if(UpdatedNodes[edge.target]){
-            console.log(UpdatedNodes[edge.target].style.border,"iiiiiiiiiiiiiiiiiiii")
-            UpdatedNodes[edge.target].style.border = "1px solid red"
+          if (UpdatedNodes[edge.target]) {
+            UpdatedNodes[edge.target].style.border = "1px solid red";
           }
           setNodes(UpdatedNodes);
         }
@@ -636,9 +635,6 @@ const Designer = ({ update }) => {
       Data.applicationName = Data.applicationName.trim();
       Data.label = Data.label.trim();
     }
-    if (Data.serverPort) {
-      Data.serverPort = Data.serverPort;
-    }
     if (Isopen === "aws" || Isopen === "azure") {
       UpdatedNodes["cloudProvider"].data = {
         ...UpdatedNodes["cloudProvider"].data,
@@ -652,8 +648,21 @@ const Designer = ({ update }) => {
     } else if (Data?.type === "Group") {
       UpdatedNodes[Isopen].data = { ...UpdatedNodes[Isopen].data, ...Data };
     } else {
+      if (CurrentNode?.applicationName) {
+        setUniqueApplicationNames((prev) =>
+          prev.filter((appName) => CurrentNode.applicationName !== appName)
+        );
+      }
       setUniqueApplicationNames((prev) => [...prev, Data.applicationName]);
+
+      if (CurrentNode?.serverPort) {
+        setUniquePortNumbers((prev) =>
+          prev.filter((port) => CurrentNode.serverPort !== port)
+        );
+      }
+
       setUniquePortNumbers((prev) => [...prev, Data.serverPort]);
+
       UpdatedNodes[Isopen].data = { ...UpdatedNodes[Isopen].data, ...Data };
       UpdatedNodes[Isopen].selected = false;
     }
@@ -1024,6 +1033,7 @@ const Designer = ({ update }) => {
             CurrentNode={CurrentNode}
             onClose={setopen}
             onSubmit={onChange}
+            uniqueApplicationNames={uniqueApplicationNames}
             uniquePortNumbers={uniquePortNumbers}
           />
         )}

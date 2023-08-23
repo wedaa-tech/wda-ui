@@ -52,9 +52,14 @@ const ServiceModal = ({
 
   const [duplicateApplicationNameError, setDuplicateApplicationNameError] =
     useState(false);
+
   const [PortNumberError, setPortNumberError] = useState(false);
+
   const ValidateName = (value) => {
-    const isDuplicateName = uniqueApplicationNames.includes(value);
+    const currentApplicationName = CurrentNode?.applicationName;
+    const isDuplicateName =
+      uniqueApplicationNames.includes(value) &&
+      value !== currentApplicationName;
     if (isDuplicateName && value !== "") {
       setDuplicateApplicationNameError(true);
       return false;
@@ -66,7 +71,9 @@ const ServiceModal = ({
 
   //check whether port number is unique and lies within the range
   const ValidatePortNumber = (value) => {
-    const isDuplicatePort = uniquePortNumbers.includes(value);
+    const currentServerPort = CurrentNode?.serverPort;
+    const isDuplicatePort =
+      uniquePortNumbers.includes(value) && value !== currentServerPort;
     if (isDuplicatePort && value !== "") {
       setPortNumberError(true);
       return false;
@@ -122,12 +129,11 @@ const ServiceModal = ({
 
   const reservedPorts = ["5601", "9200", "15021", "20001", "3000", "8080"];
   const serverPortCheck =
-    ApplicationData.serverPort &&
-    (reservedPorts.includes(ApplicationData.serverPort) ||
-      Number(ApplicationData.serverPort) <= 1023);
+  ApplicationData.serverPort && reservedPorts.includes(ApplicationData.serverPort);
 
   const PortNumberRangeCheck =
-    ApplicationData.serverPort && Number(ApplicationData.serverPort) > 65535;
+  ApplicationData.serverPort &&
+    (Number(ApplicationData.serverPort) < 1024 || Number(ApplicationData.serverPort) > 65535);
 
   const appNameCheck = /[0-9_-]/.test(ApplicationData.applicationName);
 

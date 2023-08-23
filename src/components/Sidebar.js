@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import db1 from "../assets/pstgrc.jpeg";
+import db1 from "../assets/postgresql.png";
 import db2 from "../assets/mongo.png";
-import eurkea from "../assets/eureka.jpg";
+import eurkea from "../assets/eureka.png";
 import keycloakIcon from "../assets/keycloak.png";
 import eck from "../assets/eck.png";
-// import mini from "../assets/mini.jpeg";
+// import mini from "../assets/mini.png";
 // import docker from "../assets/docker.png";
 import "./../App.css";
 import { Input, FormLabel, Button, Checkbox } from "@chakra-ui/react";
@@ -27,7 +27,7 @@ const Sidebar = ({
   selectedColor,
   handleColorClick,
   userData,
-  update
+  update,
 }) => {
   const onDragStart = (event, nodeType, Name) => {
     event.dataTransfer.setData("Name", Name);
@@ -39,9 +39,8 @@ const Sidebar = ({
   const toggleOption = (option) => {
     setSelectedOption((prevOption) => (prevOption === option ? null : option));
   };
-  var applicationName = ""
-  if(update && userData?.projectName)
-  applicationName=userData?.projectName;
+  var applicationName = "";
+  if (update && userData?.projectName) applicationName = userData?.projectName;
   const IntialState = {
     projectName: applicationName,
   };
@@ -191,7 +190,7 @@ const Sidebar = ({
                 justifyContent: "space-between",
               }}
             >
-              You can drag these nodes to the pane on the left.
+              You can drag these nodes to the pane on the right.
             </h2>
           </div>
 
@@ -278,8 +277,8 @@ const Sidebar = ({
                 draggable
               >
                 <img
-                  width="120px"
-                  style={{ marginBottom: "10px" }}
+                  width="145px"
+                  style={{ marginTop: "10px" }}
                   src={db1}
                   alt="postgreslogo"
                 ></img>
@@ -291,7 +290,12 @@ const Sidebar = ({
                 }
                 draggable
               >
-                <img width="120px" src={db2} alt="mongologo"></img>
+                <img
+                  width="145px"
+                  style={{ margin: "10px 0px 10px 15px" }}
+                  src={db2}
+                  alt="mongologo"
+                ></img>
               </div>
             </>
           )}
@@ -324,7 +328,12 @@ const Sidebar = ({
                 }
                 draggable
               >
-                <img width="120px" src={eurkea} alt="eurekalogo"></img>
+                <img
+                  width="100px"
+                  height="40px"
+                  src={eurkea}
+                  alt="eurekalogo"
+                ></img>
               </div>
             </>
           )}

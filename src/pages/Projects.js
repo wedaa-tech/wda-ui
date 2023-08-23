@@ -13,7 +13,7 @@ import { useState, useEffect } from "react";
 import { useKeycloak } from "@react-keycloak/web";
 import azure from "../../src/assets/Azure.png";
 import aws from "../../src/assets/aws.png";
-import minikube from "../../src/assets/mini.jpeg";
+import minikube from "../../src/assets/mini.png";
 import Footer from "../components/Footer";
 import DeploymentModal from "../components/Modal/DeploymentModal";
 import DeleteModal from '../components/Modal/DeleteModal';

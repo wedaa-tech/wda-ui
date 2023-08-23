@@ -1,4 +1,4 @@
-import eureka from "../../assets/eureka.jpg";
+import eureka from "../../assets/eureka.png";
 import { NodeResizer } from "reactflow";
 // import consol from "../../assets/consol.png";
 
