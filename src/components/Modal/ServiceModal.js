@@ -20,7 +20,6 @@ const ServiceModal = ({
   onSubmit,
   CurrentNode,
   handleColorClick,
-  selectedColor,
   uniqueApplicationNames,
   uniquePortNumbers,
 }) => {
