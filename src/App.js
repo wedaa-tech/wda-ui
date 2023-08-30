@@ -15,6 +15,7 @@ import React from "react";
 import { ReactKeycloakProvider } from "@react-keycloak/web";
 import keycloak from "./Keycloak";
 import PrivateRoute from "./helpers/PrivateRoute";
+import SuccessPage from "./pages/SuccessPage";
 
 function App() {
   return (
@@ -35,6 +36,9 @@ function App() {
           </Route>
           <Route exact path="/">
             <Home />
+          </Route>
+          <Route exact path="/success">
+            <SuccessPage/>
           </Route>
           <Route exact path="/canvasToCode">
             {/* <PrivateRoute> */}

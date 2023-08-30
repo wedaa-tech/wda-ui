@@ -26,18 +26,18 @@ import { InfoIcon } from "@chakra-ui/icons";
 
 const DeployModal = ({ onSubmit, isLoading, projectData, onClose, update }) => {
   const location = useLocation();
-  const [userData,setuserData] = useState(location?.state);
+  const [userData, setuserData] = useState(location?.state);
   const [selectedImage, setSelectedImage] = useState(null);
   const [checkLength, setCheckLength] = useState(false);
   const [DeploymentData, setDeploymentData] = useState({});
-  
-  useEffect(()=>{
-    if(update && userData && userData.metadata?.deployment){
-      setSelectedImage(userData.metadata.deployment.cloudProvider)
-      setDeploymentData(userData.metadata.deployment) 
-  }
-  },[userData,location?.state])
-  
+
+  useEffect(() => {
+    if (update && userData && userData.metadata?.deployment) {
+      setSelectedImage(userData.metadata.deployment.cloudProvider);
+      setDeploymentData(userData.metadata.deployment);
+    }
+  }, [userData, location?.state]);
+
   const isCheckEmpty = () => {
     if (DeploymentData.cloudProvider === "azure") {
       return (
@@ -255,11 +255,7 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose, update }) => {
           !clusterNameCheck
         );
       else {
-        return (
-          !namespaceCheck ||
-          !domainNameCheck ||
-          !clusterNameCheck
-        );
+        return !namespaceCheck || !domainNameCheck || !clusterNameCheck;
       }
     }
     return (
@@ -939,13 +935,13 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose, update }) => {
           {isLoading && (
             <Flex
               position="fixed"
-              top="0"
+              top="62"
               left="0"
               right="0"
               bottom="0"
               alignItems="center"
               justifyContent="center"
-              backgroundColor="rgba(240, 248, 255, 0.85)"
+              backgroundColor="#f5f5f5"
               zIndex="9999"
               display="flex"
               flexDirection="column"

@@ -28,7 +28,7 @@ import AlertModal from "../components/Modal/AlertModal";
 import resizeableNode from "./Customnodes/ResizeableNode";
 import groupNode from "./Customnodes/GroupNode";
 import { useLocation } from "react-router-dom";
-
+import { useHistory } from 'react-router-dom'; 
 import "./../App.css";
 import EdgeModal from "../components/Modal/EdgeModal";
 import { useKeycloak } from "@react-keycloak/web";
@@ -695,7 +695,7 @@ const Designer = ({ update }) => {
       }
     }
   };
-
+  const history = useHistory();
   const onsubmit = (Data) => {
     const NewNodes = { ...nodes };
     const NewEdges = { ...edges };
@@ -775,11 +775,12 @@ const Designer = ({ update }) => {
       .then((response) => response.blob())
       .then((blob) => {
         setIsLoading(false);
+        history.push('/success')
         saveAs(blob, `${Data.projectName}.zip`); // Edit the name or ask the user for the project Name
       })
       .catch((error) => console.error(error))
       .finally(() => {
-        window.location.replace("../../");
+        history.push('/success')
       });
   };
 
