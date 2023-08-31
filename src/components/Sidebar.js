@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import db1 from "../assets/postgresql.png";
 import db2 from "../assets/mongo.png";
 import eurkea from "../assets/eureka.png";
@@ -11,6 +11,7 @@ import { Input, FormLabel, Button, Checkbox } from "@chakra-ui/react";
 import DeployModal from "./Modal/DeployModal";
 import { useKeycloak } from "@react-keycloak/web";
 import { ArrowRightIcon, ArrowLeftIcon } from "@chakra-ui/icons";
+import { useLocation } from "react-router-dom";
 
 const Sidebar = ({
   isUINodeEnabled,
@@ -25,26 +26,45 @@ const Sidebar = ({
   isEmptyUiSubmit,
   isEmptyServiceSubmit,
   selectedColor,
-  userData,
   update,
+  updated,
+  setUpdated,
+  triggerExit,
 }) => {
+  const location = useLocation();
   const onDragStart = (event, nodeType, Name) => {
     event.dataTransfer.setData("Name", Name);
     event.dataTransfer.setData("application/reactflow", nodeType);
     event.dataTransfer.effectAllowed = "move";
   };
-
   const [selectedOption, setSelectedOption] = useState(null);
   const toggleOption = (option) => {
     setSelectedOption((prevOption) => (prevOption === option ? null : option));
   };
   var applicationName = "";
-  if (update && userData?.projectName) applicationName = userData?.projectName;
+  if (location?.state) applicationName = location.state.projectName;
+  else if (localStorage?.data) {
+    applicationName = JSON.parse(localStorage.data).projectName;
+  }
   const IntialState = {
     projectName: applicationName,
   };
   const [projectData, setprojectData] = useState(IntialState);
+  useEffect(() => {
+    if (triggerExit.onOk) {
+      setprojectData({
+        projectName: "",
+      });
+    }
+  }, [triggerExit]);
+
   const handleProjectData = (column, value) => {
+    setUpdated(true);
+    let data = {};
+    if (localStorage?.data) data = JSON.parse(localStorage.data);
+    data.projectName = value;
+    data.updated = updated;
+    localStorage.data = JSON.stringify(data);
     setprojectData((prev) => ({ ...prev, [column]: value }));
   };
   const [showModal, setShowModal] = useState(false);

@@ -138,7 +138,11 @@ const ServiceModal = ({
     (Number(ApplicationData.serverPort) < 1024 ||
       Number(ApplicationData.serverPort) > 65535);
 
-  const appNameCheck = /[0-9_-]/.test(ApplicationData.applicationName);
+  const appNameCheck =
+    ApplicationData.applicationName &&
+    !/^[a-zA-Z](?:[a-zA-Z0-9_-]*[a-zA-Z0-9])?$/g.test(
+      ApplicationData.applicationName
+    );
 
   const packageNameCheck =
     ApplicationData.packageName &&
@@ -194,7 +198,7 @@ const ServiceModal = ({
                 mb={2}
               >
                 <AlertIcon style={{ width: "14px", height: "14px" }} />
-                Application Name should not contain -, _ or number.
+                Application Name should not contain -, _ or numbers.
               </Alert>
             )}
             {duplicateApplicationNameError && (
