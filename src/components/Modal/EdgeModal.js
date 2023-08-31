@@ -21,7 +21,6 @@ const EdgeModal = ({
   handleEdgeData,
   isServiceDiscovery,
 }) => {
-  console.log(CurrentEdge, "edgeeeeee");
   const initialState = {
     type: "",
     framework: "",
@@ -148,7 +147,6 @@ const EdgeModal = ({
                 </Select>
               </FormControl>
             )}
-            {console.log("servicefsdf", isServiceDiscovery)}
             {edgeData.type === "synchronous" &&
               edgeData.framework === "rest-api" &&
               !isServiceDiscovery && (

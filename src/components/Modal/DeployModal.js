@@ -255,7 +255,7 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose, update }) => {
   const clusterNameCheck = /^[a-zA-Z][a-zA-Z0-9-]*$/.test(
     DeploymentData.clusterName
   );
-  const storageClassCheck = /^[a-z0-9]([-a-z0-9]*[a-z0-9])?$/.test(
+  const storageClassCheck = /^[a-z][a-z]*$/.test(
     DeploymentData.kubernetesStorageClassName
   );
 
@@ -327,7 +327,6 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose, update }) => {
       delete FinalData?.tenantId;
       delete FinalData?.dockerRepositoryName;
     } else if (FinalData.cloudProvider === "azure") {
-      console.log("hloooooo");
       delete FinalData?.awsAccountId;
       delete FinalData?.awsRegion;
       delete FinalData?.kubernetesStorageClassName;
@@ -644,13 +643,14 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose, update }) => {
               {DeploymentData.clusterName && !clusterNameCheck ? (
                 <Alert
                   status="error"
-                  height="12px"
+                  height="38px"
                   fontSize="12px"
                   borderRadius="3px"
                   mb={2}
                 >
                   <AlertIcon style={{ width: "14px", height: "14px" }} />
-                  Cluster Name should not contain special characters.
+                  Cluster Name should not contain special characters or start
+                  with number.
                 </Alert>
               ) : (
                 <></>
@@ -712,8 +712,8 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose, update }) => {
                         mb={2}
                       >
                         <AlertIcon style={{ width: "14px", height: "14px" }} />
-                        Storage Class Name should not contain special characters
-                        or start with uppercase.
+                        Storage Class Name should not contain special
+                        characters, numbers or uppercase.
                       </Alert>
                     ) : (
                       <></>
@@ -739,13 +739,14 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose, update }) => {
               {DeploymentData.kubernetesNamespace && !namespaceCheck ? (
                 <Alert
                   status="error"
-                  height="12px"
+                  height="38px"
                   fontSize="12px"
                   borderRadius="3px"
                   mb={2}
                 >
                   <AlertIcon style={{ width: "14px", height: "14px" }} />
-                  Namespace should not contain special characters.
+                  Namespace should not contain special characters or start with
+                  number.
                 </Alert>
               ) : (
                 <></>

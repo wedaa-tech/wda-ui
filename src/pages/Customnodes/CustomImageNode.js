@@ -3,7 +3,6 @@ import postgres from "../../assets/postgresql.png";
 import sql from "../../assets/mongo.png";
 
 function CustomImageNode({ data, isConnectable, selected }) {
-  console.log(data);
 
   return (
     <>

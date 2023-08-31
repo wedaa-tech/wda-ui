@@ -157,7 +157,7 @@ const Sidebar = ({
           onClick={handleToggleContent}
         />
         <div
-          class="sideBlock"
+          className="sideBlock"
           style={{
             position: "relative",
             flex: "1",

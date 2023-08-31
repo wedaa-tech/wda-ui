@@ -129,9 +129,6 @@ const Designer = ({ update }) => {
 
   const updateEdge = (oldEdge, newConnection, edges, Nodes) => {
     setUpdated(true);
-    console.log("OldEdge", oldEdge);
-    console.log("New Connection", newConnection);
-    console.log("Edges", edges);
     let newEdgeId = newConnection.source + "-" + newConnection.target;
     newConnection.markerEnd = { type: MarkerType.ArrowClosed };
     newConnection.type = "straight";
@@ -226,7 +223,6 @@ const Designer = ({ update }) => {
             } else if (change.id === "logManagement") {
               setLogManagementCount(0);
             }
-            console.log(change, "Chanfe");
             // Remove the deleted node from updatedNodes
             delete updatedNodes[change.id];
             // Remove the applicationName from uniqueApplicationNames
@@ -263,12 +259,10 @@ const Designer = ({ update }) => {
     setUpdated(true);
     setEdges((oldEdges) => {
       const updatedEdges = { ...oldEdges };
-      console.log(changes, updatedEdges);
       let UpdatedNodes = { ...Nodes };
       changes.forEach((change) => {
         switch (change.type) {
           case "add":
-            console.log("Addddddddddd");
             // Handle add event
             break;
           case "remove":
@@ -286,7 +280,6 @@ const Designer = ({ update }) => {
             // Handle remove event
             break;
           case "update":
-            console.log("Updateeeeeeeeeeeeee");
             // Handle update event
             break;
           case "select":
@@ -323,7 +316,6 @@ const Designer = ({ update }) => {
   const onEdgeUpdate = useCallback((Nodes, oldEdge, newConnection) => {
     setUpdated(true);
     edgeUpdateSuccessful.current = true;
-    console.log(oldEdge, newConnection, Nodes);
     if (
       !(
         newConnection.target.startsWith("Database") &&
@@ -366,7 +358,6 @@ const Designer = ({ update }) => {
 
   const onclick = (e, node) => {
     const Id = e.target.dataset.id || e.target.name || node.id;
-    console.log(Id);
     if (Id) {
       const type = Id.split("_")[0];
       setNodeType(type);
@@ -379,7 +370,6 @@ const Designer = ({ update }) => {
 
     // const onSingleClick = (e, node) => {
     // const Id = e.target.dataset.id || e.target.name || node.id;
-    // console.log(Id);
     setNodeClick(Id);
   };
   const clear = () => {
@@ -451,7 +441,6 @@ const Designer = ({ update }) => {
         }));
       } else if (name.startsWith("Database")) {
         const prodDatabaseType = name.split("_").splice(1)[0];
-        console.log(prodDatabaseType);
         const newNode = {
           id: getId("Database"),
           type: "selectorNode",
@@ -461,9 +450,7 @@ const Designer = ({ update }) => {
         };
         setNodes((nds) => ({ ...nds, [newNode.id]: newNode }));
       } else if (name.startsWith("Discovery") && servicecount === 0) {
-        console.log(servicecount);
         const serviceDiscoveryType = name.split("_").splice(1)[0];
-        console.log(serviceDiscoveryType);
         const newNode = {
           id: "serviceDiscoveryType",
           type: "selectorNode1",
@@ -475,11 +462,9 @@ const Designer = ({ update }) => {
         setIsServiceDiscovery(true);
         setServiceDiscoveryCount(1);
       } else if (name.startsWith("Discovery") && servicecount >= 1) {
-        console.log("else", servicecount);
         setServiceDiscoveryCount(2);
       } else if (name.startsWith("Auth") && authcount === 0) {
         const authenticationType = name.split("_").splice(1)[0];
-        console.log(authenticationType);
         const newNode = {
           id: "authenticationType",
           type: "selectorNode3",
@@ -490,12 +475,9 @@ const Designer = ({ update }) => {
         setNodes((nds) => ({ ...nds, [newNode.id]: newNode }));
         setAuthProviderCount(1);
       } else if (name.startsWith("Auth") && authcount >= 1) {
-        console.log("else", authcount);
         setAuthProviderCount(2);
       } else if (name.startsWith("MessageBroker") && messagecount === 0) {
-        console.log(messagecount);
         const messageBroker = name.split("_").splice(1)[0];
-        console.log(messageBroker);
         const newNode = {
           id: "messageBroker",
           type: "selectorNode4",
@@ -522,7 +504,6 @@ const Designer = ({ update }) => {
         };
         setNodes((nds) => ({ ...nds, [newNode.id]: newNode }));
       } else if (name.startsWith("MessageBroker") && messagecount >= 1) {
-        console.log("else", messagecount);
         setMessageBrokerCount(2);
       } else if (name.startsWith("Load") && loadcount === 0) {
         const logManagementType = name.split("_").splice(1)[0];
@@ -536,12 +517,9 @@ const Designer = ({ update }) => {
         setNodes((nds) => ({ ...nds, [newNode.id]: newNode }));
         setLogManagementCount(1);
       } else if (name.startsWith("Load") && loadcount >= 1) {
-        console.log("else", loadcount);
         setLogManagementCount(2);
       } else if (name.startsWith("Localenvironment") && Localenvcount === 0) {
-        console.log(Localenvcount);
         const Localenvironment = name.split("_").splice(1)[0];
-        console.log(Localenvironment);
         const newNode = {
           id: "Localenvironment",
           type: "selectorNode7",
@@ -552,7 +530,6 @@ const Designer = ({ update }) => {
         setNodes((nds) => ({ ...nds, [newNode.id]: newNode }));
         setLocalenvironmentCount(1);
       } else if (name.startsWith("Localenvironment") && Localenvcount >= 1) {
-        console.log("else", Localenvcount);
         setLocalenvironmentCount(2);
       } else {
         const newNode = {
@@ -813,8 +790,6 @@ const Designer = ({ update }) => {
     const sourceType = sourceId.split("_")[0];
     const targetType = targetId.split("_")[0];
 
-    console.log(sourceType, targetType);
-
     if (sourceType !== targetType) {
       if (
         (sourceType === "Service" && targetType === "Database") ||
@@ -823,7 +798,6 @@ const Designer = ({ update }) => {
         let AllNodes = { ...Nodes };
         let sourceNode = AllNodes[sourceId];
         let targetNode = AllNodes[targetId];
-        console.log(sourceNode, targetNode);
         AllNodes[sourceId].data = {
           ...sourceNode.data,
           prodDatabaseType: targetNode.data.prodDatabaseType,
@@ -941,7 +915,6 @@ const Designer = ({ update }) => {
   const onEdgeClick = (e, edge) => {
     const sourceType = edge.source.split("_")[0];
     const targetType = edge.target.split("_")[0];
-    console.log(e, edge);
     if (
       (sourceType === "UI" && targetType === "Service") ||
       (sourceType === "Service" && targetType === "Service")
@@ -952,7 +925,6 @@ const Designer = ({ update }) => {
   };
 
   const handleEdgeData = (Data) => {
-    console.log(Data, IsEdgeopen);
     let UpdatedEdges = { ...edges };
 
     if (Data.framework === "rest-api" && isServiceDiscovery) {
