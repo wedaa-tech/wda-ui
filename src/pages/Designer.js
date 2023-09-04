@@ -446,7 +446,11 @@ const Designer = ({ update }) => {
           type: "selectorNode",
           position,
           data: { prodDatabaseType: prodDatabaseType, isConnected: false },
-          style: { border: "1px solid red", padding: "4px 4px" },
+          style: {
+            border: "1px solid red",
+            padding: "4px 4px",
+            height: "60px",
+          },
         };
         setNodes((nds) => ({ ...nds, [newNode.id]: newNode }));
       } else if (name.startsWith("Discovery") && servicecount === 0) {
@@ -964,22 +968,24 @@ const Designer = ({ update }) => {
     params.type = "smoothstep";
     params.data = {};
     const targetNode = Nodes[params.target];
-
+    const sourceNode = Nodes[params.source];
     if (targetNode.id.startsWith("Database")) {
-      if (
-        !Nodes[params.source]?.data["prodDatabaseType"] &&
-        !targetNode.data.isConnected
-      ) {
+      let isServiceConnected = Nodes[params.source]?.data["prodDatabaseType"];
+      if (!isServiceConnected && !targetNode.data.isConnected) {
         targetNode.data.isConnected = true;
         setEdges((eds) => addEdge(params, eds, Nodes));
         MergeData(params.source, params.target, Nodes);
       }
-      let updatedNodes = { ...Nodes };
-      if (updatedNodes[targetNode?.id]?.style) {
-        updatedNodes[targetNode?.id].style.border = "1px solid black";
+      if (!isServiceConnected) {
+        let updatedNodes = { ...Nodes };
+        if (updatedNodes[targetNode?.id]?.style) {
+          updatedNodes[targetNode?.id].style.border = "1px solid black";
+        }
+        setNodes(updatedNodes);
       }
-      setNodes(updatedNodes);
-    } else {
+    } else if (
+      !(targetNode.id.startsWith("UI") && sourceNode.id.startsWith("Service"))
+    ) {
       setEdges((eds) => addEdge(params, eds, Nodes));
     }
   }, []);
