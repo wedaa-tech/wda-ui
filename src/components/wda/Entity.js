@@ -72,7 +72,6 @@ function Entity({ id, entity, setEntity }) {
     );
   };
 
-  // console.log("entityTuples", entityTuples);
 
   return (
     <AccordionItem>

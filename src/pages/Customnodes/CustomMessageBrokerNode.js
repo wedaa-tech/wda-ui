@@ -7,7 +7,6 @@ import rabbitmq from "../../assets/rabbitmq.png";
 
 function CustomMessageBrokerNode({ data, isConnectable }) {
   const messageBroker = data.messageBroker;
-  console.log(messageBroker);
 
   return (
     <div>

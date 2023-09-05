@@ -13,18 +13,23 @@ import { useState, useEffect } from "react";
 import { useKeycloak } from "@react-keycloak/web";
 import azure from "../../src/assets/Azure.png";
 import aws from "../../src/assets/aws.png";
-import minikube from "../../src/assets/mini.jpeg";
+import minikube from "../../src/assets/mini.png";
 import Footer from "../components/Footer";
 import DeploymentModal from "../components/Modal/DeploymentModal";
+import ActionModal from "../components/Modal/ActionModal";
 
 function Projects() {
   const history = useHistory();
-
   const [data, setData] = useState([]);
   const { keycloak, initialized } = useKeycloak();
   const [showData, setShowData] = useState(false);
   const [modalData, setModalData] = useState([]);
   const [cloudName, setCloudName] = useState("");
+  const [showModal, setShowModal] = useState({
+    display: false,
+    id: "",
+    name: "",
+  });
 
   const DefaultData = {
     awsAccountId: "",
@@ -49,10 +54,10 @@ function Projects() {
 
   const [depData, setDepData] = useState(DefaultData);
 
-  const handleClick = async (data, column, name) => {
+  const handleClick = async (data, column, id) => {
     if (column === "Architecture")
       history.push({
-        pathname: "/projects/" + name,
+        pathname: "/projects/" + id,
         state: data,
       });
     else {
@@ -108,7 +113,9 @@ function Projects() {
       })
         .then((response) => response.json())
         .then((result) => {
-          setData(result.data);
+          if (result?.data) {
+            setData(result.data);
+          }
         })
         .catch((error) => console.error(error));
     }
@@ -116,6 +123,59 @@ function Projects() {
 
   const handleContainerClose = () => {
     setShowData(false);
+  };
+
+  const handleButtonClick = (val, projectName) => {
+    setShowModal({ display: true, id: val, name: projectName });
+  };
+
+  const handleCloseModal = () => {
+    setShowModal({ ...modalData, display: false });
+  };
+
+  const onSubmit = async (data) => {
+    const response = await fetch(
+      process.env.REACT_APP_API_BASE_URL + "/api/blueprints/" + data.id,
+      {
+        method: "delete",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+        },
+      }
+    )
+      .catch((error) => console.error(error))
+      .finally(() => {
+        window.location.replace("../../projects");
+      });
+  };
+
+  const verifyData = async (data, id) => {
+    try {
+      const response = await fetch(
+        process.env.REACT_APP_API_BASE_URL + "/api/user/" + id,
+        {
+          method: "get",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: initialized
+              ? `Bearer ${keycloak?.token}`
+              : undefined,
+          },
+        }
+      );
+      if (response.ok) {
+        history.push({
+          pathname: "/edit/" + id,
+          state: data,
+        });
+      } else {
+        console.error("You are not authorized");
+        window.location.replace("../../");
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -127,6 +187,8 @@ function Projects() {
               <Th>S.No</Th>
               <Th>Project</Th>
               <Th>Infrastructure</Th>
+              <Th>Edit</Th>
+              <Th>Delete</Th>
             </Tr>
           </Thead>
           <Tbody>
@@ -139,11 +201,7 @@ function Projects() {
                       colorScheme="teal"
                       variant="link"
                       onClick={(e) =>
-                        handleClick(
-                          project.metadata,
-                          "Architecture",
-                          project.projectName
-                        )
+                        handleClick(project, "Architecture", project.project_id)
                       }
                       _hover={{
                         transform: "scale(1.1)",
@@ -190,12 +248,69 @@ function Projects() {
                       <span style={{ lineHeight: "40px" }}>NA</span>
                     </Td>
                   )}
+                  <Td>
+                    <button
+                      style={{ paddingLeft: "7px" }}
+                      onClick={() => verifyData(project, project.project_id)}
+                    >
+                      <svg
+                        stroke="currentColor"
+                        fill="none"
+                        strokeWidth="2"
+                        viewBox="0 0 24 24"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="h-4 w-4"
+                        height="1em"
+                        width="1em"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                      </svg>
+                    </button>
+                  </Td>
+                  <Td>
+                    <button
+                      style={{ paddingLeft: "10px" }}
+                      onClick={() =>
+                        handleButtonClick(
+                          project.project_id,
+                          project.projectName
+                        )
+                      }
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                      >
+                        <path fill="none" d="M0 0h24v24H0z" />
+                        <path
+                          fill="#000000"
+                          d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"
+                        />
+                      </svg>
+                    </button>
+                  </Td>
                 </Tr>
               );
             })}
           </Tbody>
         </Table>
       </TableContainer>
+      {showModal.display && (
+        <>
+          <ActionModal
+            onClose={handleCloseModal}
+            onSubmit={onSubmit}
+            actionType="delete"
+            id={showModal.id}
+            name={showModal.name}
+          />
+        </>
+      )}
       {showData && (
         <>
           <DeploymentModal

@@ -1,5 +1,5 @@
 import docker from "../../assets/docker.png";
-import mini from "../../assets/mini.jpeg";
+import mini from "../../assets/mini.png";
 
 function CustomLocalenvironmentNode({ data, isConnectable }) {
   const Localenvironment = data.Localenvironment;

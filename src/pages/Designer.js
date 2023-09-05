@@ -27,11 +27,13 @@ import CustomLocalenvironmentNode from "./Customnodes/CustomLocalenvironmentNode
 import AlertModal from "../components/Modal/AlertModal";
 import resizeableNode from "./Customnodes/ResizeableNode";
 import groupNode from "./Customnodes/GroupNode";
-
+import { useLocation } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import "./../App.css";
 import EdgeModal from "../components/Modal/EdgeModal";
 import { useKeycloak } from "@react-keycloak/web";
 import { FiUploadCloud } from "react-icons/fi";
+import ActionModal from "../components/Modal/ActionModal";
 
 let service_id = 1;
 let database_id = 1;
@@ -61,7 +63,7 @@ const nodeTypes = {
   GroupNode: groupNode,
 };
 
-const Designer = () => {
+const Designer = ({ update }) => {
   const reactFlowWrapper = useRef(null);
   const { keycloak, initialized } = useKeycloak();
   const [nodes, setNodes] = useState({});
@@ -75,12 +77,25 @@ const Designer = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isEmptyUiSubmit, setIsEmptyUiSubmit] = useState(false);
   const [isEmptyServiceSubmit, setIsEmptyServiceSubmit] = useState(false);
-
+  const location = useLocation();
+  const [userData, setuserData] = useState({});
   const [serviceInputCheck, setServiceInputCheck] = useState({});
 
-  console.log("Nodes", nodes);
+  const [updated, setUpdated] = useState(false);
+  const [isVisibleDialog, setVisibleDialog] = useState(false);
+  const history = useHistory();
+  const [triggerExit, setTriggerExit] = useState({
+    onOk: false,
+    path: "",
+  });
+
+  const handleGoToIntendedPage = useCallback(
+    (location) => history.push(location),
+    [history]
+  );
+
   const addEdge = (edgeParams, edges) => {
-    console.log(edgeParams, "edgeee");
+    setUpdated(true);
     const edgeId = `${edgeParams.source}-${edgeParams.target}`;
     const databaseEdge = edgeParams?.target.startsWith("Database");
     const groupEdge =
@@ -113,9 +128,7 @@ const Designer = () => {
   };
 
   const updateEdge = (oldEdge, newConnection, edges, Nodes) => {
-    console.log("OldEdge", oldEdge);
-    console.log("New Connection", newConnection);
-    console.log("Edges", edges);
+    setUpdated(true);
     let newEdgeId = newConnection.source + "-" + newConnection.target;
     newConnection.markerEnd = { type: MarkerType.ArrowClosed };
     newConnection.type = "straight";
@@ -132,10 +145,12 @@ const Designer = () => {
   };
 
   const onNodesChange = useCallback((setShowDiv, edges, changes = []) => {
+    setUpdated(true);
     setNodes((oldNodes) => {
       const updatedNodes = { ...oldNodes };
       const updatedEdges = { ...edges };
       const deletedApplicationNames = []; // Track deleted application names
+      const deletedApplicationPorts = [];
 
       changes.forEach((change) => {
         switch (change.type) {
@@ -153,20 +168,22 @@ const Designer = () => {
               };
             break;
           case "position":
-            updatedNodes[change.id] = {
-              ...updatedNodes[change.id],
-              position: {
-                ...updatedNodes[change.id].position,
-                ...change.position,
-              },
-              positionAbsolute: {
-                x: 0,
-                y: 0,
-                ...updatedNodes[change.id].positionAbsolute,
-                ...change.positionAbsolute,
-              },
-              dragging: change.dragging,
-            };
+            if (change?.position) {
+              updatedNodes[change.id] = {
+                ...updatedNodes[change.id],
+                position: {
+                  ...updatedNodes[change.id].position,
+                  ...change.position,
+                },
+                positionAbsolute: {
+                  x: 0,
+                  y: 0,
+                  ...updatedNodes[change.id].positionAbsolute,
+                  ...change.positionAbsolute,
+                },
+                dragging: change.dragging,
+              };
+            }
             break;
           case "select":
             updatedNodes[change.id] = {
@@ -206,19 +223,17 @@ const Designer = () => {
             } else if (change.id === "logManagement") {
               setLogManagementCount(0);
             }
-            console.log(change, "Chanfe");
             // Remove the deleted node from updatedNodes
             delete updatedNodes[change.id];
             // Remove the applicationName from uniqueApplicationNames
             const deletedNode = oldNodes[change.id];
-            if (
-              deletedNode &&
-              deletedNode.data &&
-              deletedNode.data.applicationName
-            ) {
+            if (deletedNode?.data?.applicationName) {
               deletedApplicationNames.push(
                 deletedNode.data.applicationName.trim()
               );
+            }
+            if (deletedNode?.data?.serverPort) {
+              deletedApplicationPorts.push(deletedNode.data.serverPort.trim());
             }
             break;
           default:
@@ -227,32 +242,36 @@ const Designer = () => {
       });
       if (Object.keys(updatedNodes).length === 0) setShowDiv(true);
       // Remove deleted application names from uniqueApplicationNames
+      setUniquePortNumbers((prev) =>
+        prev.filter(
+          (portNumbers) => !deletedApplicationPorts.includes(portNumbers)
+        )
+      );
       setUniqueApplicationNames((prev) =>
         prev.filter((appName) => !deletedApplicationNames.includes(appName))
       );
-
       return updatedNodes;
     });
   }, []);
 
   const [edges, setEdges] = useState({});
-  console.log("Edges", edges);
-
   const onEdgesChange = useCallback((Nodes, changes = []) => {
+    setUpdated(true);
     setEdges((oldEdges) => {
       const updatedEdges = { ...oldEdges };
-      console.log(changes, updatedEdges);
       let UpdatedNodes = { ...Nodes };
       changes.forEach((change) => {
         switch (change.type) {
           case "add":
-            console.log("Addddddddddd");
             // Handle add event
             break;
           case "remove":
             let [sourceId, targetId] = change.id.split("-");
             if (targetId.startsWith("Database")) {
               UpdatedNodes[targetId].data.isConnected = false;
+              if (UpdatedNodes[targetId]?.style) {
+                UpdatedNodes[targetId].style.border = "1px solid red";
+              }
               if (sourceId.startsWith("Service") || sourceId.startsWith("UI"))
                 delete UpdatedNodes[sourceId].data.prodDatabaseType;
               setNodes(UpdatedNodes);
@@ -261,7 +280,6 @@ const Designer = () => {
             // Handle remove event
             break;
           case "update":
-            console.log("Updateeeeeeeeeeeeee");
             // Handle update event
             break;
           case "select":
@@ -296,8 +314,8 @@ const Designer = () => {
   }, []);
 
   const onEdgeUpdate = useCallback((Nodes, oldEdge, newConnection) => {
+    setUpdated(true);
     edgeUpdateSuccessful.current = true;
-    console.log(oldEdge, newConnection, Nodes);
     if (
       !(
         newConnection.target.startsWith("Database") &&
@@ -319,6 +337,9 @@ const Designer = () => {
           let UpdatedNodes = { ...Nodes };
           delete UpdatedNodes[edge.source].data.prodDatabaseType;
           UpdatedNodes[edge.target].data.isConnected = false;
+          if (UpdatedNodes[edge.target]) {
+            UpdatedNodes[edge.target].style.border = "1px solid red";
+          }
           setNodes(UpdatedNodes);
         }
         delete AllEdges[edge.id];
@@ -335,15 +356,8 @@ const Designer = () => {
     setShowDiv(false);
   }, []);
 
-  const onDragStop = useCallback((event) => {
-    event.preventDefault();
-    event.dataTransfer.dropEffect = "move";
-    setShowDiv(true);
-  }, []);
-
   const onclick = (e, node) => {
     const Id = e.target.dataset.id || e.target.name || node.id;
-    console.log(Id);
     if (Id) {
       const type = Id.split("_")[0];
       setNodeType(type);
@@ -352,12 +366,35 @@ const Designer = () => {
       } else setCurrentNode(nodes[Id].data);
       setopen(Id);
     }
-  };
+    // };
 
-  const onSingleClick = (e, node) => {
-    const Id = e.target.dataset.id || e.target.name || node.id;
-    console.log(Id);
+    // const onSingleClick = (e, node) => {
+    // const Id = e.target.dataset.id || e.target.name || node.id;
     setNodeClick(Id);
+  };
+  const clear = () => {
+    setuserData({});
+    setNodes({});
+    setEdges({});
+    setIsServiceDiscovery(false);
+    setServiceDiscoveryCount(0);
+    setUniqueApplicationNames([]);
+    setUniquePortNumbers([]);
+    setServiceInputCheck([]);
+    database_id = 1;
+    group_id = 1;
+    service_id = 1;
+    setAuthProviderCount(0);
+    setIsMessageBroker(false);
+    setMessageBrokerCount(0);
+    setLogManagementCount(0);
+    setLocalenvironmentCount(0);
+    setIsUINodeEnabled(false);
+    setUpdated(false);
+    setTriggerExit({
+      onOk: false,
+      path: "",
+    });
   };
 
   const onDrop = useCallback(
@@ -369,12 +406,11 @@ const Designer = () => {
       authcount,
       Localenvcount
     ) => {
+      setUpdated(true);
       event.preventDefault();
-      console.log(event);
       const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
       const type = event.dataTransfer.getData("application/reactflow");
       const name = event.dataTransfer.getData("Name");
-
       if (typeof type === "undefined" || !type) {
         setShowDiv(true);
         return;
@@ -384,7 +420,6 @@ const Designer = () => {
         x: event.clientX - reactFlowBounds.left,
         y: event.clientY - reactFlowBounds.top,
       });
-
       if (name === "Service") {
         const newNode = {
           id: getId("Service"),
@@ -406,19 +441,20 @@ const Designer = () => {
         }));
       } else if (name.startsWith("Database")) {
         const prodDatabaseType = name.split("_").splice(1)[0];
-        console.log(prodDatabaseType);
         const newNode = {
           id: getId("Database"),
           type: "selectorNode",
           position,
           data: { prodDatabaseType: prodDatabaseType, isConnected: false },
-          style: { border: "1px solid", padding: "4px 4px" },
+          style: {
+            border: "1px solid red",
+            padding: "4px 4px",
+            height: "60px",
+          },
         };
         setNodes((nds) => ({ ...nds, [newNode.id]: newNode }));
       } else if (name.startsWith("Discovery") && servicecount === 0) {
-        console.log(servicecount);
         const serviceDiscoveryType = name.split("_").splice(1)[0];
-        console.log(serviceDiscoveryType);
         const newNode = {
           id: "serviceDiscoveryType",
           type: "selectorNode1",
@@ -430,11 +466,9 @@ const Designer = () => {
         setIsServiceDiscovery(true);
         setServiceDiscoveryCount(1);
       } else if (name.startsWith("Discovery") && servicecount >= 1) {
-        console.log("else", servicecount);
         setServiceDiscoveryCount(2);
       } else if (name.startsWith("Auth") && authcount === 0) {
         const authenticationType = name.split("_").splice(1)[0];
-        console.log(authenticationType);
         const newNode = {
           id: "authenticationType",
           type: "selectorNode3",
@@ -445,12 +479,9 @@ const Designer = () => {
         setNodes((nds) => ({ ...nds, [newNode.id]: newNode }));
         setAuthProviderCount(1);
       } else if (name.startsWith("Auth") && authcount >= 1) {
-        console.log("else", authcount);
         setAuthProviderCount(2);
       } else if (name.startsWith("MessageBroker") && messagecount === 0) {
-        console.log(messagecount);
         const messageBroker = name.split("_").splice(1)[0];
-        console.log(messageBroker);
         const newNode = {
           id: "messageBroker",
           type: "selectorNode4",
@@ -477,7 +508,6 @@ const Designer = () => {
         };
         setNodes((nds) => ({ ...nds, [newNode.id]: newNode }));
       } else if (name.startsWith("MessageBroker") && messagecount >= 1) {
-        console.log("else", messagecount);
         setMessageBrokerCount(2);
       } else if (name.startsWith("Load") && loadcount === 0) {
         const logManagementType = name.split("_").splice(1)[0];
@@ -491,12 +521,9 @@ const Designer = () => {
         setNodes((nds) => ({ ...nds, [newNode.id]: newNode }));
         setLogManagementCount(1);
       } else if (name.startsWith("Load") && loadcount >= 1) {
-        console.log("else", loadcount);
         setLogManagementCount(2);
       } else if (name.startsWith("Localenvironment") && Localenvcount === 0) {
-        console.log(Localenvcount);
         const Localenvironment = name.split("_").splice(1)[0];
-        console.log(Localenvironment);
         const newNode = {
           id: "Localenvironment",
           type: "selectorNode7",
@@ -507,7 +534,6 @@ const Designer = () => {
         setNodes((nds) => ({ ...nds, [newNode.id]: newNode }));
         setLocalenvironmentCount(1);
       } else if (name.startsWith("Localenvironment") && Localenvcount >= 1) {
-        console.log("else", Localenvcount);
         setLocalenvironmentCount(2);
       } else {
         const newNode = {
@@ -530,9 +556,168 @@ const Designer = () => {
     [reactFlowInstance]
   );
 
+  useEffect(() => {
+    document.title = "WDA";
+    setShowDiv(true);
+    let data = location?.state;
+    if (!data) {
+      if (
+        localStorage?.data != undefined &&
+        localStorage.data != null &&
+        localStorage.data?.metadata?.nodes != ""
+      ) {
+        data = JSON.parse(localStorage.data);
+        setuserData(data);
+        if (data?.metadata?.nodes) {
+          const nodee = data?.metadata?.nodes;
+          if (!(Object.keys(nodee).length === 0)) {
+            setShowDiv(false);
+            setNodes(data?.metadata.nodes);
+          }
+        }
+        if (data.metadata?.edges) {
+          setEdges(data?.metadata.edges);
+        }
+        if (data?.updated) {
+          setUpdated(data.updated);
+        }
+      }
+    } else {
+      setuserData(data);
+      if (data?.metadata?.nodes) {
+        setShowDiv(false);
+        setNodes(data?.metadata.nodes);
+      }
+      if (data.metadata?.edges) {
+        setEdges(data?.metadata.edges);
+      }
+    }
+    if (
+      data != null &&
+      !(Object.keys(data).length === 0) &&
+      data?.metadata?.nodes
+    ) {
+      const nodes = data?.metadata?.nodes;
+      if (!(Object.keys(nodes).length === 0)) setShowDiv(false);
+      for (const key in nodes) {
+        if (key.toLowerCase().includes("servicediscovery")) {
+          setIsServiceDiscovery(true);
+          setServiceDiscoveryCount(1);
+        } else if (key.toLowerCase().includes("service")) {
+          service_id++;
+          setUniqueApplicationNames((prev) => [
+            ...prev,
+            data.metadata.nodes[key].data.label,
+          ]);
+          setUniquePortNumbers((prev) => [
+            ...prev,
+            data.metadata.nodes[key].data.serverPort,
+          ]);
+          setServiceInputCheck((prev) => ({
+            ...prev,
+            [key.id]: false,
+          }));
+        } else if (key.toLowerCase().includes("database")) {
+          database_id++;
+        } else if (key.toLowerCase().includes("group")) {
+          group_id++;
+        } else if (key.toLowerCase().includes("auth")) {
+          setAuthProviderCount(1);
+        } else if (key.toLowerCase().includes("messagebroker")) {
+          setIsMessageBroker(true);
+          setMessageBrokerCount(1);
+        } else if (key.toLowerCase().includes("logmanagement")) {
+          setLogManagementCount(1);
+        } else if (key.toLowerCase().includes("localenvironment")) {
+          setLocalenvironmentCount(1);
+        } else if (key.toLowerCase().includes("ui")) {
+          setUniquePortNumbers((prev) => [
+            ...prev,
+            data.metadata.nodes[key].data.serverPort,
+          ]);
+          setIsUINodeEnabled(true);
+        }
+      }
+    }
+    return () => {
+      localStorage.clear();
+      service_id = 1;
+      database_id = 1;
+      group_id = 1;
+      setUpdated(false);
+    };
+  }, []);
+  useEffect(() => {
+    if (update && userData.project_id) {
+      var data = { ...userData };
+      data.metadata.nodes = nodes;
+      (data.metadata ??= {}).edges = edges;
+      data.updated = updated;
+      setuserData(data);
+      if (!(Object.keys(data).length === 0)) {
+        localStorage.data = JSON.stringify(data);
+      }
+    }
+    if (!update) {
+      if (localStorage.data && JSON.parse(localStorage.data).projectName) {
+        userData.projectName = JSON.parse(localStorage.data).projectName;
+      }
+      if (localStorage.data && JSON.parse(localStorage.data).updated) {
+        userData.updated = JSON.parse(localStorage.data).updated;
+      }
+      var udata = { ...userData };
+      (udata.metadata ??= {}).nodes = nodes;
+      udata.metadata.edges = edges;
+      if (
+        localStorage.data &&
+        JSON.parse(localStorage.data)?.metadata?.deployment
+      ) {
+        udata.metadata.deployment = JSON.parse(
+          localStorage.data
+        ).metadata.deployment;
+      }
+      setuserData(udata);
+      if (!(Object.keys(udata).length === 0)) {
+        localStorage.data = JSON.stringify(udata);
+      }
+    }
+  }, [nodes, edges]);
+
+  useEffect(() => {
+    if (triggerExit.onOk) {
+      handleGoToIntendedPage(triggerExit.path);
+      localStorage.clear();
+      clear();
+      setShowDiv(true);
+    }
+    let unblock;
+    if (updated) {
+      unblock = history.block((location) => {
+        setVisibleDialog(true);
+        setTriggerExit((obj) => ({ ...obj, path: location.pathname }));
+        if (triggerExit.onOk) {
+          return true;
+        }
+        return false;
+      });
+    }
+    return () => {
+      if (unblock) {
+        unblock();
+      }
+    };
+  }, [
+    handleGoToIntendedPage,
+    history,
+    triggerExit.onOk,
+    triggerExit.path,
+    updated,
+  ]);
+
   const onChange = (Data) => {
+    setUpdated(true);
     if (Data.applicationType === "gateway") {
-      setIsEmptyUiSubmit("false");
+      setIsEmptyUiSubmit(false);
       let updatedNodes = { ...nodes };
       if (updatedNodes["UI"]?.style) {
         updatedNodes["UI"].style.border = "1px solid black";
@@ -545,14 +730,11 @@ const Designer = () => {
           flag = true;
           setIsEmptyServiceSubmit(true);
         }
-        if (key.startsWith("Service")) {
-          const styleData = serviceInputCheck[key]?.style;
+        if (key.startsWith("Service") && Isopen === key) {
+          const styleData = serviceInputCheck[key];
           if (styleData) {
             let updatedNodes = { ...nodes };
-            updatedNodes[key].style = {
-              ...updatedNodes[key].style,
-              ...styleData,
-            };
+            updatedNodes[key].style.border = "1px solid black";
             setNodes(updatedNodes);
           }
         }
@@ -560,13 +742,6 @@ const Designer = () => {
 
       if (!flag) {
         setIsEmptyServiceSubmit(false);
-        let updatedNodes = { ...nodes };
-        for (let key in updatedNodes) {
-          if (key.startsWith("Service") && updatedNodes[key]?.style) {
-            updatedNodes[key].style.border = "1px solid black";
-          }
-        }
-        setNodes(updatedNodes);
       }
       setServiceInputCheck((prev) => ({
         ...prev,
@@ -591,7 +766,21 @@ const Designer = () => {
     } else if (Data?.type === "Group") {
       UpdatedNodes[Isopen].data = { ...UpdatedNodes[Isopen].data, ...Data };
     } else {
+      if (CurrentNode?.applicationName) {
+        setUniqueApplicationNames((prev) =>
+          prev.filter((appName) => CurrentNode.applicationName !== appName)
+        );
+      }
       setUniqueApplicationNames((prev) => [...prev, Data.applicationName]);
+
+      if (CurrentNode?.serverPort) {
+        setUniquePortNumbers((prev) =>
+          prev.filter((port) => CurrentNode.serverPort !== port)
+        );
+      }
+
+      setUniquePortNumbers((prev) => [...prev, Data.serverPort]);
+
       UpdatedNodes[Isopen].data = { ...UpdatedNodes[Isopen].data, ...Data };
       UpdatedNodes[Isopen].selected = false;
     }
@@ -600,17 +789,10 @@ const Designer = () => {
   };
 
   const [showDiv, setShowDiv] = useState(false);
-  useEffect(() => {
-    document.title = "WDA";
-    setShowDiv(true);
-    return () => setShowDiv(false);
-  }, []);
 
   const MergeData = (sourceId, targetId, Nodes) => {
     const sourceType = sourceId.split("_")[0];
     const targetType = targetId.split("_")[0];
-
-    console.log(sourceType, targetType);
 
     if (sourceType !== targetType) {
       if (
@@ -620,7 +802,6 @@ const Designer = () => {
         let AllNodes = { ...Nodes };
         let sourceNode = AllNodes[sourceId];
         let targetNode = AllNodes[targetId];
-        console.log(sourceNode, targetNode);
         AllNodes[sourceId].data = {
           ...sourceNode.data,
           prodDatabaseType: targetNode.data.prodDatabaseType,
@@ -631,6 +812,7 @@ const Designer = () => {
   };
 
   const onsubmit = (Data) => {
+    setUpdated(false);
     const NewNodes = { ...nodes };
     const NewEdges = { ...edges };
     let Service_Discovery_Data = nodes["serviceDiscoveryType"]?.data;
@@ -668,7 +850,6 @@ const Designer = () => {
         (edge) => edge.data && JSON.stringify(edge.data) !== "{}"
       )
     ) {
-      console.log("object");
       Data["communications"] = {};
       let communicationIndex = 0;
       for (const edgeInfo in NewEdges) {
@@ -685,14 +866,16 @@ const Designer = () => {
         }
       }
     }
-    if (saveMetadata) {
+    if (saveMetadata || userData?.project_id) {
       Data["metadata"] = {
         nodes: nodes,
         edges: edges,
         deployment: Data?.deployment,
       };
     } else delete Data?.metadata;
-    console.log(Data, "Finaaal Dataaaaaaaaaa");
+    if (userData?.project_id) {
+      Data.projectId = userData?.project_id;
+    }
     setNodes(NewNodes);
 
     setIsLoading(true);
@@ -707,13 +890,16 @@ const Designer = () => {
       .then((response) => response.blob())
       .then((blob) => {
         setIsLoading(false);
+        history.push("/success");
         saveAs(blob, `${Data.projectName}.zip`); // Edit the name or ask the user for the project Name
       })
       .catch((error) => console.error(error))
       .finally(() => {
-        window.location.replace("../../");
+        localStorage.clear();
+        history.push("/success");
       });
   };
+
   const onCheckEdge = (edges) => {
     let NewEdges = { ...edges };
     for (const key in NewEdges) {
@@ -733,7 +919,6 @@ const Designer = () => {
   const onEdgeClick = (e, edge) => {
     const sourceType = edge.source.split("_")[0];
     const targetType = edge.target.split("_")[0];
-    console.log(e, edge);
     if (
       (sourceType === "UI" && targetType === "Service") ||
       (sourceType === "Service" && targetType === "Service")
@@ -744,7 +929,6 @@ const Designer = () => {
   };
 
   const handleEdgeData = (Data) => {
-    console.log(Data, IsEdgeopen);
     let UpdatedEdges = { ...edges };
 
     if (Data.framework === "rest-api" && isServiceDiscovery) {
@@ -779,21 +963,29 @@ const Designer = () => {
   };
 
   const onConnect = useCallback((params, Nodes) => {
+    setUpdated(true);
     params.markerEnd = { type: MarkerType.ArrowClosed };
     params.type = "smoothstep";
     params.data = {};
     const targetNode = Nodes[params.target];
-
+    const sourceNode = Nodes[params.source];
     if (targetNode.id.startsWith("Database")) {
-      if (
-        !Nodes[params.source]?.data["prodDatabaseType"] &&
-        !targetNode.data.isConnected
-      ) {
+      let isServiceConnected = Nodes[params.source]?.data["prodDatabaseType"];
+      if (!isServiceConnected && !targetNode.data.isConnected) {
         targetNode.data.isConnected = true;
         setEdges((eds) => addEdge(params, eds, Nodes));
         MergeData(params.source, params.target, Nodes);
       }
-    } else {
+      if (!isServiceConnected) {
+        let updatedNodes = { ...Nodes };
+        if (updatedNodes[targetNode?.id]?.style) {
+          updatedNodes[targetNode?.id].style.border = "1px solid black";
+        }
+        setNodes(updatedNodes);
+      }
+    } else if (
+      !(targetNode.id.startsWith("UI") && sourceNode.id.startsWith("Service"))
+    ) {
       setEdges((eds) => addEdge(params, eds, Nodes));
     }
   }, []);
@@ -803,7 +995,7 @@ const Designer = () => {
   };
 
   const [uniqueApplicationNames, setUniqueApplicationNames] = useState([]);
-
+  const [uniquePortNumbers, setUniquePortNumbers] = useState([]);
   const [selectedColor, setSelectedColor] = useState("");
 
   const handleColorClick = (color) => {
@@ -825,7 +1017,7 @@ const Designer = () => {
               style={{
                 position: "absolute",
                 top: "50%",
-                left: "50%",
+                left: "60%",
                 transform: "translate(-60%, -50%)",
                 display: "flex",
                 flexDirection: "column",
@@ -899,7 +1091,7 @@ const Designer = () => {
             onEdgesChange={(changes) => onEdgesChange(nodes, changes)}
             onConnect={(params) => onConnect(params, nodes)}
             onInit={setReactFlowInstance}
-            onNodeDrag={onSingleClick}
+            onNodeDrag={onclick}
             onDrop={(e) =>
               onDrop(
                 e,
@@ -912,8 +1104,8 @@ const Designer = () => {
             }
             onDragOver={onDragOver}
             onDragLeave={() => setShowDiv(Object.keys(nodes).length === 0)}
-            onNodeDoubleClick={onclick}
-            onNodeClick={onSingleClick}
+            onNodeClick={onclick}
+            // onNodeClick={onSingleClick}
             deleteKeyCode={["Backspace", "Delete"]}
             fitView
             onEdgeUpdate={(oldEdge, newConnection) =>
@@ -921,12 +1113,12 @@ const Designer = () => {
             }
             onEdgeUpdateStart={onEdgeUpdateStart}
             onEdgeUpdateEnd={(_, edge) => onEdgeUpdateEnd(nodes, edge)}
-            onEdgeDoubleClick={onEdgeClick}
+            onEdgeClick={onEdgeClick}
             nodesFocusable={true}
             defaultViewport={defaultViewport}
           >
             <Controls />
-            <MiniMap style={{ backgroundColor: "#3182CE" }} />
+            {/* <MiniMap style={{ backgroundColor: "#3182CE" }} /> */}
             <Background
               gap={10}
               color="#f2f2f2"
@@ -946,9 +1138,12 @@ const Designer = () => {
           isEmptyUiSubmit={isEmptyUiSubmit}
           isEmptyServiceSubmit={isEmptyServiceSubmit}
           selectedColor={selectedColor}
-          handleColorClick={handleColorClick}
           nodeClick={nodeClick}
           edges={edges}
+          update={update}
+          updated={updated}
+          setUpdated={setUpdated}
+          triggerExit={triggerExit}
         />
 
         {nodeType === "UI" && Isopen && (
@@ -957,6 +1152,9 @@ const Designer = () => {
             CurrentNode={CurrentNode}
             onClose={setopen}
             onSubmit={onChange}
+            handleColorClick={handleColorClick}
+            uniqueApplicationNames={uniqueApplicationNames}
+            uniquePortNumbers={uniquePortNumbers}
           />
         )}
         {nodeType === "Service" && Isopen && (
@@ -965,7 +1163,9 @@ const Designer = () => {
             CurrentNode={CurrentNode}
             onClose={setopen}
             onSubmit={onChange}
+            handleColorClick={handleColorClick}
             uniqueApplicationNames={uniqueApplicationNames}
+            uniquePortNumbers={uniquePortNumbers}
           />
         )}
         {nodeType === "group" && Isopen && (
@@ -974,6 +1174,22 @@ const Designer = () => {
             CurrentNode={CurrentNode}
             onClose={setopen}
             onSubmit={onChange}
+            handleColorClick={handleColorClick}
+          />
+        )}
+
+        {isVisibleDialog && (
+          <ActionModal
+            isOpen={isVisibleDialog}
+            onClose={() => setVisibleDialog(false)}
+            onSubmit={() => {
+              setTriggerExit((obj) => ({
+                ...obj,
+                onOk: true,
+              }));
+              setVisibleDialog(false);
+            }}
+            actionType="clear"
           />
         )}
 

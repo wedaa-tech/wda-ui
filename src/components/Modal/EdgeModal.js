@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Modal,
-  ModalOverlay,
   ModalContent,
   ModalHeader,
   ModalCloseButton,
@@ -22,13 +21,29 @@ const EdgeModal = ({
   handleEdgeData,
   isServiceDiscovery,
 }) => {
-  console.log(CurrentEdge, "edgeeeeee");
   const initialState = {
     type: "",
     framework: "",
     ...CurrentEdge,
   };
   const [edgeData, setEdgeData] = useState(initialState);
+
+  useEffect(() => {
+    const handleDeleteKeyPress = (event) => {
+      if (
+        isOpen &&
+        (event.key === "Backspace" || event.key === "Delete") &&
+        event.target.tagName !== "INPUT"
+      ) {
+        onClose();
+      }
+    };
+
+    window.addEventListener("keydown", handleDeleteKeyPress);
+    return () => {
+      window.removeEventListener("keydown", handleDeleteKeyPress);
+    };
+  }, [isOpen, onClose]);
 
   const isEmpty = edgeData.type === "" || edgeData.framework === "";
 
@@ -57,9 +72,15 @@ const EdgeModal = ({
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={() => onClose(false)} isCentered={true}>
-      <ModalOverlay />
-      <ModalContent>
+    <Modal isOpen={isOpen} onClose={() => onClose(false)}>
+      <ModalContent
+        style={{
+          position: "absolute",
+          top: "20px",
+          right: "10px",
+          width: "300px",
+        }}
+      >
         <ModalHeader>Communication</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
@@ -126,7 +147,6 @@ const EdgeModal = ({
                 </Select>
               </FormControl>
             )}
-            {console.log("servicefsdf", isServiceDiscovery)}
             {edgeData.type === "synchronous" &&
               edgeData.framework === "rest-api" &&
               !isServiceDiscovery && (

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import ReactFlow, { ReactFlowProvider } from "reactflow";
 import "reactflow/dist/style.css";
+import { useHistory } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import CustomImageNode from "./Customnodes/CustomImageNode";
 import CustomServiceNode from "./Customnodes/CustomServiceNode";
@@ -13,6 +14,8 @@ import CustomLocalenvironmentNode from "./Customnodes/CustomLocalenvironmentNode
 import ProjectModal from "../components/Modal/ProjectModal";
 import DeploymentModal from "../components/Modal/DeploymentModal";
 import ReadOnlyEdgeModal from "../components/Modal/ReadOnlyEdgeModal";
+import { useKeycloak } from "@react-keycloak/web";
+import { useParams } from "react-router-dom";
 
 const readOnlyNodeStyle = {
   border: "1px solid #ccc",
@@ -37,34 +40,43 @@ const nodeTypes = {
 
 const Project = () => {
   const location = useLocation();
-  const [metadata, setmetadata] = useState(location.state);
+  const [metadata, setMetadata] = useState({});
   const [nodes, setNodes] = useState([]);
   const [edges, setEdges] = useState([]);
+  const [val, setVal] = useState({});
+  const history = useHistory();
+  const { keycloak, initialized } = useKeycloak();
+  let { id } = useParams();
 
   useEffect(() => {
-    const data = location?.state;
-    console.log(data, metadata, "data");
+    let data = location?.state;
     if (!data) {
-      const data = JSON.parse(localStorage.metadata);
-      setmetadata(data);
+      let dataStorage = JSON.parse(localStorage.getItem("data"));
+      setVal(dataStorage);
+      setMetadata(dataStorage.metadata);
+      dataStorage = dataStorage.metadata;
+      setNodes(Object.values(dataStorage?.nodes));
+      if (dataStorage?.edges) {
+        setEdges(Object.values(dataStorage?.edges));
+      }
+    } else {
+      setVal(data);
+      setMetadata(data.metadata);
+      data = data.metadata;
       setNodes(Object.values(data?.nodes));
       if (data?.edges) {
         setEdges(Object.values(data?.edges));
       }
-    } else {
-      localStorage.metadata = JSON.stringify(metadata);
-      if (metadata?.nodes) {
-        setNodes(Object.values(metadata?.nodes));
-      } else if (metadata?.edges) {
-        setEdges(Object.values(data?.edges));
-      } else {
-        setNodes([getDeploymentNode(metadata)]);
-      }
-      if (metadata?.edges) {
-        setEdges(Object.values(metadata?.edges));
-      }
     }
-  }, [location?.state, metadata]);
+    return () => {
+      localStorage.clear();
+    };
+  }, [location?.state]);
+
+  useEffect(() => {
+    if (Object.keys(val).length >= 1)
+      localStorage.setItem("data", JSON.stringify(val));
+  }, [val]);
 
   const reactFlowWrapper = useRef(null);
   const [serviceModal, setserviceModal] = useState(false);
@@ -191,7 +203,6 @@ const Project = () => {
   };
 
   const onEdgeClick = (event, element) => {
-    console.log(element.data, "data");
     const EdgeData = element.data;
     if (EdgeData) {
       event.preventDefault();
@@ -206,8 +217,46 @@ const Project = () => {
       }));
     }
   };
+
   const handleContainerClose = () => {
     setserviceModal(false) || setEdgeModal(false) || setCloudModal(false);
+  };
+
+  // edit functionality
+  const handleEditClick = () => {
+    if (!keycloak.authenticated) {
+      keycloak.login();
+      return;
+    }
+
+    const verifyData = async () => {
+      try {
+        const response = await fetch(
+          process.env.REACT_APP_API_BASE_URL + "/api/user/" + id,
+          {
+            method: "get",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: initialized
+                ? `Bearer ${keycloak?.token}`
+                : undefined,
+            },
+          }
+        );
+        if (response.ok) {
+          history.push({
+            pathname: "/edit/" + id,
+            state: val,
+          });
+        } else {
+          console.error("You are not authorized");
+          window.location.replace("../../");
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    verifyData();
   };
 
   return (
@@ -219,6 +268,36 @@ const Project = () => {
             ref={reactFlowWrapper}
             style={{ width: "100%", height: "90%" }}
           >
+            <div>
+              <button
+                style={{
+                  float: "right",
+                  marginTop: "3%",
+                  marginRight: "15%",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+                onClick={(e) => handleEditClick()}
+              >
+                <svg
+                  stroke="#6b7280"
+                  fill="none"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="h-4 w-4"
+                  height="1em"
+                  width="1em"
+                  xmlns="http://www.w3.org/2000/svg"
+                  style={{ marginRight: "0.5em" }}
+                >
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+                <span style={{ color: "#6b7280" }}>Edit</span>
+              </button>
+            </div>
             <ReactFlow
               nodes={nodes}
               edges={edges}

@@ -1,7 +1,7 @@
 // import { Handle, Position } from "reactflow";
 import azure from "../../assets/Azure.png";
 import aws from "../../assets/aws.png";
-import minikube from "../../assets/mini.jpeg";
+import minikube from "../../assets/mini.png";
 
 // const handleStyle = { left: 25 };
 

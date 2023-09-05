@@ -15,9 +15,11 @@ import React from "react";
 import { ReactKeycloakProvider } from "@react-keycloak/web";
 import keycloak from "./Keycloak";
 import PrivateRoute from "./helpers/PrivateRoute";
+import SuccessPage from "./pages/SuccessPage";
 
 function App() {
   return (
+
     <ReactKeycloakProvider authClient={keycloak}>
       <Router className="flex h-screen">
         <Navbar />
@@ -35,10 +37,18 @@ function App() {
           <Route exact path="/">
             <Home />
           </Route>
+          <Route exact path="/success">
+            <SuccessPage/>
+          </Route>
           <Route exact path="/canvasToCode">
             {/* <PrivateRoute> */}
-            <Designer />
+            <Designer update={false}/>
             {/* </PrivateRoute> */}
+          </Route>
+          <Route exact path="/edit/:id">
+            <PrivateRoute>
+             <Designer update={true}/>
+            </PrivateRoute>
           </Route>
           <Route exact path="/projects">
             <PrivateRoute>
@@ -46,9 +56,9 @@ function App() {
             </PrivateRoute>
           </Route>
           <Route exact path="/projects/:id">
-            <PrivateRoute>
+            {/* <PrivateRoute> */}
               <Project />
-            </PrivateRoute>
+            {/* </PrivateRoute> */}
           </Route>
           <Route exact path="/docs">
             <DocHome />
