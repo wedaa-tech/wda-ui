@@ -773,10 +773,10 @@ const Designer = ({ update }) => {
 
   const onChange = (Data) => {
     setUpdated(true);
-    let flaggateway = false;
+    let allGatewayDetailsFilled = false;
     for (let key in gatewayInputCheck) {
       if (key !== Isopen && gatewayInputCheck[key] === true) {
-        flaggateway = true;
+        allGatewayDetailsFilled = true;
         setIsEmptyGatewaySubmit(true);
       }
       if (key.startsWith("Gateway") && Isopen === key) {
@@ -788,7 +788,7 @@ const Designer = ({ update }) => {
         }
       }
     }
-    if (!flaggateway) {
+    if (!allGatewayDetailsFilled) {
       setIsEmptyGatewaySubmit(false);
     }
     setGatewayInputCheck((prev) => ({
@@ -796,10 +796,10 @@ const Designer = ({ update }) => {
       [Isopen]: false,
     }));
 
-    let flagui = false;
+    let allUiDetailsFilled = false;
     for (let key in uiInputCheck) {
       if (key !== Isopen && uiInputCheck[key] === true) {
-        flagui = true;
+        allUiDetailsFilled = true;
         setIsEmptyUiSubmit(true);
       }
       if (key.startsWith("UI") && Isopen === key) {
@@ -811,17 +811,17 @@ const Designer = ({ update }) => {
         }
       }
     }
-    if (!flagui) {
+    if (!allUiDetailsFilled) {
       setIsEmptyUiSubmit(false);
     }
     setUiInputCheck((prev) => ({
       ...prev,
       [Isopen]: false,
     }));
-    let flag = false;
+    let allServiceDetailsFilled = false;
     for (let key in serviceInputCheck) {
       if (key !== Isopen && serviceInputCheck[key] === true) {
-        flag = true;
+        allServiceDetailsFilled = true;
         setIsEmptyServiceSubmit(true);
       }
       if (key.startsWith("Service") && Isopen === key) {
@@ -833,7 +833,7 @@ const Designer = ({ update }) => {
         }
       }
     }
-    if (!flag) {
+    if (!allServiceDetailsFilled) {
       setIsEmptyServiceSubmit(false);
     }
     setServiceInputCheck((prev) => ({

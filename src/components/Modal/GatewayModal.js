@@ -115,12 +115,6 @@ const GatewayModal = ({
         [column]: value,
       }));
     }
-    if (column === "serverPort" && ApplicationData.serverPort === "9000") {
-      // Update serverPort only if it has not been edited by the user
-      setApplicationData((prev) => ({ ...prev, [column]: value }));
-    } else {
-      setApplicationData((prev) => ({ ...prev, [column]: value }));
-    }
   };
 
   const isSubmitDisabled =
@@ -260,7 +254,6 @@ const GatewayModal = ({
               <FormLabel>Server Port</FormLabel>
               <Input
                 mb={4}
-                defaultValue={9000}
                 variant="outline"
                 id="serverport"
                 placeholder="Port number"
