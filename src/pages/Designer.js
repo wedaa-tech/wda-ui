@@ -1062,7 +1062,13 @@ const Designer = ({ update }) => {
       params.data = {};
       const targetNode = Nodes[params.target];
       const sourceNode = Nodes[params.source];
-      if (!targetNode.id.startsWith("UI")) {
+      if (
+        !(
+          targetNode.id.startsWith("UI") ||
+          (targetNode.id.startsWith("Database") &&
+            sourceNode.id.startsWith("UI"))
+        )
+      ) {
         if (targetNode.id.startsWith("Database")) {
           let isServiceConnected =
             Nodes[params.source]?.data["prodDatabaseType"];
