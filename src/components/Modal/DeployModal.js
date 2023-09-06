@@ -21,7 +21,7 @@ import {
 import azure from "../../../src/assets/Azure.png";
 import aws from "../../../src/assets/aws.png";
 import { InfoIcon } from "@chakra-ui/icons";
-// import minikube from "../../assets/mini.png";
+import minikube from "../../assets/mini.png";
 
 const DeployModal = ({ onSubmit, isLoading, projectData, onClose, update }) => {
   const [selectedImage, setSelectedImage] = useState(null);
@@ -441,8 +441,8 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose, update }) => {
                     : "2px solid #d9d9d9",
               }}
             />
-            {/* <img
-              width="170px"
+            <img
+              width="120px"
               src={minikube}
               alt="minikubelogo"
               onClick={() => handleImageClick("minikube")}
@@ -456,7 +456,7 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose, update }) => {
                     ? "2px solid #3182CE"
                     : "2px solid #d9d9d9",
               }}
-            /> */}
+            />
           </div>
           {selectedImage === "azure" && (
             <div>
