@@ -389,9 +389,13 @@ const Designer = ({ update }) => {
     setUniqueApplicationNames([]);
     setUniquePortNumbers([]);
     setServiceInputCheck([]);
+    setUiInputCheck([]);
+    setGatewayInputCheck([]);
     databaseId = 1;
     groupId = 1;
     serviceId = 1;
+    uiId = 1;
+    gatewayId = 1;
     setAuthProviderCount(0);
     setIsMessageBroker(false);
     setMessageBrokerCount(0);
@@ -646,6 +650,20 @@ const Designer = ({ update }) => {
             ...prev,
             [key.id]: false,
           }));
+        } else if (key.toLowerCase().includes("gateway")) {
+          gatewayId++;
+          setUniqueApplicationNames((prev) => [
+            ...prev,
+            data.metadata.nodes[key].data.label,
+          ]);
+          setUniquePortNumbers((prev) => [
+            ...prev,
+            data.metadata.nodes[key].data.serverPort,
+          ]);
+          setGatewayInputCheck((prev) => ({
+            ...prev,
+            [key.id]: false,
+          }));
         } else if (key.toLowerCase().includes("database")) {
           databaseId++;
         } else if (key.toLowerCase().includes("group")) {
@@ -660,10 +678,19 @@ const Designer = ({ update }) => {
         } else if (key.toLowerCase().includes("localenvironment")) {
           setLocalenvironmentCount(1);
         } else if (key.toLowerCase().includes("ui")) {
+          uiId++;
+          setUniqueApplicationNames((prev) => [
+            ...prev,
+            data.metadata.nodes[key].data.label,
+          ]);
           setUniquePortNumbers((prev) => [
             ...prev,
             data.metadata.nodes[key].data.serverPort,
           ]);
+          setUiInputCheck((prev) => ({
+            ...prev,
+            [key.id]: false,
+          }));
         }
       }
     }
@@ -672,6 +699,8 @@ const Designer = ({ update }) => {
       serviceId = 1;
       databaseId = 1;
       groupId = 1;
+      uiId = 1;
+      gatewayId = 1;
       setUpdated(false);
     };
   }, []);
@@ -750,27 +779,17 @@ const Designer = ({ update }) => {
         flaggateway = true;
         setIsEmptyGatewaySubmit(true);
       }
-      if (key.startsWith("Gateway")) {
-        const styleData = gatewayInputCheck[key]?.style;
+      if (key.startsWith("Gateway") && Isopen === key) {
+        const styleData = gatewayInputCheck[key];
         if (styleData) {
           let updatedNodes = { ...nodes };
-          updatedNodes[key].style = {
-            ...updatedNodes[key].style,
-            ...styleData,
-          };
+          updatedNodes[key].style.border = "1px solid black";
           setNodes(updatedNodes);
         }
       }
     }
     if (!flaggateway) {
       setIsEmptyGatewaySubmit(false);
-      let updatedNodes = { ...nodes };
-      for (let key in updatedNodes) {
-        if (key.startsWith("Gateway") && updatedNodes[key]?.style) {
-          updatedNodes[key].style.border = "1px solid black";
-        }
-      }
-      setNodes(updatedNodes);
     }
     setGatewayInputCheck((prev) => ({
       ...prev,
@@ -783,27 +802,17 @@ const Designer = ({ update }) => {
         flagui = true;
         setIsEmptyUiSubmit(true);
       }
-      if (key.startsWith("UI")) {
-        const styleData = uiInputCheck[key]?.style;
+      if (key.startsWith("UI") && Isopen === key) {
+        const styleData = uiInputCheck[key];
         if (styleData) {
           let updatedNodes = { ...nodes };
-          updatedNodes[key].style = {
-            ...updatedNodes[key].style,
-            ...styleData,
-          };
+          updatedNodes[key].style.border = "1px solid black";
           setNodes(updatedNodes);
         }
       }
     }
     if (!flagui) {
       setIsEmptyUiSubmit(false);
-      let updatedNodes = { ...nodes };
-      for (let key in updatedNodes) {
-        if (key.startsWith("UI") && updatedNodes[key]?.style) {
-          updatedNodes[key].style.border = "1px solid black";
-        }
-      }
-      setNodes(updatedNodes);
     }
     setUiInputCheck((prev) => ({
       ...prev,
@@ -855,16 +864,11 @@ const Designer = ({ update }) => {
           prev.filter((appName) => CurrentNode.applicationName !== appName)
         );
       }
-      setUniqueApplicationNames((prev) => [...prev, Data.applicationName]);
-
       if (CurrentNode?.serverPort) {
         setUniquePortNumbers((prev) =>
           prev.filter((port) => CurrentNode.serverPort !== port)
         );
       }
-
-      setUniquePortNumbers((prev) => [...prev, Data.serverPort]);
-
       UpdatedNodes[Isopen].data = { ...UpdatedNodes[Isopen].data, ...Data };
       UpdatedNodes[Isopen].selected = false;
     }
@@ -1011,10 +1015,7 @@ const Designer = ({ update }) => {
   const onEdgeClick = (e, edge) => {
     const sourceType = edge.source.split("_")[0];
     const targetType = edge.target.split("_")[0];
-    if (
-      (sourceType === "UI" && targetType === "Service") ||
-      (sourceType === "Service" && targetType === "Service")
-    ) {
+    if (sourceType === "Service" && targetType === "Service") {
       setEdgeopen(edge.id);
       setCurrentEdge(edges[edge.id].data);
     }
@@ -1300,15 +1301,6 @@ const Designer = ({ update }) => {
             handleColorClick={handleColorClick}
             uniqueApplicationNames={uniqueApplicationNames}
             uniquePortNumbers={uniquePortNumbers}
-          />
-        )}
-        {nodeType === "Gateway" && Isopen && (
-          <GatewayModal
-            isOpen={Isopen}
-            CurrentNode={CurrentNode}
-            onClose={setopen}
-            onSubmit={onChange}
-            uniqueApplicationNames={uniqueApplicationNames}
           />
         )}
         {nodeType === "group" && Isopen && (

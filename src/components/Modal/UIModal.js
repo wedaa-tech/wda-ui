@@ -199,18 +199,6 @@ const UiDataModal = ({
                   Application Name should not contain -, _ or numbers.
                 </Alert>
               )}
-              {duplicateApplicationNameError && (
-              <Alert
-                status="error"
-                height="12px"
-                fontSize="12px"
-                borderRadius="3px"
-                mb={2}
-              >
-                <AlertIcon style={{ width: "14px", height: "14px" }} />
-                Application name already exists. Please choose a unique name.
-              </Alert>
-            )}
             </FormControl>
             <FormControl>
               <FormLabel>Client Framework</FormLabel>
