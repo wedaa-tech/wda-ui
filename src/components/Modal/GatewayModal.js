@@ -54,9 +54,9 @@ const GatewayModal = ({
   const [duplicateApplicationNameError, setDuplicateApplicationNameError] =
     useState(false);
 
-  const [PortNumberError, setPortNumberError] = useState(false);
+  const [portNumberError, setPortNumberError] = useState(false);
 
-  const ValidateName = (value) => {
+  const validateName = (value) => {
     const currentApplicationName = CurrentNode?.applicationName;
     const isDuplicateName =
       uniqueApplicationNames.includes(value) &&
@@ -71,7 +71,7 @@ const GatewayModal = ({
   };
 
   //check whether port number is unique and lies within the range
-  const ValidatePortNumber = (value) => {
+  const validatePortNumber = (value) => {
     const currentServerPort = CurrentNode?.serverPort;
     const isDuplicatePort =
       uniquePortNumbers.includes(value) && value !== currentServerPort;
@@ -96,14 +96,14 @@ const GatewayModal = ({
 
   const handleData = (column, value) => {
     if (column === "label") {
-      ValidateName(value);
+      validateName(value);
       setApplicationData((prev) => ({
         ...prev,
         [column]: value,
         applicationName: value,
       }));
     } else if (column === "serverPort") {
-      ValidatePortNumber(value);
+      validatePortNumber(value);
       setApplicationData((prev) => ({
         ...prev,
         [column]: value,
@@ -127,7 +127,7 @@ const GatewayModal = ({
     ApplicationData.serverPort &&
     reservedPorts.includes(ApplicationData.serverPort);
 
-  const PortNumberRangeCheck =
+  const portNumberRangeCheck =
     ApplicationData.serverPort &&
     (Number(ApplicationData.serverPort) < 1024 ||
       Number(ApplicationData.serverPort) > 65535);
@@ -258,7 +258,7 @@ const GatewayModal = ({
                 id="serverport"
                 placeholder="Port number"
                 borderColor={
-                  PortNumberError || serverPortCheck || PortNumberRangeCheck
+                  portNumberError || serverPortCheck || portNumberRangeCheck
                     ? "red"
                     : "black"
                 }
@@ -280,7 +280,7 @@ const GatewayModal = ({
                 The input cannot contain reserved port number.
               </Alert>
             )}
-            {PortNumberError && (
+            {portNumberError && (
               <Alert
                 status="error"
                 padding="4px"
@@ -292,7 +292,7 @@ const GatewayModal = ({
                 Port Number already exists. Please choose a unique Port Number.
               </Alert>
             )}
-            {PortNumberRangeCheck && (
+            {portNumberRangeCheck && (
               <Alert
                 status="error"
                 padding="4px"
@@ -375,8 +375,8 @@ const GatewayModal = ({
               isSubmitDisabled ||
               appNameCheck ||
               serverPortCheck ||
-              PortNumberError ||
-              PortNumberRangeCheck
+              portNumberError ||
+              portNumberRangeCheck
             }
           >
             Save

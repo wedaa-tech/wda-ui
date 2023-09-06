@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useId } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Modal,
   ModalContent,
@@ -37,7 +37,7 @@ const UiDataModal = ({
   const [UiData, setUiDataData] = useState(IntialState);
   const [duplicateApplicationNameError, setDuplicateApplicationNameError] =
     useState(false);
-  const [PortNumberError, setPortNumberError] = useState(false);
+  const [portNumberError, setPortNumberError] = useState(false);
   const isEmptyUiSubmit =
     UiData.applicationName === "" ||
     UiData.packageName === "" ||
@@ -47,7 +47,7 @@ const UiDataModal = ({
   const serverPortCheck =
     UiData.serverPort && reservedPorts.includes(UiData.serverPort);
 
-  const PortNumberRangeCheck =
+  const portNumberRangeCheck =
     UiData.serverPort &&
     (Number(UiData.serverPort) < 1024 || Number(UiData.serverPort) > 65535);
 
@@ -59,7 +59,7 @@ const UiDataModal = ({
     UiData.packageName &&
     !/^[a-zA-Z](?:[a-zA-Z0-9_.-]*[a-zA-Z0-9])?$/g.test(UiData.packageName);
 
-  const ValidateName = (value) => {
+  const validateName = (value) => {
     const currentApplicationName = CurrentNode?.applicationName;
     const isDuplicateName =
       uniqueApplicationNames.includes(value) &&
@@ -74,7 +74,7 @@ const UiDataModal = ({
   };
 
   //check whether port number is unique and lies within the range
-  const ValidatePortNumber = (value) => {
+  const validatePortNumber = (value) => {
     const currentServerPort = CurrentNode?.serverPort;
     const isDuplicatePort =
       uniquePortNumbers.includes(value) && value !== currentServerPort;
@@ -115,14 +115,14 @@ const UiDataModal = ({
 
   const handleData = (column, value) => {
     if (column === "label") {
-      ValidateName(value);
+      validateName(value);
       setUiDataData((prev) => ({
         ...prev,
         [column]: value,
         applicationName: value,
       }));
     } else if (column === "serverPort") {
-      ValidatePortNumber(value);
+      validatePortNumber(value);
       setUiDataData((prev) => ({
         ...prev,
         [column]: value,
@@ -252,7 +252,7 @@ const UiDataModal = ({
                 id="serverPort"
                 placeholder="Port number"
                 borderColor={
-                  PortNumberError || serverPortCheck || PortNumberRangeCheck
+                  portNumberError || serverPortCheck || portNumberRangeCheck
                     ? "red"
                     : "black"
                 }
@@ -274,7 +274,7 @@ const UiDataModal = ({
                 The input cannot contain reserved port number.
               </Alert>
             )}
-            {PortNumberError && (
+            {portNumberError && (
               <Alert
                 status="error"
                 padding="4px"
@@ -286,7 +286,7 @@ const UiDataModal = ({
                 Port Number already exists. Please choose a unique Port Number.
               </Alert>
             )}
-            {PortNumberRangeCheck && (
+            {portNumberRangeCheck && (
               <Alert
                 status="error"
                 padding="4px"
@@ -367,8 +367,8 @@ const UiDataModal = ({
               isEmptyUiSubmit ||
               appNameCheck ||
               serverPortCheck ||
-              PortNumberError ||
-              PortNumberRangeCheck
+              portNumberError ||
+              portNumberRangeCheck
             }
           >
             Save

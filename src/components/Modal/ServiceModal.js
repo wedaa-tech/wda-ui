@@ -54,9 +54,9 @@ const ServiceModal = ({
   const [duplicateApplicationNameError, setDuplicateApplicationNameError] =
     useState(false);
 
-  const [PortNumberError, setPortNumberError] = useState(false);
+  const [portNumberError, setPortNumberError] = useState(false);
 
-  const ValidateName = (value) => {
+  const validateName = (value) => {
     const currentApplicationName = CurrentNode?.applicationName;
     const isDuplicateName =
       uniqueApplicationNames.includes(value) &&
@@ -71,7 +71,7 @@ const ServiceModal = ({
   };
 
   //check whether port number is unique and lies within the range
-  const ValidatePortNumber = (value) => {
+  const validatePortNumber = (value) => {
     const currentServerPort = CurrentNode?.serverPort;
     const isDuplicatePort =
       uniquePortNumbers.includes(value) && value !== currentServerPort;
@@ -96,14 +96,14 @@ const ServiceModal = ({
 
   const handleData = (column, value) => {
     if (column === "label") {
-      ValidateName(value);
+      validateName(value);
       setApplicationData((prev) => ({
         ...prev,
         [column]: value,
         applicationName: value,
       }));
     } else if (column === "serverPort") {
-      ValidatePortNumber(value);
+      validatePortNumber(value);
       setApplicationData((prev) => ({
         ...prev,
         [column]: value,
@@ -114,12 +114,6 @@ const ServiceModal = ({
         ...prev,
         [column]: value,
       }));
-    }
-    if (column === "serverPort" && ApplicationData.serverPort === "9000") {
-      // Update serverPort only if it has not been edited by the user
-      setApplicationData((prev) => ({ ...prev, [column]: value }));
-    } else {
-      setApplicationData((prev) => ({ ...prev, [column]: value }));
     }
   };
 
@@ -133,7 +127,7 @@ const ServiceModal = ({
     ApplicationData.serverPort &&
     reservedPorts.includes(ApplicationData.serverPort);
 
-  const PortNumberRangeCheck =
+  const portNumberRangeCheck =
     ApplicationData.serverPort &&
     (Number(ApplicationData.serverPort) < 1024 ||
       Number(ApplicationData.serverPort) > 65535);
@@ -263,12 +257,11 @@ const ServiceModal = ({
               <FormLabel>Server Port</FormLabel>
               <Input
                 mb={4}
-                defaultValue={9000}
                 variant="outline"
                 id="serverport"
                 placeholder="Port number"
                 borderColor={
-                  PortNumberError || serverPortCheck || PortNumberRangeCheck
+                  portNumberError || serverPortCheck || portNumberRangeCheck
                     ? "red"
                     : "black"
                 }
@@ -290,7 +283,7 @@ const ServiceModal = ({
                 The input cannot contain reserved port number.
               </Alert>
             )}
-            {PortNumberError && (
+            {portNumberError && (
               <Alert
                 status="error"
                 padding="4px"
@@ -302,7 +295,7 @@ const ServiceModal = ({
                 Port Number already exists. Please choose a unique Port Number.
               </Alert>
             )}
-            {PortNumberRangeCheck && (
+            {portNumberRangeCheck && (
               <Alert
                 status="error"
                 padding="4px"
@@ -385,8 +378,8 @@ const ServiceModal = ({
               isSubmitDisabled ||
               appNameCheck ||
               serverPortCheck ||
-              PortNumberError ||
-              PortNumberRangeCheck
+              portNumberError ||
+              portNumberRangeCheck
             }
           >
             Save
