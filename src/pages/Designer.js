@@ -1302,6 +1302,15 @@ const Designer = ({ update }) => {
             uniquePortNumbers={uniquePortNumbers}
           />
         )}
+        {nodeType === "Gateway" && Isopen && (
+          <GatewayModal
+            isOpen={Isopen}
+            CurrentNode={CurrentNode}
+            onClose={setopen}
+            onSubmit={onChange}
+            uniqueApplicationNames={uniqueApplicationNames}
+          />
+        )}
         {nodeType === "group" && Isopen && (
           <GroupDataModal
             isOpen={Isopen}

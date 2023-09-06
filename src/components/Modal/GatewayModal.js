@@ -205,6 +205,7 @@ const GatewayModal = ({
               <Alert
                 status="error"
                 padding="4px"
+                height="12px"
                 fontSize="12px"
                 borderRadius="3px"
                 mb={2}
@@ -227,7 +228,7 @@ const GatewayModal = ({
                 }
                 disabled
               >
-                <option value="java">Spring Boot</option>
+                <option value="java" >Spring Boot</option>
               </Select>
             </FormControl>
 
@@ -248,6 +249,7 @@ const GatewayModal = ({
               <Alert
                 status="error"
                 padding="4px"
+                height="12px"
                 fontSize="12px"
                 borderRadius="3px"
                 mb={2}
@@ -279,6 +281,7 @@ const GatewayModal = ({
               <Alert
                 status="error"
                 padding="4px"
+                height="12px"
                 fontSize="12px"
                 borderRadius="3px"
                 mb={2}
