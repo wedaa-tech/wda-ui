@@ -289,7 +289,7 @@ const GatewayModal = ({
                 mb={2}
               >
                 <AlertIcon style={{ width: "14px", height: "14px" }} />
-                Port Number already exists. Please choose a unique Number.
+                Port Number already exists. Please choose a unique Port Number.
               </Alert>
             )}
             {PortNumberRangeCheck && (
