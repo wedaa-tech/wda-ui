@@ -41,6 +41,7 @@ let gatewayId = 1;
 let databaseId = 1;
 let groupId = 1;
 let uiId = 1;
+let uiCount = 0;
 
 const getId = (type = "") => {
   if (type === "Service") return `Service_${serviceId++}`;
@@ -84,7 +85,12 @@ const Designer = ({ update }) => {
   const location = useLocation();
   const [userData, setuserData] = useState({});
   const [isEmptyGatewaySubmit, setIsEmptyGatewaySubmit] = useState(false);
-
+  const [isUINodeEnabled, setIsUINodeEnabled] = useState(false);
+  const [isGatewayNodeEnabled, setIsGatewayNodeEnabled] = useState(false);
+  const [applicationData, setApplicationData] = useState({
+    docusaurus: false,
+    ui: false,
+  });
   const [serviceInputCheck, setServiceInputCheck] = useState({});
   const [uiInputCheck, setUiInputCheck] = useState({});
   const [gatewayInputCheck, setGatewayInputCheck] = useState({});
@@ -206,10 +212,19 @@ const Designer = ({ update }) => {
               setMessageBrokerCount(0);
             } else if (change.id.startsWith("UI")) {
               setIsEmptyUiSubmit(false);
+              setIsUINodeEnabled(false);
+              uiCount--;
+              if (updatedNodes[change.id].data?.framework) {
+                setApplicationData((prev) => ({
+                  ...prev,
+                  [updatedNodes[change.id].data?.framework]: false,
+                }));
+              }
             } else if (change.id.startsWith("Service")) {
               setIsEmptyServiceSubmit(false);
             } else if (change.id.startsWith("Gateway")) {
               setIsEmptyGatewaySubmit(false);
+              setIsGatewayNodeEnabled(false);
             } else if (change.id === "serviceDiscoveryType") {
               setIsServiceDiscovery(false);
               setServiceDiscoveryCount(0);
@@ -396,11 +411,18 @@ const Designer = ({ update }) => {
     serviceId = 1;
     uiId = 1;
     gatewayId = 1;
+    uiCount = 0;
     setAuthProviderCount(0);
     setIsMessageBroker(false);
+    setIsUINodeEnabled(false);
+    setIsGatewayNodeEnabled(false);
     setMessageBrokerCount(0);
     setLogManagementCount(0);
     setLocalenvironmentCount(0);
+    setApplicationData({
+      docusaurus: false,
+      ui: false,
+    });
     setUpdated(false);
     setTriggerExit({
       onOk: false,
@@ -565,6 +587,7 @@ const Designer = ({ update }) => {
           ...prev,
           [newNode.id]: true,
         }));
+        setIsGatewayNodeEnabled(true);
       } else {
         const newNode = {
           id: getId("UI"),
@@ -584,6 +607,8 @@ const Designer = ({ update }) => {
           ...prev,
           [newNode.id]: true,
         }));
+        uiCount++;
+        if (uiCount == 2) setIsUINodeEnabled(true);
       }
     },
     [reactFlowInstance]
@@ -664,6 +689,7 @@ const Designer = ({ update }) => {
             ...prev,
             [key.id]: false,
           }));
+          setIsGatewayNodeEnabled(true);
         } else if (key.toLowerCase().includes("database")) {
           databaseId++;
         } else if (key.toLowerCase().includes("group")) {
@@ -679,6 +705,14 @@ const Designer = ({ update }) => {
           setLocalenvironmentCount(1);
         } else if (key.toLowerCase().includes("ui")) {
           uiId++;
+          uiCount++;
+          if (nodes[key].data?.applicationFramework) {
+            setApplicationData((prev) => ({
+              ...prev,
+              [nodes[key].data?.applicationFramework]: true,
+            }));
+          }
+          if (uiCount == 2) setIsUINodeEnabled(true);
           setUniqueApplicationNames((prev) => [
             ...prev,
             data.metadata.nodes[key].data.label,
@@ -701,6 +735,7 @@ const Designer = ({ update }) => {
       groupId = 1;
       uiId = 1;
       gatewayId = 1;
+      uiCount = 0;
       setUpdated(false);
     };
   }, []);
@@ -773,6 +808,23 @@ const Designer = ({ update }) => {
 
   const onChange = (Data) => {
     setUpdated(true);
+    if (
+      Data.applicationFramework === "ui" ||
+      Data.applicationFramework === "docusaurus"
+    ) {
+      if (nodes[Isopen].data?.applicationFramework) {
+        setApplicationData((prev) => ({
+          ...prev,
+          [nodes[Isopen].data?.applicationFramework]: false,
+        }));
+      }
+      if (Data?.applicationFramework) {
+        setApplicationData((prev) => ({
+          ...prev,
+          [Data.applicationFramework]: true,
+        }));
+      }
+    }
     let allGatewayDetailsFilled = false;
     for (let key in gatewayInputCheck) {
       if (key !== Isopen && gatewayInputCheck[key] === true) {
@@ -904,7 +956,9 @@ const Designer = ({ update }) => {
     const NewNodes = { ...nodes };
     const NewEdges = { ...edges };
     let Service_Discovery_Data = nodes["serviceDiscoveryType"]?.data;
-    let authenticationData = nodes["authenticationType"]?.data;
+    let authenticationData = { authenticationType: "no" };
+    if (nodes["authenticationType"])
+      authenticationData = nodes["authenticationType"]?.data;
     let logManagementData = nodes["logManagement"]?.data;
     if (logManagementData && Data?.deployment)
       Data.deployment.enableECK = "true";
@@ -924,6 +978,11 @@ const Designer = ({ update }) => {
           ...authenticationData,
           ...logManagementData,
         };
+      if (Node.id.startsWith("UI")) {
+        if (Node.data.applicationFramework !== "docusaurus")
+          Node.data.applicationFramework = Node.data.clientFramework;
+        else Node.data.packageName = "docs";
+      }
     }
     if (Object.values(NewNodes).some((node) => node.data)) {
       Data["services"] = {};
@@ -1257,6 +1316,8 @@ const Designer = ({ update }) => {
           </ReactFlow>
         </div>
         <Sidebar
+          isUINodeEnabled={isUINodeEnabled}
+          isGatewayNodeEnabled={isGatewayNodeEnabled}
           Service_Discovery_Data={nodes["serviceDiscoveryType"]?.data}
           authenticationData={nodes["authenticationType"]?.data}
           nodes={nodes}
@@ -1285,6 +1346,7 @@ const Designer = ({ update }) => {
             handleColorClick={handleColorClick}
             uniqueApplicationNames={uniqueApplicationNames}
             uniquePortNumbers={uniquePortNumbers}
+            applicationData={applicationData}
           />
         )}
         {nodeType === "Service" && Isopen && (

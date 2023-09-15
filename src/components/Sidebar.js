@@ -14,6 +14,8 @@ import { ArrowRightIcon, ArrowLeftIcon } from "@chakra-ui/icons";
 import { useLocation } from "react-router-dom";
 
 const Sidebar = ({
+  isUINodeEnabled,
+  isGatewayNodeEnabled,
   Service_Discovery_Data,
   onSubmit,
   authenticationData,
@@ -119,7 +121,6 @@ const Sidebar = ({
   const checkDisabled = () => {
     if (
       !checkNodeExists ||
-      !authenticationData ||
       projectNameCheck ||
       projectData.projectName === "" ||
       isEmptyUiSubmit === true ||
@@ -218,17 +219,27 @@ const Sidebar = ({
           </div>
 
           <div
-            className={`dndnode output`}
+            className={`dndnode output ${isUINodeEnabled ? "disabled" : ""}`}
             onDragStart={(event) => onDragStart(event, "default", "UI")}
-            draggable
+            draggable={!isUINodeEnabled}
+            style={{
+              backgroundColor: isUINodeEnabled ? "#CFCFCF" : "",
+              cursor: isUINodeEnabled ? "not-allowed" : "",
+            }}
           >
             UI
           </div>
 
           <div
-            className={`dndnode output`}
+            className={`dndnode output ${
+              isGatewayNodeEnabled ? "disabled" : ""
+            }`}
             onDragStart={(event) => onDragStart(event, "default", "Gateway")}
-            draggable
+            draggable={!isGatewayNodeEnabled}
+            style={{
+              backgroundColor: isGatewayNodeEnabled ? "#CFCFCF" : "",
+              cursor: isGatewayNodeEnabled ? "not-allowed" : "",
+            }}
           >
             Gateway
           </div>
@@ -490,19 +501,6 @@ const Sidebar = ({
               }}
             >
               Please ensure there exists atleast one application
-            </p>
-          ) : (
-            <></>
-          )}
-          {!authenticationData ? (
-            <p
-              style={{
-                fontSize: "10px",
-                color: "red",
-                marginTop: "5px",
-              }}
-            >
-              Please select Authentication type
             </p>
           ) : (
             <></>
