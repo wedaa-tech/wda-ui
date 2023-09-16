@@ -9,7 +9,7 @@ import ReactFlow, {
   BackgroundVariant,
 } from "reactflow";
 import "reactflow/dist/style.css";
-import { Button } from "@chakra-ui/react";
+import { Button, Flex, Spinner } from "@chakra-ui/react";
 import { ArrowRightIcon } from "@chakra-ui/icons";
 import Sidebar from "./../components/Sidebar";
 import { saveAs } from "file-saver";
@@ -1325,6 +1325,7 @@ const Designer = ({ update }) => {
           saveMetadata={saveMetadata}
           Togglesave={UpdateSave}
           isLoading={isLoading}
+          setIsLoading={setIsLoading}
           isEmptyUiSubmit={isEmptyUiSubmit}
           isEmptyServiceSubmit={isEmptyServiceSubmit}
           isEmptyGatewaySubmit={isEmptyGatewaySubmit}
@@ -1434,6 +1435,41 @@ const Designer = ({ update }) => {
           <AlertModal isOpen={true} onClose={() => setAuthProviderCount(1)} />
         )}
       </ReactFlowProvider>
+
+      {isLoading && (
+        <Flex
+          position="fixed"
+          top="62"
+          left="0"
+          right="0"
+          bottom="0"
+          alignItems="center"
+          justifyContent="center"
+          backgroundColor="#f5f5f5"
+          zIndex="9999"
+          display="flex"
+          flexDirection="column"
+        >
+          <Spinner
+            thickness="8px"
+            speed="0.9s"
+            emptyColor="gray.200"
+            color="#3182CE"
+            height="250px"
+            width="250px"
+          />
+          <div
+            style={{
+              marginTop: "40px",
+              color: "#3182CE",
+              fontWeight: "bolder",
+              fontSize: "20px",
+            }}
+          >
+            Please wait while we generate your project
+          </div>
+        </Flex>
+      )}
     </div>
   );
 };

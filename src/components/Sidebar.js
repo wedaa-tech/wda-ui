@@ -20,6 +20,7 @@ const Sidebar = ({
   onSubmit,
   authenticationData,
   isLoading,
+  setIsLoading,
   saveMetadata,
   Togglesave,
   nodes,
@@ -73,7 +74,15 @@ const Sidebar = ({
   const { initialized, keycloak } = useKeycloak();
 
   const handleButtonClick = () => {
-    setShowModal(true);
+    if (
+      Object.keys(nodes).length === 1 &&
+      Object.values(nodes)[0]?.data?.applicationFramework === "docusaurus"
+    ) {
+      setIsLoading(true);
+      onSubmit(projectData);
+    } else {
+      setShowModal(true);
+    }
   };
   const handleCloseModal = () => {
     setShowModal(false);
