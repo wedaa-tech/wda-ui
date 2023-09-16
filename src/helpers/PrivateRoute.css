@@ -7,9 +7,9 @@
     padding: 20px;
     border-radius: 4px;
     text-align: center;
-  }
-  
-  .modal-overlay {
+}
+
+.modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -19,9 +19,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-  }
-  
-  .modal-btn {
+}
+
+.modal-btn {
     margin-top: 10px;
-  }
-  
+}

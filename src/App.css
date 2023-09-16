@@ -1,111 +1,111 @@
 body {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh; /* ensure body takes up full viewport height */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* ensure body takes up full viewport height */
 }
 
 .wrapper {
-  flex: 1; /* make wrapper take up remaining vertical space */
+    flex: 1; /* make wrapper take up remaining vertical space */
 }
 .myDiv {
-  font-size: 20px;
-  text-align: left;
+    font-size: 20px;
+    text-align: left;
 }
 
 .footer {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
 }
 .Modal {
-  width: "100%";
-  height: "90%";
-  align-items: "center";
-  justify-content: "center";
+    width: '100%';
+    height: '90%';
+    align-items: 'center';
+    justify-content: 'center';
 }
 .input-container {
-  margin-bottom: 1rem; /* or any other value you prefer */
+    margin-bottom: 1rem; /* or any other value you prefer */
 }
 
 html,
 body,
 #root {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: sans-serif;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: sans-serif;
 }
 
 .dndflow {
-  flex-direction: column;
-  display: flex;
-  flex-grow: 1;
-  height: 93.5%;
+    flex-direction: column;
+    display: flex;
+    flex-grow: 1;
+    height: 93.5%;
 }
 
 .dndflow aside {
-  border-right: 1px solid #eee;
-  padding: 15px 10px;
-  font-size: 12px;
-  background: #fcfcfc;
+    border-right: 1px solid #eee;
+    padding: 15px 10px;
+    font-size: 12px;
+    background: #fcfcfc;
 }
 
 .dndflow aside .description {
-  margin-bottom: 14px;
+    margin-bottom: 14px;
 }
 
 .dndflow aside .sideBlock::-webkit-scrollbar {
-  width: 0.1em;
-  background: transparent;
+    width: 0.1em;
+    background: transparent;
 }
 
 .dndflow aside .sideBlock::-webkit-scrollbar-thumb {
-  background-color: transparent;
+    background-color: transparent;
 }
 
 .dndflow .dndnode {
-  height: 40px;
-  padding: 4px;
-  border: 1px solid #1a192b;
-  border-radius: 15px;
-  margin-bottom: 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: grab;
+    height: 40px;
+    padding: 4px;
+    border: 1px solid #1a192b;
+    border-radius: 15px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: grab;
 }
 
 .dndflow .dndnode.input {
-  border-color: #0041d0;
-  padding: 2px;
+    border-color: #0041d0;
+    padding: 2px;
 }
 
 .dndflow .dndnode.output {
-  border-color: #3182ce;
-  padding: 20px;
-  font-size: 20px;
+    border-color: #3182ce;
+    padding: 20px;
+    font-size: 20px;
 }
 
 .dndflow .reactflow-wrapper {
-  flex-grow: 1;
-  height: 100%;
-  padding: 2px;
+    flex-grow: 1;
+    height: 100%;
+    padding: 2px;
 }
 
 .react-flow__attribution a {
-  text-decoration: none;
-  pointer-events: none;
-  color: #ffffff;
+    text-decoration: none;
+    pointer-events: none;
+    color: #ffffff;
 }
 
 .react-flow__controls {
-  margin-left:97.5%;
+    margin-left: 97.5%;
 }
 
 .dndflow .selectall {
-  margin-top: 10px;
+    margin-top: 10px;
 }
 
 .react-flow__node.react-flow__node-ResizableNode,
@@ -117,39 +117,39 @@ body,
 .react-flow__node.react-flow__node-selectorNode5,
 .react-flow__node.react-flow__node-selectorNode6,
 .react-flow__node.react-flow__node-selectorNode7 {
-  display: flex;
-  text-align: center;
-  align-items: center;
-  justify-content: center;
-  width: 80px;
-  height: 50px;
+    display: flex;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 50px;
 }
 
 @media screen and (min-width: 768px) {
-  .dndflow {
-    flex-direction: row;
-  }
+    .dndflow {
+        flex-direction: row;
+    }
 
-  .dndflow aside {
-    width: 20%;
-    max-width: 300px;
-  }
+    .dndflow aside {
+        width: 20%;
+        max-width: 300px;
+    }
 }
 
 .react-flow__node-selectorNode {
-  padding: 0 !important;
+    padding: 0 !important;
 }
 
 .react-flow__node-default.selectable.selected,
 .react-flow__node-input.selectable:focus {
-  box-shadow: none !important;
-  border: 1.5px solid rgb(49, 130, 206) !important;
+    box-shadow: none !important;
+    border: 1.5px solid rgb(49, 130, 206) !important;
 }
 
 .architectures-section {
-  animation: backgroundAnimation 20s linear infinite;
-  background-size: 300% 100%;
-  background-image: linear-gradient(to right, #f0f8ff, #c3e2ff, #f0f8ff);
+    animation: backgroundAnimation 20s linear infinite;
+    background-size: 300% 100%;
+    background-image: linear-gradient(to right, #f0f8ff, #c3e2ff, #f0f8ff);
 }
 
 /* .create-architecture::after:hover {
@@ -161,171 +161,172 @@ body,
 .create-architecture:not([disabled]):hover,
 .architecture-card:not([disabled]):hover,
 .image-select:not([disabled]):hover {
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
-  transform: scale(1.05);
-  transition: transform 0.3s ease-in-out;
+    box-shadow:
+        rgba(0, 0, 0, 0.1) 0px 10px 15px -3px,
+        rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
+    transform: scale(1.05);
+    transition: transform 0.3s ease-in-out;
 }
 
 .create-architecture:not([disabled]):active,
 .architecture-card:not([disabled]):active,
 .image-select:not([disabled]):active {
-  /* background-color: #3e8e41; */
-  /* box-shadow: 0 5px #666; */
-  transform: translateY(4px);
+    /* background-color: #3e8e41; */
+    /* box-shadow: 0 5px #666; */
+    transform: translateY(4px);
 }
 
 .create-architecture,
 .architecture-card,
 .total-architecture,
 .image-select {
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
-  transform: none;
-  transition: transform 0.3s ease-in-out;
+    box-shadow:
+        rgba(0, 0, 0, 0.1) 0px 4px 6px -1px,
+        rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+    transform: none;
+    transition: transform 0.3s ease-in-out;
 }
-
 
 .not-selectable {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
-
 .image-text {
-  display: grid;
-  align-items: center;
-  height: 100%;
-  font-size: xl;
-  font-weight: bold;
-  background-color: #0000002e;
-  color: black;
-  backdrop-filter: blur(2px);
-  border-radius: inherit;
+    display: grid;
+    align-items: center;
+    height: 100%;
+    font-size: xl;
+    font-weight: bold;
+    background-color: #0000002e;
+    color: black;
+    backdrop-filter: blur(2px);
+    border-radius: inherit;
 }
 
 .image-select {
-  background-size: cover;
-  background-position: center;
-  color: white;
-  height: 100px;
-  text-align: center;
-  border-radius: 10px;
+    background-size: cover;
+    background-position: center;
+    color: white;
+    height: 100px;
+    text-align: center;
+    border-radius: 10px;
 }
 
-
 body {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  /* ensure body takes up full viewport height */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    /* ensure body takes up full viewport height */
 }
 
 .wrapper {
-  flex: 1;
-  /* make wrapper take up remaining vertical space */
+    flex: 1;
+    /* make wrapper take up remaining vertical space */
 }
 
 .myDiv {
-  font-size: 20px;
-  text-align: left;
+    font-size: 20px;
+    text-align: left;
 }
 
 .footer {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
 }
 
 .Modal {
-  width: "100%";
-  height: "90%";
-  align-items: "center";
-  justify-content: "center";
+    width: '100%';
+    height: '90%';
+    align-items: 'center';
+    justify-content: 'center';
 }
 
 .input-container {
-  margin-bottom: 1rem;
-  /* or any other value you prefer */
+    margin-bottom: 1rem;
+    /* or any other value you prefer */
 }
 
 html,
 body,
 #root {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: sans-serif;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: sans-serif;
 }
 
 .dndflow {
-  flex-direction: column;
-  display: flex;
-  flex-grow: 1;
-  height: 93.5%;
+    flex-direction: column;
+    display: flex;
+    flex-grow: 1;
+    height: 93.5%;
 }
 
 .dndflow aside {
-  border-right: 1px solid #eee;
-  padding: 15px 10px;
-  font-size: 12px;
-  background: #fcfcfc;
+    border-right: 1px solid #eee;
+    padding: 15px 10px;
+    font-size: 12px;
+    background: #fcfcfc;
 }
 
 .dndflow aside .description {
-  margin-bottom: 14px;
+    margin-bottom: 14px;
 }
 
 .dndflow aside .sideBlock::-webkit-scrollbar {
-  width: 0.1em;
-  background: transparent;
+    width: 0.1em;
+    background: transparent;
 }
 
 .dndflow aside .sideBlock::-webkit-scrollbar-thumb {
-  background-color: transparent;
+    background-color: transparent;
 }
 
 .dndflow .dndnode {
-  height: 40px;
-  padding: 4px;
-  border: 1px solid #1a192b;
-  border-radius: 2px;
-  margin-bottom: 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: grab;
+    height: 40px;
+    padding: 4px;
+    border: 1px solid #1a192b;
+    border-radius: 2px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: grab;
 }
 
 .dndflow .dndnode.input {
-  border-color: #0041d0;
-  padding: 2px;
+    border-color: #0041d0;
+    padding: 2px;
 }
 
 .dndflow .dndnode.output {
-  border-color: #3182ce;
-  padding: 20px;
-  font-size: 20px;
+    border-color: #3182ce;
+    padding: 20px;
+    font-size: 20px;
 }
 
 .dndflow .reactflow-wrapper {
-  flex-grow: 1;
-  height: 100%;
-  padding: 2px;
+    flex-grow: 1;
+    height: 100%;
+    padding: 2px;
 }
 
 .react-flow__attribution a {
-  text-decoration: none;
-  pointer-events: none;
-  color: #ffffff;
+    text-decoration: none;
+    pointer-events: none;
+    color: #ffffff;
 }
 
 .dndflow .selectall {
-  margin-top: 10px;
+    margin-top: 10px;
 }
 
 .react-flow__node.react-flow__node-ResizableNode,
@@ -336,46 +337,50 @@ body,
 .react-flow__node.react-flow__node-selectorNode5,
 .react-flow__node.react-flow__node-selectorNode6,
 .react-flow__node.react-flow__node-selectorNode7 {
-  display: flex;
-  text-align: center;
-  align-items: center;
-  justify-content: center;
-  width: 60px;
-  height: 60px;
+    display: flex;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
 }
 
 .refArchNode {
-  box-shadow: rgba(0, 0, 0, 0.24) 0px 4px 6px -1px, rgba(0, 0, 0, 0.12) 0px 2px 4px -1px;
-  transform: none;
-  transition: transform 0.3s ease-in-out;
-  border-radius: 10px;
+    box-shadow:
+        rgba(0, 0, 0, 0.24) 0px 4px 6px -1px,
+        rgba(0, 0, 0, 0.12) 0px 2px 4px -1px;
+    transform: none;
+    transition: transform 0.3s ease-in-out;
+    border-radius: 10px;
 }
 
 .refArchNode:hover {
-  box-shadow: rgba(0, 0, 0, 0.3) 0px 10px 15px -3px, rgba(0, 0, 0, 0.15) 0px 4px 6px -2px;
-  transform: scale(1.05);
-  transition: transform 0.3s ease-in-out;
+    box-shadow:
+        rgba(0, 0, 0, 0.3) 0px 10px 15px -3px,
+        rgba(0, 0, 0, 0.15) 0px 4px 6px -2px;
+    transform: scale(1.05);
+    transition: transform 0.3s ease-in-out;
 }
 
 @media screen and (min-width: 768px) {
-  .dndflow {
-    flex-direction: row;
-  }
+    .dndflow {
+        flex-direction: row;
+    }
 
-  .dndflow aside {
-    width: 20%;
-    max-width: 250px;
-  }
+    .dndflow aside {
+        width: 20%;
+        max-width: 250px;
+    }
 }
 
 .react-flow__node-selectorNode {
-  padding: 0 !important;
+    padding: 0 !important;
 }
 
 .react-flow__node-default.selectable.selected,
 .react-flow__node-input.selectable:focus {
-  box-shadow: none !important;
-  border: 1.5px solid rgb(49, 130, 206) !important;
+    box-shadow: none !important;
+    border: 1.5px solid rgb(49, 130, 206) !important;
 }
 
 /* .sideBar {
@@ -386,48 +391,52 @@ body,
 } */
 
 .sideBar {
-  height: auto;
-  opacity: 1;
-  animation: fadeIn 10s;
+    height: auto;
+    opacity: 1;
+    animation: fadeIn 10s;
 }
 
 .download-image.react-flow {
-  background: #1a365d;
+    background: #1a365d;
 }
 
 .download-image .react-flow__node {
-  width: 50px;
-  height: 50px;
-  color: white;
-  font-weight: 700;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-color: white;
+    width: 50px;
+    height: 50px;
+    color: white;
+    font-weight: 700;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-color: white;
 }
 
 .download-image .react-flow__node-custom {
-  font-size: 12px;
-  background: #eee;
-  border: 1px solid #555;
-  border-radius: 5px;
-  text-align: center;
-  padding: 10px;
+    font-size: 12px;
+    background: #eee;
+    border: 1px solid #555;
+    border-radius: 5px;
+    text-align: center;
+    padding: 10px;
 }
 
 .download-image .react-flow__node-custom .react-flow__handle-right {
-  transform: none;
+    transform: none;
 }
 
 .refArchNode {
-  box-shadow: rgba(0, 0, 0, 0.24) 0px 4px 6px -1px, rgba(0, 0, 0, 0.12) 0px 2px 4px -1px;
-  transform: none;
-  transition: transform 0.3s ease-in-out;
-  border-radius: 10px;
+    box-shadow:
+        rgba(0, 0, 0, 0.24) 0px 4px 6px -1px,
+        rgba(0, 0, 0, 0.12) 0px 2px 4px -1px;
+    transform: none;
+    transition: transform 0.3s ease-in-out;
+    border-radius: 10px;
 }
 
 .refArchNode:hover {
-  box-shadow: rgba(0, 0, 0, 0.3) 0px 10px 15px -3px, rgba(0, 0, 0, 0.15) 0px 4px 6px -2px;
-  transform: scale(1.05);
-  transition: transform 0.3s ease-in-out;
+    box-shadow:
+        rgba(0, 0, 0, 0.3) 0px 10px 15px -3px,
+        rgba(0, 0, 0, 0.15) 0px 4px 6px -2px;
+    transform: scale(1.05);
+    transition: transform 0.3s ease-in-out;
 }

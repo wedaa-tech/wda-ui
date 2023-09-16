@@ -2,60 +2,60 @@ name: Deploy
 
 # Controls when the workflow will run
 on:
-  workflow_dispatch:
+    workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
 
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region:            ap-south-1
+            - name: Configure AWS Credentials
+              uses: aws-actions/configure-aws-credentials@v1
+              with:
+                  aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                  aws-region: ap-south-1
 
-      # - name: Update DNS name 
-      #   run: |
-      #     echo "Updating API URL in .env.production..."
+            # - name: Update DNS name
+            #   run: |
+            #     echo "Updating API URL in .env.production..."
 
-      #     # set KC_NEW_IP_ADDRESS with the keycloak task IP
-      #     kC_NEW_IP_ADDRESS=$(aws ecs describe-tasks --cluster wda --tasks $(aws ecs list-tasks --cluster wda --service-name kc-service --query 'taskArns' --output text) --query 'tasks[*].attachments[0].details[?name==`networkInterfaceId`].value' --output text | xargs -I {} aws ec2 describe-network-interfaces --network-interface-ids {} --query 'NetworkInterfaces[0].Association.PublicIp' --output text)
-          
-      #     # refactor the string representation, only with IP address
-      #     kC_NEW_IP_ADDRESS=$(echo "$kC_NEW_IP_ADDRESS" | sed 's/IP_ADDRESS=//g')
+            #     # set KC_NEW_IP_ADDRESS with the keycloak task IP
+            #     kC_NEW_IP_ADDRESS=$(aws ecs describe-tasks --cluster wda --tasks $(aws ecs list-tasks --cluster wda --service-name kc-service --query 'taskArns' --output text) --query 'tasks[*].attachments[0].details[?name==`networkInterfaceId`].value' --output text | xargs -I {} aws ec2 describe-network-interfaces --network-interface-ids {} --query 'NetworkInterfaces[0].Association.PublicIp' --output text)
 
-      #     # set WDA_NEW_IP_ADDRESS with the keycloak task IP
-      #     WDA_NEW_IP_ADDRESS=$(aws ecs describe-tasks --cluster wda --tasks $(aws ecs list-tasks --cluster wda --service-name wda-service --query 'taskArns' --output text) --query 'tasks[*].attachments[0].details[?name==`networkInterfaceId`].value' --output text | xargs -I {} aws ec2 describe-network-interfaces --network-interface-ids {} --query 'NetworkInterfaces[0].Association.PublicIp' --output text)
-          
-      #     # refactor the string representation, only with IP address
-      #     WDA_NEW_IP_ADDRESS=$(echo "$WDA_NEW_IP_ADDRESS" | sed 's/IP_ADDRESS=//g')
+            #     # refactor the string representation, only with IP address
+            #     kC_NEW_IP_ADDRESS=$(echo "$kC_NEW_IP_ADDRESS" | sed 's/IP_ADDRESS=//g')
 
-      #     # print the Keycloak/wda service IP address
-      #     echo -e "\e[1m\e[32mecho keycloak host address: http://$kC_NEW_IP_ADDRESS:8080\e[0m"
-      #     echo -e "\e[1m\e[32mecho wda host address:      http://$WDA_NEW_IP_ADDRESS:3001/health\e[0m"
+            #     # set WDA_NEW_IP_ADDRESS with the keycloak task IP
+            #     WDA_NEW_IP_ADDRESS=$(aws ecs describe-tasks --cluster wda --tasks $(aws ecs list-tasks --cluster wda --service-name wda-service --query 'taskArns' --output text) --query 'tasks[*].attachments[0].details[?name==`networkInterfaceId`].value' --output text | xargs -I {} aws ec2 describe-network-interfaces --network-interface-ids {} --query 'NetworkInterfaces[0].Association.PublicIp' --output text)
 
-      #     sed -i 's#REACT_APP_API_BASE_URL = ".*"#REACT_APP_API_BASE_URL = "http://'"$WDA_NEW_IP_ADDRESS"':3001"#' .env.production
-      #     sed -i 's#REACT_APP_KEYCLOAK_URL = ".*"#REACT_APP_KEYCLOAK_URL = "http://'"$kC_NEW_IP_ADDRESS"':8080"#' .env.production
-          
-      #     git config --local user.email "tic.dev@comakeit.com"
-      #     git config --local user.name "comakeit-tic"
-      #     git add . 
-      #     git commit -a -m "updated API URL in env.production"
+            #     # refactor the string representation, only with IP address
+            #     WDA_NEW_IP_ADDRESS=$(echo "$WDA_NEW_IP_ADDRESS" | sed 's/IP_ADDRESS=//g')
 
-      # - name: Push changes
-      #   uses: ad-m/github-push-action@master
-      #   with:
-      #     force: true
-      #     github_token: ${{ secrets.GITHUB_TOKEN }}
-      #     branch: deploy
+            #     # print the Keycloak/wda service IP address
+            #     echo -e "\e[1m\e[32mecho keycloak host address: http://$kC_NEW_IP_ADDRESS:8080\e[0m"
+            #     echo -e "\e[1m\e[32mecho wda host address:      http://$WDA_NEW_IP_ADDRESS:3001/health\e[0m"
 
-       # Treating warnings as errors because process.env.CI = true
-       # set CI=false to treat warnings as warnings
-      - name: Build React App
-        run:  npm install && CI=false npm run build
+            #     sed -i 's#REACT_APP_API_BASE_URL = ".*"#REACT_APP_API_BASE_URL = "http://'"$WDA_NEW_IP_ADDRESS"':3001"#' .env.production
+            #     sed -i 's#REACT_APP_KEYCLOAK_URL = ".*"#REACT_APP_KEYCLOAK_URL = "http://'"$kC_NEW_IP_ADDRESS"':8080"#' .env.production
 
-      - name: Deploy app build to S3 bucket
-        run:  aws s3 sync ./build/ s3://wda-ui --delete
+            #     git config --local user.email "tic.dev@comakeit.com"
+            #     git config --local user.name "comakeit-tic"
+            #     git add .
+            #     git commit -a -m "updated API URL in env.production"
+
+            # - name: Push changes
+            #   uses: ad-m/github-push-action@master
+            #   with:
+            #     force: true
+            #     github_token: ${{ secrets.GITHUB_TOKEN }}
+            #     branch: deploy
+
+            # Treating warnings as errors because process.env.CI = true
+            # set CI=false to treat warnings as warnings
+            - name: Build React App
+              run: npm install && CI=false npm run build
+
+            - name: Deploy app build to S3 bucket
+              run: aws s3 sync ./build/ s3://wda-ui --delete
