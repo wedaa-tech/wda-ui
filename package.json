@@ -11,6 +11,7 @@
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "@uiw/react-markdown-preview": "^4.1.15",
     "env-cmd": "^10.1.0",
     "file-saver": "^2.0.5",
     "framer-motion": "^10.2.4",

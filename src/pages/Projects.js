@@ -57,7 +57,7 @@ function Projects() {
   const handleClick = async (data, column, id) => {
     if (column === "Architecture")
       history.push({
-        pathname: "/projects/" + id,
+        pathname: "/architecture/" + id,
         state: data,
       });
     else {
@@ -166,7 +166,7 @@ function Projects() {
       );
       if (response.ok) {
         history.push({
-          pathname: "/edit/" + id,
+          pathname: "/architecture/" + id + "/edit",
           state: data,
         });
       } else {

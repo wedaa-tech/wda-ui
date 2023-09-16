@@ -1,0 +1,1037 @@
+{
+  "UI": [
+    {
+      "name": "src",
+      "type": "folder",
+      "details": "Source code folder",
+      "description": "This folder contains all the source code for your application.",
+      "children": [
+        {
+          "name": "assets",
+          "type": "folder",
+          "details": "Asset files folder",
+          "description": "This folder contains asset files used in your application.",
+          "children": [
+            {
+              "name": "font",
+              "type": "folder",
+              "details": "Font files folder",
+              "description": "This folder contains font files used in your application.",
+              "children": [
+                {
+                  "name": "CentraNo2-Bold.ttf",
+                  "type": "file",
+                  "details": "Font file (CentraNo2-Bold)",
+                  "description": "CentraNo2-Bold.ttf is a font file with a bold style."
+                },
+                {
+                  "name": "CentraNo2-Book.ttf",
+                  "type": "file",
+                  "details": "Font file (CentraNo2-Book)",
+                  "description": "CentraNo2-Book.ttf is a font file with a book style."
+                },
+                {
+                  "name": "CentraNo2-Medium.ttf",
+                  "type": "file",
+                  "details": "Font file (CentraNo2-Medium)",
+                  "description": "CentraNo2-Medium.ttf is a font file with a medium style."
+                }
+              ]
+            },
+            {
+              "name": "img",
+              "type": "folder",
+              "details": "Image files folder",
+              "description": "This folder contains image files used in your application.",
+              "children": [
+                {
+                  "name": "arrow1.svg",
+                  "type": "file",
+                  "details": "SVG image (arrow1)",
+                  "description": "The arrow1.svg file is an SVG image of an arrow."
+                },
+                {
+                  "name": "arrow2.svg",
+                  "type": "file",
+                  "details": "SVG image (arrow2)",
+                  "description": "The arrow2.svg file is an SVG image of an arrow."
+                },
+                {
+                  "name": "color-sharp2.png",
+                  "type": "file",
+                  "details": "PNG image (color-sharp2)",
+                  "description": "The color-sharp2.png file is a PNG image with sharp colors."
+                },
+                {
+                  "name": "color-sharp.png",
+                  "type": "file",
+                  "details": "PNG image (color-sharp)",
+                  "description": "The color-sharp.png file is a PNG image with sharp colors."
+                },
+                {
+                  "name": "logox.png",
+                  "type": "file",
+                  "details": "PNG image (logox)",
+                  "description": "The logox.png file is a PNG image of a logo."
+                },
+                {
+                  "name": "meter1.svg",
+                  "type": "file",
+                  "details": "SVG image (meter1)",
+                  "description": "The meter1.svg file is an SVG image of a meter."
+                },
+                {
+                  "name": "meter2.svg",
+                  "type": "file",
+                  "details": "SVG image (meter2)",
+                  "description": "The meter2.svg file is an SVG image of a meter."
+                },
+                {
+                  "name": "meter3.svg",
+                  "type": "file",
+                  "details": "SVG image (meter3)",
+                  "description": "The meter3.svg file is an SVG image of a meter."
+                },
+                {
+                  "name": "nav-icon1.svg",
+                  "type": "file",
+                  "details": "SVG image (nav-icon1)",
+                  "description": "The nav-icon1.svg file is an SVG image of a navigation icon."
+                },
+                {
+                  "name": "nav-icon2.svg",
+                  "type": "file",
+                  "details": "SVG image (nav-icon2)",
+                  "description": "The nav-icon2.svg file is an SVG image of a navigation icon."
+                },
+                {
+                  "name": "nav-icon3.svg",
+                  "type": "file",
+                  "details": "SVG image (nav-icon3)",
+                  "description": "The nav-icon3.svg file is an SVG image of a navigation icon."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "components",
+          "type": "folder",
+          "details": "React components folder",
+          "description": "This folder contains reusable React components used in your application.",
+          "children": [
+            {
+              "name": "Banner.js",
+              "type": "file",
+              "details": "Banner component",
+              "description": "The Banner component displays a banner at the top of the page."
+            },
+            {
+              "name": "Docs.js",
+              "type": "file",
+              "details": "Docs component",
+              "description": "The Docs component displays documentation for your application."
+            },
+            {
+              "name": "NavBar.js",
+              "type": "file",
+              "details": "NavBar component",
+              "description": "The NavBar component provides navigation links for your app."
+            }
+          ]
+        },
+        {
+          "name": "config",
+          "type": "folder",
+          "details": "Configuration folder",
+          "description": "This folder contains configuration files for your application.",
+          "children": [
+            {
+              "name": "auth",
+              "type": "folder",
+              "details": "Authentication configuration",
+              "description": "This folder contains authentication-related configuration files.",
+              "children": [
+                {
+                  "name": "privateRoute.js",
+                  "type": "file",
+                  "details": "Private Route configuration",
+                  "description": "The Private Route configuration file defines routes that require authentication."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "App.css",
+          "type": "file",
+          "details": "CSS file for App component",
+          "description": "The App.css file contains styles for the main App component."
+        },
+        {
+          "name": "App.js",
+          "type": "file",
+          "details": "Main App component",
+          "description": "The App.js file defines the main component for your application."
+        },
+        {
+          "name": "App.test.js",
+          "type": "file",
+          "details": "Test file for App component",
+          "description": "The App.test.js file contains tests for the App component."
+        }
+      ]
+    },
+    {
+      "name": "public",
+      "type": "folder",
+      "details": "Public assets folder",
+      "description": "This folder contains public assets used in your application.",
+      "children": [
+        {
+          "name": "favicon.ico",
+          "type": "file",
+          "details": "Favicon icon",
+          "description": "The favicon.ico file is the icon displayed in the browser tab."
+        },
+        {
+          "name": "index.html",
+          "type": "file",
+          "details": "HTML entry point",
+          "description": "The index.html file is the main HTML file for your application."
+        },
+        {
+          "name": "logo192.png",
+          "type": "file",
+          "details": "Logo image (192px)",
+          "description": "The logo192.png file is a logo image with a width of 192 pixels."
+        },
+        {
+          "name": "logo512.png",
+          "type": "file",
+          "details": "Logo image (512px)",
+          "description": "The logo512.png file is a logo image with a width of 512 pixels."
+        },
+        {
+          "name": "manifest.json",
+          "type": "file",
+          "details": "Web app manifest file",
+          "description": "The manifest.json file provides metadata about the web app."
+        },
+        {
+          "name": "robots.txt",
+          "type": "file",
+          "details": "Robots.txt file",
+          "description": "The robots.txt file specifies rules for web crawlers."
+        }
+      ]
+    },
+    {
+      "name": "comm.yo-rc.json",
+      "type": "file",
+      "details": "Yo RC file",
+      "description": "The comm.yo-rc.json file contains configuration for the Yeoman generator."
+    },
+    {
+      "name": "Dockerfile",
+      "type": "file",
+      "details": "Docker configuration file",
+      "description": "The Dockerfile contains instructions for building a Docker image for your application."
+    },
+    {
+      "name": "nginx.conf",
+      "type": "file",
+      "details": "Nginx configuration file",
+      "description": "The nginx.conf file contains configuration for the Nginx web server."
+    },
+    {
+      "name": "package.json",
+      "type": "file",
+      "details": "Node.js package file",
+      "description": "The package.json file contains metadata and dependencies for your Node.js project."
+    },
+    {
+      "name": "README.md",
+      "type": "file",
+      "details": "README file",
+      "description": "The README.md file typically contains documentation and instructions for your project."
+    }
+  ],
+  "Service": [
+    {
+      "name": "src",
+      "type": "folder",
+      "details": "Source code folder",
+      "description": "This folder contains all the source code for your application.",
+      "children": [
+        {
+          "name": "main",
+          "type": "folder",
+          "details": "Main application code",
+          "description": "This folder contains the main application code.",
+          "children": [
+            {
+              "name": "docker",
+              "type": "folder",
+              "details": "Docker configuration files",
+              "description": "This folder contains Docker configuration files.",
+              "children": [
+                {
+                  "name": "app.yml",
+                  "type": "file",
+                  "details": "Docker Compose configuration (app.yml)",
+                  "description": "The app.yml file contains Docker Compose configuration for your application."
+                },
+                {
+                  "name": "hazelcast-management-center.yml",
+                  "type": "file",
+                  "details": "Docker Compose configuration (hazelcast-management-center.yml)",
+                  "description": "The hazelcast-management-center.yml file contains Docker Compose configuration for Hazelcast Management Center."
+                },
+                {
+                  "name": "jib",
+                  "type": "folder",
+                  "details": "Jib configuration",
+                  "description": "This folder contains Jib configuration files.",
+                  "children": [
+                    {
+                      "name": "entrypoint.sh",
+                      "type": "file",
+                      "details": "Jib entrypoint script",
+                      "description": "The entrypoint.sh file is a script used by Jib for containerization."
+                    }
+                  ]
+                },
+                {
+                  "name": "monitoring.yml",
+                  "type": "file",
+                  "details": "Docker Compose configuration (monitoring.yml)",
+                  "description": "The monitoring.yml file contains Docker Compose configuration for monitoring services."
+                },
+                {
+                  "name": "realm-config",
+                  "type": "folder",
+                  "details": "Keycloak realm configuration",
+                  "description": "This folder contains configuration for Keycloak realms.",
+                  "children": [
+                    {
+                      "name": "jhipster-realm.json",
+                      "type": "file",
+                      "details": "Keycloak realm configuration file",
+                      "description": "The jhipster-realm.json file contains configuration for Keycloak realms used in the application."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "java",
+              "type": "folder",
+              "details": "Java source files",
+              "description": "This folder contains Java source files for your application.",
+              "children": [
+                {
+                  "name": "com",
+                  "type": "folder",
+                  "details": "Company or project package",
+                  "description": "This folder contains Java packages for your company or project.",
+                  "children": [
+                    {
+                      "name": "tic",
+                      "type": "folder",
+                      "details": "Tic package",
+                      "description": "This folder contains Java packages for the 'tic' project.",
+                      "children": [
+                        {
+                          "name": "service",
+                          "type": "folder",
+                          "details": "Service packages",
+                          "description": "This folder contains service-related Java packages.",
+                          "children": [
+                            {
+                              "name": "aop",
+                              "type": "folder",
+                              "details": "Aspect-Oriented Programming",
+                              "description": "This folder contains Aspect-Oriented Programming (AOP) components.",
+                              "children": [
+                                {
+                                  "name": "logging",
+                                  "type": "folder",
+                                  "details": "Logging aspects",
+                                  "description": "This folder contains logging aspects for AOP.",
+                                  "children": [
+                                    {
+                                      "name": "LoggingAspect.java",
+                                      "type": "file",
+                                      "details": "LoggingAspect class",
+                                      "description": "The LoggingAspect.java file contains the logging aspect class for AOP."
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "name": "client",
+                              "type": "folder",
+                              "details": "Client-related packages",
+                              "description": "This folder contains client-related Java packages.",
+                              "children": [
+                                {
+                                  "name": "AuthorizedFeignClient.java",
+                                  "type": "file",
+                                  "details": "AuthorizedFeignClient class",
+                                  "description": "The AuthorizedFeignClient.java file contains the AuthorizedFeignClient class."
+                                },
+                                {
+                                  "name": "OAuth2InterceptedFeignConfiguration.java",
+                                  "type": "file",
+                                  "details": "OAuth2InterceptedFeignConfiguration class",
+                                  "description": "The OAuth2InterceptedFeignConfiguration.java file contains the OAuth2InterceptedFeignConfiguration class."
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "name": "config",
+                          "type": "folder",
+                          "details": "Configuration packages",
+                          "description": "This folder contains configuration-related Java packages.",
+                          "children": [
+                            {
+                              "name": "ApplicationProperties.java",
+                              "type": "file",
+                              "details": "ApplicationProperties class",
+                              "description": "The ApplicationProperties.java file contains the ApplicationProperties class."
+                            },
+                            {
+                              "name": "Constants.java",
+                              "type": "file",
+                              "details": "Constants class",
+                              "description": "The Constants.java file contains application constants."
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "resources",
+              "type": "folder",
+              "details": "Resource files",
+              "description": "This folder contains resource files for your application.",
+              "children": [
+                {
+                  "name": "banner.txt",
+                  "type": "file",
+                  "details": "Banner text file",
+                  "description": "The banner.txt file contains a banner displayed during application startup."
+                },
+                {
+                  "name": "config",
+                  "type": "folder",
+                  "details": "Configuration files",
+                  "description": "This folder contains application configuration files.",
+                  "children": [
+                    {
+                      "name": "application-dev.yml",
+                      "type": "file",
+                      "details": "Development environment configuration (application-dev.yml)",
+                      "description": "The application-dev.yml file contains configuration for the development environment."
+                    },
+                    {
+                      "name": "application-prod.yml",
+                      "type": "file",
+                      "details": "Production environment configuration (application-prod.yml)",
+                      "description": "The application-prod.yml file contains configuration for the production environment."
+                    },
+                    {
+                      "name": "application-tls.yml",
+                      "type": "file",
+                      "details": "TLS configuration (application-tls.yml)",
+                      "description": "The application-tls.yml file contains configuration for TLS (Transport Layer Security)."
+                    },
+                    {
+                      "name": "application.yml",
+                      "type": "file",
+                      "details": "Application configuration (application.yml)",
+                      "description": "The application.yml file contains general application configuration."
+                    }
+                  ]
+                },
+                {
+                  "name": "i18n",
+                  "type": "folder",
+                  "details": "Internationalization files",
+                  "description": "This folder contains internationalization (i18n) resource files.",
+                  "children": [
+                    {
+                      "name": "messages_en.properties",
+                      "type": "file",
+                      "details": "English messages resource file (messages_en.properties)",
+                      "description": "The messages_en.properties file contains English language messages."
+                    },
+                    {
+                      "name": "messages.properties",
+                      "type": "file",
+                      "details": "Default messages resource file (messages.properties)",
+                      "description": "The messages.properties file contains default language messages."
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "test",
+          "type": "folder",
+          "details": "Test code",
+          "description": "This folder contains test code for your application.",
+          "children": [
+            {
+              "name": "java",
+              "type": "folder",
+              "details": "Java test source files",
+              "description": "This folder contains Java test source files.",
+              "children": [
+                {
+                  "name": "com",
+                  "type": "folder",
+                  "details": "Company or project package for tests",
+                  "description": "This folder contains Java packages for tests.",
+                  "children": [
+                    {
+                      "name": "tic",
+                      "type": "folder",
+                      "details": "Tic package for tests",
+                      "description": "This folder contains test packages for the 'tic' project.",
+                      "children": [
+                        {
+                          "name": "service",
+                          "type": "folder",
+                          "details": "Service-related test packages",
+                          "description": "This folder contains service-related test packages.",
+                          "children": [
+                            {
+                              "name": "config",
+                              "type": "folder",
+                              "details": "Configuration-related test packages",
+                              "description": "This folder contains configuration-related test packages.",
+                              "children": [
+                                {
+                                  "name": "AsyncSyncConfiguration.java",
+                                  "type": "file",
+                                  "details": "AsyncSyncConfiguration class",
+                                  "description": "The AsyncSyncConfiguration.java file contains configuration for asynchronous and synchronous tests."
+                                },
+                                {
+                                  "name": "SpringBootTestClassOrderer.java",
+                                  "type": "file",
+                                  "details": "SpringBootTestClassOrderer class",
+                                  "description": "The SpringBootTestClassOrderer.java file contains a class for ordering Spring Boot tests."
+                                },
+                                {
+                                  "name": "TestSecurityConfiguration.java",
+                                  "type": "file",
+                                  "details": "TestSecurityConfiguration class",
+                                  "description": "The TestSecurityConfiguration.java file contains security-related configuration for tests."
+                                },
+                                {
+                                  "name": "WebConfigurerTestController.java",
+                                  "type": "file",
+                                  "details": "WebConfigurerTestController class",
+                                  "description": "The WebConfigurerTestController.java file contains a controller used for testing web configuration."
+                                },
+                                {
+                                  "name": "WebConfigurerTest.java",
+                                  "type": "file",
+                                  "details": "WebConfigurerTest class",
+                                  "description": "The WebConfigurerTest.java file contains tests for web configuration."
+                                }
+                              ]
+                            },
+                            {
+                              "name": "security",
+                              "type": "folder",
+                              "details": "Security-related test packages",
+                              "description": "This folder contains security-related test packages.",
+                              "children": [
+                                {
+                                  "name": "oauth2",
+                                  "type": "folder",
+                                  "details": "OAuth2-related test packages",
+                                  "description": "This folder contains OAuth2-related test packages.",
+                                  "children": [
+                                    {
+                                      "name": "AudienceValidatorTest.java",
+                                      "type": "file",
+                                      "details": "AudienceValidatorTest class",
+                                      "description": "The AudienceValidatorTest.java file contains tests for audience validation in OAuth2."
+                                    },
+                                    {
+                                      "name": "AuthorizationHeaderUtilTest.java",
+                                      "type": "file",
+                                      "details": "AuthorizationHeaderUtilTest class",
+                                      "description": "The AuthorizationHeaderUtilTest.java file contains tests for authorization headers in OAuth2."
+                                    }
+                                  ]
+                                },
+                                {
+                                  "name": "SecurityUtilsUnitTest.java",
+                                  "type": "file",
+                                  "details": "SecurityUtilsUnitTest class",
+                                  "description": "The SecurityUtilsUnitTest.java file contains unit tests for security utilities."
+                                }
+                              ]
+                            },
+                            {
+                              "name": "web",
+                              "type": "folder",
+                              "details": "Web-related test packages",
+                              "description": "This folder contains web-related test packages.",
+                              "children": [
+                                {
+                                  "name": "rest",
+                                  "type": "folder",
+                                  "details": "REST test packages",
+                                  "description": "This folder contains REST API test packages.",
+                                  "children": [
+                                    {
+                                      "name": "errors",
+                                      "type": "folder",
+                                      "details": "Error handling test packages",
+                                      "description": "This folder contains test packages for error handling.",
+                                      "children": [
+                                        {
+                                          "name": "ExceptionTranslatorIT.java",
+                                          "type": "file",
+                                          "details": "ExceptionTranslatorIT class",
+                                          "description": "The ExceptionTranslatorIT.java file contains integration tests for exception translation."
+                                        },
+                                        {
+                                          "name": "ExceptionTranslatorTestController.java",
+                                          "type": "file",
+                                          "details": "ExceptionTranslatorTestController class",
+                                          "description": "The ExceptionTranslatorTestController.java file contains a controller used for testing exception translation."
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "name": "TestUtil.java",
+                                      "type": "file",
+                                      "details": "TestUtil class",
+                                      "description": "The TestUtil.java file contains utility functions for tests."
+                                    },
+                                    {
+                                      "name": "WithUnauthenticatedMockUser.java",
+                                      "type": "file",
+                                      "details": "WithUnauthenticatedMockUser class",
+                                      "description": "The WithUnauthenticatedMockUser.java file contains a class for tests with unauthenticated mock users."
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "resources",
+              "type": "folder",
+              "details": "Test resource files",
+              "description": "This folder contains test resource files.",
+              "children": [
+                {
+                  "name": "config",
+                  "type": "folder",
+                  "details": "Test configuration files",
+                  "description": "This folder contains test configuration files.",
+                  "children": [
+                    {
+                      "name": "application.yml",
+                      "type": "file",
+                      "details": "Test application configuration (application.yml)",
+                      "description": "The application.yml file contains test-specific application configuration."
+                    }
+                  ]
+                },
+                {
+                  "name": "junit-platform.properties",
+                  "type": "file",
+                  "details": "JUnit platform configuration",
+                  "description": "The junit-platform.properties file contains configuration for JUnit tests."
+                },
+                {
+                  "name": "logback.xml",
+                  "type": "file",
+                  "details": "Logback configuration",
+                  "description": "The logback.xml file contains configuration for the Logback logging framework."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "checkstyle.xml",
+      "type": "file",
+      "details": "Checkstyle configuration",
+      "description": "The checkstyle.xml file contains configuration for Checkstyle code style checking."
+    },
+    {
+      "name": "comm.yo-rc.json",
+      "type": "file",
+      "details": "Yo RC file",
+      "description": "The comm.yo-rc.json file contains configuration for the Yeoman generator."
+    },
+    {
+      "name": "mvnw",
+      "type": "file",
+      "details": "Maven Wrapper script",
+      "description": "The mvnw file is a Maven Wrapper script for building the project with Maven."
+    },
+    {
+      "name": "mvnw.cmd",
+      "type": "file",
+      "details": "Maven Wrapper script (Windows)",
+      "description": "The mvnw.cmd file is a Windows-specific Maven Wrapper script for building the project with Maven."
+    },
+    {
+      "name": "package.json",
+      "type": "file",
+      "details": "Node.js package file",
+      "description": "The package.json file contains metadata and dependencies for your Node.js project."
+    },
+    {
+      "name": "pom.xml",
+      "type": "file",
+      "details": "Maven POM file",
+      "description": "The pom.xml file is the Maven Project Object Model (POM) file for your Java project."
+    },
+    {
+      "name": "README.md",
+      "type": "file",
+      "details": "README file",
+      "description": "The README.md file typically contains documentation and instructions for your project."
+    },
+    {
+      "name": "sonar-project.properties",
+      "type": "file",
+      "details": "SonarQube project properties",
+      "description": "The sonar-project.properties file contains configuration for SonarQube code analysis."
+    }
+  ],
+  "Gateway": [
+    {
+      "name": "src",
+      "type": "folder",
+      "details": "Source code folder",
+      "children": [
+        {
+          "name": "main",
+          "type": "folder",
+          "details": "Main application code",
+          "children": [
+            {
+              "name": "docker",
+              "type": "folder",
+              "details": "Docker configuration files",
+              "children": [
+                {
+                  "name": "app.yml",
+                  "type": "file",
+                  "details": "Docker Compose configuration (app.yml)"
+                },
+                {
+                  "name": "grafana",
+                  "type": "folder",
+                  "details": "Grafana configuration"
+                },
+                {
+                  "name": "jhipster-control-center.yml",
+                  "type": "file",
+                  "details": "Docker Compose configuration (jhipster-control-center.yml)"
+                },
+                {
+                  "name": "jib",
+                  "type": "folder",
+                  "details": "Jib configuration"
+                },
+                {
+                  "name": "keycloak.yml",
+                  "type": "file",
+                  "details": "Docker Compose configuration (keycloak.yml)"
+                },
+                {
+                  "name": "monitoring.yml",
+                  "type": "file",
+                  "details": "Docker Compose configuration (monitoring.yml)"
+                },
+                {
+                  "name": "prometheus",
+                  "type": "folder",
+                  "details": "Prometheus configuration"
+                },
+                {
+                  "name": "realm-config",
+                  "type": "folder",
+                  "details": "Keycloak realm configuration"
+                },
+                {
+                  "name": "services.yml",
+                  "type": "file",
+                  "details": "Docker Compose configuration (services.yml)"
+                },
+                {
+                  "name": "sonar.yml",
+                  "type": "file",
+                  "details": "Docker Compose configuration (sonar.yml)"
+                },
+                {
+                  "name": "zipkin.yml",
+                  "type": "file",
+                  "details": "Docker Compose configuration (zipkin.yml)"
+                }
+              ]
+            },
+            {
+              "name": "java",
+              "type": "folder",
+              "details": "Java source files",
+              "children": [
+                {
+                  "name": "com",
+                  "type": "folder",
+                  "details": "Company or project package",
+                  "children": [
+                    {
+                      "name": "tic",
+                      "type": "folder",
+                      "details": "Tic package",
+                      "children": [
+                        {
+                          "name": "gateway",
+                          "type": "folder",
+                          "details": "Gateway package",
+                          "children": [
+                            {
+                              "name": "aop",
+                              "type": "folder",
+                              "details": "Aspect-Oriented Programming"
+                            },
+                            {
+                              "name": "config",
+                              "type": "folder",
+                              "details": "Configuration"
+                            },
+                            {
+                              "name": "GatewayApp.java",
+                              "type": "file",
+                              "details": "GatewayApp.java class"
+                            },
+                            {
+                              "name": "GeneratedByJHipster.java",
+                              "type": "file",
+                              "details": "GeneratedByJHipster.java class"
+                            },
+                            {
+                              "name": "package-info.java",
+                              "type": "file",
+                              "details": "Package info"
+                            },
+                            {
+                              "name": "security",
+                              "type": "folder",
+                              "details": "Security"
+                            },
+                            {
+                              "name": "web",
+                              "type": "folder",
+                              "details": "Web"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "resources",
+              "type": "folder",
+              "details": "Resource files",
+              "children": [
+                {
+                  "name": "banner.txt",
+                  "type": "file",
+                  "details": "Banner text file"
+                },
+                {
+                  "name": "config",
+                  "type": "folder",
+                  "details": "Configuration files"
+                },
+                {
+                  "name": "i18n",
+                  "type": "folder",
+                  "details": "Internationalization files"
+                },
+                {
+                  "name": "logback-spring.xml",
+                  "type": "file",
+                  "details": "Logback configuration"
+                },
+                {
+                  "name": "templates",
+                  "type": "folder",
+                  "details": "HTML templates"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "test",
+          "type": "folder",
+          "details": "Test code",
+          "children": [
+            {
+              "name": "java",
+              "type": "folder",
+              "details": "Java test source files",
+              "children": [
+                {
+                  "name": "com",
+                  "type": "folder",
+                  "details": "Company or project package for tests",
+                  "children": [
+                    {
+                      "name": "tic",
+                      "type": "folder",
+                      "details": "Tic package for tests",
+                      "children": [
+                        {
+                          "name": "gateway",
+                          "type": "folder",
+                          "details": "Gateway package for tests",
+                          "children": [
+                            {
+                              "name": "config",
+                              "type": "folder",
+                              "details": "Configuration for tests"
+                            },
+                            {
+                              "name": "IntegrationTest.java",
+                              "type": "file",
+                              "details": "IntegrationTest.java class"
+                            },
+                            {
+                              "name": "security",
+                              "type": "folder",
+                              "details": "Security for tests"
+                            },
+                            {
+                              "name": "TechnicalStructureTest.java",
+                              "type": "file",
+                              "details": "TechnicalStructureTest.java class"
+                            },
+                            {
+                              "name": "test",
+                              "type": "folder",
+                              "details": "Test classes"
+                            },
+                            {
+                              "name": "web",
+                              "type": "folder",
+                              "details": "Web for tests"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "resources",
+              "type": "folder",
+              "details": "Test resource files",
+              "children": [
+                {
+                  "name": "config",
+                  "type": "folder",
+                  "details": "Test configuration files"
+                },
+                {
+                  "name": "junit-platform.properties",
+                  "type": "file",
+                  "details": "JUnit platform configuration"
+                },
+                {
+                  "name": "logback.xml",
+                  "type": "file",
+                  "details": "Logback configuration for tests"
+                },
+                {
+                  "name": "META-INF",
+                  "type": "folder",
+                  "details": "META-INF resources",
+                  "children": [
+                    {
+                      "name": "services",
+                      "type": "folder",
+                      "details": "Service providers for tests",
+                      "children": [
+                        {
+                          "name": "reactor.blockhound.integration.BlockHoundIntegration",
+                          "type": "file",
+                          "details": "BlockHoundIntegration service"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "checkstyle.xml",
+      "type": "file",
+      "details": "Checkstyle configuration"
+    },
+    { "name": "comm.yo-rc.json", "type": "file", "details": "Yo RC file" },
+    { "name": "mvnw", "type": "file", "details": "Maven Wrapper script" },
+    {
+      "name": "mvnw.cmd",
+      "type": "file",
+      "details": "Maven Wrapper script (Windows)"
+    },
+    {
+      "name": "package.json",
+      "type": "file",
+      "details": "Node.js package file"
+    },
+    { "name": "pom.xml", "type": "file", "details": "Maven POM file" },
+    { "name": "README.md", "type": "file", "details": "README file" },
+    {
+      "name": "sonar-project.properties",
+      "type": "file",
+      "details": "SonarQube project properties"
+    }
+  ]
+}

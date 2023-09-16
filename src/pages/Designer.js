@@ -7,6 +7,7 @@ import ReactFlow, {
   ConnectionLineType,
   Background,
   BackgroundVariant,
+  Panel,
 } from "reactflow";
 import "reactflow/dist/style.css";
 import { Button } from "@chakra-ui/react";
@@ -35,6 +36,8 @@ import EdgeModal from "../components/Modal/EdgeModal";
 import { useKeycloak } from "@react-keycloak/web";
 import { FiUploadCloud } from "react-icons/fi";
 import ActionModal from "../components/Modal/ActionModal";
+import { useParams } from "react-router-dom/cjs/react-router-dom.min";
+import Review, { ReviewFlow } from "./Rewiew";
 
 let serviceId = 1;
 let gatewayId = 1;
@@ -67,7 +70,8 @@ const nodeTypes = {
   GroupNode: groupNode,
 };
 
-const Designer = ({ update }) => {
+const Designer = ({ update, viewMode = false }) => {
+  const [viewOnly, setViewOnly] = useState(viewMode);
   const reactFlowWrapper = useRef(null);
   const { keycloak, initialized } = useKeycloak();
   const [nodes, setNodes] = useState({});
@@ -98,7 +102,7 @@ const Designer = ({ update }) => {
   });
 
   const handleGoToIntendedPage = useCallback(
-    (location) => history.push(location),
+    (location) => history.goBack(),
     [history]
   );
 
@@ -425,6 +429,13 @@ const Designer = ({ update }) => {
       if (typeof type === "undefined" || !type) {
         setShowDiv(true);
         return;
+      } else if (type === "marketNode") {
+        const marketMetaData = JSON.parse(
+          event.dataTransfer.getData("metaData")
+        );
+        setNodes(() => ({ ...marketMetaData.nodes }));
+        setEdges(() => ({ ...marketMetaData.edges }));
+        return;
       }
 
       const position = reactFlowInstance.project({
@@ -589,41 +600,79 @@ const Designer = ({ update }) => {
     [reactFlowInstance]
   );
 
-  useEffect(() => {
-    document.title = "WDA";
-    setShowDiv(true);
-    let data = location?.state;
-    if (!data) {
-      if (
-        localStorage?.data != undefined &&
-        localStorage.data != null &&
-        localStorage.data?.metadata?.nodes != ""
-      ) {
-        data = JSON.parse(localStorage.data);
-        setuserData(data);
-        if (data?.metadata?.nodes) {
-          const nodee = data?.metadata?.nodes;
-          if (!(Object.keys(nodee).length === 0)) {
-            setShowDiv(false);
-            setNodes(data?.metadata.nodes);
+  const [projectParentId, setProjectParentId] = useState(null);
+
+  const { parentId, id } = useParams();
+
+  const verifyData = async () => {
+    try {
+      const response = await fetch(
+        process.env.REACT_APP_API_BASE_URL + "/blueprints/" + id,
+        {
+          method: "get",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: initialized
+              ? `Bearer ${keycloak?.token}`
+              : undefined,
+          },
+        }
+      );
+      if (response.ok) {
+        return await response;
+      } else {
+        console.error("You are not authorized");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const loadData = async () => {
+    if (initialized && parentId && id) {
+      try {
+        const response = await fetch(
+          process.env.REACT_APP_API_BASE_URL + "/blueprints/" + id,
+          {
+            method: "get",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: initialized
+                ? `Bearer ${keycloak?.token}`
+                : undefined,
+            },
           }
+        );
+
+        if (response.ok) {
+          const result = await response.json();
+          if (result?.metadata) {
+            console.log(
+              result,
+              "awfesdrgykuhyjthrgef456ig67rub54eyvwtq3ctvywbui76b54vycwqtyv67i"
+            );
+            setProjectParentId(result.parentId);
+            return await result;
+          }
+        } else {
+          throw new Error(
+            `Fetch request failed with status: ${response.status}`
+          );
         }
-        if (data.metadata?.edges) {
-          setEdges(data?.metadata.edges);
-        }
-        if (data?.updated) {
-          setUpdated(data.updated);
-        }
+      } catch (error) {
+        console.error(error);
       }
-    } else {
-      setuserData(data);
-      if (data?.metadata?.nodes) {
-        setShowDiv(false);
-        setNodes(data?.metadata.nodes);
-      }
-      if (data.metadata?.edges) {
-        setEdges(data?.metadata.edges);
-      }
+    }
+  };
+
+  const initializeState = (data) => {
+    setuserData(data);
+    if (data?.metadata?.nodes) {
+      setShowDiv(false);
+      setNodes(data?.metadata.nodes);
+    }
+    if (data.metadata?.edges) {
+      setEdges(data?.metadata.edges);
     }
     if (
       data != null &&
@@ -694,6 +743,43 @@ const Designer = ({ update }) => {
         }
       }
     }
+  };
+
+  useEffect(() => {
+    document.title = "WDA";
+    setShowDiv(true);
+    var data = location?.state;
+    if (!data && !parentId && !id) {
+      console.log("awdfegrhtgseffbfngwef");
+      if (
+        localStorage?.data != undefined &&
+        localStorage.data != null &&
+        localStorage.data?.metadata?.nodes != ""
+      ) {
+        data = JSON.parse(localStorage.data);
+        setuserData(data);
+        if (data?.metadata?.nodes) {
+          const nodee = data?.metadata?.nodes;
+          if (!(Object.keys(nodee).length === 0)) {
+            setShowDiv(false);
+            setNodes(data?.metadata.nodes);
+          }
+        }
+        if (data.metadata?.edges) {
+          setEdges(data?.metadata.edges);
+        }
+        if (data?.updated) {
+          setUpdated(data.updated);
+        }
+      }
+    } else {
+      const fetchData = async () => {
+        const result = await loadData();
+        initializeState(result);
+      };
+
+      fetchData();
+    }
     return () => {
       localStorage.clear();
       serviceId = 1;
@@ -704,6 +790,7 @@ const Designer = ({ update }) => {
       setUpdated(false);
     };
   }, []);
+
   useEffect(() => {
     if (update && userData.project_id) {
       var data = { ...userData };
@@ -972,6 +1059,9 @@ const Designer = ({ update }) => {
     if (userData?.project_id) {
       Data.projectId = userData?.project_id;
     }
+    if (projectParentId) {
+      Data.parentId = projectParentId;
+    }
     setNodes(NewNodes);
 
     setIsLoading(true);
@@ -986,7 +1076,6 @@ const Designer = ({ update }) => {
       .then((response) => response.blob())
       .then((blob) => {
         setIsLoading(false);
-        history.push("/success");
         saveAs(blob, `${Data.projectName}.zip`); // Edit the name or ask the user for the project Name
       })
       .catch((error) => console.error(error))
@@ -1135,6 +1224,17 @@ const Designer = ({ update }) => {
     setNodes(UpdatedNodes);
   };
 
+  // if (viewOnly)
+  //   return (
+  //     <ReactFlowProvider>
+  //       <ReviewFlow
+  //         nodesData={Object.values(nodes)}
+  //         edgesData={Object.values(edges)}
+  //         setViewOnly={setViewOnly}
+  //       />
+  //     </ReactFlowProvider>
+  //   );
+
   return (
     <div
       className="dndflow"
@@ -1234,7 +1334,7 @@ const Designer = ({ update }) => {
             }
             onDragOver={onDragOver}
             onDragLeave={() => setShowDiv(Object.keys(nodes).length === 0)}
-            onNodeClick={onclick}
+            onNodeClick={!viewOnly ? onclick : ""}
             // onNodeClick={onSingleClick}
             deleteKeyCode={["Backspace", "Delete"]}
             fitView
@@ -1243,12 +1343,41 @@ const Designer = ({ update }) => {
             }
             onEdgeUpdateStart={onEdgeUpdateStart}
             onEdgeUpdateEnd={(_, edge) => onEdgeUpdateEnd(nodes, edge)}
-            onEdgeClick={onEdgeClick}
-            nodesFocusable={true}
+            onEdgeClick={!viewOnly ? onEdgeClick : ""}
             defaultViewport={defaultViewport}
+            nodesDraggable={!viewOnly}
+            elementsSelectable={!viewOnly}
+            nodesConnectable={!viewOnly}
           >
-            <Controls />
+            <Controls showInteractive={!viewOnly} />
             {/* <MiniMap style={{ backgroundColor: "#3182CE" }} /> */}
+            <Panel position="top-right">
+              <Button
+                hidden={viewOnly}
+                backgroundColor={"blue"}
+                color={"white"}
+                onClick={() => console.log(nodes, edges, userData)}
+              >
+                Print
+              </Button>
+              <Button
+                hidden={!viewOnly}
+                backgroundColor={"skyblue"}
+                color={"white"}
+                onClick={() => setViewOnly(false)}
+              >
+                Edit Mode
+              </Button>
+              <Button
+                hidden={viewOnly}
+                backgroundColor={"skyblue"}
+                color={"white"}
+                onClick={() => setViewOnly(true)}
+              >
+                View Mode
+              </Button>
+            </Panel>
+
             <Background
               gap={10}
               color="#f2f2f2"
@@ -1274,6 +1403,7 @@ const Designer = ({ update }) => {
           updated={updated}
           setUpdated={setUpdated}
           triggerExit={triggerExit}
+          viewOnly={viewOnly}
         />
 
         {nodeType === "UI" && Isopen && (

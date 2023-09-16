@@ -1,0 +1,82 @@
+@keyframes backgroundAnimation {
+    0% {
+        background-position: 0 0;
+    }
+
+    100% {
+        background-position: 100% 0;
+    }
+}
+
+.architectures-section {
+    animation: backgroundAnimation 20s linear infinite;
+    background-size: 300% 100%;
+    background-image: linear-gradient(to right, #f0f8ff, #c3e2ff, #f0f8ff);
+}
+
+/* .create-architecture::after:hover {
+    box-shadow: mg;
+    transform: none;
+    transition: transform 0.3s ease-in-out;
+} */
+
+.create-architecture:not([disabled]):hover,
+.architecture-card:not([disabled]):hover,
+.image-select:not([disabled]):hover {
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
+    transform: scale(1.05);
+    transition: transform 0.3s ease-in-out;
+}
+
+.create-architecture:not([disabled]):active,
+.architecture-card:not([disabled]):active,
+.image-select:not([disabled]):active {
+    /* background-color: #3e8e41; */
+    /* box-shadow: 0 5px #666; */
+    transform: translateY(4px);
+}
+
+.create-architecture,
+.architecture-card,
+.total-architecture,
+.image-select {
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+    transform: none;
+    transition: transform 0.3s ease-in-out;
+}
+
+
+.not-selectable {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+
+.image-text {
+    display: grid;
+    align-items: center;
+    height: 100%;
+    font-size: xl;
+    font-weight: bold;
+    background-color: #0000002e;
+    color: black;
+    backdrop-filter: blur(2px);
+    border-radius: inherit;
+}
+
+.image-select {
+    background-size: cover;
+    background-position: center;
+    color: white;
+    height: 100px;
+    text-align: center;
+    border-radius: 10px;
+}
+
+.image-select:disabled {
+    
+}

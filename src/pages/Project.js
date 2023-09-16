@@ -50,6 +50,12 @@ const Project = () => {
 
   useEffect(() => {
     let data = location?.state;
+    console.log(location, location.state);
+    if (location.state === undefined) {
+      history.push("/projects", {
+        replace: true,
+      });
+    }
     if (!data) {
       let dataStorage = JSON.parse(localStorage.getItem("data"));
       setVal(dataStorage);
@@ -60,8 +66,14 @@ const Project = () => {
         setEdges(Object.values(dataStorage?.edges));
       }
     } else {
+      if (data?.state) {
+        console.log(data, "1");
+        data = data.state;
+        console.log(data, "2");
+      }
       setVal(data);
       setMetadata(data.metadata);
+      console.log(data, "awdfegrhtmrgsefgrhtfg");
       data = data.metadata;
       setNodes(Object.values(data?.nodes));
       if (data?.edges) {
@@ -85,6 +97,7 @@ const Project = () => {
   const [typeName, setTypeName] = useState("");
   const [cloudModal, setCloudModal] = useState(false);
   const [cloudName, setCloudName] = useState("");
+
 
   const DefaultAppData = {
     applicationName: "",
@@ -245,7 +258,7 @@ const Project = () => {
         );
         if (response.ok) {
           history.push({
-            pathname: "/edit/" + id,
+            pathname: "/architecture/" + id + "/edit",
             state: val,
           });
         } else {
