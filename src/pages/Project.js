@@ -142,56 +142,55 @@ const Project = () => {
         };
     };
 
-  const onNodeClick = (event, element) => {
-    event.preventDefault();
-    if (element.data.applicationType === "gateway") {
-      setNodeType("UI");
-      setserviceModal(true);
-      setAppData(prev => ({
-          ...prev,
-          applicationFramework: element.data.applicationFramework,
-          clientFramework: element.data.clientFramework,
-          withExample: element.data.withExample,
-      }));
-    } else if (element.data.applicationType === "microservice") {
-      setNodeType("Service");
-      setserviceModal(true);
-      setAppData((prev) => ({
-        ...prev,
-        applicationFramework: element.data.applicationFramework,
-      }));
-    } else if (element.data?.data?.cloudProvider === "aws") {
-      setNodeType("Cloud");
-      setCloudName("aws");
-      setCloudModal(true);
-      setData((prev) => ({
-        ...prev,
-        awsAccountId: element.data?.data?.awsAccountId,
-        awsRegion: element.data?.data?.awsRegion,
-        kubernetesStorageClassName:
-          element.data?.data?.kubernetesStorageClassName,
-      }));
-    } else if (element.data?.data?.cloudProvider === "azure") {
-      setNodeType("Cloud");
-      setCloudName("azure");
-      setCloudModal(true);
-      setData((prev) => ({
-        ...prev,
-        azureLocation: element.data?.data?.azureLocation,
-        subscriptionId: element.data?.data?.subscriptionId,
-        tenantId: element.data?.data?.tenantId,
-      }));
-    } else if (element.data?.data?.cloudProvider === "minikube") {
-      setNodeType("Cloud");
-      setCloudName("minikube");
-      setCloudModal(true);
-      setData((prev) => ({
-        ...prev,
-        dockerRepositoryName: element.data?.data?.dockerRepositoryName,
-      }));
-    } else {
-      setNodeType("other");
-    }
+    const onNodeClick = (event, element) => {
+        event.preventDefault();
+        if (element.data.applicationType === 'gateway') {
+            setNodeType('UI');
+            setserviceModal(true);
+            setAppData(prev => ({
+                ...prev,
+                applicationFramework: element.data.applicationFramework,
+                clientFramework: element.data.clientFramework,
+                withExample: element.data.withExample,
+            }));
+        } else if (element.data.applicationType === 'microservice') {
+            setNodeType('Service');
+            setserviceModal(true);
+            setAppData(prev => ({
+                ...prev,
+                applicationFramework: element.data.applicationFramework,
+            }));
+        } else if (element.data?.data?.cloudProvider === 'aws') {
+            setNodeType('Cloud');
+            setCloudName('aws');
+            setCloudModal(true);
+            setData(prev => ({
+                ...prev,
+                awsAccountId: element.data?.data?.awsAccountId,
+                awsRegion: element.data?.data?.awsRegion,
+                kubernetesStorageClassName: element.data?.data?.kubernetesStorageClassName,
+            }));
+        } else if (element.data?.data?.cloudProvider === 'azure') {
+            setNodeType('Cloud');
+            setCloudName('azure');
+            setCloudModal(true);
+            setData(prev => ({
+                ...prev,
+                azureLocation: element.data?.data?.azureLocation,
+                subscriptionId: element.data?.data?.subscriptionId,
+                tenantId: element.data?.data?.tenantId,
+            }));
+        } else if (element.data?.data?.cloudProvider === 'minikube') {
+            setNodeType('Cloud');
+            setCloudName('minikube');
+            setCloudModal(true);
+            setData(prev => ({
+                ...prev,
+                dockerRepositoryName: element.data?.data?.dockerRepositoryName,
+            }));
+        } else {
+            setNodeType('other');
+        }
 
         setAppData(prev => ({
             ...prev,

@@ -13,6 +13,7 @@ import {
     ModalBody,
     ModalCloseButton,
     Input,
+    ProgressLabel,
 } from '@chakra-ui/react';
 import ProjectCard from './ProjectCard';
 import './index.css';
@@ -85,6 +86,8 @@ const ProjectsSection = () => {
     const [newProjectName, setNewProjectName] = useState('');
     const initialRef = useRef(null);
 
+    console.log('awdawdawd');
+
     const handleOpenNewProjectModal = () => {
         setNewProjectModalOpen(true);
     };
@@ -101,6 +104,7 @@ const ProjectsSection = () => {
     };
 
     const handleCreateNewProject = async () => {
+        if (projectsNames.includes(newProjectName)) return;
         var pid;
         if (initialized) {
             await fetch(process.env.REACT_APP_API_BASE_URL + '/api/projects', {
@@ -138,6 +142,7 @@ const ProjectsSection = () => {
 
     const { initialized, keycloak } = useKeycloak();
     const [projects, setProjects] = useState([]);
+    const [projectsNames, setProjectsNames] = useState([]);
 
     useEffect(() => {
         if (initialized) {
@@ -152,6 +157,9 @@ const ProjectsSection = () => {
                 .then(result => {
                     if (result?.data) {
                         const projectslist = structuredClone(result.data);
+                        const projectsNameList = projectslist;
+                        console.log(projectsNameList, 'projectNamesList');
+                        setProjectsNames(projectsNameList);
                         setProjects(projectslist);
                     }
                 })

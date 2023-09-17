@@ -105,6 +105,7 @@ export const ReviewFlow = ({ nodesData, edgesData, setViewOnly = false }) => {
                 <ReactFlow
                     nodes={nodes}
                     edges={edges}
+                    snapGrid={[10, 10]}
                     onNodesChange={onNodesChange}
                     onEdgesChange={onEdgesChange}
                     onNodeClick={focusNode}
@@ -114,17 +115,17 @@ export const ReviewFlow = ({ nodesData, edgesData, setViewOnly = false }) => {
                     fitView
                 >
                     <Panel position="top-right">
-                        <Button backgroundColor={'skyblue'} color={'white'} onClick={handleEditClick}>
+                        <Button colorScheme="blue" onClick={handleEditClick}>
                             Edit Mode
                         </Button>
                     </Panel>
                     <Panel position="top-left">
-                        <Button hidden={setViewOnly ? true : false} backgroundColor={'skyblue'} color={'white'} onClick={handleBackClick}>
+                        <Button hidden={setViewOnly ? true : false} colorScheme="blue" onClick={handleBackClick}>
                             Back
                         </Button>
                     </Panel>
                     <Controls position="bottom-right" />
-                    <Background color="#ccc" variant={BackgroundVariant.Lines} />
+                    <Background gap={10} color="#f2f2f2" variant={BackgroundVariant.Lines} />
                 </ReactFlow>
             </GridItem>
             <GridItem

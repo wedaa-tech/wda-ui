@@ -34,7 +34,7 @@ function CodeReview({ nodeId }) {
                     <Tab>Configuration</Tab>
                     <Tab>Folder Structure</Tab>
                     <Tab>README.md</Tab>
-                    <Tab>Deployement</Tab>
+                    {/* <Tab>Deployement</Tab> */}
                 </TabList>
                 <TabPanels height={'100%'}>
                     <TabPanel height={'100%'}>
@@ -46,9 +46,9 @@ function CodeReview({ nodeId }) {
                     <TabPanel height={'100%'}>
                         <Readme nodeType={nodeType} />
                     </TabPanel>
-                    <TabPanel height={'100%'}>
+                    {/* <TabPanel height={'100%'}>
                         <Deployement nodeId={nodeId} />
-                    </TabPanel>
+                    </TabPanel> */}
                 </TabPanels>
             </Tabs>
         </Box>

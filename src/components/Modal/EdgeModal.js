@@ -14,18 +14,13 @@ import {
     AlertIcon,
 } from '@chakra-ui/react';
 
-const EdgeModal = ({
-  isOpen,
-  CurrentEdge,
-  onClose,
-  handleEdgeData,
-}) => {
-  const initialState = {
-    type: "",
-    framework: "",
-    ...CurrentEdge,
-  };
-  const [edgeData, setEdgeData] = useState(initialState);
+const EdgeModal = ({ isOpen, CurrentEdge, onClose, handleEdgeData }) => {
+    const initialState = {
+        type: '',
+        framework: '',
+        ...CurrentEdge,
+    };
+    const [edgeData, setEdgeData] = useState(initialState);
 
     useEffect(() => {
         const handleDeleteKeyPress = event => {
@@ -134,10 +129,10 @@ const EdgeModal = ({
                                     <option value="rabbitmq">Rabbit MQ</option>
                                     {/* <option value="kafka">Kafka</option>
                   <option value="pulsar">Pulsar</option> */}
-                </Select>
-              </FormControl>
-            )}
-            {/* {edgeData.type === "synchronous" &&
+                                </Select>
+                            </FormControl>
+                        )}
+                        {/* {edgeData.type === "synchronous" &&
               edgeData.framework === "rest" &&
               !isMessageBroker && (
                 <Alert

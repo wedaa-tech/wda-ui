@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import db1 from '../assets/postgresql.png';
 import db2 from '../assets/mongo.png';
 import eurkea from '../assets/eureka.png';
@@ -23,6 +23,7 @@ import {
     useColorModeValue,
     useTab,
     useToast,
+    Tooltip,
 } from '@chakra-ui/react';
 import DeployModal from './Modal/DeployModal';
 import { useKeycloak } from '@react-keycloak/web';
@@ -36,6 +37,7 @@ const Sidebar = ({
     Service_Discovery_Data,
     onSubmit,
     authenticationData,
+    architectureName,
     isLoading,
     setIsLoading,
     saveMetadata,
@@ -64,9 +66,8 @@ const Sidebar = ({
     const toggleOption = option => {
         setSelectedOption(prevOption => (prevOption === option ? null : option));
     };
-    var applicationName = '';
-    if (location?.state) applicationName = location.state.projectName;
-    else if (localStorage?.data) {
+    var applicationName = architectureName || '';
+    if (localStorage?.data) {
         applicationName = JSON.parse(localStorage.data).projectName;
     }
     const IntialState = {
@@ -82,6 +83,15 @@ const Sidebar = ({
         }
     }, [triggerExit]);
 
+    useEffect(() => {
+        if (architectureName) {
+            setprojectData(pd => ({
+                ...pd,
+                projectName: architectureName,
+            }));
+        }
+    }, [architectureName]);
+
     const handleProjectData = (column, value) => {
         setUpdated(true);
         let data = {};
@@ -94,17 +104,10 @@ const Sidebar = ({
     const [showModal, setShowModal] = useState(false);
     const { initialized, keycloak } = useKeycloak();
 
-  const handleButtonClick = () => {
-      if (Object.keys(nodes).length === 1 && Object.values(nodes)[0]?.data?.applicationFramework === 'docusaurus') {
-          setIsLoading(true);
-          onSubmit(projectData);
-      } else {
-          setShowModal(true);
-      }
-  };
     const handleCloseModal = () => {
         setShowModal(false);
     };
+
     const checkNodeExists = Object.values(nodes).some(
         node => node.id.startsWith('Service') || node.id.startsWith('Gateway') || node.id.startsWith('UI'),
     );
@@ -167,17 +170,55 @@ const Sidebar = ({
     });
 
     const checkDisabled = () => {
-        if (
-            !checkNodeExists ||
-            !authenticationData ||
-            projectNameCheck ||
-            projectData.projectName === '' ||
-            isEmptyUiSubmit === true ||
-            isEmptyServiceSubmit === true ||
-            isEmptyGatewaySubmit === true
-        )
-            return true;
-        else return false;
+        if (!checkNodeExists) {
+            return { isValid: false, message: 'Drag and drop atleast one Application to generate the code' };
+        }
+
+        if (projectNameCheck) {
+            return { isValid: false, message: 'Architecture name should be valid.' };
+        }
+
+        if (projectData.projectName === '') {
+            return { isValid: false, message: 'Architecture name is empty.' };
+        }
+
+        if (isEmptyUiSubmit) {
+            return { isValid: false, message: 'UI is not Configured. Click on the highlighted UI Node to Configure it.' };
+        }
+
+        if (isEmptyServiceSubmit) {
+            return { isValid: false, message: 'Service is not Configured. Click on the highlighted Service node to Configure it.' };
+        }
+
+        if (isEmptyGatewaySubmit) {
+            return { isValid: false, message: 'Gateway is not Configured. Click on the highlighted Gateway node to Configure it.' };
+        }
+
+        return { isValid: true, message: 'Validation successful. Proceed to generate the application.' };
+    };
+
+    const toastIdRef = useRef();
+
+    const handleButtonClick = () => {
+        if (checkEdge()) return;
+        const { isValid, message } = checkDisabled();
+        const errorMessage = message || 'Validation failed';
+        toast.close(toastIdRef.current);
+        toastIdRef.current = toast({
+            title: errorMessage,
+            status: isValid ? 'success' : 'error',
+            duration: 3000,
+            variant: 'left-accent',
+            isClosable: true,
+        });
+        if (!isValid) return;
+        if (Object.keys(nodes).length === 1 && Object.values(nodes)[0]?.data?.applicationFramework === 'docusaurus') {
+            // }
+            setIsLoading(true);
+            onSubmit(projectData);
+        } else {
+            setShowModal(true);
+        }
     };
 
     const handleToggleContent = () => {
@@ -193,6 +234,48 @@ const Sidebar = ({
         else {
             setContentVisible(!isContentVisible);
         }
+    };
+
+    const [summarizedArray, setSummarizedArray] = useState([]);
+
+    const summarizeArray = dataArray => {
+        const summary = {};
+
+        dataArray.forEach(item => {
+            let applicationType = item.data.applicationType;
+            let applicationName = item.data.applicationName;
+            const id = item.id;
+
+            if (id === 'authenticationType') {
+                applicationName = 'keycloak';
+                applicationType = 'Authentication';
+            }
+
+            if (id === 'serviceDiscoveryType') {
+                applicationName = 'eureka';
+                applicationType = 'Service Discovery';
+            }
+
+            if (id === 'logManagementType') {
+                applicationName = 'ELK Stack';
+                applicationType = 'Log Management';
+            }
+
+            if (!summary[applicationType]) {
+                summary[applicationType] = [];
+            }
+
+            summary[applicationType].push(applicationName);
+        });
+
+        // Convert the summary into an array of objects
+        const summarized = Object.entries(summary).map(([applicationType, applicationNames]) => {
+            return {
+                applicationType,
+                applicationNames,
+            };
+        });
+        setSummarizedArray(structuredClone(summarized));
     };
 
     return (
@@ -240,10 +323,12 @@ const Sidebar = ({
                         <Tab fontSize={'12px'} fontWeight={'bold'}>
                             Components
                         </Tab>
-                        <Tab fontSize={'12px'} fontWeight={'bold'}>
-                            Reference <br />
-                            Architectures
-                        </Tab>
+                        <Tooltip isDisabled={initialized && keycloak.authenticated} hasArrow label="Login to View" bg="red.600">
+                            <Tab isDisabled={!(initialized && keycloak.authenticated)} fontSize={'12px'} fontWeight={'bold'}>
+                                Reference <br />
+                                Architectures
+                            </Tab>
+                        </Tooltip>
                     </TabList>
                     {/* <TabIndicator
                 index={tabIndex}
@@ -459,17 +544,10 @@ const Sidebar = ({
                                     </Checkbox>
                                 )}
                                 {/* <div style={{ display:'flex', justifyContent:'center'}}> */}
-                                <Button
-                                    onClick={handleButtonClick}
-                                    mt={4}
-                                    border="2px"
-                                    borderColor="#3182CE"
-                                    width="100px"
-                                    type="submit"
-                                    isDisabled={checkEdge() || checkDisabled()}
-                                >
+                                <Button onClick={handleButtonClick} mt={4} border="2px" borderColor="#3182CE" width="100px" type="submit">
                                     Next
                                 </Button>
+                                {/* <Button onClick={() => console.log(applicationName)}></Button> */}
                                 {showModal && (
                                     <DeployModal
                                         onSubmit={onSubmit}
@@ -480,7 +558,6 @@ const Sidebar = ({
                                         update={update}
                                     />
                                 )}
-
                                 {!checkNodeExists ? (
                                     <p
                                         style={{
@@ -490,19 +567,6 @@ const Sidebar = ({
                                         }}
                                     >
                                         Please ensure there exists atleast one application
-                                    </p>
-                                ) : (
-                                    <></>
-                                )}
-                                {!authenticationData ? (
-                                    <p
-                                        style={{
-                                            fontSize: '10px',
-                                            color: 'red',
-                                            marginTop: '5px',
-                                        }}
-                                    >
-                                        Please select Authentication type
                                     </p>
                                 ) : (
                                     <></>

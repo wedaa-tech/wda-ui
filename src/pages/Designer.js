@@ -10,7 +10,7 @@ import ReactFlow, {
     Panel,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { Button, Flex, Spinner } from '@chakra-ui/react';
+import { Box, Button, Flex, Spinner } from '@chakra-ui/react';
 import { ArrowRightIcon } from '@chakra-ui/icons';
 import Sidebar from './../components/Sidebar';
 import { saveAs } from 'file-saver';
@@ -598,9 +598,10 @@ const Designer = ({ update, viewMode = false }) => {
         [reactFlowInstance],
     );
 
-    const [projectParentId, setProjectParentId] = useState(null);
-
     const { parentId, id } = useParams();
+    const [projectParentId, setProjectParentId] = useState(parentId || location.state?.parentId);
+
+    const [projectName, setProjectName] = useState(null);
 
     const loadData = async () => {
         if (initialized && parentId && id) {
@@ -616,8 +617,8 @@ const Designer = ({ update, viewMode = false }) => {
                 if (response.ok) {
                     const result = await response.json();
                     if (result?.metadata) {
-                        console.log(result, 'awfesdrgykuhyjthrgef456ig67rub54eyvwtq3ctvywbui76b54vycwqtyv67i');
                         setProjectParentId(result.parentId);
+                        setProjectName(result.request_json?.projectName);
                         return await result;
                     }
                 } else {
@@ -629,15 +630,8 @@ const Designer = ({ update, viewMode = false }) => {
         }
     };
 
-    const initializeState = data => {
-        setuserData(data);
-        if (data?.metadata?.nodes) {
-            setShowDiv(false);
-            setNodes(data?.metadata.nodes);
-        }
-        if (data.metadata?.edges) {
-            setEdges(data?.metadata.edges);
-        }
+    const initData = data => {
+        console.log('initData', data);
         if (data != null && !(Object.keys(data).length === 0) && data?.metadata?.nodes) {
             const nodes = data?.metadata?.nodes;
             if (!(Object.keys(nodes).length === 0)) setShowDiv(false);
@@ -699,9 +693,22 @@ const Designer = ({ update, viewMode = false }) => {
     useEffect(() => {
         document.title = 'WDA';
         setShowDiv(true);
-        var data = location?.state;
-        if (!data && !parentId && !id) {
-            console.log('awdfegrhtgseffbfngwef');
+        console.log(parentId, id, parentId && id);
+        let data = location?.state;
+        if (parentId && id) {
+            const fetchData = async () => {
+                const fetchedData = await loadData();
+                if (fetchedData?.metadata?.nodes) {
+                    setShowDiv(false);
+                    setNodes(fetchedData?.metadata.nodes);
+                }
+                if (fetchedData.metadata?.edges) {
+                    setEdges(fetchedData?.metadata.edges);
+                }
+                initData(fetchedData);
+            };
+            fetchData();
+        } else if (!data) {
             if (localStorage?.data != undefined && localStorage.data != null && localStorage.data?.metadata?.nodes != '') {
                 data = JSON.parse(localStorage.data);
                 setuserData(data);
@@ -719,14 +726,19 @@ const Designer = ({ update, viewMode = false }) => {
                     setUpdated(data.updated);
                 }
             }
+            initData(data);
         } else {
-            const fetchData = async () => {
-                const result = await loadData();
-                initializeState(result);
-            };
-
-            fetchData();
+            setuserData(data);
+            if (data?.metadata?.nodes) {
+                setShowDiv(false);
+                setNodes(data?.metadata.nodes);
+            }
+            if (data.metadata?.edges) {
+                setEdges(data?.metadata.edges);
+            }
+            initData(data);
         }
+
         return () => {
             localStorage.clear();
             serviceId = 1;
@@ -752,7 +764,7 @@ const Designer = ({ update, viewMode = false }) => {
         }
         if (!update) {
             try {
-                if (localStorage.data && JSON.parse(localStorage.data) && JSON.parse(localStorage.data).projectName) {
+                if (localStorage.data && JSON.parse(localStorage.data).projectName) {
                     userData.projectName = JSON.parse(localStorage.data).projectName;
                 }
                 if (localStorage.data && JSON.parse(localStorage.data).updated) {
@@ -769,10 +781,10 @@ const Designer = ({ update, viewMode = false }) => {
                     localStorage.data = JSON.stringify(udata);
                 }
             } catch (error) {
-                console.error(error);
+                console.error('error');
             }
         }
-    }, [nodes, edges, update, userData, updated]);
+    }, [nodes, edges]);
 
     useEffect(() => {
         if (triggerExit.onOk) {
@@ -1014,7 +1026,7 @@ const Designer = ({ update, viewMode = false }) => {
             .catch(error => console.error(error))
             .finally(() => {
                 localStorage.clear();
-                history.push('/success');
+                history.replace('/project/' + projectParentId + '/architectures');
             });
     };
 
@@ -1040,13 +1052,13 @@ const Designer = ({ update, viewMode = false }) => {
         }
     };
 
-  const handleEdgeData = (Data) => {
-    let UpdatedEdges = { ...edges };
-    if (Data.framework === "rest-api") {
-      UpdatedEdges[IsEdgeopen].label = "Rest";
-    } else {
-      UpdatedEdges[IsEdgeopen].label = "RabbitMQ";
-    }
+    const handleEdgeData = Data => {
+        let UpdatedEdges = { ...edges };
+        if (Data.framework === 'rest-api') {
+            UpdatedEdges[IsEdgeopen].label = 'Rest';
+        } else {
+            UpdatedEdges[IsEdgeopen].label = 'RabbitMQ';
+        }
 
         if (Data.type === 'synchronous') {
             UpdatedEdges[IsEdgeopen].markerEnd = {
@@ -1139,6 +1151,7 @@ const Designer = ({ update, viewMode = false }) => {
         setNodes(UpdatedNodes);
     };
 
+
     // if (viewOnly)
     //   return (
     //     <ReactFlowProvider>
@@ -1149,7 +1162,7 @@ const Designer = ({ update, viewMode = false }) => {
     //       />
     //     </ReactFlowProvider>
     //   );
-
+    console.log('Awawaw');
     return (
         <div className="dndflow" style={{ overflow: 'hidden !important', bottom: 0 }}>
             <ReactFlowProvider>
@@ -1261,7 +1274,7 @@ const Designer = ({ update, viewMode = false }) => {
                                 hidden={viewOnly}
                                 backgroundColor={'blue'}
                                 color={'white'}
-                                onClick={() => console.log(nodes, edges, userData)}
+                                onClick={() => console.log(nodes, edges, userData, projectParentId, projectName)}
                             >
                                 Print
                             </Button>
@@ -1282,6 +1295,7 @@ const Designer = ({ update, viewMode = false }) => {
                     Service_Discovery_Data={nodes['serviceDiscoveryType']?.data}
                     authenticationData={nodes['authenticationType']?.data}
                     nodes={nodes}
+                    architectureName={projectName}
                     onSubmit={onsubmit}
                     saveMetadata={saveMetadata}
                     Togglesave={UpdateSave}
@@ -1359,15 +1373,17 @@ const Designer = ({ update, viewMode = false }) => {
                     />
                 )}
 
-        {IsEdgeopen && (
-          <EdgeModal
-            isOpen={IsEdgeopen}
-            CurrentEdge={CurrentEdge}
-            onClose={setEdgeopen}
-            handleEdgeData={handleEdgeData}
-            isMessageBroker={isMessageBroker}
-          />
-        )}
+                {IsEdgeopen && (
+                    <EdgeModal
+                        isOpen={IsEdgeopen}
+                        CurrentEdge={CurrentEdge}
+                        onClose={setEdgeopen}
+                        handleEdgeData={handleEdgeData}
+                        isMessageBroker={isMessageBroker}
+                    />
+                )}
+
+                
 
                 {ServiceDiscoveryCount === 2 && <AlertModal isOpen={true} onClose={() => setServiceDiscoveryCount(1)} />}
 
@@ -1394,16 +1410,7 @@ const Designer = ({ update, viewMode = false }) => {
                     flexDirection="column"
                 >
                     <Spinner thickness="8px" speed="0.9s" emptyColor="gray.200" color="#3182CE" height="250px" width="250px" />
-                    <div
-                        style={{
-                            marginTop: '40px',
-                            color: '#3182CE',
-                            fontWeight: 'bolder',
-                            fontSize: '20px',
-                        }}
-                    >
-                        Please wait while we generate your project
-                    </div>
+                    <Box>Generating the Code</Box>
                 </Flex>
             )}
         </div>

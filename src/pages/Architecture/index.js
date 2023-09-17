@@ -14,6 +14,7 @@ import {
     ModalCloseButton,
     Input,
     Flex,
+    Tooltip,
 } from '@chakra-ui/react';
 import ArchitectureCard from './ArchitectureCard';
 import design1 from '../../assets/markets/design1.png';
@@ -120,7 +121,7 @@ function ArchitecturesSection() {
         console.log(parentId);
         history.push('/canvastocode', {
             replace: true,
-            state: { parentId: parentId },
+            parentId: parentId,
         });
         handleCloseNewArchitectureModal();
     };
@@ -268,15 +269,21 @@ function ArchitecturesSection() {
                             <Box onClick={handleCreateNewArchitecture} as="button" bgImage={application} className="image-select">
                                 <Text className="not-selectable image-text">Application</Text>
                             </Box>
-                            <Box onClick={handleCreateNewArchitecture} bgImage={cipipeline} className="image-select" disabled>
-                                <Text className="not-selectable image-text">CI Pipeline</Text>
-                            </Box>
-                            <Box onClick={handleCreateNewArchitecture} bgImage={cdpipeline} className="image-select" disabled>
-                                <Text className="not-selectable image-text">CD Pipeline</Text>
-                            </Box>
-                            <Box onClick={handleCreateNewArchitecture} bgImage={mlpipeline} className="image-select" disabled>
-                                <Text className="not-selectable image-text">ML Pipeline</Text>
-                            </Box>
+                            <Tooltip hasArrow color={'black'} label="Not yet Supported" bg="gray.300">
+                                <Box onClick={''} bgImage={cipipeline} className="image-select" disabled>
+                                    <Text className="not-selectable image-text">CI Pipeline</Text>
+                                </Box>
+                            </Tooltip>
+                            <Tooltip hasArrow label="Not yet Supported" color={'black'} bg="gray.300">
+                                <Box onClick={''} bgImage={cdpipeline} className="image-select" disabled>
+                                    <Text className="not-selectable image-text">CD Pipeline</Text>
+                                </Box>
+                            </Tooltip>
+                            <Tooltip hasArrow label="Not yet Supported" color={'black'} bg="gray.300">
+                                <Box onClick={''} bgImage={mlpipeline} className="image-select" disabled>
+                                    <Text className="not-selectable image-text">ML Pipeline</Text>
+                                </Box>
+                            </Tooltip>
                         </SimpleGrid>
                     </ModalBody>
                     <ModalFooter></ModalFooter>
