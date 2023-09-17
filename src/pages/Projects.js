@@ -55,12 +55,22 @@ function Projects() {
   const [depData, setDepData] = useState(DefaultData);
 
   const handleClick = async (data, column, id) => {
-    if (column === "Architecture")
+    if (column === "Architecture") {
+      const Data = { ...data };
+      for (const key in data) {
+        if (key.startsWith("UI")) {
+          if (
+            Data.metadata.nodes[key].data.applicationFramework != "docusaurus"
+          ) {
+            Data.metadata.nodes[key].data.applicationFramework = "ui";
+          }
+        }
+      }
       history.push({
         pathname: "/projects/" + id,
-        state: data,
+        state: Data,
       });
-    else {
+    } else {
       if (data) {
         if (data.cloudProvider === "aws") {
           setCloudName("aws");
@@ -165,9 +175,19 @@ function Projects() {
         }
       );
       if (response.ok) {
+        const Data = { ...data };
+        for (const key in data.metadata.nodes) {
+          if (key.startsWith("UI")) {
+            if (
+              Data.metadata.nodes[key].data.applicationFramework != "docusaurus"
+            ) {
+              Data.metadata.nodes[key].data.applicationFramework = "ui";
+            }
+          }
+        }
         history.push({
           pathname: "/edit/" + id,
-          state: data,
+          state: Data,
         });
       } else {
         console.error("You are not authorized");

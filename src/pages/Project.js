@@ -138,6 +138,7 @@ const Project = () => {
       setserviceModal(true);
       setAppData((prev) => ({
         ...prev,
+        applicationFramework: element.data.applicationFramework,
         clientFramework: element.data.clientFramework,
         withExample: element.data.withExample,
       }));
