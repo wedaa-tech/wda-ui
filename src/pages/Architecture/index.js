@@ -94,7 +94,7 @@ function ArchitecturesSection() {
     //   });
     // }
 
-    const [projectName, setProjectName] = useState(null);
+    const [projectName, setProjectName] = useState(location?.state?.state?.projectName);
 
     // console.log(projectName, location.state, location.state.projectName, location, );
     const [isNewArchitectureModalOpen, setNewArchitectureModalOpen] = useState(false);

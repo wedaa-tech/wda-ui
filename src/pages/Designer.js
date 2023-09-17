@@ -406,8 +406,8 @@ const Designer = ({ update, viewMode = false }) => {
                 return;
             } else if (type === 'marketNode') {
                 const marketMetaData = JSON.parse(event.dataTransfer.getData('metaData'));
-                setNodes(() => ({ ...marketMetaData.nodes }));
-                setEdges(() => ({ ...marketMetaData.edges }));
+                setNodes(nds => ({ ...nds, ...marketMetaData.nodes }));
+                setEdges(eds => ({ ...eds, ...marketMetaData.edges }));
                 return;
             }
 
@@ -577,25 +577,6 @@ const Designer = ({ update, viewMode = false }) => {
 
     const { parentId, id } = useParams();
 
-    const verifyData = async () => {
-        try {
-            const response = await fetch(process.env.REACT_APP_API_BASE_URL + '/blueprints/' + id, {
-                method: 'get',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
-                },
-            });
-            if (response.ok) {
-                return await response;
-            } else {
-                console.error('You are not authorized');
-            }
-        } catch (error) {
-            console.error(error);
-        }
-    };
-
     const loadData = async () => {
         if (initialized && parentId && id) {
             try {
@@ -735,24 +716,28 @@ const Designer = ({ update, viewMode = false }) => {
             }
         }
         if (!update) {
-            if (localStorage.data && JSON.parse(localStorage.data).projectName) {
-                userData.projectName = JSON.parse(localStorage.data).projectName;
-            }
-            if (localStorage.data && JSON.parse(localStorage.data).updated) {
-                userData.updated = JSON.parse(localStorage.data).updated;
-            }
-            var udata = { ...userData };
-            (udata.metadata ??= {}).nodes = nodes;
-            udata.metadata.edges = edges;
-            if (localStorage.data && JSON.parse(localStorage.data)?.metadata?.deployment) {
-                udata.metadata.deployment = JSON.parse(localStorage.data).metadata.deployment;
-            }
-            setuserData(udata);
-            if (!(Object.keys(udata).length === 0)) {
-                localStorage.data = JSON.stringify(udata);
+            try {
+                if (localStorage.data && JSON.parse(localStorage.data) && JSON.parse(localStorage.data).projectName) {
+                    userData.projectName = JSON.parse(localStorage.data).projectName;
+                }
+                if (localStorage.data && JSON.parse(localStorage.data).updated) {
+                    userData.updated = JSON.parse(localStorage.data).updated;
+                }
+                var udata = { ...userData };
+                (udata.metadata ??= {}).nodes = nodes;
+                udata.metadata.edges = edges;
+                if (localStorage.data && JSON.parse(localStorage.data)?.metadata?.deployment) {
+                    udata.metadata.deployment = JSON.parse(localStorage.data).metadata.deployment;
+                }
+                setuserData(udata);
+                if (!(Object.keys(udata).length === 0)) {
+                    localStorage.data = JSON.stringify(udata);
+                }
+            } catch (error) {
+                console.error(error);
             }
         }
-    }, [nodes, edges]);
+    }, [nodes, edges, update, userData, updated]);
 
     useEffect(() => {
         if (triggerExit.onOk) {
