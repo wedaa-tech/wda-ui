@@ -14,12 +14,21 @@ import {
     AlertIcon,
 } from '@chakra-ui/react';
 
-const UiDataModal = ({ isOpen, onClose, onSubmit, CurrentNode, uniqueApplicationNames, uniquePortNumbers, handleColorClick }) => {
+const UiDataModal = ({
+    isOpen,
+    onClose,
+    onSubmit,
+    CurrentNode,
+    uniqueApplicationNames,
+    uniquePortNumbers,
+    handleColorClick,
+    applicationData,
+}) => {
     const IntialState = {
         label: 'UI',
         applicationName: '',
-        clientFramework: 'react',
-        applicationFramework: 'react',
+        clientFramework: 'no',
+        applicationFramework: '',
         packageName: '',
         serverPort: '',
         withExample: 'false',
@@ -29,7 +38,8 @@ const UiDataModal = ({ isOpen, onClose, onSubmit, CurrentNode, uniqueApplication
     const [UiData, setUiDataData] = useState(IntialState);
     const [duplicateApplicationNameError, setDuplicateApplicationNameError] = useState(false);
     const [portNumberError, setPortNumberError] = useState(false);
-    const isEmptyUiSubmit = UiData.applicationName === '' || UiData.packageName === '' || UiData.serverPort === '';
+    const isEmptyUiSubmit =
+        UiData.applicationName === '' || (UiData.applicationFramework === 'ui' && UiData.packageName === '') || UiData.serverPort === '';
 
     const reservedPorts = ['5601', '9200', '15021', '20001', '3000', '8080'];
     const serverPortCheck = UiData.serverPort && reservedPorts.includes(UiData.serverPort);
@@ -157,37 +167,60 @@ const UiDataModal = ({ isOpen, onClose, onSubmit, CurrentNode, uniqueApplication
                             )}
                         </FormControl>
                         <FormControl>
-                            <FormLabel>Client Framework</FormLabel>
+                            <FormLabel>Application Framework</FormLabel>
                             <Select
                                 mb={4}
                                 variant="outline"
-                                id="clientFramework"
+                                id="applicationFramework"
                                 borderColor={'black'}
-                                value={UiData.clientFramework}
-                                onChange={e => handleData('clientFramework', e.target.value)}
+                                value={UiData.applicationFramework}
+                                onChange={e => handleData('applicationFramework', e.target.value)}
                             >
                                 <option value="" disabled>
                                     Select an option
                                 </option>
-                                <option value="react">React</option>
-                                <option value="angular">Angular</option>
-                                <option value="vue">Vue</option>
+                                <option value="ui" disabled={applicationData.ui}>
+                                    UI
+                                </option>
+                                <option value="docusaurus" disabled={applicationData.docusaurus}>
+                                    Docusaurus
+                                </option>
                             </Select>
                         </FormControl>
-
-                        <FormControl>
-                            <FormLabel>Package Name</FormLabel>
-                            <Input
-                                mb={4}
-                                variant="outline"
-                                id="packageName"
-                                placeholder="packageName"
-                                borderColor={!UiData.packageName ? 'red' : 'black'}
-                                maxLength="32"
-                                value={UiData.packageName}
-                                onChange={e => handleData('packageName', e.target.value)}
-                            />
-                        </FormControl>
+                        {UiData.applicationFramework === 'ui' && (
+                            <FormControl>
+                                <FormLabel>Client Framework</FormLabel>
+                                <Select
+                                    mb={4}
+                                    variant="outline"
+                                    id="clientFramework"
+                                    borderColor={'black'}
+                                    value={UiData.clientFramework}
+                                    onChange={e => handleData('clientFramework', e.target.value)}
+                                >
+                                    <option value="no" disabled>
+                                        Select an option
+                                    </option>
+                                    <option value="react">React</option>
+                                    <option value="angular">Angular</option>
+                                </Select>
+                            </FormControl>
+                        )}
+                        {UiData.applicationFramework === 'ui' && (
+                            <FormControl>
+                                <FormLabel>Package Name</FormLabel>
+                                <Input
+                                    mb={4}
+                                    variant="outline"
+                                    id="packageName"
+                                    placeholder="packageName"
+                                    borderColor={!UiData.packageName ? 'red' : 'black'}
+                                    maxLength="32"
+                                    value={UiData.packageName}
+                                    onChange={e => handleData('packageName', e.target.value)}
+                                />
+                            </FormControl>
+                        )}
                         {packageNameCheck && (
                             <Alert status="error" padding="4px" fontSize="12px" borderRadius="3px" mb={2}>
                                 <AlertIcon style={{ width: '14px', height: '14px' }} />

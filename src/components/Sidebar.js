@@ -31,10 +31,13 @@ import { useLocation } from 'react-router-dom';
 import ZoomableImageModalWrapper from './ZoomableImageModalWrapper';
 
 const Sidebar = ({
+    isUINodeEnabled,
+    isGatewayNodeEnabled,
     Service_Discovery_Data,
     onSubmit,
     authenticationData,
     isLoading,
+    setIsLoading,
     saveMetadata,
     Togglesave,
     nodes,
@@ -91,9 +94,14 @@ const Sidebar = ({
     const [showModal, setShowModal] = useState(false);
     const { initialized, keycloak } = useKeycloak();
 
-    const handleButtonClick = () => {
-        setShowModal(true);
-    };
+  const handleButtonClick = () => {
+      if (Object.keys(nodes).length === 1 && Object.values(nodes)[0]?.data?.applicationFramework === 'docusaurus') {
+          setIsLoading(true);
+          onSubmit(projectData);
+      } else {
+          setShowModal(true);
+      }
+  };
     const handleCloseModal = () => {
         setShowModal(false);
     };
@@ -301,11 +309,26 @@ const Sidebar = ({
                                     </h2>
                                 </div>
 
-                                <div className={`dndnode output`} onDragStart={event => onDragStart(event, 'default', 'UI')} draggable>
+                                <div
+                                    className={`dndnode output ${isUINodeEnabled ? 'disabled' : ''}`}
+                                    onDragStart={event => onDragStart(event, 'default', 'UI')}
+                                    draggable={!isUINodeEnabled}
+                                    style={{
+                                        backgroundColor: isUINodeEnabled ? '#CFCFCF' : '',
+                                        cursor: isUINodeEnabled ? 'not-allowed' : '',
+                                    }}
+                                >
                                     UI
                                 </div>
-
-                                <div className={`dndnode output`} onDragStart={event => onDragStart(event, 'default', 'Gateway')} draggable>
+                                <div
+                                    className={`dndnode output ${isGatewayNodeEnabled ? 'disabled' : ''}`}
+                                    onDragStart={event => onDragStart(event, 'default', 'Gateway')}
+                                    draggable={!isGatewayNodeEnabled}
+                                    style={{
+                                        backgroundColor: isGatewayNodeEnabled ? '#CFCFCF' : '',
+                                        cursor: isGatewayNodeEnabled ? 'not-allowed' : '',
+                                    }}
+                                >
                                     Gateway
                                 </div>
 

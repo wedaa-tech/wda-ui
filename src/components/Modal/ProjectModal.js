@@ -50,7 +50,7 @@ const ProjectModal = ({
                                     isDisabled={true}
                                 />
                             </FormControl>
-                            {nodeType === 'UI' ? (
+                            {nodeType === 'UI' && applicationFramework != 'docusaurus' ? (
                                 <FormControl>
                                     <FormLabel>Client Framework</FormLabel>
                                     <Select
@@ -83,12 +83,26 @@ const ProjectModal = ({
                                         <option value="" disabled>
                                             Select an option
                                         </option>
+                                        <option value="docusaurus">Docusaurus</option>
                                         <option value="java">Java</option>
                                         <option value="gomicro">Go Micro</option>
                                     </Select>
                                 </FormControl>
                             )}
-
+                            {applicationFramework !== 'docusaurus' && (
+                                <FormControl>
+                                    <FormLabel>Package Name</FormLabel>
+                                    <Input
+                                        mb={4}
+                                        variant="outline"
+                                        id="packageName"
+                                        placeholder="packageName"
+                                        borderColor={'black'}
+                                        value={packageName}
+                                        isDisabled={true}
+                                    />
+                                </FormControl>
+                            )}
                             <FormControl>
                                 <FormLabel>Package Name</FormLabel>
                                 <Input
