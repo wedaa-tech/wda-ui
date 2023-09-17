@@ -1040,13 +1040,13 @@ const Designer = ({ update, viewMode = false }) => {
         }
     };
 
-    const handleEdgeData = Data => {
-        let UpdatedEdges = { ...edges };
-        if (Data.framework === 'rest-api' && isServiceDiscovery) {
-            UpdatedEdges[IsEdgeopen].label = 'Rest';
-        } else {
-            UpdatedEdges[IsEdgeopen].label = 'RabbitMQ';
-        }
+  const handleEdgeData = (Data) => {
+    let UpdatedEdges = { ...edges };
+    if (Data.framework === "rest-api") {
+      UpdatedEdges[IsEdgeopen].label = "Rest";
+    } else {
+      UpdatedEdges[IsEdgeopen].label = "RabbitMQ";
+    }
 
         if (Data.type === 'synchronous') {
             UpdatedEdges[IsEdgeopen].markerEnd = {
@@ -1359,16 +1359,15 @@ const Designer = ({ update, viewMode = false }) => {
                     />
                 )}
 
-                {IsEdgeopen && (
-                    <EdgeModal
-                        isOpen={IsEdgeopen}
-                        CurrentEdge={CurrentEdge}
-                        onClose={setEdgeopen}
-                        handleEdgeData={handleEdgeData}
-                        isServiceDiscovery={isServiceDiscovery}
-                        isMessageBroker={isMessageBroker}
-                    />
-                )}
+        {IsEdgeopen && (
+          <EdgeModal
+            isOpen={IsEdgeopen}
+            CurrentEdge={CurrentEdge}
+            onClose={setEdgeopen}
+            handleEdgeData={handleEdgeData}
+            isMessageBroker={isMessageBroker}
+          />
+        )}
 
                 {ServiceDiscoveryCount === 2 && <AlertModal isOpen={true} onClose={() => setServiceDiscoveryCount(1)} />}
 

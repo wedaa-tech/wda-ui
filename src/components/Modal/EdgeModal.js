@@ -14,13 +14,18 @@ import {
     AlertIcon,
 } from '@chakra-ui/react';
 
-const EdgeModal = ({ isOpen, CurrentEdge, onClose, handleEdgeData, isServiceDiscovery }) => {
-    const initialState = {
-        type: '',
-        framework: '',
-        ...CurrentEdge,
-    };
-    const [edgeData, setEdgeData] = useState(initialState);
+const EdgeModal = ({
+  isOpen,
+  CurrentEdge,
+  onClose,
+  handleEdgeData,
+}) => {
+  const initialState = {
+    type: "",
+    framework: "",
+    ...CurrentEdge,
+  };
+  const [edgeData, setEdgeData] = useState(initialState);
 
     useEffect(() => {
         const handleDeleteKeyPress = event => {
@@ -53,12 +58,7 @@ const EdgeModal = ({ isOpen, CurrentEdge, onClose, handleEdgeData, isServiceDisc
     };
 
     function handleSubmit(edgeData) {
-        if (edgeData.type === 'asynchronous') {
-            handleEdgeData(edgeData);
-        } else if (edgeData.type === 'synchronous') {
-            // isMessageBroker &&
-            isServiceDiscovery && handleEdgeData(edgeData);
-        }
+        handleEdgeData(edgeData);
     }
 
     return (
@@ -134,23 +134,10 @@ const EdgeModal = ({ isOpen, CurrentEdge, onClose, handleEdgeData, isServiceDisc
                                     <option value="rabbitmq">Rabbit MQ</option>
                                     {/* <option value="kafka">Kafka</option>
                   <option value="pulsar">Pulsar</option> */}
-                                </Select>
-                            </FormControl>
-                        )}
-                        {edgeData.type === 'synchronous' && edgeData.framework === 'rest-api' && !isServiceDiscovery && (
-                            <Alert
-                                status="error"
-                                // height="12px"
-                                fontSize="12px"
-                                borderRadius="3px"
-                                padding="4px"
-                                mb={2}
-                            >
-                                <AlertIcon style={{ width: '14px', height: '14px' }} />
-                                Please select a service discovery to establish communication
-                            </Alert>
-                        )}
-                        {/* {edgeData.type === "synchronous" &&
+                </Select>
+              </FormControl>
+            )}
+            {/* {edgeData.type === "synchronous" &&
               edgeData.framework === "rest" &&
               !isMessageBroker && (
                 <Alert
