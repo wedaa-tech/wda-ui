@@ -1082,7 +1082,7 @@ const Designer = ({ update }) => {
 
   const handleEdgeData = (Data) => {
     let UpdatedEdges = { ...edges };
-    if (Data.framework === "rest-api" && isServiceDiscovery) {
+    if (Data.framework === "rest-api") {
       UpdatedEdges[IsEdgeopen].label = "Rest";
     } else {
       UpdatedEdges[IsEdgeopen].label = "RabbitMQ";
@@ -1403,7 +1403,6 @@ const Designer = ({ update }) => {
             CurrentEdge={CurrentEdge}
             onClose={setEdgeopen}
             handleEdgeData={handleEdgeData}
-            isServiceDiscovery={isServiceDiscovery}
             isMessageBroker={isMessageBroker}
           />
         )}
