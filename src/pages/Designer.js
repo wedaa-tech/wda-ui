@@ -214,10 +214,13 @@ const Designer = ({ update }) => {
               setIsEmptyUiSubmit(false);
               setIsUINodeEnabled(false);
               uiCount--;
-              if (updatedNodes[change.id].data?.framework) {
+              if (
+                change?.id &&
+                updatedNodes[change?.id]?.data?.applicationFramework
+              ) {
                 setApplicationData((prev) => ({
                   ...prev,
-                  [updatedNodes[change.id].data?.framework]: false,
+                  [updatedNodes[change?.id]?.data?.applicationFramework]: false,
                 }));
               }
             } else if (change.id.startsWith("Service")) {
@@ -923,7 +926,13 @@ const Designer = ({ update }) => {
       }
       UpdatedNodes[Isopen].data = { ...UpdatedNodes[Isopen].data, ...Data };
       UpdatedNodes[Isopen].selected = false;
+      if (
+        Isopen.startsWith("UI") &&
+        UpdatedNodes[Isopen].data?.applicationFramework === "ui"
+      )
+        delete UpdatedNodes[Isopen].data?.theme;
     }
+
     setNodes(UpdatedNodes);
     setopen(false);
   };
@@ -1125,7 +1134,8 @@ const Designer = ({ update }) => {
         !(
           targetNode.id.startsWith("UI") ||
           (targetNode.id.startsWith("Database") &&
-            sourceNode.id.startsWith("UI"))
+            sourceNode.id.startsWith("UI")) ||
+          sourceNode?.data.applicationFramework === "docusaurus"
         )
       ) {
         if (targetNode.id.startsWith("Database")) {

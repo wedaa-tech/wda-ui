@@ -57,7 +57,7 @@ function Projects() {
   const handleClick = async (data, column, id) => {
     if (column === "Architecture") {
       const Data = { ...data };
-      for (const key in data) {
+      for (const key in data.metadata.nodes) {
         if (key.startsWith("UI")) {
           if (
             Data.metadata.nodes[key].data.applicationFramework != "docusaurus"

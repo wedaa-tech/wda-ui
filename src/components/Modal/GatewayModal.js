@@ -221,7 +221,7 @@ const GatewayModal = ({
                 }
                 disabled
               >
-                <option value="java">Spring Boot</option>
+                <option value="java">Spring Cloud Gateway</option>
               </Select>
             </FormControl>
 
