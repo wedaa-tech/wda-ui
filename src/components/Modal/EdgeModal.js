@@ -14,13 +14,7 @@ import {
   AlertIcon,
 } from "@chakra-ui/react";
 
-const EdgeModal = ({
-  isOpen,
-  CurrentEdge,
-  onClose,
-  handleEdgeData,
-  isServiceDiscovery,
-}) => {
+const EdgeModal = ({ isOpen, CurrentEdge, onClose, handleEdgeData }) => {
   const initialState = {
     type: "",
     framework: "",
@@ -63,12 +57,7 @@ const EdgeModal = ({
   };
 
   function handleSubmit(edgeData) {
-    if (edgeData.type === "asynchronous") {
-      handleEdgeData(edgeData);
-    } else if (edgeData.type === "synchronous") {
-      // isMessageBroker &&
-      isServiceDiscovery && handleEdgeData(edgeData);
-    }
+    handleEdgeData(edgeData);
   }
 
   return (
@@ -147,21 +136,6 @@ const EdgeModal = ({
                 </Select>
               </FormControl>
             )}
-            {edgeData.type === "synchronous" &&
-              edgeData.framework === "rest-api" &&
-              !isServiceDiscovery && (
-                <Alert
-                  status="error"
-                  // height="12px"
-                  fontSize="12px"
-                  borderRadius="3px"
-                  padding="4px"
-                  mb={2}
-                >
-                  <AlertIcon style={{ width: "14px", height: "14px" }} />
-                  Please select a service discovery to establish communication
-                </Alert>
-              )}
             {/* {edgeData.type === "synchronous" &&
               edgeData.framework === "rest" &&
               !isMessageBroker && (
