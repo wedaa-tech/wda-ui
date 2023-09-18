@@ -2,25 +2,25 @@ name: Build and Push to s3
 
 # Controls when the workflow will run
 on:
-  workflow_dispatch:
+    workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
 
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region:            ap-south-1
+            - name: Configure AWS Credentials
+              uses: aws-actions/configure-aws-credentials@v1
+              with:
+                  aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                  aws-region: ap-south-1
 
-       # Treating warnings as errors because process.env.CI = true
-       # set CI=false to treat warnings as warnings
-      - name: Build React App
-        run:  npm install && CI=false npm run build
+              # Treating warnings as errors because process.env.CI = true
+              # set CI=false to treat warnings as warnings
+            - name: Build React App
+              run: npm install && CI=false npm run build
 
-      - name: Deploy app build to S3 bucket
-        run:  aws s3 sync ./build/ s3://wda-ui --delete
+            - name: Deploy app build to S3 bucket
+              run: aws s3 sync ./build/ s3://wda-ui --delete

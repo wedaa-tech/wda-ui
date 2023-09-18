@@ -1,0 +1,53 @@
+/* Sidebar.css */
+
+.chakra-tabs__tab-panel {
+    overflow-y: auto;
+    max-height: inherit;
+}
+
+.chakra-tabs__tab-panel::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    background-color: #f5f5f5;
+    border-radius: 30px;
+}
+
+.chakra-tabs__tab-panel::-webkit-scrollbar {
+    width: 10px;
+    background-color: #f5f5f5;
+    border-radius: 30px;
+}
+
+.chakra-tabs__tab-panel::-webkit-scrollbar-thumb {
+    background-color: #00000083;
+    border: 2px solid #555555;
+    border-radius: 30px;
+}
+
+.chakra-tabs__tab-panel {
+    max-height: calc(100vh - 160px);
+}
+
+ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+li {
+    margin-bottom: 5px;
+}
+
+details > summary {
+    list-style: none;
+}
+
+summary::-webkit-details-marker {
+    display: none;
+}
+
+summary::after {
+    content: ' ►';
+}
+
+details[open] summary:after {
+    content: ' ▼';
+}
