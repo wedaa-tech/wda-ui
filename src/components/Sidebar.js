@@ -542,11 +542,9 @@ const Sidebar = ({
                                     Save Project
                                 </Checkbox>
                             )}
-                            {/* <div style={{ display:'flex', justifyContent:'center'}}> */}
                             <Button onClick={handleButtonClick} mt={4} border="2px" borderColor="#3182CE" width="100px" type="submit">
                                 Next
                             </Button>
-                            {/* <Button onClick={() => console.log(applicationName)}></Button> */}
                             {showModal && (
                                 <DeployModal
                                     onSubmit={onSubmit}

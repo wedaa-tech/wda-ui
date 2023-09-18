@@ -43,8 +43,6 @@ const ProjectsSection = () => {
     const [newProjectDescription, setNewProjectDescription] = useState('');
     const initialRef = useRef(null);
 
-    console.log('awdawdawd');
-
     const handleOpenNewProjectModal = () => {
         setNewProjectModalOpen(true);
     };
@@ -116,7 +114,6 @@ const ProjectsSection = () => {
                     if (result?.data) {
                         const projectslist = structuredClone(result.data);
                         const projectsNameList = projectslist;
-                        console.log(projectsNameList, 'projectNamesList');
                         setProjectsNames(projectsNameList);
                         setProjects(projectslist);
                     }

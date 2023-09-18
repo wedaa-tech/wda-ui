@@ -72,7 +72,6 @@ export const ReviewFlow = ({
     useEffect(() => {
         setNodes(nodesData);
         setEdges(edgesData);
-        console.log(nodesData, edgesData);
     }, [nodes, edges, nodesData, edgesData, setNodes, setEdges]);
 
     const [nodeId, setNodeId] = useState(null);
@@ -81,7 +80,6 @@ export const ReviewFlow = ({
 
     const focusNode = useCallback(
         (_, selectedNode) => {
-            console.log('selectedNode', selectedNode);
 
             setNodeId(selectedNode.id);
 

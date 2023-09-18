@@ -15,7 +15,6 @@ function CodeReview({ nodeId, generateMode = false, deployementData = null }) {
     const [node, setNode] = useState(null);
 
     useEffect(() => {
-        console.log(node, nodeId);
         const loadData = () => {
             if (nodeId && getNode(nodeId)) {
                 const nd = getNode(nodeId);

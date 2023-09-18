@@ -41,8 +41,10 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose, update }) => {
     }, []);
 
     useEffect(() => {
-        let data = {};
-        if (localStorage?.data) {
+        let data = {
+            metadata: {},
+        };
+        if (localStorage?.data?.metadata) {
             data = JSON.parse(localStorage.data);
             if (Object.keys(DeploymentData).length >= 1) data.metadata.deployment = DeploymentData;
             localStorage.data = JSON.stringify(data);

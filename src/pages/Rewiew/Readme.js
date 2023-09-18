@@ -5,8 +5,6 @@ import { UI_README, SERVICE_README } from './ReadmeOutputs';
 const Readme = ({ nodeType }) => {
     const [readmeData, setReadmeData] = useState('');
 
-    console.log(nodeType, 'readme');
-
     useEffect(() => {
         if (nodeType && nodeType.includes('Service')) {
             setReadmeData(SERVICE_README);

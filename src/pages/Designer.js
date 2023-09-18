@@ -79,31 +79,8 @@ const nodeTypes = {
 const imageWidth = 1024;
 const imageHeight = 768;
 
-const CreateImage = async (nodes, setImage) => {
-    console.log(nodes);
-    // const { getNodes } = useReactFlow();
-    const nodesBounds = getRectOfNodes(nodes);
-
-    const transform = getTransformForBounds(nodesBounds, imageWidth, imageHeight, 0.5, 2);
-
-    console.log(nodesBounds, transform);
-
-    await toPng(document.querySelector('.react-flow__viewport'), {
-        backgroundColor: '#ffffff',
-        width: imageWidth,
-        height: imageHeight,
-        style: {
-            width: imageWidth,
-            height: imageHeight,
-            transform: `translate(${transform[0]}px, ${transform[1]}px) scale(${transform[2]})`,
-        },
-    }).then(response => {
-        console.log(response);
-        setImage(response);
-    });
-};
-
 const Designer = ({ update, viewMode = false }) => {
+    console.log('Designer');
     const [viewOnly, setViewOnly] = useState(viewMode);
     const reactFlowWrapper = useRef(null);
     const { keycloak, initialized } = useKeycloak();
@@ -138,6 +115,30 @@ const Designer = ({ update, viewMode = false }) => {
         onOk: false,
         path: '',
     });
+
+    const CreateImage = async nodes => {
+        const nodesBounds = getRectOfNodes(nodes);
+        const transform = getTransformForBounds(nodesBounds, imageWidth, imageHeight, 0.5, 2);
+
+        try {
+            const response = await toPng(document.querySelector('.react-flow__viewport'), {
+                backgroundColor: '#ffffff',
+                width: imageWidth,
+                height: imageHeight,
+                style: {
+                    width: imageWidth,
+                    height: imageHeight,
+                    transform: `translate(${transform[0]}px, ${transform[1]}px) scale(${transform[2]})`,
+                },
+            });
+
+            setImage(response);
+            return response;
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
+    };
 
     const handleGoToIntendedPage = useCallback(
         location => {
@@ -202,117 +203,109 @@ const Designer = ({ update, viewMode = false }) => {
             const deletedApplicationNames = []; // Track deleted application names
             const deletedApplicationPorts = [];
 
-      changes.forEach((change) => {
-        switch (change.type) {
-          case "dimensions":
-            if (change.resizing)
-              updatedNodes[change.id] = {
-                ...updatedNodes[change.id],
-                position: {
-                  ...updatedNodes[change.id].position,
-                },
-                style: {
-                  ...updatedNodes[change.id].style,
-                  ...change.dimensions,
-                },
-              };
-            break;
-          case "position":
-            if (change?.position) {
-              updatedNodes[change.id] = {
-                ...updatedNodes[change.id],
-                position: {
-                  ...updatedNodes[change.id]?.position,
-                  ...change.position,
-                },
-                positionAbsolute: {
-                  x: 0,
-                  y: 0,
-                  ...updatedNodes[change.id]?.positionAbsolute,
-                  ...change.positionAbsolute,
-                },
-                dragging: change.dragging,
-              };
-            }
-            break;
-          case "select":
-            updatedNodes[change.id] = {
-              ...updatedNodes[change.id],
-              selected: change.selected,
-            };
-            break;
-          case "remove": // Delete Functionality
-            if (change.id === "messageBroker") {
-              setIsMessageBroker(false);
-              onCheckEdge(edges);
-              setMessageBrokerCount(0);
-            } else if (change.id.startsWith("UI")) {
-              setIsEmptyUiSubmit(false);
-              setIsUINodeEnabled(false);
-              uiCount--;
-              if (change?.id && updatedNodes[change?.id]?.data?.applicationFramework) {
-                  setApplicationData(prev => ({
-                      ...prev,
-                      [updatedNodes[change.id].data?.framework]: false,
-                  }));
-              }
-            } else if (change.id.startsWith("Service")) {
-              setIsEmptyServiceSubmit(false);
-            } else if (change.id.startsWith("Gateway")) {
-              setIsEmptyGatewaySubmit(false);
-              setIsGatewayNodeEnabled(false);
-            } else if (change.id === "serviceDiscoveryType") {
-              setIsServiceDiscovery(false);
-              setServiceDiscoveryCount(0);
-              setIsServiceDiscovery(false);
-              for (let key in updatedEdges) {
-                let Edge = updatedEdges[key];
-                if (Edge?.data?.framework === "rest-api") {
-                  delete Edge?.data?.type;
-                  delete Edge?.data?.framework;
-                  delete Edge?.label;
+            changes.forEach(change => {
+                switch (change.type) {
+                    case 'dimensions':
+                        if (change.resizing)
+                            updatedNodes[change.id] = {
+                                ...updatedNodes[change.id],
+                                position: {
+                                    ...updatedNodes[change.id].position,
+                                },
+                                style: {
+                                    ...updatedNodes[change.id].style,
+                                    ...change.dimensions,
+                                },
+                            };
+                        break;
+                    case 'position':
+                        if (change?.position) {
+                            updatedNodes[change.id] = {
+                                ...updatedNodes[change.id],
+                                position: {
+                                    ...updatedNodes[change.id]?.position,
+                                    ...change.position,
+                                },
+                                positionAbsolute: {
+                                    x: 0,
+                                    y: 0,
+                                    ...updatedNodes[change.id]?.positionAbsolute,
+                                    ...change.positionAbsolute,
+                                },
+                                dragging: change.dragging,
+                            };
+                        }
+                        break;
+                    case 'select':
+                        updatedNodes[change.id] = {
+                            ...updatedNodes[change.id],
+                            selected: change.selected,
+                        };
+                        break;
+                    case 'remove': // Delete Functionality
+                        if (change.id === 'messageBroker') {
+                            setIsMessageBroker(false);
+                            onCheckEdge(edges);
+                            setMessageBrokerCount(0);
+                        } else if (change.id.startsWith('UI')) {
+                            setIsEmptyUiSubmit(false);
+                            setIsUINodeEnabled(false);
+                            uiCount--;
+                            if (change?.id && updatedNodes[change?.id]?.data?.applicationFramework) {
+                                setApplicationData(prev => ({
+                                    ...prev,
+                                    [updatedNodes[change.id].data?.framework]: false,
+                                }));
+                            }
+                        } else if (change.id.startsWith('Service')) {
+                            setIsEmptyServiceSubmit(false);
+                        } else if (change.id.startsWith('Gateway')) {
+                            setIsEmptyGatewaySubmit(false);
+                            setIsGatewayNodeEnabled(false);
+                        } else if (change.id === 'serviceDiscoveryType') {
+                            setIsServiceDiscovery(false);
+                            setServiceDiscoveryCount(0);
+                            setIsServiceDiscovery(false);
+                            for (let key in updatedEdges) {
+                                let Edge = updatedEdges[key];
+                                if (Edge?.data?.framework === 'rest-api') {
+                                    delete Edge?.data?.type;
+                                    delete Edge?.data?.framework;
+                                    delete Edge?.label;
+                                }
+                                setEdges(updatedEdges);
+                            }
+                        } else if (change.id === 'cloudProvider') {
+                            setCloudProviderCount(0);
+                        } else if (change.id === 'authenticationType') {
+                            setAuthProviderCount(0);
+                        } else if (change.id === 'Localenvironment') {
+                            setLocalenvironmentCount(0);
+                        } else if (change.id === 'logManagement') {
+                            setLogManagementCount(0);
+                        }
+                        // Remove the deleted node from updatedNodes
+                        delete updatedNodes[change.id];
+                        // Remove the applicationName from uniqueApplicationNames
+                        const deletedNode = oldNodes[change.id];
+                        if (deletedNode?.data?.applicationName) {
+                            deletedApplicationNames.push(deletedNode.data.applicationName.trim());
+                        }
+                        if (deletedNode?.data?.serverPort) {
+                            deletedApplicationPorts.push(deletedNode.data.serverPort.trim());
+                        }
+                        break;
+                    default:
+                        break;
                 }
-                setEdges(updatedEdges);
-              }
-            } else if (change.id === "cloudProvider") {
-              setCloudProviderCount(0);
-            } else if (change.id === "authenticationType") {
-              setAuthProviderCount(0);
-            } else if (change.id === "Localenvironment") {
-              setLocalenvironmentCount(0);
-            } else if (change.id === "logManagement") {
-              setLogManagementCount(0);
-            }
-            // Remove the deleted node from updatedNodes
-            delete updatedNodes[change.id];
-            // Remove the applicationName from uniqueApplicationNames
-            const deletedNode = oldNodes[change.id];
-            if (deletedNode?.data?.applicationName) {
-              deletedApplicationNames.push(
-                deletedNode.data.applicationName.trim()
-              );
-            }
-            if (deletedNode?.data?.serverPort) {
-              deletedApplicationPorts.push(deletedNode.data.serverPort.trim());
-            }
-            break;
-          default:
-            break;
-        }
-      });
-      if (Object.keys(updatedNodes).length === 0) setShowDiv(true);
-      // Remove deleted application names from uniqueApplicationNames
-      setUniquePortNumbers((prev) =>
-        prev.filter(
-          (portNumbers) => !deletedApplicationPorts.includes(portNumbers)
-        )
-      );
-      setUniqueApplicationNames((prev) =>
-        prev.filter((appName) => !deletedApplicationNames.includes(appName))
-      );
-      return updatedNodes;
-    });
-  }, []);
+            });
+            if (Object.keys(updatedNodes).length === 0) setShowDiv(true);
+            // Remove deleted application names from uniqueApplicationNames
+            setUniquePortNumbers(prev => prev.filter(portNumbers => !deletedApplicationPorts.includes(portNumbers)));
+            setUniqueApplicationNames(prev => prev.filter(appName => !deletedApplicationNames.includes(appName)));
+            return updatedNodes;
+        });
+    }, []);
 
     const [edges, setEdges] = useState({});
     const onEdgesChange = useCallback((Nodes, changes = []) => {
@@ -648,8 +641,6 @@ const Designer = ({ update, viewMode = false }) => {
 
     const [projectName, setProjectName] = useState(null);
 
-
-    
     const loadData = async () => {
         if (initialized && parentId && id) {
             try {
@@ -678,23 +669,22 @@ const Designer = ({ update, viewMode = false }) => {
     };
 
     const initData = data => {
-        console.log('initData', data);
         if (data != null && !(Object.keys(data).length === 0) && data?.metadata?.nodes) {
             const nodes = data?.metadata?.nodes;
             if (!(Object.keys(nodes).length === 0)) setShowDiv(false);
-              let max_groupId = -1;
-              let max_serviceId = -1;
-              let max_gatewayId = -1;
-              let max_uiId = -1;
-              let max_databaseId = -1;
+            let max_groupId = -1;
+            let max_serviceId = -1;
+            let max_gatewayId = -1;
+            let max_uiId = -1;
+            let max_databaseId = -1;
             for (const key in nodes) {
                 if (key.toLowerCase().includes('servicediscovery')) {
                     setIsServiceDiscovery(true);
                     setServiceDiscoveryCount(1);
                 } else if (key.toLowerCase().includes('service')) {
-          const id = key.split('_');
-          const numberId = parseInt(id[1], 10);
-          max_serviceId = Math.max(numberId, max_serviceId);
+                    const id = key.split('_');
+                    const numberId = parseInt(id[1], 10);
+                    max_serviceId = Math.max(numberId, max_serviceId);
                     setUniqueApplicationNames(prev => [...prev, data.metadata.nodes[key].data.label]);
                     setUniquePortNumbers(prev => [...prev, data.metadata.nodes[key].data.serverPort]);
                     setServiceInputCheck(prev => ({
@@ -702,9 +692,9 @@ const Designer = ({ update, viewMode = false }) => {
                         [key.id]: false,
                     }));
                 } else if (key.toLowerCase().includes('gateway')) {
-          const id = key.split('_');
-          const numberId = parseInt(id[1], 10);
-          max_gatewayId = Math.max(numberId, max_gatewayId);
+                    const id = key.split('_');
+                    const numberId = parseInt(id[1], 10);
+                    max_gatewayId = Math.max(numberId, max_gatewayId);
                     setUniqueApplicationNames(prev => [...prev, data.metadata.nodes[key].data.label]);
                     setUniquePortNumbers(prev => [...prev, data.metadata.nodes[key].data.serverPort]);
                     setGatewayInputCheck(prev => ({
@@ -726,9 +716,9 @@ const Designer = ({ update, viewMode = false }) => {
                 } else if (key.toLowerCase().includes('localenvironment')) {
                     setLocalenvironmentCount(1);
                 } else if (key.toLowerCase().includes('ui')) {
-          const id = key.split('_');
-          const numberId = parseInt(id[1], 10);
-          max_uiId = Math.max(numberId, max_uiId);
+                    const id = key.split('_');
+                    const numberId = parseInt(id[1], 10);
+                    max_uiId = Math.max(numberId, max_uiId);
                     uiCount++;
                     if (nodes[key].data?.applicationFramework) {
                         setApplicationData(prev => ({
@@ -756,7 +746,6 @@ const Designer = ({ update, viewMode = false }) => {
     useEffect(() => {
         document.title = 'WDA';
         setShowDiv(true);
-        console.log(parentId, id, parentId && id);
         let data = location?.state;
         if (parentId) {
             if (!id) {
@@ -980,41 +969,35 @@ const Designer = ({ update, viewMode = false }) => {
             [Isopen]: false,
         }));
 
-    let UpdatedNodes = { ...nodes };
-    if (Data.applicationName) {
-      Data.applicationName = Data.applicationName.trim();
-      Data.label = Data.label.trim();
-    }
-    if (Isopen === "aws" || Isopen === "azure") {
-      UpdatedNodes["cloudProvider"].data = {
-        ...UpdatedNodes["cloudProvider"].data,
-        ...Data,
-      };
-      if (
-        UpdatedNodes["cloudProvider"].data.kubernetesUseDynamicStorage ===
-        "false"
-      )
-        delete UpdatedNodes["cloudProvider"].data.kubernetesStorageClassName;
-    } else if (Data?.type === "Group") {
-      UpdatedNodes[Isopen].data = { ...UpdatedNodes[Isopen].data, ...Data };
-    } else {
-      if (CurrentNode?.applicationName) {
-        setUniqueApplicationNames((prev) =>
-          prev.filter((appName) => CurrentNode.applicationName !== appName)
-        );
-      }
-      if (CurrentNode?.serverPort) {
-        setUniquePortNumbers((prev) =>
-          prev.filter((port) => CurrentNode.serverPort !== port)
-        );
-      }
-      UpdatedNodes[Isopen].data = { ...UpdatedNodes[Isopen].data, ...Data };
-      UpdatedNodes[Isopen].selected = false;
-      if (Isopen.startsWith('UI') && UpdatedNodes[Isopen].data?.applicationFramework === 'ui') delete UpdatedNodes[Isopen].data?.theme;
-    }
-    setNodes(UpdatedNodes);
-    setopen(false);
-  };
+        let UpdatedNodes = { ...nodes };
+        if (Data.applicationName) {
+            Data.applicationName = Data.applicationName.trim();
+            Data.label = Data.label.trim();
+        }
+        if (Isopen === 'aws' || Isopen === 'azure') {
+            UpdatedNodes['cloudProvider'].data = {
+                ...UpdatedNodes['cloudProvider'].data,
+                ...Data,
+            };
+            if (UpdatedNodes['cloudProvider'].data.kubernetesUseDynamicStorage === 'false')
+                delete UpdatedNodes['cloudProvider'].data.kubernetesStorageClassName;
+        } else if (Data?.type === 'Group') {
+            UpdatedNodes[Isopen].data = { ...UpdatedNodes[Isopen].data, ...Data };
+        } else {
+            if (CurrentNode?.applicationName) {
+                setUniqueApplicationNames(prev => prev.filter(appName => CurrentNode.applicationName !== appName));
+            }
+            if (CurrentNode?.serverPort) {
+                setUniquePortNumbers(prev => prev.filter(port => CurrentNode.serverPort !== port));
+            }
+            UpdatedNodes[Isopen].data = { ...UpdatedNodes[Isopen].data, ...Data };
+            UpdatedNodes[Isopen].selected = false;
+            if (Isopen.startsWith('UI') && UpdatedNodes[Isopen].data?.applicationFramework === 'ui')
+                delete UpdatedNodes[Isopen].data?.theme;
+        }
+        setNodes(UpdatedNodes);
+        setopen(false);
+    };
 
     const [showDiv, setShowDiv] = useState(false);
 
@@ -1114,27 +1097,29 @@ const Designer = ({ update, viewMode = false }) => {
 
     const generateZip = async () => {
         const Data = generatingData;
-        CreateImage(Object.values(nodes), setImage);
+        const generatedImage = await CreateImage(Object.values(nodes));
         setIsGenerating(true);
-        if (image) Data.imageUrl = image;
-        fetch(process.env.REACT_APP_API_BASE_URL + '/generate', {
-            method: 'post',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
-            },
-            body: JSON.stringify(Data),
-        })
-            .then(response => response.blob())
-            .then(blob => {
-                setIsGenerating(false);
-                saveAs(blob, `${Data.projectName}.zip`); // Edit the name or ask the user for the project Name
-            })
-            .catch(error => console.error(error))
-            .finally(() => {
-                localStorage.clear();
-                history.replace('/project/' + projectParentId + '/architectures');
+        if (generatedImage) Data.imageUrl = generatedImage;
+
+        try {
+            const response = await fetch(process.env.REACT_APP_API_BASE_URL + '/generate', {
+                method: 'post',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                },
+                body: JSON.stringify(Data),
             });
+
+            const blob = await response.blob();
+            setIsGenerating(false);
+            saveAs(blob, `${Data.projectName}.zip`);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            localStorage.clear();
+            history.replace('/project/' + projectParentId + '/architectures');
+        }
     };
 
     const onCheckEdge = edges => {
@@ -1192,164 +1177,152 @@ const Designer = ({ update, viewMode = false }) => {
         setEdgeopen(false);
     };
 
-  const onConnect = useCallback(
-    (params, Nodes) => {
-      setUpdated(true);
-      params.markerEnd = { type: MarkerType.ArrowClosed };
-      params.type = "smoothstep";
-      params.data = {};
-      const targetNode = Nodes[params.target];
-          const sourceNode = Nodes[params.source];
-                if (sourceNode.id.startsWith('UI') && targetNode.id.startsWith('Service')) {
-                    const gatewayNodes = Object.values(nodes).filter(node => node.id.startsWith('Gateway'));
-                    const uiConnectToService = gatewayNodes.some(gatewayNode => {
-                        const uiToGatewayEdge = edges[`${sourceNode.id}-${gatewayNode.id}`];
-                        const gatewayToServiceEdge = edges[`${gatewayNode.id}-${targetNode.id}`];
-                        return uiToGatewayEdge && gatewayToServiceEdge;
-                    });
-                    if (uiConnectToService) {
-                        return;
-                    }
-                }
-                if (sourceNode.id.startsWith('UI') && targetNode.id.startsWith('Gateway')) {
-                    const connectedServices = Object.values(nodes).filter(
-                        node => node.id.startsWith('Service') && edges[`${sourceNode.id}-${node.id}`],
-                    );
-                    const connectedServicesToGateway = connectedServices.filter(serviceNode => {
-                        const edgeToGateway = edges[`${targetNode.id}-${serviceNode.id}`];
-                        return edgeToGateway;
-                    });
-                    connectedServicesToGateway.forEach(serviceNode => {
-                        const edgeToRemove = `${sourceNode.id}-${serviceNode.id}`;
-                        setEdges(eds => {
-                            const updatedEdges = { ...eds };
-                            delete updatedEdges[edgeToRemove];
-                            return updatedEdges;
-                        });
-                    });
-                    setEdges(eds => {
-                        const updatedEdges = addEdge(params, eds, Nodes);
-                        const newEdgeId = `${sourceNode.id}-${targetNode.id}`;
-                        const Data = {
-                            type: 'synchronous',
-                            framework: 'rest-api',
-                        };
-                        updatedEdges[newEdgeId].markerEnd = {
-                            color: 'black',
-                            type: MarkerType.ArrowClosed,
-                        };
-                        updatedEdges[newEdgeId].data = {
-                            client: updatedEdges[newEdgeId].source,
-                            server: updatedEdges[newEdgeId].target,
-                            ...updatedEdges[newEdgeId].data,
-                            ...Data,
-                        };
-                        updatedEdges[newEdgeId].style = { stroke: 'black' };
-                        return updatedEdges;
-                    });
+    const onConnect = useCallback(
+        (params, Nodes) => {
+            setUpdated(true);
+            params.markerEnd = { type: MarkerType.ArrowClosed };
+            params.type = 'smoothstep';
+            params.data = {};
+            const targetNode = Nodes[params.target];
+            const sourceNode = Nodes[params.source];
+            if (sourceNode.id.startsWith('UI') && targetNode.id.startsWith('Service')) {
+                const gatewayNodes = Object.values(nodes).filter(node => node.id.startsWith('Gateway'));
+                const uiConnectToService = gatewayNodes.some(gatewayNode => {
+                    const uiToGatewayEdge = edges[`${sourceNode.id}-${gatewayNode.id}`];
+                    const gatewayToServiceEdge = edges[`${gatewayNode.id}-${targetNode.id}`];
+                    return uiToGatewayEdge && gatewayToServiceEdge;
+                });
+                if (uiConnectToService) {
                     return;
                 }
-
-                if (sourceNode.id.startsWith('Gateway') && targetNode.id.startsWith('Service')) {
-                    const connectedUIToServices = Object.values(Nodes).filter(
-                        node => node.id.startsWith('UI') && edges[`${node.id}-${targetNode.id}`],
-                    );
-                    const connectedUIToGateway = connectedUIToServices.filter(uiNode => {
-                        const edgeToGateway = edges[`${uiNode.id}-${sourceNode.id}`];
-                        return edgeToGateway;
-                    });
-                    connectedUIToGateway.forEach(uiNode => {
-                        const edgeToRemove = `${uiNode.id}-${targetNode.id}`;
-                        setEdges(eds => {
-                            const updatedEdges = { ...eds };
-                            delete updatedEdges[edgeToRemove];
-                            return updatedEdges;
-                        });
-                    });
-                    setEdges(eds => {
-                        const updatedEdges = addEdge(params, eds, Nodes);
-                        const newEdgeId = `${sourceNode.id}-${targetNode.id}`;
-                        const Data = {
-                            type: 'synchronous',
-                            framework: 'rest-api',
-                        };
-                        updatedEdges[newEdgeId].markerEnd = {
-                            color: 'black',
-                            type: MarkerType.ArrowClosed,
-                        };
-                        updatedEdges[newEdgeId].data = {
-                            client: updatedEdges[newEdgeId].source,
-                            server: updatedEdges[newEdgeId].target,
-                            ...updatedEdges[newEdgeId].data,
-                            ...Data,
-                        };
-                        updatedEdges[newEdgeId].style = { stroke: 'black' };
-                        return updatedEdges;
-                    });
-                    return;
-                }
-
-      if (
-        !(
-          targetNode.id.startsWith("UI") ||
-          (targetNode.id.startsWith("Database") &&
-            sourceNode.id.startsWith("UI")) ||
-          (targetNode.id.startsWith("Gateway") &&
-            sourceNode.id.startsWith("Service")) ||
-          sourceNode?.data.applicationFramework === "docusaurus"
-
-        )
-      ) {
-        if (targetNode.id.startsWith("Database")) {
-          let isServiceConnected =
-            Nodes[params.source]?.data["prodDatabaseType"];
-          if (
-            !isServiceConnected &&
-            !targetNode.data.isConnected &&
-            !sourceNode.id.startsWith("UI")
-          ) {
-            targetNode.data.isConnected = true;
-            setEdges((eds) => addEdge(params, eds, Nodes));
-            MergeData(params.source, params.target, Nodes);
-          }
-          if (!isServiceConnected) {
-            let updatedNodes = { ...Nodes };
-            if (updatedNodes[targetNode?.id]?.style) {
-              updatedNodes[targetNode?.id].style.border = "1px solid black";
             }
-            setNodes(updatedNodes);
-          }
-        } else if (
-          targetNode.id.startsWith("Gateway") ||
-          sourceNode.id.startsWith("Gateway") ||
-          sourceNode.id.startsWith("UI")
-        ) {
-          const Data = {
-            type: "synchronous",
-            framework: "rest-api",
-          };
-          setEdges((eds) => addEdge(params, eds, Nodes));
-          const edgeName = sourceNode.id + "-" + targetNode.id;
-          let UpdatedEdges = { ...edges };
-          UpdatedEdges[edgeName].markerEnd = {
-            color: "black",
-            type: MarkerType.ArrowClosed,
-          };
-          UpdatedEdges[edgeName].style = { stroke: "black" };
-          UpdatedEdges[edgeName].data = {
-            client: UpdatedEdges[edgeName].source,
-            server: UpdatedEdges[edgeName].target,
-            ...UpdatedEdges[edgeName].data,
-            ...Data,
-          };
-          setEdges(UpdatedEdges);
-        } else {
-          setEdges((eds) => addEdge(params, eds, Nodes));
-        }
-      }
-    },
-    [edges]
-  );
+            if (sourceNode.id.startsWith('UI') && targetNode.id.startsWith('Gateway')) {
+                const connectedServices = Object.values(nodes).filter(
+                    node => node.id.startsWith('Service') && edges[`${sourceNode.id}-${node.id}`],
+                );
+                const connectedServicesToGateway = connectedServices.filter(serviceNode => {
+                    const edgeToGateway = edges[`${targetNode.id}-${serviceNode.id}`];
+                    return edgeToGateway;
+                });
+                connectedServicesToGateway.forEach(serviceNode => {
+                    const edgeToRemove = `${sourceNode.id}-${serviceNode.id}`;
+                    setEdges(eds => {
+                        const updatedEdges = { ...eds };
+                        delete updatedEdges[edgeToRemove];
+                        return updatedEdges;
+                    });
+                });
+                setEdges(eds => {
+                    const updatedEdges = addEdge(params, eds, Nodes);
+                    const newEdgeId = `${sourceNode.id}-${targetNode.id}`;
+                    const Data = {
+                        type: 'synchronous',
+                        framework: 'rest-api',
+                    };
+                    updatedEdges[newEdgeId].markerEnd = {
+                        color: 'black',
+                        type: MarkerType.ArrowClosed,
+                    };
+                    updatedEdges[newEdgeId].data = {
+                        client: updatedEdges[newEdgeId].source,
+                        server: updatedEdges[newEdgeId].target,
+                        ...updatedEdges[newEdgeId].data,
+                        ...Data,
+                    };
+                    updatedEdges[newEdgeId].style = { stroke: 'black' };
+                    return updatedEdges;
+                });
+                return;
+            }
+
+            if (sourceNode.id.startsWith('Gateway') && targetNode.id.startsWith('Service')) {
+                const connectedUIToServices = Object.values(Nodes).filter(
+                    node => node.id.startsWith('UI') && edges[`${node.id}-${targetNode.id}`],
+                );
+                const connectedUIToGateway = connectedUIToServices.filter(uiNode => {
+                    const edgeToGateway = edges[`${uiNode.id}-${sourceNode.id}`];
+                    return edgeToGateway;
+                });
+                connectedUIToGateway.forEach(uiNode => {
+                    const edgeToRemove = `${uiNode.id}-${targetNode.id}`;
+                    setEdges(eds => {
+                        const updatedEdges = { ...eds };
+                        delete updatedEdges[edgeToRemove];
+                        return updatedEdges;
+                    });
+                });
+                setEdges(eds => {
+                    const updatedEdges = addEdge(params, eds, Nodes);
+                    const newEdgeId = `${sourceNode.id}-${targetNode.id}`;
+                    const Data = {
+                        type: 'synchronous',
+                        framework: 'rest-api',
+                    };
+                    updatedEdges[newEdgeId].markerEnd = {
+                        color: 'black',
+                        type: MarkerType.ArrowClosed,
+                    };
+                    updatedEdges[newEdgeId].data = {
+                        client: updatedEdges[newEdgeId].source,
+                        server: updatedEdges[newEdgeId].target,
+                        ...updatedEdges[newEdgeId].data,
+                        ...Data,
+                    };
+                    updatedEdges[newEdgeId].style = { stroke: 'black' };
+                    return updatedEdges;
+                });
+                return;
+            }
+
+            if (
+                !(
+                    targetNode.id.startsWith('UI') ||
+                    (targetNode.id.startsWith('Database') && sourceNode.id.startsWith('UI')) ||
+                    (targetNode.id.startsWith('Gateway') && sourceNode.id.startsWith('Service')) ||
+                    sourceNode?.data.applicationFramework === 'docusaurus'
+                )
+            ) {
+                if (targetNode.id.startsWith('Database')) {
+                    let isServiceConnected = Nodes[params.source]?.data['prodDatabaseType'];
+                    if (!isServiceConnected && !targetNode.data.isConnected && !sourceNode.id.startsWith('UI')) {
+                        targetNode.data.isConnected = true;
+                        setEdges(eds => addEdge(params, eds, Nodes));
+                        MergeData(params.source, params.target, Nodes);
+                    }
+                    if (!isServiceConnected) {
+                        let updatedNodes = { ...Nodes };
+                        if (updatedNodes[targetNode?.id]?.style) {
+                            updatedNodes[targetNode?.id].style.border = '1px solid black';
+                        }
+                        setNodes(updatedNodes);
+                    }
+                } else if (targetNode.id.startsWith('Gateway') || sourceNode.id.startsWith('Gateway') || sourceNode.id.startsWith('UI')) {
+                    const Data = {
+                        type: 'synchronous',
+                        framework: 'rest-api',
+                    };
+                    setEdges(eds => addEdge(params, eds, Nodes));
+                    const edgeName = sourceNode.id + '-' + targetNode.id;
+                    let UpdatedEdges = { ...edges };
+                    UpdatedEdges[edgeName].markerEnd = {
+                        color: 'black',
+                        type: MarkerType.ArrowClosed,
+                    };
+                    UpdatedEdges[edgeName].style = { stroke: 'black' };
+                    UpdatedEdges[edgeName].data = {
+                        client: UpdatedEdges[edgeName].source,
+                        server: UpdatedEdges[edgeName].target,
+                        ...UpdatedEdges[edgeName].data,
+                        ...Data,
+                    };
+                    setEdges(UpdatedEdges);
+                } else {
+                    setEdges(eds => addEdge(params, eds, Nodes));
+                }
+            }
+        },
+        [edges],
+    );
 
     const UpdateSave = () => {
         setsaveMetadata(prev => !prev);
@@ -1397,7 +1370,6 @@ const Designer = ({ update, viewMode = false }) => {
                 )}
             </ReactFlowProvider>
         );
-    console.log('Awawaw');
     return (
         <div className="dndflow" style={{ overflow: 'hidden !important', bottom: 0, height: 'calc(100vh - 64px)' }}>
             <ReactFlowProvider>

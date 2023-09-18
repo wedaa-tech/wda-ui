@@ -87,7 +87,6 @@ function ArchitecturesSection() {
 
     const { parentId } = useParams();
 
-    console.log(location.state, location);
 
     // if (location.state === undefined || !parentId) {
     //   history.push("/projects", {
@@ -97,7 +96,6 @@ function ArchitecturesSection() {
 
     const [projectName, setProjectName] = useState(location?.state?.state?.projectName);
 
-    // console.log(projectName, location.state, location.state.projectName, location, );
     const [isNewArchitectureModalOpen, setNewArchitectureModalOpen] = useState(false);
     const [newArchitectureName, setNewArchitectureName] = useState('');
     const initialRef = useRef(null);
@@ -118,7 +116,6 @@ function ArchitecturesSection() {
     };
 
     const handleCreateNewArchitecture = () => {
-        console.log(parentId);
         history.push('/project/' + parentId + '/architecture/create', {
             replace: true,
             parentId: parentId,
@@ -158,7 +155,6 @@ function ArchitecturesSection() {
     }, [initialized, keycloak, parentId]);
 
     const handleOpenArchitecture = (project_id, data) => {
-        console.log(project_id, data, 'project_id, data');
         history.push('/project/' + parentId + '/architecture/' + project_id + '/details', {
             replace: true,
             state: data,

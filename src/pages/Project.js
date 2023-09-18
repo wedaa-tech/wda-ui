@@ -50,7 +50,6 @@ const Project = () => {
 
     useEffect(() => {
         let data = location?.state;
-        console.log(location, location.state);
         if (location.state === undefined) {
             history.push('/projects', {
                 replace: true,
@@ -67,13 +66,10 @@ const Project = () => {
             }
         } else {
             if (data?.state) {
-                console.log(data, '1');
                 data = data.state;
-                console.log(data, '2');
             }
             setVal(data);
             setMetadata(data.metadata);
-            console.log(data, 'awdfegrhtmrgsefgrhtfg');
             data = data.metadata;
             setNodes(Object.values(data?.nodes));
             if (data?.edges) {

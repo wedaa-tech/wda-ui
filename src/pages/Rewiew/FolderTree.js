@@ -63,10 +63,7 @@ const FolderTree = ({ nodeType }) => {
     const [selectedItem, setSelectedItem] = useState(null);
     const [folders, setFolders] = useState([]);
 
-    console.log(nodeType, 'nodeType');
-
     useEffect(() => {
-        console.log('awdawdawdawd', nodeType);
         if (nodeType && nodeType.includes('Service')) {
             setFolders(folderStructure['Service']);
         } else if (nodeType && nodeType.includes('Gateway')) {
