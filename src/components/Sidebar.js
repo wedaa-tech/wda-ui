@@ -539,7 +539,7 @@ const Sidebar = ({
                             }}
                         >
                             {initialized && keycloak.authenticated && (
-                                <Checkbox hidden={id ? false : true} size="md" colorScheme="blue" isChecked={saveMetadata} onChange={Togglesave}>
+                                <Checkbox size="md" colorScheme="blue" isChecked={saveMetadata} onChange={Togglesave}>
                                     Save Project
                                 </Checkbox>
                             )}
