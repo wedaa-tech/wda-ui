@@ -80,7 +80,6 @@ const imageWidth = 1024;
 const imageHeight = 768;
 
 const Designer = ({ update, viewMode = false }) => {
-    console.log('Designer');
     const [viewOnly, setViewOnly] = useState(viewMode);
     const reactFlowWrapper = useRef(null);
     const { keycloak, initialized } = useKeycloak();
