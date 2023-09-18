@@ -6,7 +6,7 @@ const ProjectCard = ({ title, description, imageUrl, parentId, onClick, count })
         <Box
             maxW="sm"
             className="project-card"
-            height={'300px'}
+            height={'160px'}
             borderWidth="1px"
             borderRadius="lg"
             overflow="hidden"
@@ -17,7 +17,7 @@ const ProjectCard = ({ title, description, imageUrl, parentId, onClick, count })
             backgroundColor={'white'}
             onClick={() => onClick(title, parentId)}
         >
-            <Image
+            {/* <Image
                 style={{
                     width: '100%',
                     objectFit: 'contain',
@@ -26,8 +26,8 @@ const ProjectCard = ({ title, description, imageUrl, parentId, onClick, count })
                 height="65%"
                 src={imageUrl}
                 alt={title}
-            />
-            <Box p="6">
+            /> */}
+            <Flex p="6" flexDirection={'column'}>
                 <Flex justifyContent={'space-between'} alignItems={'baseline'}>
                     <Text
                         className="not-selectable"
@@ -50,7 +50,7 @@ const ProjectCard = ({ title, description, imageUrl, parentId, onClick, count })
                 <Text className="not-selectable" color="gray.600">
                     {description}
                 </Text>
-            </Box>
+            </Flex>
         </Box>
     );
 };

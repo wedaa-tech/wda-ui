@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Grid, Button, GridItem } from '@chakra-ui/react';
+import { Grid, Button, GridItem, Flex } from '@chakra-ui/react';
 import './index.css';
 import ReactFlow, {
     Background,
@@ -54,7 +54,14 @@ const buttonStyle = {
     marginTop: 5,
 };
 
-export const ReviewFlow = ({ nodesData, edgesData, setViewOnly = false }) => {
+export const ReviewFlow = ({
+    nodesData,
+    edgesData,
+    setViewOnly = false,
+    generateZip = voidfunc,
+    generateMode = false,
+    deployementData = null,
+}) => {
     const [nodes, setNodes, onNodesChange] = useNodesState(useExample ? example.nodes : nodesData);
     const [edges, setEdges, onEdgesChange] = useEdgesState(useExample ? example.edges : edgesData);
 
@@ -96,7 +103,7 @@ export const ReviewFlow = ({ nodesData, edgesData, setViewOnly = false }) => {
     };
 
     const handleBackClick = () => {
-        history.goBack();
+        history.replace('/project/' + parentId + '/architectures');
     };
 
     return (
@@ -112,11 +119,12 @@ export const ReviewFlow = ({ nodesData, edgesData, setViewOnly = false }) => {
                     nodesDraggable={false}
                     nodesConnectable={false}
                     nodeTypes={nodeTypes}
+                    showInteractive={false}
                     fitView
                 >
                     <Panel position="top-right">
-                        <Button colorScheme="blue" onClick={handleEditClick}>
-                            Edit Mode
+                        <Button colorScheme="blue" onClick={generateMode ? () => setViewOnly(false) : handleEditClick}>
+                            {generateMode ? 'Go Back' : 'Edit Mode'}
                         </Button>
                     </Panel>
                     <Panel position="top-left">
@@ -124,7 +132,7 @@ export const ReviewFlow = ({ nodesData, edgesData, setViewOnly = false }) => {
                             Back
                         </Button>
                     </Panel>
-                    <Controls position="bottom-right" />
+                    <Controls position="bottom-right" showInteractive={false} />
                     <Background gap={10} color="#f2f2f2" variant={BackgroundVariant.Lines} />
                 </ReactFlow>
             </GridItem>
@@ -132,8 +140,14 @@ export const ReviewFlow = ({ nodesData, edgesData, setViewOnly = false }) => {
                 colSpan={3}
                 backgroundColor={'white.100'}
                 boxShadow={'rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;'}
+                height={'inherit'}
             >
-                <CodeReview nodeId={nodeId} />
+                <Flex height={"100%"} direction={'column'}>
+                    <CodeReview nodeId={nodeId} generateMode={generateMode} deployementData={deployementData} />
+                    <Button hidden={!generateMode} m={8} colorScheme="blue" onClick={generateZip}>
+                        Generate Architecture
+                    </Button>
+                </Flex>
             </GridItem>
         </Grid>
     );
@@ -143,6 +157,7 @@ const Review = () => {
     const { initialized, keycloak } = useKeycloak();
     const [nodes, setNodes] = useState([]);
     const [edges, setEdges] = useState([]);
+    const [deployementData, setDeployementData] = useState(null);
 
     const { parentId, id } = useParams();
 
@@ -160,6 +175,7 @@ const Review = () => {
                     if (result?.metadata) {
                         setNodes(Object.values(result.metadata?.nodes));
                         setEdges(Object.values(result.metadata?.edges));
+                        setDeployementData(result.request_json?.deployement);
                     }
                 })
                 .catch(error => console.error(error));
@@ -170,7 +186,7 @@ const Review = () => {
 
     return (
         <ReactFlowProvider>
-            <ReviewFlow nodesData={nodes} edgesData={edges} />
+            <ReviewFlow nodesData={nodes} edgesData={edges} deployementData={deployementData} />
         </ReactFlowProvider>
     );
 };

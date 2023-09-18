@@ -40,8 +40,8 @@ jobs:
             #     sed -i 's#REACT_APP_API_BASE_URL = ".*"#REACT_APP_API_BASE_URL = "http://'"$WDA_NEW_IP_ADDRESS"':3001"#' .env.production
             #     sed -i 's#REACT_APP_KEYCLOAK_URL = ".*"#REACT_APP_KEYCLOAK_URL = "http://'"$kC_NEW_IP_ADDRESS"':8080"#' .env.production
 
-            #     git config --local user.email "tic.dev@comakeit.com"
-            #     git config --local user.name "comakeit-tic"
+            #     git config --local user.email "dev@wedaa.tech"
+            #     git config --local user.name "wedaa.tech"
             #     git add .
             #     git commit -a -m "updated API URL in env.production"
 

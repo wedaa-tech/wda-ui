@@ -22,7 +22,7 @@ function Footer() {
     return (
         <div>
             <div style={phantom} />
-            <div style={style}>Created by TIC@coMakeIT</div>
+            <div style={style}>Created by WeDAA</div>
         </div>
     );
 }

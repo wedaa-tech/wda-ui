@@ -2,7 +2,7 @@ import { Box, Flex, HStack, Button, Text, Image, Menu, MenuButton, MenuList, Men
 import { useRef, useState } from 'react';
 import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons';
 import { Link } from 'react-router-dom';
-import logo from '../assets/TIC_logo.png';
+import logo from '../assets/wedaa_logo.png';
 import { useKeycloak } from '@react-keycloak/web';
 import { useLocation } from 'react-router-dom/cjs/react-router-dom.min';
 
@@ -49,11 +49,6 @@ export default function Header({ children }) {
                             }}
                         />
                     </Link>
-                    <Link to="/">
-                        <Text fontSize="xl" fontWeight="bold" color={color}>
-                            TIC@coMakeIT
-                        </Text>
-                    </Link>
                 </Flex>
                 <HStack spacing={4} display={{ base: 'none', md: 'flex' }}>
                     {!keycloak.authenticated && (
@@ -97,7 +92,7 @@ export default function Header({ children }) {
                                         New
                                     </MenuItem>
                                 </Link>
-                                <Link to="/projects">
+                                <Link to="/">
                                     <MenuItem
                                         fontSize="md"
                                         bg={bg}
@@ -113,20 +108,6 @@ export default function Header({ children }) {
                     <Link onClick={() => window.open(process.env.REACT_APP_DOCS_URL)}>
                         <Text fontSize="md" color={color}>
                             Docs
-                        </Text>
-                    </Link>
-                    {/* <Link to="/about">
-            <Text
-              fontSize="md"
-              color={color}
-              fontWeight={location.pathname === "/about" ? "bold" : "normal"}
-            >
-              About
-            </Text>
-          </Link> */}
-                    <Link to="/contact">
-                        <Text fontSize="md" color={color} fontWeight={location.pathname === '/contact' ? 'bold' : 'normal'}>
-                            Contact
                         </Text>
                     </Link>
                     {!keycloak.authenticated && (

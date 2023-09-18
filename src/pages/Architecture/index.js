@@ -119,7 +119,7 @@ function ArchitecturesSection() {
 
     const handleCreateNewArchitecture = () => {
         console.log(parentId);
-        history.push('/canvastocode', {
+        history.push('/project/' + parentId + '/architecture/create', {
             replace: true,
             parentId: parentId,
         });

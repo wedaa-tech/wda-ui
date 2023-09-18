@@ -214,7 +214,8 @@ const Sidebar = ({
         if (!isValid) return;
         if (Object.keys(nodes).length === 1 && Object.values(nodes)[0]?.data?.applicationFramework === 'docusaurus') {
             // }
-            setIsLoading(true);
+            // setIsLoading(true);
+            // setShowModal(true);
             onSubmit(projectData);
         } else {
             setShowModal(true);
@@ -279,324 +280,321 @@ const Sidebar = ({
     };
 
     return (
-        <>
-            <Flex
+        <Flex
+            // position="absolute"
+            marginTop={'8px'}
+            h="calc(100vh - 84px)"
+            bg={useColorModeValue('white', 'gray.800')}
+            borderColor={useColorModeValue('gray.900', 'gray.900')}
+            zIndex={10}
+            boxShadow="0 4px 12px rgba(0, 0, 0, 0.3)"
+            borderRightRadius={'10px'}
+            style={{
+                transition: 'transform 0.3s',
+                transform: isContentVisible ? 'translateX(0px)' : 'translateX(-300px)',
+            }}
+            maxWidth="300px"
+        >
+            <Button
+                onClick={handleToggleContent}
+                variant="ghost"
+                mr="2"
+                alignSelf="flex-end"
                 position="absolute"
-                top="70px"
-                h="calc(100vh - 84px)"
-                w="300px"
-                bg={useColorModeValue('white', 'gray.800')}
-                borderColor={useColorModeValue('gray.900', 'gray.900')}
-                zIndex={1}
+                top="10px"
                 boxShadow="0 4px 12px rgba(0, 0, 0, 0.3)"
-                borderRightRadius={'10px'}
-                style={{
-                    transition: 'transform 0.3s',
-                    transform: isContentVisible ? 'translateX(0px)' : 'translateX(-300px)',
-                }}
-                maxWidth="300px"
+                bg={useColorModeValue('white', 'gray.800')}
+                left={'310px'}
+                zIndex={100}
             >
-                <Button
-                    onClick={handleToggleContent}
-                    variant="ghost"
-                    mr="2"
-                    alignSelf="flex-end"
-                    position="absolute"
-                    top="10px"
-                    boxShadow="0 4px 12px rgba(0, 0, 0, 0.3)"
-                    bg={useColorModeValue('white', 'gray.800')}
-                    left={'310px'}
-                    zIndex={100}
-                >
-                    {isContentVisible ? <CloseIcon /> : <HamburgerIcon />}
-                </Button>
-                <Tabs
-                    minWidth={'300px'}
-                    onChange={index => setTabIndex(index)}
-                    h="calc(100vh - 140px)"
-                    index={tabIndex}
-                    colorScheme="blue"
-                    hidden={!isContentVisible}
-                    transition={'hidden 0.2s'}
-                >
-                    <TabList justifyContent="space-evenly">
-                        <Tab fontSize={'12px'} fontWeight={'bold'}>
-                            Components
+                {isContentVisible ? <CloseIcon /> : <HamburgerIcon />}
+            </Button>
+            <Tabs
+                minWidth={'300px'}
+                onChange={index => setTabIndex(index)}
+                h="calc(100vh - 140px)"
+                index={tabIndex}
+                colorScheme="blue"
+                hidden={!isContentVisible}
+                transition={'hidden 0.2s'}
+            >
+                <TabList justifyContent="space-evenly">
+                    <Tab fontSize={'12px'} fontWeight={'bold'}>
+                        Components
+                    </Tab>
+                    <Tooltip isDisabled={initialized && keycloak.authenticated} hasArrow label="Login to View" bg="red.600">
+                        <Tab isDisabled={!(initialized && keycloak.authenticated)} fontSize={'12px'} fontWeight={'bold'}>
+                            Reference <br />
+                            Architectures
                         </Tab>
-                        <Tooltip isDisabled={initialized && keycloak.authenticated} hasArrow label="Login to View" bg="red.600">
-                            <Tab isDisabled={!(initialized && keycloak.authenticated)} fontSize={'12px'} fontWeight={'bold'}>
-                                Reference <br />
-                                Architectures
-                            </Tab>
-                        </Tooltip>
-                    </TabList>
-                    {/* <TabIndicator
+                    </Tooltip>
+                </TabList>
+                {/* <TabIndicator
                 index={tabIndex}
                 mt="-1.5px"
                 height="2px"
                 bg="blue.500"
                 borderRadius="1px"
               /> */}
-                    <TabPanels height={'100%'}>
-                        <TabPanel
+                <TabPanels height={'100%'}>
+                    <TabPanel
+                        style={{
+                            minHeight: '100%',
+                            display: 'flex',
+                            flexDirection: 'column',
+                        }}
+                    >
+                        <div
+                            className="sideBlock"
                             style={{
-                                minHeight: '100%',
+                                position: 'relative',
+                                flex: '1',
+                                overflowY: 'auto',
+                                display: isContentVisible ? 'block' : 'none',
+                            }}
+                        >
+                            <div
+                                style={{
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    margin: '0px 8px 8px 0px',
+                                }}
+                            >
+                                <FormLabel fontWeight="bold" style={{ margin: '0' }}>
+                                    Architecture Name
+                                </FormLabel>
+                            </div>
+                            <Input
+                                mb={1}
+                                variant="outline"
+                                id="projectName"
+                                borderColor={!projectData.projectName || projectNameCheck ? 'red' : '#CFCFCF'}
+                                maxLength="32"
+                                value={projectData.projectName}
+                                onChange={e => handleProjectData('projectName', e.target.value)}
+                            ></Input>
+                            {projectData.projectName && projectNameCheck && (
+                                <span style={{ color: 'red', fontSize: '10px' }}>Enter a valid project name</span>
+                            )}
+
+                            <div className="description">
+                                <h2
+                                    style={{
+                                        marginTop: '8px',
+                                        fontSize: '12px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'space-between',
+                                    }}
+                                >
+                                    You can drag these nodes to the pane on the right.
+                                </h2>
+                            </div>
+
+                            <div
+                                className={`dndnode output ${isUINodeEnabled ? 'disabled' : ''}`}
+                                onDragStart={event => onDragStart(event, 'default', 'UI')}
+                                draggable={!isUINodeEnabled}
+                                style={{
+                                    backgroundColor: isUINodeEnabled ? '#CFCFCF' : '',
+                                    cursor: isUINodeEnabled ? 'not-allowed' : '',
+                                }}
+                            >
+                                UI
+                            </div>
+                            <div
+                                className={`dndnode output ${isGatewayNodeEnabled ? 'disabled' : ''}`}
+                                onDragStart={event => onDragStart(event, 'default', 'Gateway')}
+                                draggable={!isGatewayNodeEnabled}
+                                style={{
+                                    backgroundColor: isGatewayNodeEnabled ? '#CFCFCF' : '',
+                                    cursor: isGatewayNodeEnabled ? 'not-allowed' : '',
+                                }}
+                            >
+                                Gateway
+                            </div>
+
+                            <div className="dndnode output" onDragStart={event => onDragStart(event, 'default', 'Service')} draggable>
+                                Service
+                            </div>
+                            <div className="dndnode output" onDragStart={event => onDragStart(event, 'default', 'Group')} draggable>
+                                Group
+                            </div>
+                            <h1
+                                style={{
+                                    cursor: 'pointer',
+                                    fontSize: '20px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                }}
+                                onClick={() => toggleOption('Authentication')}
+                            >
+                                Authentication {selectedOption === 'Authentication' ? <span>&#x25B2;</span> : <span>&#x25BC;</span>}
+                            </h1>
+                            {selectedOption === 'Authentication' && (
+                                <>
+                                    <div
+                                        className="selectorNode3"
+                                        onDragStart={event => onDragStart(event, 'default', 'Auth_oauth2')}
+                                        draggable
+                                    >
+                                        <img width="145px" src={keycloakIcon} alt="keycloaklogo"></img>
+                                    </div>
+                                </>
+                            )}
+                            <h1
+                                style={{
+                                    cursor: 'pointer',
+                                    fontSize: '20px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                }}
+                                onClick={() => toggleOption('Database')}
+                            >
+                                Database {selectedOption === 'Databases' ? <span>&#x25B2;</span> : <span>&#x25BC;</span>}
+                            </h1>
+                            {selectedOption === 'Database' && (
+                                <>
+                                    <div
+                                        className="selectorNode"
+                                        onDragStart={event => onDragStart(event, 'default', 'Database_postgresql')}
+                                        draggable
+                                    >
+                                        <img width="145px" style={{ marginTop: '10px' }} src={db1} alt="postgreslogo"></img>
+                                    </div>
+                                    <div
+                                        className="selectorNode"
+                                        onDragStart={event => onDragStart(event, 'default', 'Database_mongodb')}
+                                        draggable
+                                    >
+                                        <img width="145px" style={{ margin: '10px 0px 10px 15px' }} src={db2} alt="mongologo"></img>
+                                    </div>
+                                </>
+                            )}
+
+                            <h1>
+                                <span
+                                    style={{
+                                        cursor: 'pointer',
+                                        fontSize: '20px',
+                                        justifyContent: 'space-between',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                    }}
+                                    onClick={() => toggleOption('serviceDiscovery')}
+                                >
+                                    Service Discovery{' '}
+                                    {selectedOption === 'serviceDiscovery' ? <span>&#x25B2;</span> : <span>&#x25BC;</span>}
+                                </span>
+                            </h1>
+                            {selectedOption === 'serviceDiscovery' && (
+                                <>
+                                    <div
+                                        className="selectorNode1"
+                                        onDragStart={event => onDragStart(event, 'default', 'Discovery_eureka')}
+                                        draggable
+                                    >
+                                        <img width="100px" height="40px" src={eurkea} alt="eurekalogo"></img>
+                                    </div>
+                                </>
+                            )}
+                            <h1>
+                                <span
+                                    style={{
+                                        cursor: 'pointer',
+                                        fontSize: '20px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'space-between',
+                                    }}
+                                    onClick={() => toggleOption('loadManagement')}
+                                >
+                                    Log Management {selectedOption === 'loadManagement' ? <span>&#x25B2;</span> : <span>&#x25BC;</span>}
+                                </span>
+                            </h1>
+                            {selectedOption === 'loadManagement' && (
+                                <>
+                                    <div
+                                        className="selectorNode6"
+                                        onDragStart={event => onDragStart(event, 'default', 'Load_eck')}
+                                        draggable
+                                    >
+                                        <img width="120px" src={eck} alt="ecklogo" />
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                        <div
+                            style={{
+                                position: 'sticky',
+                                bottom: '0',
+                                marginTop: '35px',
                                 display: 'flex',
                                 flexDirection: 'column',
                             }}
                         >
-                            <div
-                                className="sideBlock"
-                                style={{
-                                    position: 'relative',
-                                    flex: '1',
-                                    overflowY: 'auto',
-                                    display: isContentVisible ? 'block' : 'none',
-                                }}
-                            >
-                                <div
+                            {initialized && keycloak.authenticated && (
+                                <Checkbox size="md" colorScheme="blue" isChecked={saveMetadata} onChange={Togglesave}>
+                                    Save Project
+                                </Checkbox>
+                            )}
+                            {/* <div style={{ display:'flex', justifyContent:'center'}}> */}
+                            <Button onClick={handleButtonClick} mt={4} border="2px" borderColor="#3182CE" width="100px" type="submit">
+                                Next
+                            </Button>
+                            {/* <Button onClick={() => console.log(applicationName)}></Button> */}
+                            {showModal && (
+                                <DeployModal
+                                    onSubmit={onSubmit}
+                                    isLoading={isLoading}
+                                    projectData={projectData}
+                                    onClose={handleCloseModal}
+                                    Service_Discovery_Data={Service_Discovery_Data}
+                                    update={update}
+                                />
+                            )}
+                            {!checkNodeExists ? (
+                                <p
                                     style={{
-                                        display: 'flex',
-                                        flexDirection: 'row',
-                                        alignItems: 'center',
-                                        justifyContent: 'space-between',
-                                        margin: '0px 8px 8px 0px',
+                                        fontSize: '10px',
+                                        color: 'red',
+                                        marginTop: '5px',
                                     }}
                                 >
-                                    <FormLabel fontWeight="bold" style={{ margin: '0' }}>
-                                        Architecture Name
-                                    </FormLabel>
-                                </div>
-                                <Input
-                                    mb={1}
-                                    variant="outline"
-                                    id="projectName"
-                                    borderColor={!projectData.projectName || projectNameCheck ? 'red' : '#CFCFCF'}
-                                    maxLength="32"
-                                    value={projectData.projectName}
-                                    onChange={e => handleProjectData('projectName', e.target.value)}
-                                ></Input>
-                                {projectData.projectName && projectNameCheck && (
-                                    <span style={{ color: 'red', fontSize: '10px' }}>Enter a valid project name</span>
-                                )}
-
-                                <div className="description">
-                                    <h2
-                                        style={{
-                                            marginTop: '8px',
-                                            fontSize: '12px',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'space-between',
-                                        }}
+                                    Please ensure there exists atleast one application
+                                </p>
+                            ) : (
+                                <></>
+                            )}
+                        </div>
+                    </TabPanel>
+                    <TabPanel>
+                        <VStack spacing={5}>
+                            {refArch.map(element => {
+                                const metadata = structuredClone(element.metadata);
+                                return (
+                                    <Box
+                                        width={'90%'}
+                                        onDragStart={event => onDragStart(event, 'marketNode', 'marketNode', metadata)}
+                                        draggable
                                     >
-                                        You can drag these nodes to the pane on the right.
-                                    </h2>
-                                </div>
-
-                                <div
-                                    className={`dndnode output ${isUINodeEnabled ? 'disabled' : ''}`}
-                                    onDragStart={event => onDragStart(event, 'default', 'UI')}
-                                    draggable={!isUINodeEnabled}
-                                    style={{
-                                        backgroundColor: isUINodeEnabled ? '#CFCFCF' : '',
-                                        cursor: isUINodeEnabled ? 'not-allowed' : '',
-                                    }}
-                                >
-                                    UI
-                                </div>
-                                <div
-                                    className={`dndnode output ${isGatewayNodeEnabled ? 'disabled' : ''}`}
-                                    onDragStart={event => onDragStart(event, 'default', 'Gateway')}
-                                    draggable={!isGatewayNodeEnabled}
-                                    style={{
-                                        backgroundColor: isGatewayNodeEnabled ? '#CFCFCF' : '',
-                                        cursor: isGatewayNodeEnabled ? 'not-allowed' : '',
-                                    }}
-                                >
-                                    Gateway
-                                </div>
-
-                                <div className="dndnode output" onDragStart={event => onDragStart(event, 'default', 'Service')} draggable>
-                                    Service
-                                </div>
-                                <div className="dndnode output" onDragStart={event => onDragStart(event, 'default', 'Group')} draggable>
-                                    Group
-                                </div>
-                                <h1
-                                    style={{
-                                        cursor: 'pointer',
-                                        fontSize: '20px',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'space-between',
-                                    }}
-                                    onClick={() => toggleOption('Authentication')}
-                                >
-                                    Authentication {selectedOption === 'Authentication' ? <span>&#x25B2;</span> : <span>&#x25BC;</span>}
-                                </h1>
-                                {selectedOption === 'Authentication' && (
-                                    <>
-                                        <div
-                                            className="selectorNode3"
-                                            onDragStart={event => onDragStart(event, 'default', 'Auth_oauth2')}
-                                            draggable
-                                        >
-                                            <img width="145px" src={keycloakIcon} alt="keycloaklogo"></img>
-                                        </div>
-                                    </>
-                                )}
-                                <h1
-                                    style={{
-                                        cursor: 'pointer',
-                                        fontSize: '20px',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'space-between',
-                                    }}
-                                    onClick={() => toggleOption('Database')}
-                                >
-                                    Database {selectedOption === 'Databases' ? <span>&#x25B2;</span> : <span>&#x25BC;</span>}
-                                </h1>
-                                {selectedOption === 'Database' && (
-                                    <>
-                                        <div
-                                            className="selectorNode"
-                                            onDragStart={event => onDragStart(event, 'default', 'Database_postgresql')}
-                                            draggable
-                                        >
-                                            <img width="145px" style={{ marginTop: '10px' }} src={db1} alt="postgreslogo"></img>
-                                        </div>
-                                        <div
-                                            className="selectorNode"
-                                            onDragStart={event => onDragStart(event, 'default', 'Database_mongodb')}
-                                            draggable
-                                        >
-                                            <img width="145px" style={{ margin: '10px 0px 10px 15px' }} src={db2} alt="mongologo"></img>
-                                        </div>
-                                    </>
-                                )}
-
-                                <h1>
-                                    <span
-                                        style={{
-                                            cursor: 'pointer',
-                                            fontSize: '20px',
-                                            justifyContent: 'space-between',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                        }}
-                                        onClick={() => toggleOption('serviceDiscovery')}
-                                    >
-                                        Service Discovery{' '}
-                                        {selectedOption === 'serviceDiscovery' ? <span>&#x25B2;</span> : <span>&#x25BC;</span>}
-                                    </span>
-                                </h1>
-                                {selectedOption === 'serviceDiscovery' && (
-                                    <>
-                                        <div
-                                            className="selectorNode1"
-                                            onDragStart={event => onDragStart(event, 'default', 'Discovery_eureka')}
-                                            draggable
-                                        >
-                                            <img width="100px" height="40px" src={eurkea} alt="eurekalogo"></img>
-                                        </div>
-                                    </>
-                                )}
-                                <h1>
-                                    <span
-                                        style={{
-                                            cursor: 'pointer',
-                                            fontSize: '20px',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'space-between',
-                                        }}
-                                        onClick={() => toggleOption('loadManagement')}
-                                    >
-                                        Log Management {selectedOption === 'loadManagement' ? <span>&#x25B2;</span> : <span>&#x25BC;</span>}
-                                    </span>
-                                </h1>
-                                {selectedOption === 'loadManagement' && (
-                                    <>
-                                        <div
-                                            className="selectorNode6"
-                                            onDragStart={event => onDragStart(event, 'default', 'Load_eck')}
-                                            draggable
-                                        >
-                                            <img width="120px" src={eck} alt="ecklogo" />
-                                        </div>
-                                    </>
-                                )}
-                            </div>
-                            <div
-                                style={{
-                                    position: 'sticky',
-                                    bottom: '0',
-                                    marginTop: '35px',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                }}
-                            >
-                                {initialized && keycloak.authenticated && (
-                                    <Checkbox size="md" colorScheme="blue" isChecked={saveMetadata} onChange={Togglesave}>
-                                        Save Project
-                                    </Checkbox>
-                                )}
-                                {/* <div style={{ display:'flex', justifyContent:'center'}}> */}
-                                <Button onClick={handleButtonClick} mt={4} border="2px" borderColor="#3182CE" width="100px" type="submit">
-                                    Next
-                                </Button>
-                                {/* <Button onClick={() => console.log(applicationName)}></Button> */}
-                                {showModal && (
-                                    <DeployModal
-                                        onSubmit={onSubmit}
-                                        isLoading={isLoading}
-                                        projectData={projectData}
-                                        onClose={handleCloseModal}
-                                        Service_Discovery_Data={Service_Discovery_Data}
-                                        update={update}
-                                    />
-                                )}
-                                {!checkNodeExists ? (
-                                    <p
-                                        style={{
-                                            fontSize: '10px',
-                                            color: 'red',
-                                            marginTop: '5px',
-                                        }}
-                                    >
-                                        Please ensure there exists atleast one application
-                                    </p>
-                                ) : (
-                                    <></>
-                                )}
-                            </div>
-                        </TabPanel>
-                        <TabPanel>
-                            <VStack spacing={5}>
-                                {refArch.map(element => {
-                                    const metadata = structuredClone(element.metadata);
-                                    return (
-                                        <Box
-                                            width={'90%'}
-                                            onDragStart={event => onDragStart(event, 'marketNode', 'marketNode', metadata)}
-                                            draggable
-                                        >
-                                            <ZoomableImageModalWrapper
-                                                imageUrl={keycloakIcon}
-                                                description="Description of image 1."
-                                                name="Full Stack Architecture"
-                                            />
-                                        </Box>
-                                    );
-                                })}
-                            </VStack>
-                        </TabPanel>
-                    </TabPanels>
-                </Tabs>
-            </Flex>
-        </>
+                                        <ZoomableImageModalWrapper
+                                            imageUrl={keycloakIcon}
+                                            description="Description of image 1."
+                                            name="Full Stack Architecture"
+                                        />
+                                    </Box>
+                                );
+                            })}
+                        </VStack>
+                    </TabPanel>
+                </TabPanels>
+            </Tabs>
+        </Flex>
     );
 };
 

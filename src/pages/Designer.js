@@ -8,9 +8,12 @@ import ReactFlow, {
     Background,
     BackgroundVariant,
     Panel,
+    getRectOfNodes,
+    getTransformForBounds,
+    useReactFlow,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { Box, Button, Flex, Spinner } from '@chakra-ui/react';
+import { Box, Button, Flex, HStack, Spinner, Text, VStack } from '@chakra-ui/react';
 import { ArrowRightIcon } from '@chakra-ui/icons';
 import Sidebar from './../components/Sidebar';
 import { saveAs } from 'file-saver';
@@ -38,6 +41,8 @@ import { FiUploadCloud } from 'react-icons/fi';
 import ActionModal from '../components/Modal/ActionModal';
 import { useParams } from 'react-router-dom/cjs/react-router-dom.min';
 import Review, { ReviewFlow } from './Rewiew';
+import { toPng } from 'html-to-image';
+import DownloadButton from '../components/DownloadButton';
 
 let serviceId = 1;
 let gatewayId = 1;
@@ -69,6 +74,33 @@ const nodeTypes = {
     selectorNode7: CustomLocalenvironmentNode,
     ResizableNode: resizeableNode,
     GroupNode: groupNode,
+};
+
+const imageWidth = 1024;
+const imageHeight = 768;
+
+const CreateImage = async (nodes, setImage) => {
+    console.log(nodes);
+    // const { getNodes } = useReactFlow();
+    const nodesBounds = getRectOfNodes(nodes);
+
+    const transform = getTransformForBounds(nodesBounds, imageWidth, imageHeight, 0.5, 2);
+
+    console.log(nodesBounds, transform);
+
+    await toPng(document.querySelector('.react-flow__viewport'), {
+        backgroundColor: '#ffffff',
+        width: imageWidth,
+        height: imageHeight,
+        style: {
+            width: imageWidth,
+            height: imageHeight,
+            transform: `translate(${transform[0]}px, ${transform[1]}px) scale(${transform[2]})`,
+        },
+    }).then(response => {
+        console.log(response);
+        setImage(response);
+    });
 };
 
 const Designer = ({ update, viewMode = false }) => {
@@ -107,7 +139,12 @@ const Designer = ({ update, viewMode = false }) => {
         path: '',
     });
 
-    const handleGoToIntendedPage = useCallback(location => history.goBack(), [history]);
+    const handleGoToIntendedPage = useCallback(
+        location => {
+            history.push(`${location}`);
+        },
+        [history],
+    );
 
     const addEdge = (edgeParams, edges) => {
         setUpdated(true);
@@ -695,7 +732,29 @@ const Designer = ({ update, viewMode = false }) => {
         setShowDiv(true);
         console.log(parentId, id, parentId && id);
         let data = location?.state;
-        if (parentId && id) {
+        if (parentId) {
+            if (!id) {
+                setProjectParentId(parentId);
+                if (localStorage?.data != undefined && localStorage.data != null && localStorage.data?.metadata?.nodes != '') {
+                    data = JSON.parse(localStorage.data);
+                    setuserData(data);
+                    if (data?.metadata?.nodes) {
+                        const nodee = data?.metadata?.nodes;
+                        if (!(Object.keys(nodee).length === 0)) {
+                            setShowDiv(false);
+                            setNodes(data?.metadata.nodes);
+                        }
+                    }
+                    if (data.metadata?.edges) {
+                        setEdges(data?.metadata.edges);
+                    }
+                    if (data?.updated) {
+                        setUpdated(data.updated);
+                    }
+                }
+                initData(data);
+                return;
+            }
             const fetchData = async () => {
                 const fetchedData = await loadData();
                 if (fetchedData?.metadata?.nodes) {
@@ -943,6 +1002,8 @@ const Designer = ({ update, viewMode = false }) => {
         }
     };
 
+    const [generatingData, setGeneratingData] = useState({});
+
     const onsubmit = Data => {
         setUpdated(false);
         const NewNodes = { ...nodes };
@@ -1008,8 +1069,20 @@ const Designer = ({ update, viewMode = false }) => {
             Data.parentId = projectParentId;
         }
         setNodes(NewNodes);
-
+        setGeneratingData(structuredClone(Data));
         setIsLoading(true);
+    };
+
+    //
+
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [image, setImage] = useState(null);
+
+    const generateZip = async () => {
+        const Data = generatingData;
+        CreateImage(Object.values(nodes), setImage);
+        setIsGenerating(true);
+        if (image) Data.imageUrl = image;
         fetch(process.env.REACT_APP_API_BASE_URL + '/generate', {
             method: 'post',
             headers: {
@@ -1020,7 +1093,7 @@ const Designer = ({ update, viewMode = false }) => {
         })
             .then(response => response.blob())
             .then(blob => {
-                setIsLoading(false);
+                setIsGenerating(false);
                 saveAs(blob, `${Data.projectName}.zip`); // Edit the name or ask the user for the project Name
             })
             .catch(error => console.error(error))
@@ -1151,85 +1224,42 @@ const Designer = ({ update, viewMode = false }) => {
         setNodes(UpdatedNodes);
     };
 
-
-    // if (viewOnly)
-    //   return (
-    //     <ReactFlowProvider>
-    //       <ReviewFlow
-    //         nodesData={Object.values(nodes)}
-    //         edgesData={Object.values(edges)}
-    //         setViewOnly={setViewOnly}
-    //       />
-    //     </ReactFlowProvider>
-    //   );
+    if (isLoading)
+        return (
+            <ReactFlowProvider>
+                <ReviewFlow
+                    nodesData={Object.values(nodes)}
+                    edgesData={Object.values(edges)}
+                    setViewOnly={setIsLoading}
+                    generateZip={generateZip}
+                    deployementData={generatingData?.deployment}
+                    generateMode
+                />
+                {isGenerating && (
+                    <Flex
+                        position="fixed"
+                        top="62"
+                        left="0"
+                        right="0"
+                        bottom="0"
+                        alignItems="center"
+                        justifyContent="center"
+                        backgroundColor="#f5f5f5"
+                        zIndex="9999"
+                        display="flex"
+                        flexDirection="column"
+                    >
+                        <Spinner thickness="8px" speed="0.9s" emptyColor="gray.200" color="#3182CE" height="250px" width="250px" />
+                        <Box>Generating the Code</Box>
+                    </Flex>
+                )}
+            </ReactFlowProvider>
+        );
     console.log('Awawaw');
     return (
-        <div className="dndflow" style={{ overflow: 'hidden !important', bottom: 0 }}>
+        <div className="dndflow" style={{ overflow: 'hidden !important', bottom: 0, height: 'calc(100vh - 64px)' }}>
             <ReactFlowProvider>
                 <div className="reactflow-wrapper" ref={reactFlowWrapper}>
-                    {showDiv && (
-                        <div
-                            style={{
-                                position: 'absolute',
-                                top: '50%',
-                                left: '60%',
-                                transform: 'translate(-60%, -50%)',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                textAlign: 'center',
-                                padding: '50px',
-                                justifyContent: 'center',
-                                border: '2px dashed #cfcfcf',
-                                borderRadius: '8px',
-                                zIndex: 1,
-                            }}
-                        >
-                            <div
-                                style={{
-                                    marginBottom: '20px',
-                                    display: 'flex',
-                                    justifyContent: 'center',
-                                }}
-                            >
-                                <FiUploadCloud
-                                    style={{
-                                        fontSize: '62px',
-                                        color: '#c3c3c3',
-                                        marginBottom: '30px',
-                                    }}
-                                />
-                            </div>
-                            <div
-                                style={{
-                                    fontSize: '38px',
-                                    fontWeight: '500',
-                                    marginBottom: '10px',
-                                }}
-                            >
-                                Design your application architecture here
-                            </div>
-                            <div
-                                style={{
-                                    fontSize: '24px',
-                                    fontWeight: '300',
-                                    marginBottom: '30px',
-                                    color: '#c3c3c3',
-                                }}
-                            >
-                                Click next to auto generate code and setup infrastructure
-                            </div>
-                            <Button
-                                mt={4}
-                                border="2px"
-                                borderColor="#3182CE"
-                                alignContent="center"
-                                color="#3182CE"
-                                style={{ margin: '0 auto' }}
-                            >
-                                Drag & Drop <ArrowRightIcon style={{ marginLeft: '10px', fontSize: '11px' }} />
-                            </Button>
-                        </div>
-                    )}
                     <ReactFlow
                         nodes={Object.values(nodes)}
                         edges={Object.values(edges)}
@@ -1267,52 +1297,123 @@ const Designer = ({ update, viewMode = false }) => {
                         elementsSelectable={!viewOnly}
                         nodesConnectable={!viewOnly}
                     >
+                        <Flex height={'100%'} width={'100%'} transition={'all 3s ease-in-out'}>
+                            <Sidebar
+                                isUINodeEnabled={isUINodeEnabled}
+                                isGatewayNodeEnabled={isGatewayNodeEnabled}
+                                Service_Discovery_Data={nodes['serviceDiscoveryType']?.data}
+                                authenticationData={nodes['authenticationType']?.data}
+                                nodes={nodes}
+                                architectureName={projectName}
+                                onSubmit={onsubmit}
+                                saveMetadata={saveMetadata}
+                                Togglesave={UpdateSave}
+                                isLoading={isLoading}
+                                setIsLoading={setIsLoading}
+                                isEmptyUiSubmit={isEmptyUiSubmit}
+                                isEmptyServiceSubmit={isEmptyServiceSubmit}
+                                isEmptyGatewaySubmit={isEmptyGatewaySubmit}
+                                selectedColor={selectedColor}
+                                nodeClick={nodeClick}
+                                edges={edges}
+                                update={update}
+                                updated={updated}
+                                setUpdated={setUpdated}
+                                triggerExit={triggerExit}
+                                viewOnly={viewOnly}
+                            />
+                            {showDiv && (
+                                <Box
+                                    flex={'1'}
+                                    display={'flex'}
+                                    justifyContent={'center'}
+                                    alignItems={'center'}
+                                    transition={'all 3s ease-in-out'}
+                                >
+                                    <Box
+                                        style={{
+                                            border: '2px dashed #cfcfcf',
+                                            borderRadius: '8px',
+                                            zIndex: 1,
+                                            display: 'grid',
+                                            justifyItems: 'center',
+                                            margin: '50px',
+                                            padding: '50px',
+                                        }}
+                                    >
+                                        <div
+                                            style={{
+                                                marginBottom: '20px',
+                                                display: 'flex',
+                                                justifyContent: 'center',
+                                            }}
+                                        >
+                                            <FiUploadCloud
+                                                style={{
+                                                    fontSize: '62px',
+                                                    color: '#c3c3c3',
+                                                    marginBottom: '30px',
+                                                }}
+                                            />
+                                        </div>
+                                        <Text
+                                            style={{
+                                                fontSize: '38px',
+                                                fontWeight: '500',
+                                                marginBottom: '10px',
+                                                textAlign: 'center',
+                                            }}
+                                        >
+                                            Design your application architecture here
+                                        </Text>
+                                        <Text
+                                            style={{
+                                                fontSize: '24px',
+                                                fontWeight: '300',
+                                                marginBottom: '30px',
+                                                color: '#c3c3c3',
+                                                textAlign: 'center',
+                                            }}
+                                        >
+                                            Click next to auto generate code and setup infrastructure
+                                        </Text>
+                                        <Button
+                                            mt={4}
+                                            border="2px"
+                                            borderColor="#3182CE"
+                                            alignContent="center"
+                                            color="#3182CE"
+                                            style={{ margin: '0 auto' }}
+                                        >
+                                            Drag & Drop <ArrowRightIcon style={{ marginLeft: '10px', fontSize: '11px' }} />
+                                        </Button>
+                                    </Box>
+                                </Box>
+                            )}
+                        </Flex>
                         <Controls showInteractive={!viewOnly} />
-                        {/* <MiniMap style={{ backgroundColor: "#3182CE" }} /> */}
                         <Panel position="top-right">
-                            <Button
-                                hidden={viewOnly}
-                                backgroundColor={'blue'}
-                                color={'white'}
-                                onClick={() => console.log(nodes, edges, userData, projectParentId, projectName)}
-                            >
-                                Print
-                            </Button>
-                            <Button hidden={!viewOnly} backgroundColor={'skyblue'} color={'white'} onClick={() => setViewOnly(false)}>
-                                Edit Mode
-                            </Button>
-                            <Button hidden={viewOnly} backgroundColor={'skyblue'} color={'white'} onClick={() => setViewOnly(true)}>
-                                View Mode
-                            </Button>
+                            <VStack spacing={4} alignItems={'stretch'}>
+                                <Button
+                                    hidden={true}
+                                    backgroundColor={'blue'}
+                                    color={'white'}
+                                    onClick={() => console.log(nodes, edges, userData, projectParentId, projectName)}
+                                >
+                                    Print
+                                </Button>
+                                <Button hidden={!viewOnly} colorScheme="blackAlpha" onClick={() => setViewOnly(false)}>
+                                    Edit Mode
+                                </Button>
+                                <Button hidden={viewOnly} colorScheme="blackAlpha" onClick={() => setViewOnly(true)}>
+                                    View Mode
+                                </Button>
+                                <DownloadButton />
+                            </VStack>
                         </Panel>
-
                         <Background gap={10} color="#f2f2f2" variant={BackgroundVariant.Lines} />
                     </ReactFlow>
                 </div>
-                <Sidebar
-                    isUINodeEnabled={isUINodeEnabled}
-                    isGatewayNodeEnabled={isGatewayNodeEnabled}
-                    Service_Discovery_Data={nodes['serviceDiscoveryType']?.data}
-                    authenticationData={nodes['authenticationType']?.data}
-                    nodes={nodes}
-                    architectureName={projectName}
-                    onSubmit={onsubmit}
-                    saveMetadata={saveMetadata}
-                    Togglesave={UpdateSave}
-                    isLoading={isLoading}
-                    setIsLoading={setIsLoading}
-                    isEmptyUiSubmit={isEmptyUiSubmit}
-                    isEmptyServiceSubmit={isEmptyServiceSubmit}
-                    isEmptyGatewaySubmit={isEmptyGatewaySubmit}
-                    selectedColor={selectedColor}
-                    nodeClick={nodeClick}
-                    edges={edges}
-                    update={update}
-                    updated={updated}
-                    setUpdated={setUpdated}
-                    triggerExit={triggerExit}
-                    viewOnly={viewOnly}
-                />
 
                 {nodeType === 'UI' && Isopen && (
                     <UiDataModal
@@ -1383,8 +1484,6 @@ const Designer = ({ update, viewMode = false }) => {
                     />
                 )}
 
-                
-
                 {ServiceDiscoveryCount === 2 && <AlertModal isOpen={true} onClose={() => setServiceDiscoveryCount(1)} />}
 
                 {MessageBrokerCount === 2 && <AlertModal isOpen={true} onClose={() => setMessageBrokerCount(1)} />}
@@ -1394,25 +1493,6 @@ const Designer = ({ update, viewMode = false }) => {
                 {LocalenvironmentCount === 2 && <AlertModal isOpen={true} onClose={() => setLocalenvironmentCount(1)} />}
                 {AuthProviderCount === 2 && <AlertModal isOpen={true} onClose={() => setAuthProviderCount(1)} />}
             </ReactFlowProvider>
-
-            {isLoading && (
-                <Flex
-                    position="fixed"
-                    top="62"
-                    left="0"
-                    right="0"
-                    bottom="0"
-                    alignItems="center"
-                    justifyContent="center"
-                    backgroundColor="#f5f5f5"
-                    zIndex="9999"
-                    display="flex"
-                    flexDirection="column"
-                >
-                    <Spinner thickness="8px" speed="0.9s" emptyColor="gray.200" color="#3182CE" height="250px" width="250px" />
-                    <Box>Generating the Code</Box>
-                </Flex>
-            )}
         </div>
     );
 };

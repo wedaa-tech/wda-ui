@@ -17,7 +17,7 @@ function Contact() {
                 <p style={{ fontStyle: 'italic', fontWeight: 'bold' }}>
                     Have a question?{' '}
                     <a
-                        href="https://github.com/orgs/tic-oss/discussions"
+                        href="https://github.com/orgs/wedaa/discussions"
                         target="_blank"
                         rel="noopener noreferrer"
                         style={{ textDecoration: 'underline', color: 'blue' }}
@@ -28,7 +28,7 @@ function Contact() {
                 </p>
                 <br />
                 <p style={{ fontStyle: 'italic', fontWeight: 'bold' }}>Email:</p>
-                <p>tic.dev@comakeit.com</p>
+                <p>dev@wedaa.tech</p>
                 <br />
                 <p style={{ fontStyle: 'italic', fontWeight: 'bold' }}>Phone:</p>
                 <p> 040 4035 1000</p>
@@ -42,8 +42,8 @@ function Contact() {
                 >
                     Social Media:
                 </p>
-                <p>Twitter: @tic-dev_support</p>
-                <p>Facebook: facebook.com/tic-dev_support</p>
+                <p>Twitter: @wedaa.tech</p>
+                <p>Facebook: facebook.com/wedaa.tech</p>
                 <br />
                 <p style={{ fontStyle: 'italic', fontWeight: 'bold' }}>Address:</p>
                 <p>

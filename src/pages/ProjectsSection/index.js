@@ -14,57 +14,13 @@ import {
     ModalCloseButton,
     Input,
     ProgressLabel,
+    Flex,
+    Textarea,
 } from '@chakra-ui/react';
 import ProjectCard from './ProjectCard';
 import './index.css';
 import { useHistory } from 'react-router-dom';
 import { useKeycloak } from '@react-keycloak/web';
-
-// const projects = [
-//   {
-//     title: "Project 1",
-//     description: "Description for Project 1",
-//     imageUrl:
-//       "https://www.intellectsoft.net/blog/wp-content/uploads/Web-Application-Architecture-Diagram-1-1024x660.png", // Replace with actual image URL
-//   },
-//   {
-//     title: "Project 2",
-//     description: "Description for Project 2",
-//     imageUrl:
-//       "https://www.intellectsoft.net/blog/wp-content/uploads/Web-Application-Architecture-Diagram-1-1024x660.png", // Replace with actual image URL
-//   },
-//   {
-//     title: "Project 3",
-//     description: "Description for Project 3",
-//     imageUrl:
-//       "https://www.intellectsoft.net/blog/wp-content/uploads/Web-Application-Architecture-Diagram-1-1024x660.png", // Replace with actual image URL
-//   },
-//   {
-//     title: "Project 4",
-//     description: "Description for Project 4",
-//     imageUrl:
-//       "https://www.intellectsoft.net/blog/wp-content/uploads/Web-Application-Architecture-Diagram-1-1024x660.png", // Replace with actual image URL
-//   },
-//   {
-//     title: "Project 2",
-//     description: "Description for Project 2",
-//     imageUrl:
-//       "https://www.intellectsoft.net/blog/wp-content/uploads/Web-Application-Architecture-Diagram-1-1024x660.png", // Replace with actual image URL
-//   },
-//   {
-//     title: "Project 3",
-//     description: "Description for Project 3",
-//     imageUrl:
-//       "https://www.intellectsoft.net/blog/wp-content/uploads/Web-Application-Architecture-Diagram-1-1024x660.png", // Replace with actual image URL
-//   },
-//   {
-//     title: "Project 4",
-//     description: "Description for Project 4",
-//     imageUrl:
-//       "https://www.intellectsoft.net/blog/wp-content/uploads/Web-Application-Architecture-Diagram-1-1024x660.png", // Replace with actual image URL
-//   },
-//   // Add more projects here
-// ];
 
 const thickPlusIconStyle = {
     display: 'grid',
@@ -84,6 +40,7 @@ const ProjectsSection = () => {
     const history = useHistory();
     const [isNewProjectModalOpen, setNewProjectModalOpen] = useState(false);
     const [newProjectName, setNewProjectName] = useState('');
+    const [newProjectDescription, setNewProjectDescription] = useState('');
     const initialRef = useRef(null);
 
     console.log('awdawdawd');
@@ -115,6 +72,7 @@ const ProjectsSection = () => {
                 },
                 body: JSON.stringify({
                     name: newProjectName,
+                    description: newProjectDescription,
                 }),
             })
                 .then(response => response.json())
@@ -243,13 +201,23 @@ const ProjectsSection = () => {
                     <ModalHeader>Create New Project</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
-                        <Input
-                            ref={initialRef}
-                            placeholder="Enter project name"
-                            value={newProjectName}
-                            onChange={e => setNewProjectName(e.target.value)}
-                            onKeyPress={handleInputKeyPress}
-                        />
+                        <Flex direction={'column'}>
+                            <Input
+                                mb={6}
+                                ref={initialRef}
+                                placeholder="Enter project name"
+                                value={newProjectName}
+                                onChange={e => setNewProjectName(e.target.value)}
+                                // onKeyPress={handleInputKeyPress}
+                            />
+                            <Textarea
+                                ref={initialRef}
+                                placeholder="Enter project description (optional)"
+                                value={newProjectDescription}
+                                onChange={e => setNewProjectDescription(e.target.value)}
+                                // onKeyPress={handleInputKeyPress}
+                            />
+                        </Flex>
                     </ModalBody>
                     <ModalFooter>
                         <Button color="#3182ce" backgroundColor="#7dadd882" onClick={handleCreateNewProject}>

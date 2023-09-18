@@ -337,10 +337,10 @@
                                     "description": "This folder contains Java packages for your company or project.",
                                     "children": [
                                         {
-                                            "name": "tic",
+                                            "name": "wedaa",
                                             "type": "folder",
-                                            "details": "Tic package",
-                                            "description": "This folder contains Java packages for the 'tic' project.",
+                                            "details": "wedaa package",
+                                            "description": "This folder contains Java packages for the 'wedaa.tech' project.",
                                             "children": [
                                                 {
                                                     "name": "service",
@@ -505,10 +505,10 @@
                                     "description": "This folder contains Java packages for tests.",
                                     "children": [
                                         {
-                                            "name": "tic",
+                                            "name": "wedaa",
                                             "type": "folder",
-                                            "details": "Tic package for tests",
-                                            "description": "This folder contains test packages for the 'tic' project.",
+                                            "details": "wedaa package for tests",
+                                            "description": "This folder contains test packages for the 'wedaa.tech' project.",
                                             "children": [
                                                 {
                                                     "name": "service",
@@ -815,9 +815,9 @@
                                     "details": "Company or project package",
                                     "children": [
                                         {
-                                            "name": "tic",
+                                            "name": "wedaa",
                                             "type": "folder",
-                                            "details": "Tic package",
+                                            "details": "wedaa package",
                                             "children": [
                                                 {
                                                     "name": "gateway",
@@ -917,9 +917,9 @@
                                     "details": "Company or project package for tests",
                                     "children": [
                                         {
-                                            "name": "tic",
+                                            "name": "wedaa",
                                             "type": "folder",
-                                            "details": "Tic package for tests",
+                                            "details": "wedaa package for tests",
                                             "children": [
                                                 {
                                                     "name": "gateway",

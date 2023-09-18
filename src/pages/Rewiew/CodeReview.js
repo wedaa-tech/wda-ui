@@ -6,7 +6,7 @@ import Readme from './Readme';
 import Deployement from './Deployement';
 import { useReactFlow } from 'reactflow';
 
-function CodeReview({ nodeId }) {
+function CodeReview({ nodeId, generateMode = false, deployementData = null }) {
     const { getNode } = useReactFlow();
 
     const [nodeData, setNodeData] = useState(null);
@@ -28,17 +28,17 @@ function CodeReview({ nodeId }) {
     }, [node, getNode, nodeId]);
 
     return (
-        <Box flex="1" bg="white" px={10} py={4}>
+        <Box flex="1" bg="white" px={10} py={4} overflowY={'auto'}>
             <Tabs height={'95%'} display="flex" flexDirection="column">
                 <TabList position={'sticky'}>
                     <Tab>Configuration</Tab>
-                    <Tab>Folder Structure</Tab>
-                    <Tab>README.md</Tab>
-                    {/* <Tab>Deployement</Tab> */}
+                    <Tab hidden={generateMode}>Folder Structure</Tab>
+                    <Tab hidden={generateMode}>README.md</Tab>
+                    <Tab>Deployement</Tab>
                 </TabList>
                 <TabPanels height={'100%'}>
                     <TabPanel height={'100%'}>
-                        <Documentation nodeData={nodeData} />
+                        <Documentation nodeData={nodeData} generateMode />
                     </TabPanel>
                     <TabPanel height={'inherit'}>
                         <FolderTree nodeType={nodeType} />
@@ -46,9 +46,9 @@ function CodeReview({ nodeId }) {
                     <TabPanel height={'100%'}>
                         <Readme nodeType={nodeType} />
                     </TabPanel>
-                    {/* <TabPanel height={'100%'}>
-                        <Deployement nodeId={nodeId} />
-                    </TabPanel> */}
+                    <TabPanel height={'inherit'}>
+                        <Deployement deployementData={deployementData} />
+                    </TabPanel>
                 </TabPanels>
             </Tabs>
         </Box>
