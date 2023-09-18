@@ -1131,10 +1131,30 @@ const Designer = ({ update }) => {
       const targetNode = Nodes[params.target];
       const sourceNode = Nodes[params.source];
       if (
+        sourceNode.id.startsWith("UI") &&
+        targetNode.id.startsWith("Service")
+      ) {
+        const gatewayNodes = Object.values(nodes).filter((node) =>
+          node.id.startsWith("Gateway")
+        );
+        const uiConnectToService = gatewayNodes.some((gatewayNode) => {
+          const uiToGatewayEdge = edges[`${sourceNode.id}-${gatewayNode.id}`];
+          const gatewayToServiceEdge =
+            edges[`${gatewayNode.id}-${targetNode.id}`];
+          return uiToGatewayEdge && gatewayToServiceEdge;
+        });
+        if (uiConnectToService) {
+          return;
+        }
+      }
+  
+      if (
         !(
           targetNode.id.startsWith("UI") ||
           (targetNode.id.startsWith("Database") &&
             sourceNode.id.startsWith("UI")) ||
+          (targetNode.id.startsWith("Gateway") &&
+            sourceNode.id.startsWith("Service")) ||
           sourceNode?.data.applicationFramework === "docusaurus"
         )
       ) {
