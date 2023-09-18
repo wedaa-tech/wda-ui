@@ -1363,7 +1363,7 @@ const Designer = ({ update, viewMode = false }) => {
                         display="flex"
                         flexDirection="column"
                     >
-                        <Spinner thickness="8px" speed="0.9s" emptyColor="gray.200" color="#3182CE" height="250px" width="250px" />
+                        <Spinner thickness="8px" speed="0.9s" emptyColor="gray.200" color="#ebaf24" height="250px" width="250px" />
                         <Box>Generating the Code</Box>
                     </Flex>
                 )}
@@ -1434,6 +1434,7 @@ const Designer = ({ update, viewMode = false }) => {
                                 setUpdated={setUpdated}
                                 triggerExit={triggerExit}
                                 viewOnly={viewOnly}
+                                id={id}
                             />
                             {showDiv && (
                                 <Box
@@ -1491,12 +1492,12 @@ const Designer = ({ update, viewMode = false }) => {
                                             Click next to auto generate code and setup infrastructure
                                         </Text>
                                         <Button
-                                            mt={4}
-                                            border="2px"
-                                            borderColor="#3182CE"
-                                            alignContent="center"
-                                            color="#3182CE"
-                                            style={{ margin: '0 auto' }}
+                                            // mt={4}
+                                            // border="2px"
+                                            // borderColor="#ebaf24"
+                                            // alignContent="center"
+                                            // color="#ebaf24"
+                                            // style={{ margin: '0 auto' }}
                                         >
                                             Drag & Drop <ArrowRightIcon style={{ marginLeft: '10px', fontSize: '11px' }} />
                                         </Button>

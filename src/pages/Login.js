@@ -130,7 +130,7 @@ function Login() {
                     <a href="/signup" onClick={() => handleAction('signup')}>
                         <Text
                             fontSize="md"
-                            color="#3182CE"
+                            color="#ebaf24"
                             marginLeft="5px"
                             marginRight="55px"
                             fontWeight={action === 'signup' ? 'bold' : ''}

@@ -77,7 +77,7 @@ const thickPlusIconStyle = {
     borderRadius: '50%',
     alignContent: 'center',
     justifyContent: 'center',
-    backgroundColor: '#7dadd882',
+    backgroundColor: '#ebaf2482',
     color: 'white',
 };
 
@@ -86,7 +86,6 @@ function ArchitecturesSection() {
     const history = useHistory();
 
     const { parentId } = useParams();
-
 
     // if (location.state === undefined || !parentId) {
     //   history.push("/projects", {
@@ -169,7 +168,7 @@ function ArchitecturesSection() {
                 </Heading>
                 <Text justifyItems={'flex-end'} display={'grid'} className="not-selectable" fontWeight="bold">
                     Project Name
-                    <Text className="not-selectable" fontWeight="bold" fontFamily={'monospace'} fontSize={'30px'} color={'#3182ce'}>
+                    <Text className="not-selectable" fontWeight="bold" fontFamily={'monospace'} fontSize={'30px'} color={'#ebaf24'}>
                         {projectName}
                     </Text>
                 </Text>
@@ -210,7 +209,7 @@ function ArchitecturesSection() {
                     <Text className="not-selectable" fontWeight="bold">
                         Number of Architectures
                     </Text>
-                    <Text className="not-selectable" fontWeight="bold" fontFamily={'monospace'} fontSize={'30px'} color={'#3182ce'}>
+                    <Text className="not-selectable" fontWeight="bold" fontFamily={'monospace'} fontSize={'30px'} color={'#ebaf24'}>
                         {totalArchitectures}
                     </Text>
                 </Box>
@@ -227,7 +226,7 @@ function ArchitecturesSection() {
                     <Text className="not-selectable" fontWeight="bold">
                         Number of Drafts
                     </Text>
-                    <Text className="not-selectable" fontWeight="bold" fontFamily={'monospace'} fontSize={'30px'} color={'#3182ce'}>
+                    <Text className="not-selectable" fontWeight="bold" fontFamily={'monospace'} fontSize={'30px'} color={'#ebaf24'}>
                         {totalArchitectures}
                     </Text>
                 </Box>

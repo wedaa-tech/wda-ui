@@ -53,6 +53,7 @@ const Sidebar = ({
     setUpdated,
     triggerExit,
     isOpen = true,
+    id,
 }) => {
     const location = useLocation();
     const onDragStart = (event, nodeType, Name, metaData = '') => {
@@ -293,7 +294,7 @@ const Sidebar = ({
                 transition: 'transform 0.3s',
                 transform: isContentVisible ? 'translateX(0px)' : 'translateX(-300px)',
             }}
-            maxWidth="300px"
+            maxWidth="303px"
         >
             <Button
                 onClick={handleToggleContent}
@@ -538,11 +539,11 @@ const Sidebar = ({
                             }}
                         >
                             {initialized && keycloak.authenticated && (
-                                <Checkbox size="md" colorScheme="blue" isChecked={saveMetadata} onChange={Togglesave}>
+                                <Checkbox hidden={id ? false : true} size="md" colorScheme="blue" isChecked={saveMetadata} onChange={Togglesave}>
                                     Save Project
                                 </Checkbox>
                             )}
-                            <Button onClick={handleButtonClick} mt={4} border="2px" borderColor="#3182CE" width="100px" type="submit">
+                            <Button onClick={handleButtonClick} type="submit">
                                 Next
                             </Button>
                             {showModal && (
@@ -554,19 +555,6 @@ const Sidebar = ({
                                     Service_Discovery_Data={Service_Discovery_Data}
                                     update={update}
                                 />
-                            )}
-                            {!checkNodeExists ? (
-                                <p
-                                    style={{
-                                        fontSize: '10px',
-                                        color: 'red',
-                                        marginTop: '5px',
-                                    }}
-                                >
-                                    Please ensure there exists atleast one application
-                                </p>
-                            ) : (
-                                <></>
                             )}
                         </div>
                     </TabPanel>
@@ -581,9 +569,9 @@ const Sidebar = ({
                                         draggable
                                     >
                                         <ZoomableImageModalWrapper
-                                            imageUrl={keycloakIcon}
+                                            imageUrl={element.image}
                                             description="Description of image 1."
-                                            name="Full Stack Architecture"
+                                            name={element.name}
                                         />
                                     </Box>
                                 );

@@ -1,5 +1,5 @@
 const style = {
-    backgroundColor: '#3182CE',
+    backgroundColor: '#ebaf24',
     borderTop: '1px solid #E7E7E7',
     textAlign: 'center',
     padding: '20px',

@@ -32,7 +32,7 @@ const thickPlusIconStyle = {
     borderRadius: '50%',
     alignContent: 'center',
     justifyContent: 'center',
-    backgroundColor: '#7dadd882',
+    backgroundColor: '#ebaf2482',
     color: 'white',
 };
 
@@ -163,7 +163,7 @@ const ProjectsSection = () => {
                     <Text className="not-selectable" fontWeight="bold">
                         Number of Projects
                     </Text>
-                    <Text className="not-selectable" fontWeight="bold" fontFamily={'monospace'} fontSize={'30px'} color={'#3182ce'}>
+                    <Text className="not-selectable" fontWeight="bold" fontFamily={'monospace'} fontSize={'30px'} color={'#ebaf24'}>
                         {totalProjects}
                     </Text>
                 </Box>
@@ -208,7 +208,6 @@ const ProjectsSection = () => {
                                 // onKeyPress={handleInputKeyPress}
                             />
                             <Textarea
-                                ref={initialRef}
                                 placeholder="Enter project description (optional)"
                                 value={newProjectDescription}
                                 onChange={e => setNewProjectDescription(e.target.value)}
@@ -217,9 +216,7 @@ const ProjectsSection = () => {
                         </Flex>
                     </ModalBody>
                     <ModalFooter>
-                        <Button color="#3182ce" backgroundColor="#7dadd882" onClick={handleCreateNewProject}>
-                            Create
-                        </Button>
+                        <Button onClick={handleCreateNewProject}>Create</Button>
                     </ModalFooter>
                 </ModalContent>
             </Modal>

@@ -83,7 +83,7 @@ body,
 }
 
 .dndflow .dndnode.output {
-    border-color: #3182ce;
+    border-color: #ebaf24;
     padding: 20px;
     font-size: 20px;
 }
@@ -277,7 +277,7 @@ body,
     background: #fcfcfc;
 }
 
-.dndflow aside .description {
+.description {
     margin-bottom: 14px;
 }
 
@@ -290,7 +290,7 @@ body,
     background-color: transparent;
 }
 
-.dndflow .dndnode {
+.dndnode {
     height: 40px;
     padding: 4px;
     border: 1px solid #1a192b;
@@ -308,7 +308,7 @@ body,
 }
 
 .dndflow .dndnode.output {
-    border-color: #3182ce;
+    border-color: #ebaf24;
     padding: 20px;
     font-size: 20px;
 }

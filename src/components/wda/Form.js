@@ -460,14 +460,14 @@ function FormWda() {
                                                     thickness="8px"
                                                     speed="0.9s"
                                                     emptyColor="gray.200"
-                                                    color="#3182CE"
+                                                    color="#ebaf24"
                                                     height="250px"
                                                     width="250px"
                                                 />
                                                 <div
                                                     style={{
                                                         marginTop: '40px',
-                                                        color: '#3182CE',
+                                                        color: '#ebaf24',
                                                         fontWeight: 'bolder',
                                                         fontSize: '20px',
                                                     }}
@@ -555,14 +555,14 @@ function FormWda() {
                                                 thickness="8px"
                                                 speed="0.9s"
                                                 emptyColor="gray.200"
-                                                color="#3182CE"
+                                                color="#ebaf24"
                                                 height="250px"
                                                 width="250px"
                                             />
                                             <div
                                                 style={{
                                                     marginTop: '40px',
-                                                    color: '#3182CE',
+                                                    color: '#ebaf24',
                                                     fontWeight: 'bolder',
                                                     fontSize: '20px',
                                                 }}

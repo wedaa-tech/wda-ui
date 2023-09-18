@@ -11,22 +11,22 @@ const ZoomableImageWithDescription = ({ imageUrl, description, isOpen, onClose, 
                 <ModalCloseButton />
                 <ModalBody px={10}>
                     <Box display="flex" flexDirection="row" alignItems="flex-start">
-                        <Text width={'50%'} mt={4}>
+                        {/* <Text width={'50%'} mt={4}>
                             {description}
-                        </Text>
+                        </Text> */}
                         {/* <TransformWrapper>
-              <TransformComponent>
+              <TransformComponent> */}
                 <Image
                   width="100%"
                   maxWidth="100%"
                   overflow="auto"
-                  minHeight="calc(100vh - 200px)"
+                  maxHeight="calc(100vh - 200px)"
                   minWidth="calc(100vh - 200px)"
                   alignItems={"center"}
                   src={imageUrl}
                   objectFit={"contain"}
                 />
-              </TransformComponent>
+              {/* </TransformComponent>
             </TransformWrapper> */}
                     </Box>
                 </ModalBody>

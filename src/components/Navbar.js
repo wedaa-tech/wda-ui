@@ -8,7 +8,7 @@ import { useLocation } from 'react-router-dom/cjs/react-router-dom.min';
 
 export default function Header({ children }) {
     const color = '#ffffff';
-    const bg = '#3182CE';
+    const bg = '#000';
     const { keycloak, initialized } = useKeycloak();
     const location = useLocation();
     const timerRef = useRef();

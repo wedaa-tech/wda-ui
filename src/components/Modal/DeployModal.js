@@ -383,7 +383,7 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose, update }) => {
                                 width: '120px',
                                 cursor: 'pointer',
                                 marginRight: '10px',
-                                border: selectedImage === 'azure' ? '2px solid #3182CE' : '2px solid #d9d9d9',
+                                border: selectedImage === 'azure' ? '2px solid #ebaf24' : '2px solid #d9d9d9',
                             }}
                         />
                         <img
@@ -397,7 +397,7 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose, update }) => {
                                 width: '120px',
                                 marginRight: '10px',
                                 cursor: 'pointer',
-                                border: selectedImage === 'aws' ? '2px solid #3182CE' : '2px solid #d9d9d9',
+                                border: selectedImage === 'aws' ? '2px solid #ebaf24' : '2px solid #d9d9d9',
                             }}
                         />
                         <img
@@ -410,7 +410,7 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose, update }) => {
                                 marginBottom: '10px',
                                 width: '120px',
                                 cursor: 'pointer',
-                                border: selectedImage === 'minikube' ? '2px solid #3182CE' : '2px solid #d9d9d9',
+                                border: selectedImage === 'minikube' ? '2px solid #ebaf24' : '2px solid #d9d9d9',
                             }}
                         />
                     </div>
