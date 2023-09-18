@@ -138,6 +138,7 @@ const Project = () => {
       setserviceModal(true);
       setAppData((prev) => ({
         ...prev,
+        theme: element.data?.theme,
         applicationFramework: element.data.applicationFramework,
         clientFramework: element.data.clientFramework,
         withExample: element.data.withExample,
@@ -339,6 +340,7 @@ const Project = () => {
           applicationFramework={appData.applicationFramework}
           packageName={appData.packageName}
           serverPort={appData.serverPort}
+          theme={appData.theme}
           withExample={appData.withExample}
         />
       ) : (

@@ -33,6 +33,7 @@ const UiDataModal = ({
     serverPort: "",
     withExample: "false",
     applicationType: "gateway",
+    theme: "default",
     ...CurrentNode,
   };
   const [UiData, setUiDataData] = useState(IntialState);
@@ -274,6 +275,25 @@ const UiDataModal = ({
                 <AlertIcon style={{ width: "14px", height: "14px" }} />
                 Enter a valid package name
               </Alert>
+            )}
+            {UiData.applicationFramework === "docusaurus" && (
+              <FormControl>
+                <FormLabel>Theme</FormLabel>
+                <Select
+                  mb={4}
+                  variant="outline"
+                  id="clientFramework"
+                  borderColor={"black"}
+                  value={UiData.theme}
+                  onChange={(e) => handleData("theme", e.target.value)}
+                >
+                  <option value="" disabled>
+                    Select an option
+                  </option>
+                  <option value="default">Default</option>
+                  <option value="profile">Profile</option>
+                </Select>
+              </FormControl>
             )}
             <FormControl>
               <FormLabel>Server Port</FormLabel>
