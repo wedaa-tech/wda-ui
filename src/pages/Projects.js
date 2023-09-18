@@ -45,62 +45,61 @@ function Projects() {
 
     const [depData, setDepData] = useState(DefaultData);
 
-    const handleClick = async (data, column, id) => {
-        if (column === 'Architecture') {
-            const Data = { ...data };
-            for (const key in data) {
-                if (key.startsWith('UI')) {
-                    if (Data.metadata.nodes[key].data.applicationFramework != 'docusaurus') {
-                        Data.metadata.nodes[key].data.applicationFramework = 'ui';
-                    }
-                }
-            }
-
-            history.push({
-                pathname: '/architecture/' + id,
-                state: Data,
-            });
+  const handleClick = async (data, column, id) => {
+    if (column === "Architecture") {
+      const Data = { ...data };
+      for (const key in data.metadata.nodes) {
+          if (key.startsWith('UI')) {
+              if (Data.metadata.nodes[key].data.applicationFramework != 'docusaurus') {
+                  Data.metadata.nodes[key].data.applicationFramework = 'ui';
+              }
+          }
+      }
+      history.push({
+        pathname: "/projects/" + id,
+        state: Data,
+      });
+    } else {
+      if (data) {
+        if (data.cloudProvider === "aws") {
+          setCloudName("aws");
+          setDepData((prev) => ({
+            ...prev,
+            awsAccountId: data?.awsAccountId,
+            awsRegion: data?.awsRegion,
+            kubernetesStorageClassName: data?.kubernetesStorageClassName,
+          }));
+        } else if (data.cloudProvider === "azure") {
+          setCloudName("azure");
+          setDepData((prev) => ({
+            ...prev,
+            azureLocation: data?.azureLocation,
+            subscriptionId: data?.subscriptionId,
+            tenantId: data?.tenantId,
+          }));
         } else {
-            if (data) {
-                if (data.cloudProvider === 'aws') {
-                    setCloudName('aws');
-                    setDepData(prev => ({
-                        ...prev,
-                        awsAccountId: data?.awsAccountId,
-                        awsRegion: data?.awsRegion,
-                        kubernetesStorageClassName: data?.kubernetesStorageClassName,
-                    }));
-                } else if (data.cloudProvider === 'azure') {
-                    setCloudName('azure');
-                    setDepData(prev => ({
-                        ...prev,
-                        azureLocation: data?.azureLocation,
-                        subscriptionId: data?.subscriptionId,
-                        tenantId: data?.tenantId,
-                    }));
-                } else {
-                    setCloudName('minikube');
-                    setDepData(prev => ({
-                        ...prev,
-                        dockerRepositoryName: depData?.dockerRepositoryName,
-                    }));
-                }
-                setDepData(prev => ({
-                    ...prev,
-                    clusterName: data?.clusterName,
-                    deploymentType: data?.deploymentType,
-                    ingressDomain: data?.ingressDomain,
-                    ingressType: data?.ingressType,
-                    k8sWebUI: data?.k8sWebUI,
-                    kubernetesNamespace: data?.kubernetesNamespace,
-                    kubernetesUseDynamicStorage: data?.kubernetesUseDynamicStorage,
-                    monitoring: data?.monitoring,
-                }));
-                await setShowData(true);
-                await setModalData(() => ({ ...data }));
-            }
+          setCloudName("minikube");
+          setDepData((prev) => ({
+            ...prev,
+            dockerRepositoryName: depData?.dockerRepositoryName,
+          }));
         }
-    };
+        setDepData((prev) => ({
+          ...prev,
+          clusterName: data?.clusterName,
+          deploymentType: data?.deploymentType,
+          ingressDomain: data?.ingressDomain,
+          ingressType: data?.ingressType,
+          k8sWebUI: data?.k8sWebUI,
+          kubernetesNamespace: data?.kubernetesNamespace,
+          kubernetesUseDynamicStorage: data?.kubernetesUseDynamicStorage,
+          monitoring: data?.monitoring,
+        }));
+        await setShowData(true);
+        await setModalData(() => ({ ...data }));
+      }
+    }
+  };
 
     useEffect(() => {
         if (initialized) {

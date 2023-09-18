@@ -202,109 +202,117 @@ const Designer = ({ update, viewMode = false }) => {
             const deletedApplicationNames = []; // Track deleted application names
             const deletedApplicationPorts = [];
 
-            changes.forEach(change => {
-                switch (change.type) {
-                    case 'dimensions':
-                        if (change.resizing)
-                            updatedNodes[change.id] = {
-                                ...updatedNodes[change.id],
-                                position: {
-                                    ...updatedNodes[change.id].position,
-                                },
-                                style: {
-                                    ...updatedNodes[change.id].style,
-                                    ...change.dimensions,
-                                },
-                            };
-                        break;
-                    case 'position':
-                        if (change?.position) {
-                            updatedNodes[change.id] = {
-                                ...updatedNodes[change.id],
-                                position: {
-                                    ...updatedNodes[change.id]?.position,
-                                    ...change.position,
-                                },
-                                positionAbsolute: {
-                                    x: 0,
-                                    y: 0,
-                                    ...updatedNodes[change.id]?.positionAbsolute,
-                                    ...change.positionAbsolute,
-                                },
-                                dragging: change.dragging,
-                            };
-                        }
-                        break;
-                    case 'select':
-                        updatedNodes[change.id] = {
-                            ...updatedNodes[change.id],
-                            selected: change.selected,
-                        };
-                        break;
-                    case 'remove': // Delete Functionality
-                        if (change.id === 'messageBroker') {
-                            setIsMessageBroker(false);
-                            onCheckEdge(edges);
-                            setMessageBrokerCount(0);
-                        } else if (change.id.startsWith('UI')) {
-                            setIsEmptyUiSubmit(false);
-                            setIsUINodeEnabled(false);
-                            uiCount--;
-                            if (updatedNodes[change.id].data?.framework) {
-                                setApplicationData(prev => ({
-                                    ...prev,
-                                    [updatedNodes[change.id].data?.framework]: false,
-                                }));
-                            }
-                        } else if (change.id.startsWith('Service')) {
-                            setIsEmptyServiceSubmit(false);
-                        } else if (change.id.startsWith('Gateway')) {
-                            setIsEmptyGatewaySubmit(false);
-                            setIsGatewayNodeEnabled(false);
-                        } else if (change.id === 'serviceDiscoveryType') {
-                            setIsServiceDiscovery(false);
-                            setServiceDiscoveryCount(0);
-                            setIsServiceDiscovery(false);
-                            for (let key in updatedEdges) {
-                                let Edge = updatedEdges[key];
-                                if (Edge?.data?.framework === 'rest-api') {
-                                    delete Edge?.data?.type;
-                                    delete Edge?.data?.framework;
-                                    delete Edge?.label;
-                                }
-                                setEdges(updatedEdges);
-                            }
-                        } else if (change.id === 'cloudProvider') {
-                            setCloudProviderCount(0);
-                        } else if (change.id === 'authenticationType') {
-                            setAuthProviderCount(0);
-                        } else if (change.id === 'Localenvironment') {
-                            setLocalenvironmentCount(0);
-                        } else if (change.id === 'logManagement') {
-                            setLogManagementCount(0);
-                        }
-                        // Remove the deleted node from updatedNodes
-                        delete updatedNodes[change.id];
-                        // Remove the applicationName from uniqueApplicationNames
-                        const deletedNode = oldNodes[change.id];
-                        if (deletedNode?.data?.applicationName) {
-                            deletedApplicationNames.push(deletedNode.data.applicationName.trim());
-                        }
-                        if (deletedNode?.data?.serverPort) {
-                            deletedApplicationPorts.push(deletedNode.data.serverPort.trim());
-                        }
-                        break;
-                    default:
-                        break;
+      changes.forEach((change) => {
+        switch (change.type) {
+          case "dimensions":
+            if (change.resizing)
+              updatedNodes[change.id] = {
+                ...updatedNodes[change.id],
+                position: {
+                  ...updatedNodes[change.id].position,
+                },
+                style: {
+                  ...updatedNodes[change.id].style,
+                  ...change.dimensions,
+                },
+              };
+            break;
+          case "position":
+            if (change?.position) {
+              updatedNodes[change.id] = {
+                ...updatedNodes[change.id],
+                position: {
+                  ...updatedNodes[change.id]?.position,
+                  ...change.position,
+                },
+                positionAbsolute: {
+                  x: 0,
+                  y: 0,
+                  ...updatedNodes[change.id]?.positionAbsolute,
+                  ...change.positionAbsolute,
+                },
+                dragging: change.dragging,
+              };
+            }
+            break;
+          case "select":
+            updatedNodes[change.id] = {
+              ...updatedNodes[change.id],
+              selected: change.selected,
+            };
+            break;
+          case "remove": // Delete Functionality
+            if (change.id === "messageBroker") {
+              setIsMessageBroker(false);
+              onCheckEdge(edges);
+              setMessageBrokerCount(0);
+            } else if (change.id.startsWith("UI")) {
+              setIsEmptyUiSubmit(false);
+              setIsUINodeEnabled(false);
+              uiCount--;
+              if (change?.id && updatedNodes[change?.id]?.data?.applicationFramework) {
+                  setApplicationData(prev => ({
+                      ...prev,
+                      [updatedNodes[change.id].data?.framework]: false,
+                  }));
+              }
+            } else if (change.id.startsWith("Service")) {
+              setIsEmptyServiceSubmit(false);
+            } else if (change.id.startsWith("Gateway")) {
+              setIsEmptyGatewaySubmit(false);
+              setIsGatewayNodeEnabled(false);
+            } else if (change.id === "serviceDiscoveryType") {
+              setIsServiceDiscovery(false);
+              setServiceDiscoveryCount(0);
+              setIsServiceDiscovery(false);
+              for (let key in updatedEdges) {
+                let Edge = updatedEdges[key];
+                if (Edge?.data?.framework === "rest-api") {
+                  delete Edge?.data?.type;
+                  delete Edge?.data?.framework;
+                  delete Edge?.label;
                 }
-            });
-            if (Object.keys(updatedNodes).length === 0) setShowDiv(true);
-            // Remove deleted application names from uniqueApplicationNames
-            setUniquePortNumbers(prev => prev.filter(portNumbers => !deletedApplicationPorts.includes(portNumbers)));
-            setUniqueApplicationNames(prev => prev.filter(appName => !deletedApplicationNames.includes(appName)));
-            return updatedNodes;
-        });
-    }, []);
+                setEdges(updatedEdges);
+              }
+            } else if (change.id === "cloudProvider") {
+              setCloudProviderCount(0);
+            } else if (change.id === "authenticationType") {
+              setAuthProviderCount(0);
+            } else if (change.id === "Localenvironment") {
+              setLocalenvironmentCount(0);
+            } else if (change.id === "logManagement") {
+              setLogManagementCount(0);
+            }
+            // Remove the deleted node from updatedNodes
+            delete updatedNodes[change.id];
+            // Remove the applicationName from uniqueApplicationNames
+            const deletedNode = oldNodes[change.id];
+            if (deletedNode?.data?.applicationName) {
+              deletedApplicationNames.push(
+                deletedNode.data.applicationName.trim()
+              );
+            }
+            if (deletedNode?.data?.serverPort) {
+              deletedApplicationPorts.push(deletedNode.data.serverPort.trim());
+            }
+            break;
+          default:
+            break;
+        }
+      });
+      if (Object.keys(updatedNodes).length === 0) setShowDiv(true);
+      // Remove deleted application names from uniqueApplicationNames
+      setUniquePortNumbers((prev) =>
+        prev.filter(
+          (portNumbers) => !deletedApplicationPorts.includes(portNumbers)
+        )
+      );
+      setUniqueApplicationNames((prev) =>
+        prev.filter((appName) => !deletedApplicationNames.includes(appName))
+      );
+      return updatedNodes;
+    });
+  }, []);
 
     const [edges, setEdges] = useState({});
     const onEdgesChange = useCallback((Nodes, changes = []) => {
@@ -635,215 +643,182 @@ const Designer = ({ update, viewMode = false }) => {
         [reactFlowInstance],
     );
 
-    const { parentId, id } = useParams();
-    const [projectParentId, setProjectParentId] = useState(parentId || location.state?.parentId);
-
-    const [projectName, setProjectName] = useState(null);
-
-    const loadData = async () => {
-        if (initialized && parentId && id) {
-            try {
-                const response = await fetch(process.env.REACT_APP_API_BASE_URL + '/blueprints/' + id, {
-                    method: 'get',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
-                    },
-                });
-
-                if (response.ok) {
-                    const result = await response.json();
-                    if (result?.metadata) {
-                        setProjectParentId(result.parentId);
-                        setProjectName(result.request_json?.projectName);
-                        return await result;
-                    }
-                } else {
-                    throw new Error(`Fetch request failed with status: ${response.status}`);
-                }
-            } catch (error) {
-                console.error(error);
-            }
+  useEffect(() => {
+    document.title = "WDA";
+    setShowDiv(true);
+    let data = location?.state;
+    if (!data) {
+      if (
+        localStorage?.data != undefined &&
+        localStorage.data != null &&
+        localStorage.data?.metadata?.nodes != ""
+      ) {
+        data = JSON.parse(localStorage.data);
+        setuserData(data);
+        if (data?.metadata?.nodes) {
+          const nodee = data?.metadata?.nodes;
+          if (!(Object.keys(nodee).length === 0)) {
+            setShowDiv(false);
+            setNodes(data?.metadata.nodes);
+          }
         }
+        if (data.metadata?.edges) {
+          setEdges(data?.metadata.edges);
+        }
+        if (data?.updated) {
+          setUpdated(data.updated);
+        }
+      }
+    } else {
+      setuserData(data);
+      if (data?.metadata?.nodes) {
+        setShowDiv(false);
+        setNodes(data?.metadata.nodes);
+      }
+      if (data.metadata?.edges) {
+        setEdges(data?.metadata.edges);
+      }
+    }
+    if (
+      data != null &&
+      !(Object.keys(data).length === 0) &&
+      data?.metadata?.nodes
+    ) {
+      const nodes = data?.metadata?.nodes;
+        if (!(Object.keys(nodes).length === 0)) setShowDiv(false);
+              let max_groupId = -1;
+              let max_serviceId = -1;
+              let max_gatewayId = -1;
+              let max_uiId = -1;
+              let max_databaseId = -1;
+      for (const key in nodes) {
+        if (key.toLowerCase().includes("servicediscovery")) {
+          setIsServiceDiscovery(true);
+          setServiceDiscoveryCount(1);
+        } else if (key.toLowerCase().includes("service")) {
+          const id = key.split('_');
+          const numberId = parseInt(id[1], 10);
+          max_serviceId = Math.max(numberId, max_serviceId);
+          setUniqueApplicationNames((prev) => [
+            ...prev,
+            data.metadata.nodes[key].data.label,
+          ]);
+          setUniquePortNumbers((prev) => [
+            ...prev,
+            data.metadata.nodes[key].data.serverPort,
+          ]);
+          setServiceInputCheck((prev) => ({
+            ...prev,
+            [key.id]: false,
+          }));
+        } else if (key.toLowerCase().includes("gateway")) {
+          const id = key.split('_');
+          const numberId = parseInt(id[1], 10);
+          max_gatewayId = Math.max(numberId, max_gatewayId);
+          setUniqueApplicationNames((prev) => [
+            ...prev,
+            data.metadata.nodes[key].data.label,
+          ]);
+          setUniquePortNumbers((prev) => [
+            ...prev,
+            data.metadata.nodes[key].data.serverPort,
+          ]);
+          setGatewayInputCheck((prev) => ({
+            ...prev,
+            [key.id]: false,
+          }));
+          setIsGatewayNodeEnabled(true);
+        } else if (key.toLowerCase().includes("database")) {
+          databaseId++;
+        } else if (key.toLowerCase().includes("group")) {
+          groupId++;
+        } else if (key.toLowerCase().includes("auth")) {
+          setAuthProviderCount(1);
+        } else if (key.toLowerCase().includes("messagebroker")) {
+          setIsMessageBroker(true);
+          setMessageBrokerCount(1);
+        } else if (key.toLowerCase().includes("logmanagement")) {
+          setLogManagementCount(1);
+        } else if (key.toLowerCase().includes("localenvironment")) {
+          setLocalenvironmentCount(1);
+        } else if (key.toLowerCase().includes("ui")) {
+          const id = key.split('_');
+          const numberId = parseInt(id[1], 10);
+          max_uiId = Math.max(numberId, max_uiId);
+          uiCount++;
+          if (nodes[key].data?.applicationFramework) {
+            setApplicationData((prev) => ({
+              ...prev,
+              [nodes[key].data?.applicationFramework]: true,
+            }));
+          }
+          if (uiCount == 2) setIsUINodeEnabled(true);
+          setUniqueApplicationNames((prev) => [
+            ...prev,
+            data.metadata.nodes[key].data.label,
+          ]);
+          setUniquePortNumbers((prev) => [
+            ...prev,
+            data.metadata.nodes[key].data.serverPort,
+          ]);
+          setUiInputCheck((prev) => ({
+            ...prev,
+            [key.id]: false,
+          }));
+        }
+      }
+      if (max_serviceId != -1) serviceId = max_serviceId + 1;
+      if (max_databaseId != -1) databaseId = max_databaseId + 1;
+      if (max_gatewayId != -1) gatewayId = max_gatewayId + 1;
+      if (max_uiId != -1) uiId = max_uiId + 1;
+      if (max_groupId != -1) groupId = max_groupId + 1;
+    }
+    return () => {
+      localStorage.clear();
+      serviceId = 1;
+      databaseId = 1;
+      groupId = 1;
+      uiId = 1;
+      gatewayId = 1;
+      uiCount = 0;
+      setUpdated(false);
     };
-
-    const initData = data => {
-        console.log('initData', data);
-        if (data != null && !(Object.keys(data).length === 0) && data?.metadata?.nodes) {
-            const nodes = data?.metadata?.nodes;
-            if (!(Object.keys(nodes).length === 0)) setShowDiv(false);
-            for (const key in nodes) {
-                if (key.toLowerCase().includes('servicediscovery')) {
-                    setIsServiceDiscovery(true);
-                    setServiceDiscoveryCount(1);
-                } else if (key.toLowerCase().includes('service')) {
-                    serviceId++;
-                    setUniqueApplicationNames(prev => [...prev, data.metadata.nodes[key].data.label]);
-                    setUniquePortNumbers(prev => [...prev, data.metadata.nodes[key].data.serverPort]);
-                    setServiceInputCheck(prev => ({
-                        ...prev,
-                        [key.id]: false,
-                    }));
-                } else if (key.toLowerCase().includes('gateway')) {
-                    gatewayId++;
-                    setUniqueApplicationNames(prev => [...prev, data.metadata.nodes[key].data.label]);
-                    setUniquePortNumbers(prev => [...prev, data.metadata.nodes[key].data.serverPort]);
-                    setGatewayInputCheck(prev => ({
-                        ...prev,
-                        [key.id]: false,
-                    }));
-                    setIsGatewayNodeEnabled(true);
-                } else if (key.toLowerCase().includes('database')) {
-                    databaseId++;
-                } else if (key.toLowerCase().includes('group')) {
-                    groupId++;
-                } else if (key.toLowerCase().includes('auth')) {
-                    setAuthProviderCount(1);
-                } else if (key.toLowerCase().includes('messagebroker')) {
-                    setIsMessageBroker(true);
-                    setMessageBrokerCount(1);
-                } else if (key.toLowerCase().includes('logmanagement')) {
-                    setLogManagementCount(1);
-                } else if (key.toLowerCase().includes('localenvironment')) {
-                    setLocalenvironmentCount(1);
-                } else if (key.toLowerCase().includes('ui')) {
-                    uiId++;
-                    uiCount++;
-                    if (nodes[key].data?.applicationFramework) {
-                        setApplicationData(prev => ({
-                            ...prev,
-                            [nodes[key].data?.applicationFramework]: true,
-                        }));
-                    }
-                    if (uiCount == 2) setIsUINodeEnabled(true);
-                    setUniqueApplicationNames(prev => [...prev, data.metadata.nodes[key].data.label]);
-                    setUniquePortNumbers(prev => [...prev, data.metadata.nodes[key].data.serverPort]);
-                    setUiInputCheck(prev => ({
-                        ...prev,
-                        [key.id]: false,
-                    }));
-                }
-            }
-        }
-    };
-
-    useEffect(() => {
-        document.title = 'WDA';
-        setShowDiv(true);
-        console.log(parentId, id, parentId && id);
-        let data = location?.state;
-        if (parentId) {
-            if (!id) {
-                setProjectParentId(parentId);
-                if (localStorage?.data != undefined && localStorage.data != null && localStorage.data?.metadata?.nodes != '') {
-                    data = JSON.parse(localStorage.data);
-                    setuserData(data);
-                    if (data?.metadata?.nodes) {
-                        const nodee = data?.metadata?.nodes;
-                        if (!(Object.keys(nodee).length === 0)) {
-                            setShowDiv(false);
-                            setNodes(data?.metadata.nodes);
-                        }
-                    }
-                    if (data.metadata?.edges) {
-                        setEdges(data?.metadata.edges);
-                    }
-                    if (data?.updated) {
-                        setUpdated(data.updated);
-                    }
-                }
-                initData(data);
-                return;
-            }
-            const fetchData = async () => {
-                const fetchedData = await loadData();
-                if (fetchedData?.metadata?.nodes) {
-                    setShowDiv(false);
-                    setNodes(fetchedData?.metadata.nodes);
-                }
-                if (fetchedData.metadata?.edges) {
-                    setEdges(fetchedData?.metadata.edges);
-                }
-                initData(fetchedData);
-            };
-            fetchData();
-        } else if (!data) {
-            if (localStorage?.data != undefined && localStorage.data != null && localStorage.data?.metadata?.nodes != '') {
-                data = JSON.parse(localStorage.data);
-                setuserData(data);
-                if (data?.metadata?.nodes) {
-                    const nodee = data?.metadata?.nodes;
-                    if (!(Object.keys(nodee).length === 0)) {
-                        setShowDiv(false);
-                        setNodes(data?.metadata.nodes);
-                    }
-                }
-                if (data.metadata?.edges) {
-                    setEdges(data?.metadata.edges);
-                }
-                if (data?.updated) {
-                    setUpdated(data.updated);
-                }
-            }
-            initData(data);
-        } else {
-            setuserData(data);
-            if (data?.metadata?.nodes) {
-                setShowDiv(false);
-                setNodes(data?.metadata.nodes);
-            }
-            if (data.metadata?.edges) {
-                setEdges(data?.metadata.edges);
-            }
-            initData(data);
-        }
-
-        return () => {
-            localStorage.clear();
-            serviceId = 1;
-            databaseId = 1;
-            groupId = 1;
-            uiId = 1;
-            gatewayId = 1;
-            uiCount = 0;
-            setUpdated(false);
-        };
-    }, []);
-
-    useEffect(() => {
-        if (update && userData.project_id) {
-            var data = { ...userData };
-            data.metadata.nodes = nodes;
-            (data.metadata ??= {}).edges = edges;
-            data.updated = updated;
-            setuserData(data);
-            if (!(Object.keys(data).length === 0)) {
-                localStorage.data = JSON.stringify(data);
-            }
-        }
-        if (!update) {
-            try {
-                if (localStorage.data && JSON.parse(localStorage.data).projectName) {
-                    userData.projectName = JSON.parse(localStorage.data).projectName;
-                }
-                if (localStorage.data && JSON.parse(localStorage.data).updated) {
-                    userData.updated = JSON.parse(localStorage.data).updated;
-                }
-                var udata = { ...userData };
-                (udata.metadata ??= {}).nodes = nodes;
-                udata.metadata.edges = edges;
-                if (localStorage.data && JSON.parse(localStorage.data)?.metadata?.deployment) {
-                    udata.metadata.deployment = JSON.parse(localStorage.data).metadata.deployment;
-                }
-                setuserData(udata);
-                if (!(Object.keys(udata).length === 0)) {
-                    localStorage.data = JSON.stringify(udata);
-                }
-            } catch (error) {
-                console.error('error');
-            }
-        }
-    }, [nodes, edges]);
+  }, []);
+  useEffect(() => {
+    if (update && userData.project_id) {
+      var data = { ...userData };
+      data.metadata.nodes = nodes;
+      (data.metadata ??= {}).edges = edges;
+      data.updated = updated;
+      setuserData(data);
+      if (!(Object.keys(data).length === 0)) {
+        localStorage.data = JSON.stringify(data);
+      }
+    }
+    if (!update) {
+      if (localStorage.data && JSON.parse(localStorage.data).projectName) {
+        userData.projectName = JSON.parse(localStorage.data).projectName;
+      }
+      if (localStorage.data && JSON.parse(localStorage.data).updated) {
+        userData.updated = JSON.parse(localStorage.data).updated;
+      }
+      var udata = { ...userData };
+      (udata.metadata ??= {}).nodes = nodes;
+      udata.metadata.edges = edges;
+      if (
+        localStorage.data &&
+        JSON.parse(localStorage.data)?.metadata?.deployment
+      ) {
+        udata.metadata.deployment = JSON.parse(
+          localStorage.data
+        ).metadata.deployment;
+      }
+      setuserData(udata);
+      if (!(Object.keys(udata).length === 0)) {
+        localStorage.data = JSON.stringify(udata);
+      }
+    }
+  }, [nodes, edges]);
 
     useEffect(() => {
         if (triggerExit.onOk) {
@@ -954,33 +929,41 @@ const Designer = ({ update, viewMode = false }) => {
             [Isopen]: false,
         }));
 
-        let UpdatedNodes = { ...nodes };
-        if (Data.applicationName) {
-            Data.applicationName = Data.applicationName.trim();
-            Data.label = Data.label.trim();
-        }
-        if (Isopen === 'aws' || Isopen === 'azure') {
-            UpdatedNodes['cloudProvider'].data = {
-                ...UpdatedNodes['cloudProvider'].data,
-                ...Data,
-            };
-            if (UpdatedNodes['cloudProvider'].data.kubernetesUseDynamicStorage === 'false')
-                delete UpdatedNodes['cloudProvider'].data.kubernetesStorageClassName;
-        } else if (Data?.type === 'Group') {
-            UpdatedNodes[Isopen].data = { ...UpdatedNodes[Isopen].data, ...Data };
-        } else {
-            if (CurrentNode?.applicationName) {
-                setUniqueApplicationNames(prev => prev.filter(appName => CurrentNode.applicationName !== appName));
-            }
-            if (CurrentNode?.serverPort) {
-                setUniquePortNumbers(prev => prev.filter(port => CurrentNode.serverPort !== port));
-            }
-            UpdatedNodes[Isopen].data = { ...UpdatedNodes[Isopen].data, ...Data };
-            UpdatedNodes[Isopen].selected = false;
-        }
-        setNodes(UpdatedNodes);
-        setopen(false);
-    };
+    let UpdatedNodes = { ...nodes };
+    if (Data.applicationName) {
+      Data.applicationName = Data.applicationName.trim();
+      Data.label = Data.label.trim();
+    }
+    if (Isopen === "aws" || Isopen === "azure") {
+      UpdatedNodes["cloudProvider"].data = {
+        ...UpdatedNodes["cloudProvider"].data,
+        ...Data,
+      };
+      if (
+        UpdatedNodes["cloudProvider"].data.kubernetesUseDynamicStorage ===
+        "false"
+      )
+        delete UpdatedNodes["cloudProvider"].data.kubernetesStorageClassName;
+    } else if (Data?.type === "Group") {
+      UpdatedNodes[Isopen].data = { ...UpdatedNodes[Isopen].data, ...Data };
+    } else {
+      if (CurrentNode?.applicationName) {
+        setUniqueApplicationNames((prev) =>
+          prev.filter((appName) => CurrentNode.applicationName !== appName)
+        );
+      }
+      if (CurrentNode?.serverPort) {
+        setUniquePortNumbers((prev) =>
+          prev.filter((port) => CurrentNode.serverPort !== port)
+        );
+      }
+      UpdatedNodes[Isopen].data = { ...UpdatedNodes[Isopen].data, ...Data };
+      UpdatedNodes[Isopen].selected = false;
+      if (Isopen.startsWith('UI') && UpdatedNodes[Isopen].data?.applicationFramework === 'ui') delete UpdatedNodes[Isopen].data?.theme;
+    }
+    setNodes(UpdatedNodes);
+    setopen(false);
+  };
 
     const [showDiv, setShowDiv] = useState(false);
 
@@ -1158,56 +1141,164 @@ const Designer = ({ update, viewMode = false }) => {
         setEdgeopen(false);
     };
 
-    const onConnect = useCallback(
-        (params, Nodes) => {
-            setUpdated(true);
-            params.markerEnd = { type: MarkerType.ArrowClosed };
-            params.type = 'smoothstep';
-            params.data = {};
-            const targetNode = Nodes[params.target];
-            const sourceNode = Nodes[params.source];
-            if (!(targetNode.id.startsWith('UI') || (targetNode.id.startsWith('Database') && sourceNode.id.startsWith('UI')))) {
-                if (targetNode.id.startsWith('Database')) {
-                    let isServiceConnected = Nodes[params.source]?.data['prodDatabaseType'];
-                    if (!isServiceConnected && !targetNode.data.isConnected && !sourceNode.id.startsWith('UI')) {
-                        targetNode.data.isConnected = true;
-                        setEdges(eds => addEdge(params, eds, Nodes));
-                        MergeData(params.source, params.target, Nodes);
+  const onConnect = useCallback(
+    (params, Nodes) => {
+      setUpdated(true);
+      params.markerEnd = { type: MarkerType.ArrowClosed };
+      params.type = "smoothstep";
+      params.data = {};
+      const targetNode = Nodes[params.target];
+          const sourceNode = Nodes[params.source];
+                if (sourceNode.id.startsWith('UI') && targetNode.id.startsWith('Service')) {
+                    const gatewayNodes = Object.values(nodes).filter(node => node.id.startsWith('Gateway'));
+                    const uiConnectToService = gatewayNodes.some(gatewayNode => {
+                        const uiToGatewayEdge = edges[`${sourceNode.id}-${gatewayNode.id}`];
+                        const gatewayToServiceEdge = edges[`${gatewayNode.id}-${targetNode.id}`];
+                        return uiToGatewayEdge && gatewayToServiceEdge;
+                    });
+                    if (uiConnectToService) {
+                        return;
                     }
-                    if (!isServiceConnected) {
-                        let updatedNodes = { ...Nodes };
-                        if (updatedNodes[targetNode?.id]?.style) {
-                            updatedNodes[targetNode?.id].style.border = '1px solid black';
-                        }
-                        setNodes(updatedNodes);
-                    }
-                } else if (targetNode.id.startsWith('Gateway') || sourceNode.id.startsWith('Gateway') || sourceNode.id.startsWith('UI')) {
-                    const Data = {
-                        type: 'synchronous',
-                        framework: 'rest-api',
-                    };
-                    setEdges(eds => addEdge(params, eds, Nodes));
-                    const edgeName = sourceNode.id + '-' + targetNode.id;
-                    let UpdatedEdges = { ...edges };
-                    UpdatedEdges[edgeName].markerEnd = {
-                        color: 'black',
-                        type: MarkerType.ArrowClosed,
-                    };
-                    UpdatedEdges[edgeName].style = { stroke: 'black' };
-                    UpdatedEdges[edgeName].data = {
-                        client: UpdatedEdges[edgeName].source,
-                        server: UpdatedEdges[edgeName].target,
-                        ...UpdatedEdges[edgeName].data,
-                        ...Data,
-                    };
-                    setEdges(UpdatedEdges);
-                } else {
-                    setEdges(eds => addEdge(params, eds, Nodes));
                 }
+                if (sourceNode.id.startsWith('UI') && targetNode.id.startsWith('Gateway')) {
+                    const connectedServices = Object.values(nodes).filter(
+                        node => node.id.startsWith('Service') && edges[`${sourceNode.id}-${node.id}`],
+                    );
+                    const connectedServicesToGateway = connectedServices.filter(serviceNode => {
+                        const edgeToGateway = edges[`${targetNode.id}-${serviceNode.id}`];
+                        return edgeToGateway;
+                    });
+                    connectedServicesToGateway.forEach(serviceNode => {
+                        const edgeToRemove = `${sourceNode.id}-${serviceNode.id}`;
+                        setEdges(eds => {
+                            const updatedEdges = { ...eds };
+                            delete updatedEdges[edgeToRemove];
+                            return updatedEdges;
+                        });
+                    });
+                    setEdges(eds => {
+                        const updatedEdges = addEdge(params, eds, Nodes);
+                        const newEdgeId = `${sourceNode.id}-${targetNode.id}`;
+                        const Data = {
+                            type: 'synchronous',
+                            framework: 'rest-api',
+                        };
+                        updatedEdges[newEdgeId].markerEnd = {
+                            color: 'black',
+                            type: MarkerType.ArrowClosed,
+                        };
+                        updatedEdges[newEdgeId].data = {
+                            client: updatedEdges[newEdgeId].source,
+                            server: updatedEdges[newEdgeId].target,
+                            ...updatedEdges[newEdgeId].data,
+                            ...Data,
+                        };
+                        updatedEdges[newEdgeId].style = { stroke: 'black' };
+                        return updatedEdges;
+                    });
+                    return;
+                }
+
+                if (sourceNode.id.startsWith('Gateway') && targetNode.id.startsWith('Service')) {
+                    const connectedUIToServices = Object.values(Nodes).filter(
+                        node => node.id.startsWith('UI') && edges[`${node.id}-${targetNode.id}`],
+                    );
+                    const connectedUIToGateway = connectedUIToServices.filter(uiNode => {
+                        const edgeToGateway = edges[`${uiNode.id}-${sourceNode.id}`];
+                        return edgeToGateway;
+                    });
+                    connectedUIToGateway.forEach(uiNode => {
+                        const edgeToRemove = `${uiNode.id}-${targetNode.id}`;
+                        setEdges(eds => {
+                            const updatedEdges = { ...eds };
+                            delete updatedEdges[edgeToRemove];
+                            return updatedEdges;
+                        });
+                    });
+                    setEdges(eds => {
+                        const updatedEdges = addEdge(params, eds, Nodes);
+                        const newEdgeId = `${sourceNode.id}-${targetNode.id}`;
+                        const Data = {
+                            type: 'synchronous',
+                            framework: 'rest-api',
+                        };
+                        updatedEdges[newEdgeId].markerEnd = {
+                            color: 'black',
+                            type: MarkerType.ArrowClosed,
+                        };
+                        updatedEdges[newEdgeId].data = {
+                            client: updatedEdges[newEdgeId].source,
+                            server: updatedEdges[newEdgeId].target,
+                            ...updatedEdges[newEdgeId].data,
+                            ...Data,
+                        };
+                        updatedEdges[newEdgeId].style = { stroke: 'black' };
+                        return updatedEdges;
+                    });
+                    return;
+                }
+
+      if (
+        !(
+          targetNode.id.startsWith("UI") ||
+          (targetNode.id.startsWith("Database") &&
+            sourceNode.id.startsWith("UI")) ||
+          (targetNode.id.startsWith("Gateway") &&
+            sourceNode.id.startsWith("Service")) ||
+          sourceNode?.data.applicationFramework === "docusaurus"
+
+        )
+      ) {
+        if (targetNode.id.startsWith("Database")) {
+          let isServiceConnected =
+            Nodes[params.source]?.data["prodDatabaseType"];
+          if (
+            !isServiceConnected &&
+            !targetNode.data.isConnected &&
+            !sourceNode.id.startsWith("UI")
+          ) {
+            targetNode.data.isConnected = true;
+            setEdges((eds) => addEdge(params, eds, Nodes));
+            MergeData(params.source, params.target, Nodes);
+          }
+          if (!isServiceConnected) {
+            let updatedNodes = { ...Nodes };
+            if (updatedNodes[targetNode?.id]?.style) {
+              updatedNodes[targetNode?.id].style.border = "1px solid black";
             }
-        },
-        [edges],
-    );
+            setNodes(updatedNodes);
+          }
+        } else if (
+          targetNode.id.startsWith("Gateway") ||
+          sourceNode.id.startsWith("Gateway") ||
+          sourceNode.id.startsWith("UI")
+        ) {
+          const Data = {
+            type: "synchronous",
+            framework: "rest-api",
+          };
+          setEdges((eds) => addEdge(params, eds, Nodes));
+          const edgeName = sourceNode.id + "-" + targetNode.id;
+          let UpdatedEdges = { ...edges };
+          UpdatedEdges[edgeName].markerEnd = {
+            color: "black",
+            type: MarkerType.ArrowClosed,
+          };
+          UpdatedEdges[edgeName].style = { stroke: "black" };
+          UpdatedEdges[edgeName].data = {
+            client: UpdatedEdges[edgeName].source,
+            server: UpdatedEdges[edgeName].target,
+            ...UpdatedEdges[edgeName].data,
+            ...Data,
+          };
+          setEdges(UpdatedEdges);
+        } else {
+          setEdges((eds) => addEdge(params, eds, Nodes));
+        }
+      }
+    },
+    [edges]
+  );
 
     const UpdateSave = () => {
         setsaveMetadata(prev => !prev);

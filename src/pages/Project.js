@@ -142,55 +142,57 @@ const Project = () => {
         };
     };
 
-    const onNodeClick = (event, element) => {
-        event.preventDefault();
-        if (element.data.applicationType === 'gateway') {
-            setNodeType('UI');
-            setserviceModal(true);
-            setAppData(prev => ({
-                ...prev,
-                applicationFramework: element.data.applicationFramework,
-                clientFramework: element.data.clientFramework,
-                withExample: element.data.withExample,
-            }));
-        } else if (element.data.applicationType === 'microservice') {
-            setNodeType('Service');
-            setserviceModal(true);
-            setAppData(prev => ({
-                ...prev,
-                applicationFramework: element.data.applicationFramework,
-            }));
-        } else if (element.data?.data?.cloudProvider === 'aws') {
-            setNodeType('Cloud');
-            setCloudName('aws');
-            setCloudModal(true);
-            setData(prev => ({
-                ...prev,
-                awsAccountId: element.data?.data?.awsAccountId,
-                awsRegion: element.data?.data?.awsRegion,
-                kubernetesStorageClassName: element.data?.data?.kubernetesStorageClassName,
-            }));
-        } else if (element.data?.data?.cloudProvider === 'azure') {
-            setNodeType('Cloud');
-            setCloudName('azure');
-            setCloudModal(true);
-            setData(prev => ({
-                ...prev,
-                azureLocation: element.data?.data?.azureLocation,
-                subscriptionId: element.data?.data?.subscriptionId,
-                tenantId: element.data?.data?.tenantId,
-            }));
-        } else if (element.data?.data?.cloudProvider === 'minikube') {
-            setNodeType('Cloud');
-            setCloudName('minikube');
-            setCloudModal(true);
-            setData(prev => ({
-                ...prev,
-                dockerRepositoryName: element.data?.data?.dockerRepositoryName,
-            }));
-        } else {
-            setNodeType('other');
-        }
+  const onNodeClick = (event, element) => {
+    event.preventDefault();
+    if (element.data.applicationType === "gateway") {
+      setNodeType("UI");
+      setserviceModal(true);
+      setAppData(prev => ({
+          ...prev,
+          theme: element.data?.theme,
+          applicationFramework: element.data.applicationFramework,
+          clientFramework: element.data.clientFramework,
+          withExample: element.data.withExample,
+      }));
+    } else if (element.data.applicationType === "microservice") {
+      setNodeType("Service");
+      setserviceModal(true);
+      setAppData((prev) => ({
+        ...prev,
+        applicationFramework: element.data.applicationFramework,
+      }));
+    } else if (element.data?.data?.cloudProvider === "aws") {
+      setNodeType("Cloud");
+      setCloudName("aws");
+      setCloudModal(true);
+      setData((prev) => ({
+        ...prev,
+        awsAccountId: element.data?.data?.awsAccountId,
+        awsRegion: element.data?.data?.awsRegion,
+        kubernetesStorageClassName:
+          element.data?.data?.kubernetesStorageClassName,
+      }));
+    } else if (element.data?.data?.cloudProvider === "azure") {
+      setNodeType("Cloud");
+      setCloudName("azure");
+      setCloudModal(true);
+      setData((prev) => ({
+        ...prev,
+        azureLocation: element.data?.data?.azureLocation,
+        subscriptionId: element.data?.data?.subscriptionId,
+        tenantId: element.data?.data?.tenantId,
+      }));
+    } else if (element.data?.data?.cloudProvider === "minikube") {
+      setNodeType("Cloud");
+      setCloudName("minikube");
+      setCloudModal(true);
+      setData((prev) => ({
+        ...prev,
+        dockerRepositoryName: element.data?.data?.dockerRepositoryName,
+      }));
+    } else {
+      setNodeType("other");
+    }
 
         setAppData(prev => ({
             ...prev,
@@ -264,110 +266,111 @@ const Project = () => {
         verifyData();
     };
 
-    return (
-        <>
-            <div className="dndflow">
-                <ReactFlowProvider>
-                    <div className="reactflow-wrapper" ref={reactFlowWrapper} style={{ width: '100%', height: '90%' }}>
-                        <div>
-                            <button
-                                style={{
-                                    float: 'right',
-                                    marginTop: '3%',
-                                    marginRight: '15%',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                }}
-                                onClick={e => handleEditClick()}
-                            >
-                                <svg
-                                    stroke="#6b7280"
-                                    fill="none"
-                                    strokeWidth="2"
-                                    viewBox="0 0 24 24"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    className="h-4 w-4"
-                                    height="1em"
-                                    width="1em"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    style={{ marginRight: '0.5em' }}
-                                >
-                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                                </svg>
-                                <span style={{ color: '#6b7280' }}>Edit</span>
-                            </button>
-                        </div>
-                        <ReactFlow
-                            nodes={nodes}
-                            edges={edges}
-                            onEdgeClick={onEdgeClick}
-                            onNodeClick={onNodeClick}
-                            nodesConnectable={false}
-                            elementsSelectable={false}
-                            nodesDraggable={false}
-                            panOnDrag={false}
-                            fitView
-                            nodeTypes={{
-                                customReadOnlyNode: readOnlyNodeStyle,
-                                ...nodeTypes,
-                            }}
-                            edgeTypes={{
-                                customReadOnlyEdge: readOnlyEdgeStyle,
-                            }}
-                        />
-                    </div>
-                </ReactFlowProvider>
-            </div>
-            {edgeModal && (
-                <ReadOnlyEdgeModal
-                    edgeModal={edgeModal}
-                    type={data.type}
-                    typeName={typeName}
-                    framework={data.framework}
-                    handleContainerClose={handleContainerClose}
-                />
-            )}
-            {nodeType === 'UI' || nodeType === 'Service' ? (
-                <ProjectModal
-                    nodeType={nodeType}
-                    serviceModal={serviceModal}
-                    handleContainerClose={handleContainerClose}
-                    applicationName={appData.applicationName}
-                    clientFramework={appData.clientFramework}
-                    applicationFramework={appData.applicationFramework}
-                    packageName={appData.packageName}
-                    serverPort={appData.serverPort}
-                    withExample={appData.withExample}
-                />
-            ) : (
-                <></>
-            )}
-            {nodeType === 'Cloud' && (
-                <DeploymentModal
-                    cloudModal={cloudModal}
-                    cloudName={cloudName}
-                    handleContainerClose={handleContainerClose}
-                    awsAccountId={data.awsAccountId}
-                    awsRegion={data.awsRegion}
-                    kubernetesStorageClassName={data.kubernetesStorageClassName}
-                    azureLocation={data.azureLocation}
-                    subscriptionId={data.subscriptionId}
-                    tenantId={data.tenantId}
-                    clusterName={data.clusterName}
-                    deploymentType={data.deploymentType}
-                    ingressDomain={data.ingressDomain}
-                    ingressType={data.ingressType}
-                    k8sWebUI={data.k8sWebUI}
-                    kubernetesNamespace={data.kubernetesNamespace}
-                    kubernetesUseDynamicStorage={data.kubernetesUseDynamicStorage}
-                    monitoring={data.monitoring}
-                    dockerRepositoryName={data.dockerRepositoryName}
-                />
-            )}
-        </>
-    );
+  return (
+      <>
+          <div className="dndflow">
+              <ReactFlowProvider>
+                  <div className="reactflow-wrapper" ref={reactFlowWrapper} style={{ width: '100%', height: '90%' }}>
+                      <div>
+                          <button
+                              style={{
+                                  float: 'right',
+                                  marginTop: '3%',
+                                  marginRight: '15%',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                              }}
+                              onClick={e => handleEditClick()}
+                          >
+                              <svg
+                                  stroke="#6b7280"
+                                  fill="none"
+                                  strokeWidth="2"
+                                  viewBox="0 0 24 24"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  className="h-4 w-4"
+                                  height="1em"
+                                  width="1em"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  style={{ marginRight: '0.5em' }}
+                              >
+                                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                              </svg>
+                              <span style={{ color: '#6b7280' }}>Edit</span>
+                          </button>
+                      </div>
+                      <ReactFlow
+                          nodes={nodes}
+                          edges={edges}
+                          onEdgeClick={onEdgeClick}
+                          onNodeClick={onNodeClick}
+                          nodesConnectable={false}
+                          elementsSelectable={false}
+                          nodesDraggable={false}
+                          panOnDrag={false}
+                          fitView
+                          nodeTypes={{
+                              customReadOnlyNode: readOnlyNodeStyle,
+                              ...nodeTypes,
+                          }}
+                          edgeTypes={{
+                              customReadOnlyEdge: readOnlyEdgeStyle,
+                          }}
+                      />
+                  </div>
+              </ReactFlowProvider>
+          </div>
+          {edgeModal && (
+              <ReadOnlyEdgeModal
+                  edgeModal={edgeModal}
+                  type={data.type}
+                  typeName={typeName}
+                  framework={data.framework}
+                  handleContainerClose={handleContainerClose}
+              />
+          )}
+          {nodeType === 'UI' || nodeType === 'Service' ? (
+              <ProjectModal
+                  nodeType={nodeType}
+                  serviceModal={serviceModal}
+                  handleContainerClose={handleContainerClose}
+                  applicationName={appData.applicationName}
+                  clientFramework={appData.clientFramework}
+                  applicationFramework={appData.applicationFramework}
+                  packageName={appData.packageName}
+                  serverPort={appData.serverPort}
+                  theme={appData.theme}
+                  withExample={appData.withExample}
+              />
+          ) : (
+              <></>
+          )}
+          {nodeType === 'Cloud' && (
+              <DeploymentModal
+                  cloudModal={cloudModal}
+                  cloudName={cloudName}
+                  handleContainerClose={handleContainerClose}
+                  awsAccountId={data.awsAccountId}
+                  awsRegion={data.awsRegion}
+                  kubernetesStorageClassName={data.kubernetesStorageClassName}
+                  azureLocation={data.azureLocation}
+                  subscriptionId={data.subscriptionId}
+                  tenantId={data.tenantId}
+                  clusterName={data.clusterName}
+                  deploymentType={data.deploymentType}
+                  ingressDomain={data.ingressDomain}
+                  ingressType={data.ingressType}
+                  k8sWebUI={data.k8sWebUI}
+                  kubernetesNamespace={data.kubernetesNamespace}
+                  kubernetesUseDynamicStorage={data.kubernetesUseDynamicStorage}
+                  monitoring={data.monitoring}
+                  dockerRepositoryName={data.dockerRepositoryName}
+              />
+          )}
+      </>
+  );
 };
 
 export default Project;

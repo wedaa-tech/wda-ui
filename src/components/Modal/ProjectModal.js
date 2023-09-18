@@ -22,6 +22,7 @@ const ProjectModal = ({
     packageName,
     serverPort,
     withExample,
+    theme,
 }) => {
     return (
         <>
@@ -66,7 +67,6 @@ const ProjectModal = ({
                                         </option>
                                         <option value="react">React</option>
                                         <option value="angular">Angular</option>
-                                        <option value="vue">Vue</option>
                                     </Select>
                                 </FormControl>
                             ) : (
@@ -103,18 +103,18 @@ const ProjectModal = ({
                                     />
                                 </FormControl>
                             )}
-                            <FormControl>
-                                <FormLabel>Package Name</FormLabel>
-                                <Input
-                                    mb={4}
-                                    variant="outline"
-                                    id="packageName"
-                                    placeholder="packageName"
-                                    borderColor={'black'}
-                                    value={packageName}
-                                    isDisabled={true}
-                                />
-                            </FormControl>
+                            {applicationFramework === 'docusaurus' && (
+                                <FormControl>
+                                    <FormLabel>Theme</FormLabel>
+                                    <Select mb={4} variant="outline" id="theme" borderColor={'black'} value={theme} isDisabled={true}>
+                                        <option value="" disabled>
+                                            Select an option
+                                        </option>
+                                        <option value="default">Default</option>
+                                        <option value="profile">Profile</option>
+                                    </Select>
+                                </FormControl>
+                            )}
                             <FormControl>
                                 <FormLabel>Server Port</FormLabel>
                                 <Input
