@@ -660,12 +660,19 @@ const Designer = ({ update }) => {
     ) {
       const nodes = data?.metadata?.nodes;
       if (!(Object.keys(nodes).length === 0)) setShowDiv(false);
+      let max_groupId = -1;
+      let max_serviceId = -1;
+      let max_gatewayId = -1;
+      let max_uiId = -1;
+      let max_databaseId = -1;
       for (const key in nodes) {
         if (key.toLowerCase().includes("servicediscovery")) {
           setIsServiceDiscovery(true);
           setServiceDiscoveryCount(1);
         } else if (key.toLowerCase().includes("service")) {
-          serviceId++;
+          const id = key.split("_");
+          const numberId = parseInt(id[1], 10);
+          max_serviceId = Math.max(numberId, max_serviceId);
           setUniqueApplicationNames((prev) => [
             ...prev,
             data.metadata.nodes[key].data.label,
@@ -679,7 +686,9 @@ const Designer = ({ update }) => {
             [key.id]: false,
           }));
         } else if (key.toLowerCase().includes("gateway")) {
-          gatewayId++;
+          const id = key.split("_");
+          const numberId = parseInt(id[1], 10);
+          max_gatewayId = Math.max(numberId, max_gatewayId);
           setUniqueApplicationNames((prev) => [
             ...prev,
             data.metadata.nodes[key].data.label,
@@ -694,9 +703,13 @@ const Designer = ({ update }) => {
           }));
           setIsGatewayNodeEnabled(true);
         } else if (key.toLowerCase().includes("database")) {
-          databaseId++;
+          const id = key.split("_");
+          const numberId = parseInt(id[1], 10);
+          max_databaseId = Math.max(numberId, max_databaseId);
         } else if (key.toLowerCase().includes("group")) {
-          groupId++;
+          const id = key.split("_");
+          const numberId = parseInt(id[1], 10);
+          max_groupId = Math.max(numberId, max_groupId);
         } else if (key.toLowerCase().includes("auth")) {
           setAuthProviderCount(1);
         } else if (key.toLowerCase().includes("messagebroker")) {
@@ -707,7 +720,9 @@ const Designer = ({ update }) => {
         } else if (key.toLowerCase().includes("localenvironment")) {
           setLocalenvironmentCount(1);
         } else if (key.toLowerCase().includes("ui")) {
-          uiId++;
+          const id = key.split("_");
+          const numberId = parseInt(id[1], 10);
+          max_uiId = Math.max(numberId, max_uiId);
           uiCount++;
           if (nodes[key].data?.applicationFramework) {
             setApplicationData((prev) => ({
@@ -730,6 +745,11 @@ const Designer = ({ update }) => {
           }));
         }
       }
+      if (max_serviceId != -1) serviceId = max_serviceId + 1;
+      if (max_databaseId != -1) databaseId = max_databaseId + 1;
+      if (max_gatewayId != -1) gatewayId = max_gatewayId + 1;
+      if (max_uiId != -1) uiId = max_uiId + 1;
+      if (max_groupId != -1) groupId = max_groupId + 1;
     }
     return () => {
       localStorage.clear();
@@ -1147,7 +1167,95 @@ const Designer = ({ update }) => {
           return;
         }
       }
-  
+      if (
+        sourceNode.id.startsWith("UI") &&
+        targetNode.id.startsWith("Gateway")
+      ) {
+        const connectedServices = Object.values(nodes).filter(
+          (node) =>
+            node.id.startsWith("Service") &&
+            edges[`${sourceNode.id}-${node.id}`]
+        );
+        const connectedServicesToGateway = connectedServices.filter(
+          (serviceNode) => {
+            const edgeToGateway = edges[`${targetNode.id}-${serviceNode.id}`];
+            return edgeToGateway;
+          }
+        );
+        connectedServicesToGateway.forEach((serviceNode) => {
+          const edgeToRemove = `${sourceNode.id}-${serviceNode.id}`;
+          setEdges((eds) => {
+            const updatedEdges = { ...eds };
+            delete updatedEdges[edgeToRemove];
+            return updatedEdges;
+          });
+        });
+        setEdges((eds) => {
+          const updatedEdges = addEdge(params, eds, Nodes);
+          const newEdgeId = `${sourceNode.id}-${targetNode.id}`;
+          const Data = {
+            type: "synchronous",
+            framework: "rest-api",
+          };
+          updatedEdges[newEdgeId].markerEnd = {
+            color: "black",
+            type: MarkerType.ArrowClosed,
+          };
+          updatedEdges[newEdgeId].data = {
+            client: updatedEdges[newEdgeId].source,
+            server: updatedEdges[newEdgeId].target,
+            ...updatedEdges[newEdgeId].data,
+            ...Data,
+          };
+          updatedEdges[newEdgeId].style = { stroke: "black" };
+          return updatedEdges;
+        });
+        return;
+      }
+
+      if (
+        sourceNode.id.startsWith("Gateway") &&
+        targetNode.id.startsWith("Service")
+      ) {
+        const connectedUIToServices = Object.values(Nodes).filter(
+          (node) =>
+            node.id.startsWith("UI") && edges[`${node.id}-${targetNode.id}`]
+        );
+        const connectedUIToGateway = connectedUIToServices.filter((uiNode) => {
+          const edgeToGateway = edges[`${uiNode.id}-${sourceNode.id}`];
+          return edgeToGateway;
+        });
+        connectedUIToGateway.forEach((uiNode) => {
+          const edgeToRemove = `${uiNode.id}-${targetNode.id}`;
+          setEdges((eds) => {
+            const updatedEdges = { ...eds };
+            delete updatedEdges[edgeToRemove];
+            return updatedEdges;
+          });
+        });
+        setEdges((eds) => {
+          const updatedEdges = addEdge(params, eds, Nodes);
+          const newEdgeId = `${sourceNode.id}-${targetNode.id}`;
+          const Data = {
+            type: "synchronous",
+            framework: "rest-api",
+          };
+          updatedEdges[newEdgeId].markerEnd = {
+            color: "black",
+            type: MarkerType.ArrowClosed,
+          };
+          updatedEdges[newEdgeId].data = {
+            client: updatedEdges[newEdgeId].source,
+            server: updatedEdges[newEdgeId].target,
+            ...updatedEdges[newEdgeId].data,
+            ...Data,
+          };
+          updatedEdges[newEdgeId].style = { stroke: "black" };
+          return updatedEdges;
+        });
+        return;
+      }
+
       if (
         !(
           targetNode.id.startsWith("UI") ||
