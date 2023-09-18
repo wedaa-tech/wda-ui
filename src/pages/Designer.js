@@ -643,182 +643,233 @@ const Designer = ({ update, viewMode = false }) => {
         [reactFlowInstance],
     );
 
-  useEffect(() => {
-    document.title = "WDA";
-    setShowDiv(true);
-    let data = location?.state;
-    if (!data) {
-      if (
-        localStorage?.data != undefined &&
-        localStorage.data != null &&
-        localStorage.data?.metadata?.nodes != ""
-      ) {
-        data = JSON.parse(localStorage.data);
-        setuserData(data);
-        if (data?.metadata?.nodes) {
-          const nodee = data?.metadata?.nodes;
-          if (!(Object.keys(nodee).length === 0)) {
-            setShowDiv(false);
-            setNodes(data?.metadata.nodes);
-          }
+    const { parentId, id } = useParams();
+    const [projectParentId, setProjectParentId] = useState(parentId || location.state?.parentId);
+
+    const [projectName, setProjectName] = useState(null);
+
+
+    
+    const loadData = async () => {
+        if (initialized && parentId && id) {
+            try {
+                const response = await fetch(process.env.REACT_APP_API_BASE_URL + '/blueprints/' + id, {
+                    method: 'get',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                    },
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result?.metadata) {
+                        setProjectParentId(result.parentId);
+                        setProjectName(result.request_json?.projectName);
+                        return await result;
+                    }
+                } else {
+                    throw new Error(`Fetch request failed with status: ${response.status}`);
+                }
+            } catch (error) {
+                console.error(error);
+            }
         }
-        if (data.metadata?.edges) {
-          setEdges(data?.metadata.edges);
-        }
-        if (data?.updated) {
-          setUpdated(data.updated);
-        }
-      }
-    } else {
-      setuserData(data);
-      if (data?.metadata?.nodes) {
-        setShowDiv(false);
-        setNodes(data?.metadata.nodes);
-      }
-      if (data.metadata?.edges) {
-        setEdges(data?.metadata.edges);
-      }
-    }
-    if (
-      data != null &&
-      !(Object.keys(data).length === 0) &&
-      data?.metadata?.nodes
-    ) {
-      const nodes = data?.metadata?.nodes;
-        if (!(Object.keys(nodes).length === 0)) setShowDiv(false);
+    };
+
+    const initData = data => {
+        console.log('initData', data);
+        if (data != null && !(Object.keys(data).length === 0) && data?.metadata?.nodes) {
+            const nodes = data?.metadata?.nodes;
+            if (!(Object.keys(nodes).length === 0)) setShowDiv(false);
               let max_groupId = -1;
               let max_serviceId = -1;
               let max_gatewayId = -1;
               let max_uiId = -1;
               let max_databaseId = -1;
-      for (const key in nodes) {
-        if (key.toLowerCase().includes("servicediscovery")) {
-          setIsServiceDiscovery(true);
-          setServiceDiscoveryCount(1);
-        } else if (key.toLowerCase().includes("service")) {
+            for (const key in nodes) {
+                if (key.toLowerCase().includes('servicediscovery')) {
+                    setIsServiceDiscovery(true);
+                    setServiceDiscoveryCount(1);
+                } else if (key.toLowerCase().includes('service')) {
           const id = key.split('_');
           const numberId = parseInt(id[1], 10);
           max_serviceId = Math.max(numberId, max_serviceId);
-          setUniqueApplicationNames((prev) => [
-            ...prev,
-            data.metadata.nodes[key].data.label,
-          ]);
-          setUniquePortNumbers((prev) => [
-            ...prev,
-            data.metadata.nodes[key].data.serverPort,
-          ]);
-          setServiceInputCheck((prev) => ({
-            ...prev,
-            [key.id]: false,
-          }));
-        } else if (key.toLowerCase().includes("gateway")) {
+                    setUniqueApplicationNames(prev => [...prev, data.metadata.nodes[key].data.label]);
+                    setUniquePortNumbers(prev => [...prev, data.metadata.nodes[key].data.serverPort]);
+                    setServiceInputCheck(prev => ({
+                        ...prev,
+                        [key.id]: false,
+                    }));
+                } else if (key.toLowerCase().includes('gateway')) {
           const id = key.split('_');
           const numberId = parseInt(id[1], 10);
           max_gatewayId = Math.max(numberId, max_gatewayId);
-          setUniqueApplicationNames((prev) => [
-            ...prev,
-            data.metadata.nodes[key].data.label,
-          ]);
-          setUniquePortNumbers((prev) => [
-            ...prev,
-            data.metadata.nodes[key].data.serverPort,
-          ]);
-          setGatewayInputCheck((prev) => ({
-            ...prev,
-            [key.id]: false,
-          }));
-          setIsGatewayNodeEnabled(true);
-        } else if (key.toLowerCase().includes("database")) {
-          databaseId++;
-        } else if (key.toLowerCase().includes("group")) {
-          groupId++;
-        } else if (key.toLowerCase().includes("auth")) {
-          setAuthProviderCount(1);
-        } else if (key.toLowerCase().includes("messagebroker")) {
-          setIsMessageBroker(true);
-          setMessageBrokerCount(1);
-        } else if (key.toLowerCase().includes("logmanagement")) {
-          setLogManagementCount(1);
-        } else if (key.toLowerCase().includes("localenvironment")) {
-          setLocalenvironmentCount(1);
-        } else if (key.toLowerCase().includes("ui")) {
+                    setUniqueApplicationNames(prev => [...prev, data.metadata.nodes[key].data.label]);
+                    setUniquePortNumbers(prev => [...prev, data.metadata.nodes[key].data.serverPort]);
+                    setGatewayInputCheck(prev => ({
+                        ...prev,
+                        [key.id]: false,
+                    }));
+                    setIsGatewayNodeEnabled(true);
+                } else if (key.toLowerCase().includes('database')) {
+                    databaseId++;
+                } else if (key.toLowerCase().includes('group')) {
+                    groupId++;
+                } else if (key.toLowerCase().includes('auth')) {
+                    setAuthProviderCount(1);
+                } else if (key.toLowerCase().includes('messagebroker')) {
+                    setIsMessageBroker(true);
+                    setMessageBrokerCount(1);
+                } else if (key.toLowerCase().includes('logmanagement')) {
+                    setLogManagementCount(1);
+                } else if (key.toLowerCase().includes('localenvironment')) {
+                    setLocalenvironmentCount(1);
+                } else if (key.toLowerCase().includes('ui')) {
           const id = key.split('_');
           const numberId = parseInt(id[1], 10);
           max_uiId = Math.max(numberId, max_uiId);
-          uiCount++;
-          if (nodes[key].data?.applicationFramework) {
-            setApplicationData((prev) => ({
-              ...prev,
-              [nodes[key].data?.applicationFramework]: true,
-            }));
-          }
-          if (uiCount == 2) setIsUINodeEnabled(true);
-          setUniqueApplicationNames((prev) => [
-            ...prev,
-            data.metadata.nodes[key].data.label,
-          ]);
-          setUniquePortNumbers((prev) => [
-            ...prev,
-            data.metadata.nodes[key].data.serverPort,
-          ]);
-          setUiInputCheck((prev) => ({
-            ...prev,
-            [key.id]: false,
-          }));
+                    uiCount++;
+                    if (nodes[key].data?.applicationFramework) {
+                        setApplicationData(prev => ({
+                            ...prev,
+                            [nodes[key].data?.applicationFramework]: true,
+                        }));
+                    }
+                    if (uiCount == 2) setIsUINodeEnabled(true);
+                    setUniqueApplicationNames(prev => [...prev, data.metadata.nodes[key].data.label]);
+                    setUniquePortNumbers(prev => [...prev, data.metadata.nodes[key].data.serverPort]);
+                    setUiInputCheck(prev => ({
+                        ...prev,
+                        [key.id]: false,
+                    }));
+                }
+            }
+            if (max_serviceId != -1) serviceId = max_serviceId + 1;
+            if (max_databaseId != -1) databaseId = max_databaseId + 1;
+            if (max_gatewayId != -1) gatewayId = max_gatewayId + 1;
+            if (max_uiId != -1) uiId = max_uiId + 1;
+            if (max_groupId != -1) groupId = max_groupId + 1;
         }
-      }
-      if (max_serviceId != -1) serviceId = max_serviceId + 1;
-      if (max_databaseId != -1) databaseId = max_databaseId + 1;
-      if (max_gatewayId != -1) gatewayId = max_gatewayId + 1;
-      if (max_uiId != -1) uiId = max_uiId + 1;
-      if (max_groupId != -1) groupId = max_groupId + 1;
-    }
-    return () => {
-      localStorage.clear();
-      serviceId = 1;
-      databaseId = 1;
-      groupId = 1;
-      uiId = 1;
-      gatewayId = 1;
-      uiCount = 0;
-      setUpdated(false);
     };
-  }, []);
-  useEffect(() => {
-    if (update && userData.project_id) {
-      var data = { ...userData };
-      data.metadata.nodes = nodes;
-      (data.metadata ??= {}).edges = edges;
-      data.updated = updated;
-      setuserData(data);
-      if (!(Object.keys(data).length === 0)) {
-        localStorage.data = JSON.stringify(data);
-      }
-    }
-    if (!update) {
-      if (localStorage.data && JSON.parse(localStorage.data).projectName) {
-        userData.projectName = JSON.parse(localStorage.data).projectName;
-      }
-      if (localStorage.data && JSON.parse(localStorage.data).updated) {
-        userData.updated = JSON.parse(localStorage.data).updated;
-      }
-      var udata = { ...userData };
-      (udata.metadata ??= {}).nodes = nodes;
-      udata.metadata.edges = edges;
-      if (
-        localStorage.data &&
-        JSON.parse(localStorage.data)?.metadata?.deployment
-      ) {
-        udata.metadata.deployment = JSON.parse(
-          localStorage.data
-        ).metadata.deployment;
-      }
-      setuserData(udata);
-      if (!(Object.keys(udata).length === 0)) {
-        localStorage.data = JSON.stringify(udata);
-      }
-    }
-  }, [nodes, edges]);
+
+    useEffect(() => {
+        document.title = 'WDA';
+        setShowDiv(true);
+        console.log(parentId, id, parentId && id);
+        let data = location?.state;
+        if (parentId) {
+            if (!id) {
+                setProjectParentId(parentId);
+                if (localStorage?.data != undefined && localStorage.data != null && localStorage.data?.metadata?.nodes != '') {
+                    data = JSON.parse(localStorage.data);
+                    setuserData(data);
+                    if (data?.metadata?.nodes) {
+                        const nodee = data?.metadata?.nodes;
+                        if (!(Object.keys(nodee).length === 0)) {
+                            setShowDiv(false);
+                            setNodes(data?.metadata.nodes);
+                        }
+                    }
+                    if (data.metadata?.edges) {
+                        setEdges(data?.metadata.edges);
+                    }
+                    if (data?.updated) {
+                        setUpdated(data.updated);
+                    }
+                }
+                initData(data);
+                return;
+            }
+            const fetchData = async () => {
+                const fetchedData = await loadData();
+                if (fetchedData?.metadata?.nodes) {
+                    setShowDiv(false);
+                    setNodes(fetchedData?.metadata.nodes);
+                }
+                if (fetchedData.metadata?.edges) {
+                    setEdges(fetchedData?.metadata.edges);
+                }
+                initData(fetchedData);
+            };
+            fetchData();
+        } else if (!data) {
+            if (localStorage?.data != undefined && localStorage.data != null && localStorage.data?.metadata?.nodes != '') {
+                data = JSON.parse(localStorage.data);
+                setuserData(data);
+                if (data?.metadata?.nodes) {
+                    const nodee = data?.metadata?.nodes;
+                    if (!(Object.keys(nodee).length === 0)) {
+                        setShowDiv(false);
+                        setNodes(data?.metadata.nodes);
+                    }
+                }
+                if (data.metadata?.edges) {
+                    setEdges(data?.metadata.edges);
+                }
+                if (data?.updated) {
+                    setUpdated(data.updated);
+                }
+            }
+            initData(data);
+        } else {
+            setuserData(data);
+            if (data?.metadata?.nodes) {
+                setShowDiv(false);
+                setNodes(data?.metadata.nodes);
+            }
+            if (data.metadata?.edges) {
+                setEdges(data?.metadata.edges);
+            }
+            initData(data);
+        }
+
+        return () => {
+            localStorage.clear();
+            serviceId = 1;
+            databaseId = 1;
+            groupId = 1;
+            uiId = 1;
+            gatewayId = 1;
+            uiCount = 0;
+            setUpdated(false);
+        };
+    }, []);
+
+    useEffect(() => {
+        if (update && userData.project_id) {
+            var data = { ...userData };
+            data.metadata.nodes = nodes;
+            (data.metadata ??= {}).edges = edges;
+            data.updated = updated;
+            setuserData(data);
+            if (!(Object.keys(data).length === 0)) {
+                localStorage.data = JSON.stringify(data);
+            }
+        }
+        if (!update) {
+            try {
+                if (localStorage.data && JSON.parse(localStorage.data).projectName) {
+                    userData.projectName = JSON.parse(localStorage.data).projectName;
+                }
+                if (localStorage.data && JSON.parse(localStorage.data).updated) {
+                    userData.updated = JSON.parse(localStorage.data).updated;
+                }
+                var udata = { ...userData };
+                (udata.metadata ??= {}).nodes = nodes;
+                udata.metadata.edges = edges;
+                if (localStorage.data && JSON.parse(localStorage.data)?.metadata?.deployment) {
+                    udata.metadata.deployment = JSON.parse(localStorage.data).metadata.deployment;
+                }
+                setuserData(udata);
+                if (!(Object.keys(udata).length === 0)) {
+                    localStorage.data = JSON.stringify(udata);
+                }
+            } catch (error) {
+                console.error('error');
+            }
+        }
+    }, [nodes, edges]);
 
     useEffect(() => {
         if (triggerExit.onOk) {
