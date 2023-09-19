@@ -253,14 +253,29 @@ const Designer = ({ update, viewMode = false }) => {
                             if (change?.id && updatedNodes[change?.id]?.data?.applicationFramework) {
                                 setApplicationData(prev => ({
                                     ...prev,
-                                    [updatedNodes[change.id].data?.framework]: false,
+                                    [updatedNodes[change.id].data?.applicationFramework]: false,
                                 }));
                             }
+                            setUiInputCheck(prev => {
+                                const updatedState = { ...prev };
+                                delete updatedState[change.id];
+                                return updatedState;
+                            });
                         } else if (change.id.startsWith('Service')) {
                             setIsEmptyServiceSubmit(false);
+                            setServiceInputCheck(prev => {
+                                const updatedState = { ...prev };
+                                delete updatedState[change.id];
+                                return updatedState;
+                            });
                         } else if (change.id.startsWith('Gateway')) {
                             setIsEmptyGatewaySubmit(false);
                             setIsGatewayNodeEnabled(false);
+                            setGatewayInputCheck(prev => {
+                                const updatedState = { ...prev };
+                                delete updatedState[change.id];
+                                return updatedState;
+                            });
                         } else if (change.id === 'serviceDiscoveryType') {
                             setIsServiceDiscovery(false);
                             setServiceDiscoveryCount(0);
@@ -427,7 +442,7 @@ const Designer = ({ update, viewMode = false }) => {
         setUniqueApplicationNames([]);
         setUniquePortNumbers([]);
         setServiceInputCheck([]);
-        setUiInputCheck([]);
+        setUiInputCheck({});
         setGatewayInputCheck([]);
         databaseId = 1;
         groupId = 1;
@@ -902,16 +917,18 @@ const Designer = ({ update, viewMode = false }) => {
         }
         let allGatewayDetailsFilled = false;
         for (let key in gatewayInputCheck) {
-            if (key !== Isopen && gatewayInputCheck[key] === true) {
-                allGatewayDetailsFilled = true;
-                setIsEmptyGatewaySubmit(true);
-            }
-            if (key.startsWith('Gateway') && Isopen === key) {
-                const styleData = gatewayInputCheck[key];
-                if (styleData) {
-                    let updatedNodes = { ...nodes };
-                    updatedNodes[key].style.border = '1px solid black';
-                    setNodes(updatedNodes);
+            if (key.startsWith('Gateway')) {
+                if (key !== Isopen && gatewayInputCheck[key] === true) {
+                    allGatewayDetailsFilled = true;
+                    setIsEmptyGatewaySubmit(true);
+                }
+                if (key.startsWith('Gateway') && Isopen === key) {
+                    const styleData = gatewayInputCheck[key];
+                    if (styleData) {
+                        let updatedNodes = { ...nodes };
+                        updatedNodes[key].style.border = '1px solid black';
+                        setNodes(updatedNodes);
+                    }
                 }
             }
         }
@@ -925,16 +942,18 @@ const Designer = ({ update, viewMode = false }) => {
 
         let allUiDetailsFilled = false;
         for (let key in uiInputCheck) {
-            if (key !== Isopen && uiInputCheck[key] === true) {
-                allUiDetailsFilled = true;
-                setIsEmptyUiSubmit(true);
-            }
-            if (key.startsWith('UI') && Isopen === key) {
-                const styleData = uiInputCheck[key];
-                if (styleData) {
-                    let updatedNodes = { ...nodes };
-                    updatedNodes[key].style.border = '1px solid black';
-                    setNodes(updatedNodes);
+            if (key.startsWith('UI')) {
+                if (key !== Isopen && uiInputCheck[key] === true) {
+                    allUiDetailsFilled = true;
+                    setIsEmptyUiSubmit(true);
+                }
+                if (key.startsWith('UI') && Isopen === key) {
+                    const styleData = uiInputCheck[key];
+                    if (styleData) {
+                        let updatedNodes = { ...nodes };
+                        updatedNodes[key].style.border = '1px solid black';
+                        setNodes(updatedNodes);
+                    }
                 }
             }
         }
@@ -947,16 +966,18 @@ const Designer = ({ update, viewMode = false }) => {
         }));
         let allServiceDetailsFilled = false;
         for (let key in serviceInputCheck) {
-            if (key !== Isopen && serviceInputCheck[key] === true) {
-                allServiceDetailsFilled = true;
-                setIsEmptyServiceSubmit(true);
-            }
-            if (key.startsWith('Service') && Isopen === key) {
-                const styleData = serviceInputCheck[key];
-                if (styleData) {
-                    let updatedNodes = { ...nodes };
-                    updatedNodes[key].style.border = '1px solid black';
-                    setNodes(updatedNodes);
+            if (key.startsWith('Service')) {
+                if (key !== Isopen && serviceInputCheck[key] === true) {
+                    allServiceDetailsFilled = true;
+                    setIsEmptyServiceSubmit(true);
+                }
+                if (key.startsWith('Service') && Isopen === key) {
+                    const styleData = serviceInputCheck[key];
+                    if (styleData) {
+                        let updatedNodes = { ...nodes };
+                        updatedNodes[key].style.border = '1px solid black';
+                        setNodes(updatedNodes);
+                    }
                 }
             }
         }
@@ -1492,12 +1513,12 @@ const Designer = ({ update, viewMode = false }) => {
                                             Click next to auto generate code and setup infrastructure
                                         </Text>
                                         <Button
-                                            // mt={4}
-                                            // border="2px"
-                                            // borderColor="#ebaf24"
-                                            // alignContent="center"
-                                            // color="#ebaf24"
-                                            // style={{ margin: '0 auto' }}
+                                        // mt={4}
+                                        // border="2px"
+                                        // borderColor="#ebaf24"
+                                        // alignContent="center"
+                                        // color="#ebaf24"
+                                        // style={{ margin: '0 auto' }}
                                         >
                                             Drag & Drop <ArrowRightIcon style={{ marginLeft: '10px', fontSize: '11px' }} />
                                         </Button>
