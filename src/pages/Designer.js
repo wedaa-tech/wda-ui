@@ -242,6 +242,7 @@ const Designer = ({ update, viewMode = false }) => {
                         };
                         break;
                     case 'remove': // Delete Functionality
+                        var deletedNodeData = updatedNodes[change.id];
                         if (change.id === 'messageBroker') {
                             setIsMessageBroker(false);
                             onCheckEdge(edges);
@@ -250,10 +251,10 @@ const Designer = ({ update, viewMode = false }) => {
                             setIsEmptyUiSubmit(false);
                             setIsUINodeEnabled(false);
                             uiCount--;
-                            if (change?.id && updatedNodes[change?.id]?.data?.applicationFramework) {
+                            if (change?.id && deletedNodeData?.data?.applicationFramework) {
                                 setApplicationData(prev => ({
                                     ...prev,
-                                    [updatedNodes[change.id].data?.applicationFramework]: false,
+                                    [deletedNodeData.data.applicationFramework]: false,
                                 }));
                             }
                             setUiInputCheck(prev => {
