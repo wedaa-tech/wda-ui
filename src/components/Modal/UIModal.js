@@ -33,15 +33,19 @@ const UiDataModal = ({
         serverPort: '',
         withExample: 'false',
         applicationType: 'gateway',
-        theme: 'default',
+        theme: '',
         ...CurrentNode,
     };
     const [UiData, setUiDataData] = useState(IntialState);
     const [duplicateApplicationNameError, setDuplicateApplicationNameError] = useState(false);
     const [portNumberError, setPortNumberError] = useState(false);
     const [clientFrameworkError, setClientFrameworkError] = useState(false);
+    const [applicationFrameworkError, setApplicationFrameworkError] = useState(false);
+    const [themeError, setThemeError] = useState(false);
     const isEmptyUiSubmit =
-        UiData.applicationName === '' || (UiData.applicationFramework === 'ui' && UiData.packageName === '') || UiData.serverPort === '';
+        UiData.applicationName === '' ||
+        // (UiData.applicationFramework === 'ui' && UiData.packageName === '') ||
+        UiData.serverPort === '';
 
     const reservedPorts = ['5601', '9200', '15021', '20001', '3000', '8080'];
     const serverPortCheck = UiData.serverPort && reservedPorts.includes(UiData.serverPort);
@@ -50,17 +54,40 @@ const UiDataModal = ({
 
     const appNameCheck = UiData.applicationName && !/^[a-zA-Z](?:[a-zA-Z0-9_-]*[a-zA-Z0-9])?$/g.test(UiData.applicationName);
 
-    const packageNameCheck = UiData.packageName && !/^[a-zA-Z](?:[a-zA-Z0-9_.-]*[a-zA-Z0-9])?$/g.test(UiData.packageName);
-   
+    // const packageNameCheck = UiData.packageName && !/^[a-zA-Z](?:[a-zA-Z0-9_.-]*[a-zA-Z0-9])?$/g.test(UiData.packageName);
+
+    const labelCheck = () => UiData.label.trim() === '';
+
     const isClientFrameworkFilled = () => {
-        if (UiData.applicationFramework == 'ui' && UiData.clientFramework == 'no') {
+        if (UiData.applicationFramework === 'ui' && UiData.clientFramework === 'no') {
             setClientFrameworkError(true);
             return false;
         } else {
-            setClientFrameworkError(true);
+            setClientFrameworkError(false);
             return true;
         }
     };
+
+    const isApplicationFrameworkFilled = () => {
+        if (UiData.applicationFramework === '') {
+            setApplicationFrameworkError(true);
+            return false;
+        } else {
+            setApplicationFrameworkError(false);
+            return true;
+        }
+    };
+
+    const isThemeFilled = () => {
+        if (UiData.applicationFramework === 'docusaurus' && UiData.theme === '') {
+            setThemeError(true);
+            return false;
+        } else {
+            setThemeError(false);
+            return true;
+        }
+    };
+
     const validateName = value => {
         const currentApplicationName = CurrentNode?.applicationName;
         const isDuplicateName = uniqueApplicationNames.includes(value) && value !== currentApplicationName;
@@ -109,12 +136,11 @@ const UiDataModal = ({
     }, [isOpen, onClose]);
 
     const handleData = (column, value) => {
-        if (column === 'label') {
+        if (column === 'applicationName') {
             validateName(value);
             setUiDataData(prev => ({
                 ...prev,
                 [column]: value,
-                applicationName: value,
             }));
         } else if (column === 'serverPort') {
             validatePortNumber(value);
@@ -123,9 +149,30 @@ const UiDataModal = ({
                 [column]: value,
                 serverPort: value,
             }));
-        } else if (column == 'clientFramework') {
-            if (value != 'no') {
+        } else if (column === 'clientFramework') {
+            if (value !== 'no') {
                 setClientFrameworkError(false);
+                setUiDataData(prev => ({
+                    ...prev,
+                    [column]: value,
+                }));
+            }
+        } else if (column === 'applicationFramework') {
+            if (value !== '') {
+                setApplicationFrameworkError(false);
+                if (value === 'ui') {
+                    setThemeError(false);
+                } else if (value === 'docusaurus') {
+                    setClientFrameworkError(false);
+                }
+                setUiDataData(prev => ({
+                    ...prev,
+                    [column]: value,
+                }));
+            }
+        } else if (column === 'theme') {
+            if (value !== '') {
+                setThemeError(false);
                 setUiDataData(prev => ({
                     ...prev,
                     [column]: value,
@@ -170,7 +217,7 @@ const UiDataModal = ({
                                 borderColor={duplicateApplicationNameError && !UiData.applicationName ? 'red' : 'black'}
                                 maxLength="32"
                                 value={UiData.applicationName}
-                                onChange={e => handleData('label', e.target.value)}
+                                onChange={e => handleData('applicationName', e.target.value)}
                             />
                             {duplicateApplicationNameError && (
                                 <Alert status="error" padding="4px" fontSize="12px" borderRadius="3px" mb={2}>
@@ -186,12 +233,25 @@ const UiDataModal = ({
                             )}
                         </FormControl>
                         <FormControl>
+                            <FormLabel>Label</FormLabel>
+                            <Input
+                                mb={4}
+                                variant="outline"
+                                id="label"
+                                placeholder="Display Name"
+                                borderColor={'black'}
+                                maxLength="32"
+                                value={UiData.label}
+                                onChange={e => handleData('label', e.target.value)}
+                            />
+                        </FormControl>
+                        <FormControl>
                             <FormLabel>Application Framework</FormLabel>
                             <Select
                                 mb={4}
                                 variant="outline"
                                 id="applicationFramework"
-                                borderColor={'black'}
+                                borderColor={applicationFrameworkError ? 'red' : 'black'}
                                 value={UiData.applicationFramework}
                                 onChange={e => handleData('applicationFramework', e.target.value)}
                             >
@@ -206,6 +266,12 @@ const UiDataModal = ({
                                 </option>
                             </Select>
                         </FormControl>
+                        {applicationFrameworkError && (
+                            <Alert status="error" padding="4px" fontSize="12px" borderRadius="3px" mb={2}>
+                                <AlertIcon style={{ width: '14px', height: '14px' }} />
+                                Select a Valid Application Framework.
+                            </Alert>
+                        )}
                         {UiData.applicationFramework === 'ui' && (
                             <FormControl>
                                 <FormLabel>Client Framework</FormLabel>
@@ -225,13 +291,13 @@ const UiDataModal = ({
                                 </Select>
                             </FormControl>
                         )}
-                        {clientFrameworkError && (
+                        {UiData.applicationFramework === 'ui' && clientFrameworkError && (
                             <Alert status="error" padding="4px" fontSize="12px" borderRadius="3px" mb={2}>
                                 <AlertIcon style={{ width: '14px', height: '14px' }} />
                                 Select a Valid Client Framework.
                             </Alert>
                         )}
-                        {UiData.applicationFramework === 'ui' && (
+                        {/* {UiData.applicationFramework === 'ui' && (
                             <FormControl>
                                 <FormLabel>Package Name</FormLabel>
                                 <Input
@@ -245,13 +311,13 @@ const UiDataModal = ({
                                     onChange={e => handleData('packageName', e.target.value)}
                                 />
                             </FormControl>
-                        )}
-                        {packageNameCheck && (
+                        )} */}
+                        {/* {packageNameCheck && (
                             <Alert status="error" padding="4px" fontSize="12px" borderRadius="3px" mb={2}>
                                 <AlertIcon style={{ width: '14px', height: '14px' }} />
                                 Enter a valid package name
                             </Alert>
-                        )}
+                        )} */}
                         {UiData.applicationFramework === 'docusaurus' && (
                             <FormControl>
                                 <FormLabel>Theme</FormLabel>
@@ -259,7 +325,7 @@ const UiDataModal = ({
                                     mb={4}
                                     variant="outline"
                                     id="clientFramework"
-                                    borderColor={'black'}
+                                    borderColor={themeError ? 'red' : 'black'}
                                     value={UiData.theme}
                                     onChange={e => handleData('theme', e.target.value)}
                                 >
@@ -270,6 +336,12 @@ const UiDataModal = ({
                                     <option value="profile">Profile</option>
                                 </Select>
                             </FormControl>
+                        )}
+                        {UiData.applicationFramework === 'docusaurus' && themeError && (
+                            <Alert status="error" padding="4px" fontSize="12px" borderRadius="3px" mb={2}>
+                                <AlertIcon style={{ width: '14px', height: '14px' }} />
+                                Select a Theme.
+                            </Alert>
                         )}
                         <FormControl>
                             <FormLabel>Server Port</FormLabel>
@@ -366,7 +438,13 @@ const UiDataModal = ({
                         ></div>
                     </div>
                     <Button
-                        onClick={() => !duplicateApplicationNameError && isClientFrameworkFilled() && onSubmit(UiData)}
+                        onClick={() =>
+                            !duplicateApplicationNameError &&
+                            isApplicationFrameworkFilled() &&
+                            isClientFrameworkFilled() &&
+                            isThemeFilled() &&
+                            onSubmit(UiData)
+                        }
                         style={{ display: 'block', margin: '0 auto' }}
                         isDisabled={
                             isEmptyUiSubmit ||
@@ -374,7 +452,10 @@ const UiDataModal = ({
                             serverPortCheck ||
                             portNumberError ||
                             portNumberRangeCheck ||
-                            clientFrameworkError
+                            clientFrameworkError ||
+                            labelCheck() ||
+                            applicationFrameworkError ||
+                            themeError
                         }
                     >
                         Save
