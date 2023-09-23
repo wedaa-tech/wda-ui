@@ -1064,8 +1064,10 @@ const Designer = ({ update, viewMode = false }) => {
                     ...logManagementData,
                 };
             if (Node.id.startsWith('UI')) {
-                if (Node.data.applicationFramework !== 'docusaurus') Node.data.applicationFramework = Node.data.clientFramework;
-                else Node.data.packageName = 'docs';
+                if (Node.data.applicationFramework !== 'docusaurus') {
+                    Node.data.applicationFramework = Node.data.clientFramework;
+                    Node.data.packageName = 'ui';
+                } else Node.data.packageName = 'docs';
             }
         }
         if (Object.values(NewNodes).some(node => node.data)) {
