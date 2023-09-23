@@ -1127,10 +1127,12 @@ const Designer = ({ update, viewMode = false }) => {
                     ...logManagementData,
                 };
             if (Node.id.startsWith('UI')) {
-                if (Node.data.applicationFramework !== 'docusaurus') {
+                if (Node.data.applicationFramework === 'docusaurus') {
+                    Node.data.packageName = 'docs';
+                } else {
                     Node.data.applicationFramework = Node.data.clientFramework;
                     Node.data.packageName = 'ui';
-                } else Node.data.packageName = 'docs';
+                }
             }
         }
         if (Object.values(NewNodes).some(node => node.data)) {
