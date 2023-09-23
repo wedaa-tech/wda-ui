@@ -42,10 +42,7 @@ const UiDataModal = ({
     const [clientFrameworkError, setClientFrameworkError] = useState(false);
     const [applicationFrameworkError, setApplicationFrameworkError] = useState(false);
     const [themeError, setThemeError] = useState(false);
-    const isEmptyUiSubmit =
-        UiData.applicationName === '' ||
-        // (UiData.applicationFramework === 'ui' && UiData.packageName === '') ||
-        UiData.serverPort === '';
+    const isEmptyUiSubmit = UiData.applicationName === '' || UiData.serverPort === '';
 
     const reservedPorts = ['5601', '9200', '15021', '20001', '3000', '8080'];
     const serverPortCheck = UiData.serverPort && reservedPorts.includes(UiData.serverPort);
@@ -53,8 +50,6 @@ const UiDataModal = ({
     const portNumberRangeCheck = UiData.serverPort && (Number(UiData.serverPort) < 1024 || Number(UiData.serverPort) > 65535);
 
     const appNameCheck = UiData.applicationName && !/^[a-zA-Z](?:[a-zA-Z0-9_-]*[a-zA-Z0-9])?$/g.test(UiData.applicationName);
-
-    // const packageNameCheck = UiData.packageName && !/^[a-zA-Z](?:[a-zA-Z0-9_.-]*[a-zA-Z0-9])?$/g.test(UiData.packageName);
 
     const labelCheck = () => UiData.label.trim() === '';
 
@@ -91,7 +86,7 @@ const UiDataModal = ({
     const validateName = value => {
         const currentApplicationName = CurrentNode?.applicationName;
         const isDuplicateName = uniqueApplicationNames.includes(value) && value !== currentApplicationName;
-        if (isDuplicateName && value !== '') {
+        if (isDuplicateName && value.length > 0) {
             setDuplicateApplicationNameError(true);
             return false;
         } else {
@@ -104,7 +99,7 @@ const UiDataModal = ({
     const validatePortNumber = value => {
         const currentServerPort = CurrentNode?.serverPort;
         const isDuplicatePort = uniquePortNumbers.includes(value) && value !== currentServerPort;
-        if (isDuplicatePort && value !== '') {
+        if (isDuplicatePort && value.length > 0) {
             setPortNumberError(true);
             return false;
         } else {
@@ -158,7 +153,7 @@ const UiDataModal = ({
                 }));
             }
         } else if (column === 'applicationFramework') {
-            if (value !== '') {
+            if (value.length > 0) {
                 setApplicationFrameworkError(false);
                 if (value === 'ui') {
                     setThemeError(false);
@@ -171,7 +166,7 @@ const UiDataModal = ({
                 }));
             }
         } else if (column === 'theme') {
-            if (value !== '') {
+            if (value.length > 0) {
                 setThemeError(false);
                 setUiDataData(prev => ({
                     ...prev,

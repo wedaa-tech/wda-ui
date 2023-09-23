@@ -48,7 +48,7 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
     const validateName = value => {
         const currentApplicationName = CurrentNode?.applicationName;
         const isDuplicateName = uniqueApplicationNames.includes(value) && value !== currentApplicationName;
-        if (isDuplicateName && value !== '') {
+        if (isDuplicateName && value.length > 0) {
             setDuplicateApplicationNameError(true);
             return false;
         } else {
@@ -61,7 +61,7 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
     const validatePortNumber = value => {
         const currentServerPort = CurrentNode?.serverPort;
         const isDuplicatePort = uniquePortNumbers.includes(value) && value !== currentServerPort;
-        if (isDuplicatePort && value !== '') {
+        if (isDuplicatePort && value.length > 0) {
             setPortNumberError(true);
             return false;
         } else {
@@ -95,7 +95,7 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                 serverPort: value,
             }));
         } else if (column === 'applicationFramework') {
-            if (value !== '') {
+            if (value.length > 0) {
                 setApplicationFrameworkError(false);
                 setApplicationData(prev => ({
                     ...prev,
