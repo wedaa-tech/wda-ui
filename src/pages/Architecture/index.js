@@ -15,15 +15,9 @@ import {
     GridItem,
     Flex,
     Tooltip,
-    AlertDialog,
-    AlertDialogBody,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogContent,
-    AlertDialogOverlay,
-    AlertDialogCloseButton,
-    IconButton,
-    useDisclosure,
+    Wrap,
+    WrapItem,
+    Grid,
 } from '@chakra-ui/react';
 import ArchitectureCard from './ArchitectureCard';
 import design1 from '../../assets/markets/design1.png';
@@ -36,9 +30,6 @@ import './index.css';
 import { useLocation, useParams } from 'react-router-dom/cjs/react-router-dom.min';
 import { useHistory } from 'react-router-dom';
 import { useKeycloak } from '@react-keycloak/web';
-import { ArrowBackIcon } from '@chakra-ui/icons';
-import { easeIn } from 'framer-motion';
-import ActionModal from '../../components/Modal/ActionModal';
 
 const thickPlusIconStyle = {
     display: 'grid',
@@ -60,12 +51,6 @@ function ArchitecturesSection() {
 
     const { parentId } = useParams();
 
-    const { isOpen, onOpen, onClose } = useDisclosure();
-    const cancelRef = React.useRef();
-
-    if (parentId === undefined) {
-        history.push('/projects');
-    }
 
     const [projectName, setProjectName] = useState(location?.state?.state?.projectName);
 
@@ -155,13 +140,6 @@ function ArchitecturesSection() {
 
     return (
         <Box p="4" maxWidth="7xl" mx="auto">
-            <IconButton
-                variant="outline"
-                colorScheme="black"
-                aria-label="Delete Projects"
-                icon={<ArrowBackIcon />}
-                onClick={() => history.push('/projects')}
-            />
             <Flex justifyContent={'space-between'} alignItems={'center'}>
                 <Heading className="not-selectable" as="h1" my="10">
                     Architectures
@@ -174,7 +152,7 @@ function ArchitecturesSection() {
                 </Text>
             </Flex>
 
-            <SimpleGrid className="simple-grid" minChildWidth="null" columns={{ base: 1, sm: 1, md: 3 }} spacing={10}>
+            <SimpleGrid minChildWidth="380px" columns={{ base: 1, sm: 1, md: 3 }} spacing={10}>
                 <Box
                     maxWidth={96}
                     minWidth={96}
@@ -222,7 +200,7 @@ function ArchitecturesSection() {
             <Heading className="not-selectable" as="h3" size="lg" my="10">
                 Your Architectures
             </Heading>
-            <SimpleGrid className="simple-grid" minChildWidth="null" columns={{ base: 1, sm: 2, md: 3 }} spacing={10}>
+            <SimpleGrid minChildWidth="380px" columns={{ base: 1, sm: 2, md: 3 }} spacing={10}>
                 {architectures.map((architecture, index) => (
                     <ArchitectureCard
                         key={index}
