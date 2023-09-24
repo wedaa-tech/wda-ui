@@ -12,9 +12,12 @@ import {
     ModalFooter,
     ModalBody,
     ModalCloseButton,
-    Input,
+    GridItem,
     Flex,
     Tooltip,
+    Wrap,
+    WrapItem,
+    Grid,
 } from '@chakra-ui/react';
 import ArchitectureCard from './ArchitectureCard';
 import design1 from '../../assets/markets/design1.png';
@@ -28,44 +31,6 @@ import { useLocation, useParams } from 'react-router-dom/cjs/react-router-dom.mi
 import { useHistory } from 'react-router-dom';
 import { useKeycloak } from '@react-keycloak/web';
 
-const architectures = [
-    {
-        title: 'Architecture 1',
-        description: 'Description for Architecture 1',
-        imageUrl: design1, // Replace with actual image URL
-    },
-    {
-        title: 'Architecture 2',
-        description: 'Description for Architecture 2',
-        imageUrl: design2, // Replace with actual image URL
-    },
-    {
-        title: 'Architecture 3',
-        description: 'Description for Architecture 3',
-        imageUrl: design1, // Replace with actual image URL
-    },
-    {
-        title: 'Architecture 4',
-        description: 'Description for Architecture 4',
-        imageUrl: design2, // Replace with actual image URL
-    },
-    {
-        title: 'Architecture 2',
-        description: 'Description for Architecture 2',
-        imageUrl: design2, // Replace with actual image URL
-    },
-    {
-        title: 'Architecture 3',
-        description: 'Description for Architecture 3',
-        imageUrl: design1, // Replace with actual image URL
-    },
-    {
-        title: 'Architecture 4',
-        description: 'Description for Architecture 4',
-        imageUrl: design2, // Replace with actual image URL
-    },
-    // Add more architectures here
-];
 
 const thickPlusIconStyle = {
     display: 'grid',
@@ -87,11 +52,6 @@ function ArchitecturesSection() {
 
     const { parentId } = useParams();
 
-    // if (location.state === undefined || !parentId) {
-    //   history.push("/projects", {
-    //     replace: true,
-    //   });
-    // }
 
     const [projectName, setProjectName] = useState(location?.state?.state?.projectName);
 
@@ -140,13 +100,8 @@ function ArchitecturesSection() {
                     if (result?.data) {
                         const archslist = structuredClone(result.data);
 
-                        if (archslist.length === 0) {
-                            setNewArchitectureModalOpen(true);
-                        } else {
-                            setProjectName(archslist[0].projectName);
-                            setArchitectures(archslist);
-                            setTotalArchitectures(archslist.length);
-                        }
+                        setArchitectures(archslist);
+                        setTotalArchitectures(archslist.length);
                     }
                 })
                 .catch(error => console.error(error));
@@ -161,21 +116,23 @@ function ArchitecturesSection() {
     };
 
     return (
-        <Box p="4" maxWidth="1200px" mx="auto">
+        <Box p="4" maxWidth="7xl" mx="auto">
             <Flex justifyContent={'space-between'} alignItems={'center'}>
                 <Heading className="not-selectable" as="h1" my="10">
                     Architectures
                 </Heading>
-                <Text justifyItems={'flex-end'} display={'grid'} className="not-selectable" fontWeight="bold">
+                <Text justifyItems={'flex-end'} display={'grid'} fontWeight="bold">
                     Project Name
-                    <Text className="not-selectable" fontWeight="bold" fontFamily={'monospace'} fontSize={'30px'} color={'#ebaf24'}>
+                    <Text fontWeight="bold" fontFamily={'monospace'} fontSize={'30px'} color={'#ebaf24'}>
                         {projectName}
                     </Text>
                 </Text>
             </Flex>
 
-            <SimpleGrid columns={[2, null, 3]} spacing="40px">
+            <SimpleGrid minChildWidth="380px" columns={{ base: 1, sm: 1, md: 3 }} spacing={10}>
                 <Box
+                    maxWidth={96}
+                    minWidth={96}
                     cursor="pointer"
                     className="create-architecture"
                     p="4"
@@ -196,6 +153,8 @@ function ArchitecturesSection() {
                     </span>
                 </Box>
                 <Box
+                    maxWidth={96}
+                    minWidth={96}
                     className="total-architecture"
                     p="4"
                     borderWidth="1px"
@@ -213,28 +172,12 @@ function ArchitecturesSection() {
                         {totalArchitectures}
                     </Text>
                 </Box>
-                <Box
-                    className="total-architecture"
-                    borderWidth="1px"
-                    borderRadius="lg"
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="space-between"
-                    px="10%"
-                    height={'100px'}
-                >
-                    <Text className="not-selectable" fontWeight="bold">
-                        Number of Drafts
-                    </Text>
-                    <Text className="not-selectable" fontWeight="bold" fontFamily={'monospace'} fontSize={'30px'} color={'#ebaf24'}>
-                        {totalArchitectures}
-                    </Text>
-                </Box>
+                <Box maxWidth={96} minWidth={96}></Box>
             </SimpleGrid>
             <Heading className="not-selectable" as="h3" size="lg" my="10">
                 Your Architectures
             </Heading>
-            <SimpleGrid columns={{ base: 1, sm: 2, md: 3 }} spacing="10">
+            <SimpleGrid minChildWidth="380px" columns={{ base: 1, sm: 2, md: 3 }} spacing={10}>
                 {architectures.map((architecture, index) => (
                     <ArchitectureCard
                         key={index}

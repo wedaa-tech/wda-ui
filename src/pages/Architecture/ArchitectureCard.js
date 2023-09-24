@@ -4,6 +4,8 @@ import React from 'react';
 const ArchitectureCard = ({ title, description, imageUrl, projectId, onClick, data }) => {
     return (
         <Box
+            maxWidth={96}
+            minWidth={96}
             maxW="sm"
             className="project-card"
             height={'300px'}

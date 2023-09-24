@@ -4,7 +4,8 @@ import React from 'react';
 const ProjectCard = ({ title, description, imageUrl, parentId, onClick, count }) => {
     return (
         <Box
-            maxW="sm"
+            maxWidth={96}
+            minWidth={96}
             className="project-card"
             height={'160px'}
             borderWidth="1px"
@@ -43,7 +44,7 @@ const ProjectCard = ({ title, description, imageUrl, parentId, onClick, count })
                         {title}
                     </Text>
                     <Text className="not-selectable" color="gray.600">
-                        {description}
+                        {description.length < 27 ? description : `${description.substring(0, 20)}...`}
                     </Text>
                 </Flex>
                 <Text className="not-selectable" fontWeight="bold" fontFamily={'monospace'} fontSize={'30px'} color={'#ebaf24'}>
