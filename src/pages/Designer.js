@@ -435,6 +435,7 @@ const Designer = ({ update, viewMode = false }) => {
         setNodeClick(Id);
     };
     const clear = () => {
+        localStorage.clear();
         setuserData({});
         setNodes({});
         setEdges({});
@@ -853,16 +854,16 @@ const Designer = ({ update, viewMode = false }) => {
         }
         if (!update) {
             try {
-                if (localStorage.data && JSON.parse(localStorage.data).projectName) {
+                if (localStorage?.data && JSON.parse(localStorage.data)?.projectName) {
                     userData.projectName = JSON.parse(localStorage.data).projectName;
                 }
-                if (localStorage.data && JSON.parse(localStorage.data).updated) {
+                if (localStorage?.data && JSON.parse(localStorage.data)?.updated) {
                     userData.updated = JSON.parse(localStorage.data).updated;
                 }
                 var udata = { ...userData };
                 (udata.metadata ??= {}).nodes = nodes;
                 udata.metadata.edges = edges;
-                if (localStorage.data && JSON.parse(localStorage.data)?.metadata?.deployment) {
+                if (localStorage?.data && JSON.parse(localStorage.data)?.metadata?.deployment) {
                     udata.metadata.deployment = JSON.parse(localStorage.data).metadata.deployment;
                 }
                 setuserData(udata);
@@ -1660,6 +1661,9 @@ const Designer = ({ update, viewMode = false }) => {
                                     View Mode
                                 </Button>
                                 <DownloadButton />
+                                <Button hidden={viewOnly} colorScheme="blackAlpha" onClick={() => clear()}>
+                                    Clear
+                                </Button>
                             </VStack>
                         </Panel>
                         <Background gap={10} color="#f2f2f2" variant={BackgroundVariant.Lines} />
