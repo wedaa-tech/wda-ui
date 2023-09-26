@@ -109,6 +109,7 @@ const Designer = ({ update, viewMode = false }) => {
 
     const [updated, setUpdated] = useState(false);
     const [isVisibleDialog, setVisibleDialog] = useState(false);
+    const [actionModalType, setActionModalType] = useState(false);
     const history = useHistory();
     const [triggerExit, setTriggerExit] = useState({
         onOk: false,
@@ -799,7 +800,7 @@ const Designer = ({ update, viewMode = false }) => {
             };
             fetchData();
         } else if (!data) {
-            if (localStorage?.data != undefined && localStorage.data != null && localStorage.data?.metadata?.nodes != '') {
+            if (localStorage?.data != undefined && localStorage.data != null && JSON.parse(localStorage.data)?.metadata?.nodes != '') {
                 data = JSON.parse(localStorage.data);
                 setuserData(data);
                 if (data?.metadata?.nodes) {
@@ -845,6 +846,9 @@ const Designer = ({ update, viewMode = false }) => {
         if (update && userData.project_id) {
             var data = { ...userData };
             data.metadata.nodes = nodes;
+            console.log(Object.keys(nodes).length);
+            if (Object.keys(nodes).length === 0) setShowDiv(true);
+            else setShowDiv(false);
             (data.metadata ??= {}).edges = edges;
             data.updated = updated;
             setuserData(data);
@@ -862,6 +866,8 @@ const Designer = ({ update, viewMode = false }) => {
                 }
                 var udata = { ...userData };
                 (udata.metadata ??= {}).nodes = nodes;
+                if (Object.keys(nodes).length === 0) setShowDiv(true);
+                else setShowDiv(false);
                 udata.metadata.edges = edges;
                 if (localStorage?.data && JSON.parse(localStorage.data)?.metadata?.deployment) {
                     udata.metadata.deployment = JSON.parse(localStorage.data).metadata.deployment;
@@ -887,6 +893,7 @@ const Designer = ({ update, viewMode = false }) => {
         if (updated) {
             unblock = history.block(location => {
                 setVisibleDialog(true);
+                setActionModalType('clearAndNav');
                 setTriggerExit(obj => ({ ...obj, path: location.pathname }));
                 if (triggerExit.onOk) {
                     return true;
@@ -1661,7 +1668,14 @@ const Designer = ({ update, viewMode = false }) => {
                                     View Mode
                                 </Button>
                                 <DownloadButton />
-                                <Button hidden={viewOnly} colorScheme="blackAlpha" onClick={() => clear()}>
+                                <Button
+                                    hidden={viewOnly}
+                                    colorScheme="blackAlpha"
+                                    onClick={() => {
+                                        setVisibleDialog(true);
+                                        setActionModalType('clear');
+                                    }}
+                                >
                                     Clear
                                 </Button>
                             </VStack>
@@ -1717,15 +1731,23 @@ const Designer = ({ update, viewMode = false }) => {
                 {isVisibleDialog && (
                     <ActionModal
                         isOpen={isVisibleDialog}
-                        onClose={() => setVisibleDialog(false)}
-                        onSubmit={() => {
-                            setTriggerExit(obj => ({
-                                ...obj,
-                                onOk: true,
-                            }));
+                        onClose={() => {
                             setVisibleDialog(false);
+                            setActionModalType(null);
                         }}
-                        actionType="clear"
+                        onSubmit={() => {
+                            if (actionModalType === 'clear') {
+                                clear();
+                            } else {
+                                setTriggerExit(obj => ({
+                                    ...obj,
+                                    onOk: true,
+                                }));
+                            }
+                            setVisibleDialog(false);
+                            setActionModalType(null);
+                        }}
+                        actionType={actionModalType}
                     />
                 )}
 
