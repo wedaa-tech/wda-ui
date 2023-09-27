@@ -43,6 +43,7 @@ import { useParams } from 'react-router-dom/cjs/react-router-dom.min';
 import Review, { ReviewFlow } from './Rewiew';
 import { toPng } from 'html-to-image';
 import DownloadButton from '../components/DownloadButton';
+import CustomNodeModal from '../components/Modal/CustomNodeModal';
 
 let serviceId = 1;
 let gatewayId = 1;
@@ -420,8 +421,11 @@ const Designer = ({ update, viewMode = false }) => {
     }, []);
 
     const onclick = (e, node) => {
-        const Id = e.target.dataset.id || e.target.name || node.id;
+        var Id = e.target.dataset.id || e.target.name || node.id;
         if (Id) {
+            if (Id === 'oauth2') Id = 'authenticationType';
+            if (Id === 'eck') Id = 'logManagement';
+            if (Id === 'eureka') Id = 'serviceDiscoveryType';
             const type = Id.split('_')[0];
             setNodeType(type);
             if (type === 'aws' || type === 'azure') {
@@ -521,7 +525,9 @@ const Designer = ({ update, viewMode = false }) => {
                     style: {
                         border: '1px solid red',
                         padding: '4px 4px',
-                        height: '60px',
+                        width: '120px',
+                        height: '40px',
+                        borderRadius: '15px',
                     },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
@@ -532,7 +538,7 @@ const Designer = ({ update, viewMode = false }) => {
                     type: 'selectorNode1',
                     position,
                     data: { serviceDiscoveryType: serviceDiscoveryType },
-                    style: { border: '1px solid', padding: '4px 4px' },
+                    style: { border: '1px solid', padding: '4px 4px', width: '120px', height: '40px', borderRadius: '15px' },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
                 setIsServiceDiscovery(true);
@@ -546,7 +552,7 @@ const Designer = ({ update, viewMode = false }) => {
                     type: 'selectorNode3',
                     position,
                     data: { authenticationType: authenticationType },
-                    style: { border: '1px solid', padding: '4px 4px' },
+                    style: { border: '1px solid', padding: '4px 4px', width: '120px', height: '40px', borderRadius: '15px' },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
                 setAuthProviderCount(1);
@@ -588,7 +594,7 @@ const Designer = ({ update, viewMode = false }) => {
                     type: 'selectorNode6',
                     position,
                     data: { logManagementType: logManagementType },
-                    style: { border: '1px solid', padding: '4px 4px' },
+                    style: { border: '1px solid', padding: '4px 4px', width: '120px', height: '40px', borderRadius: '15px' },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
                 setLogManagementCount(1);
@@ -1720,6 +1726,46 @@ const Designer = ({ update, viewMode = false }) => {
                 )}
                 {nodeType === 'group' && Isopen && (
                     <GroupDataModal
+                        isOpen={Isopen}
+                        CurrentNode={CurrentNode}
+                        onClose={setopen}
+                        onSubmit={onChange}
+                        handleColorClick={handleColorClick}
+                    />
+                )}
+
+                {nodeType === 'Database' && Isopen && (
+                    <CustomNodeModal
+                        isOpen={Isopen}
+                        CurrentNode={CurrentNode}
+                        onClose={setopen}
+                        onSubmit={onChange}
+                        handleColorClick={handleColorClick}
+                    />
+                )}
+
+                {nodeType === 'serviceDiscoveryType' && Isopen && (
+                    <CustomNodeModal
+                        isOpen={Isopen}
+                        CurrentNode={CurrentNode}
+                        onClose={setopen}
+                        onSubmit={onChange}
+                        handleColorClick={handleColorClick}
+                    />
+                )}
+
+                {nodeType === 'authenticationType' && Isopen && (
+                    <CustomNodeModal
+                        isOpen={Isopen}
+                        CurrentNode={CurrentNode}
+                        onClose={setopen}
+                        onSubmit={onChange}
+                        handleColorClick={handleColorClick}
+                    />
+                )}
+
+                {nodeType === 'logManagement' && Isopen && (
+                    <CustomNodeModal
                         isOpen={Isopen}
                         CurrentNode={CurrentNode}
                         onClose={setopen}
