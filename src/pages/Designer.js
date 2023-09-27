@@ -852,7 +852,6 @@ const Designer = ({ update, viewMode = false }) => {
         if (update && userData.project_id) {
             var data = { ...userData };
             data.metadata.nodes = nodes;
-            console.log(Object.keys(nodes).length);
             if (Object.keys(nodes).length === 0) setShowDiv(true);
             else setShowDiv(false);
             (data.metadata ??= {}).edges = edges;
