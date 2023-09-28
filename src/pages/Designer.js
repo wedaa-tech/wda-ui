@@ -43,6 +43,7 @@ import { useParams } from 'react-router-dom/cjs/react-router-dom.min';
 import Review, { ReviewFlow } from './Rewiew';
 import { toPng } from 'html-to-image';
 import DownloadButton from '../components/DownloadButton';
+import CustomNodeModal from '../components/Modal/CustomNodeModal';
 
 let serviceId = 1;
 let gatewayId = 1;
@@ -109,6 +110,7 @@ const Designer = ({ update, viewMode = false }) => {
 
     const [updated, setUpdated] = useState(false);
     const [isVisibleDialog, setVisibleDialog] = useState(false);
+    const [actionModalType, setActionModalType] = useState(false);
     const history = useHistory();
     const [triggerExit, setTriggerExit] = useState({
         onOk: false,
@@ -419,8 +421,11 @@ const Designer = ({ update, viewMode = false }) => {
     }, []);
 
     const onclick = (e, node) => {
-        const Id = e.target.dataset.id || e.target.name || node.id;
+        var Id = e.target.dataset.id || e.target.name || node.id;
         if (Id) {
+            if (Id === 'oauth2') Id = 'authenticationType';
+            if (Id === 'eck') Id = 'logManagement';
+            if (Id === 'eureka') Id = 'serviceDiscoveryType';
             const type = Id.split('_')[0];
             setNodeType(type);
             if (type === 'aws' || type === 'azure') {
@@ -435,6 +440,7 @@ const Designer = ({ update, viewMode = false }) => {
         setNodeClick(Id);
     };
     const clear = () => {
+        localStorage.clear();
         setuserData({});
         setNodes({});
         setEdges({});
@@ -519,7 +525,9 @@ const Designer = ({ update, viewMode = false }) => {
                     style: {
                         border: '1px solid red',
                         padding: '4px 4px',
-                        height: '60px',
+                        width: '120px',
+                        height: '40px',
+                        borderRadius: '15px',
                     },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
@@ -530,7 +538,7 @@ const Designer = ({ update, viewMode = false }) => {
                     type: 'selectorNode1',
                     position,
                     data: { serviceDiscoveryType: serviceDiscoveryType },
-                    style: { border: '1px solid', padding: '4px 4px' },
+                    style: { border: '1px solid', padding: '4px 4px', width: '120px', height: '40px', borderRadius: '15px' },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
                 setIsServiceDiscovery(true);
@@ -544,7 +552,7 @@ const Designer = ({ update, viewMode = false }) => {
                     type: 'selectorNode3',
                     position,
                     data: { authenticationType: authenticationType },
-                    style: { border: '1px solid', padding: '4px 4px' },
+                    style: { border: '1px solid', padding: '4px 4px', width: '120px', height: '40px', borderRadius: '15px' },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
                 setAuthProviderCount(1);
@@ -586,7 +594,7 @@ const Designer = ({ update, viewMode = false }) => {
                     type: 'selectorNode6',
                     position,
                     data: { logManagementType: logManagementType },
-                    style: { border: '1px solid', padding: '4px 4px' },
+                    style: { border: '1px solid', padding: '4px 4px', width: '120px', height: '40px', borderRadius: '15px' },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
                 setLogManagementCount(1);
@@ -798,7 +806,7 @@ const Designer = ({ update, viewMode = false }) => {
             };
             fetchData();
         } else if (!data) {
-            if (localStorage?.data != undefined && localStorage.data != null && localStorage.data?.metadata?.nodes != '') {
+            if (localStorage?.data != undefined && localStorage.data != null && JSON.parse(localStorage.data)?.metadata?.nodes != '') {
                 data = JSON.parse(localStorage.data);
                 setuserData(data);
                 if (data?.metadata?.nodes) {
@@ -844,6 +852,8 @@ const Designer = ({ update, viewMode = false }) => {
         if (update && userData.project_id) {
             var data = { ...userData };
             data.metadata.nodes = nodes;
+            if (Object.keys(nodes).length === 0) setShowDiv(true);
+            else setShowDiv(false);
             (data.metadata ??= {}).edges = edges;
             data.updated = updated;
             setuserData(data);
@@ -853,16 +863,18 @@ const Designer = ({ update, viewMode = false }) => {
         }
         if (!update) {
             try {
-                if (localStorage.data && JSON.parse(localStorage.data).projectName) {
+                if (localStorage?.data && JSON.parse(localStorage.data)?.projectName) {
                     userData.projectName = JSON.parse(localStorage.data).projectName;
                 }
-                if (localStorage.data && JSON.parse(localStorage.data).updated) {
+                if (localStorage?.data && JSON.parse(localStorage.data)?.updated) {
                     userData.updated = JSON.parse(localStorage.data).updated;
                 }
                 var udata = { ...userData };
                 (udata.metadata ??= {}).nodes = nodes;
+                if (Object.keys(nodes).length === 0) setShowDiv(true);
+                else setShowDiv(false);
                 udata.metadata.edges = edges;
-                if (localStorage.data && JSON.parse(localStorage.data)?.metadata?.deployment) {
+                if (localStorage?.data && JSON.parse(localStorage.data)?.metadata?.deployment) {
                     udata.metadata.deployment = JSON.parse(localStorage.data).metadata.deployment;
                 }
                 setuserData(udata);
@@ -886,6 +898,7 @@ const Designer = ({ update, viewMode = false }) => {
         if (updated) {
             unblock = history.block(location => {
                 setVisibleDialog(true);
+                setActionModalType('clearAndNav');
                 setTriggerExit(obj => ({ ...obj, path: location.pathname }));
                 if (triggerExit.onOk) {
                     return true;
@@ -1660,6 +1673,16 @@ const Designer = ({ update, viewMode = false }) => {
                                     View Mode
                                 </Button>
                                 <DownloadButton />
+                                <Button
+                                    hidden={viewOnly}
+                                    colorScheme="blackAlpha"
+                                    onClick={() => {
+                                        setVisibleDialog(true);
+                                        setActionModalType('clear');
+                                    }}
+                                >
+                                    Clear
+                                </Button>
                             </VStack>
                         </Panel>
                         <Background gap={10} color="#f2f2f2" variant={BackgroundVariant.Lines} />
@@ -1710,18 +1733,66 @@ const Designer = ({ update, viewMode = false }) => {
                     />
                 )}
 
+                {nodeType === 'Database' && Isopen && (
+                    <CustomNodeModal
+                        isOpen={Isopen}
+                        CurrentNode={CurrentNode}
+                        onClose={setopen}
+                        onSubmit={onChange}
+                        handleColorClick={handleColorClick}
+                    />
+                )}
+
+                {nodeType === 'serviceDiscoveryType' && Isopen && (
+                    <CustomNodeModal
+                        isOpen={Isopen}
+                        CurrentNode={CurrentNode}
+                        onClose={setopen}
+                        onSubmit={onChange}
+                        handleColorClick={handleColorClick}
+                    />
+                )}
+
+                {nodeType === 'authenticationType' && Isopen && (
+                    <CustomNodeModal
+                        isOpen={Isopen}
+                        CurrentNode={CurrentNode}
+                        onClose={setopen}
+                        onSubmit={onChange}
+                        handleColorClick={handleColorClick}
+                    />
+                )}
+
+                {nodeType === 'logManagement' && Isopen && (
+                    <CustomNodeModal
+                        isOpen={Isopen}
+                        CurrentNode={CurrentNode}
+                        onClose={setopen}
+                        onSubmit={onChange}
+                        handleColorClick={handleColorClick}
+                    />
+                )}
+
                 {isVisibleDialog && (
                     <ActionModal
                         isOpen={isVisibleDialog}
-                        onClose={() => setVisibleDialog(false)}
-                        onSubmit={() => {
-                            setTriggerExit(obj => ({
-                                ...obj,
-                                onOk: true,
-                            }));
+                        onClose={() => {
                             setVisibleDialog(false);
+                            setActionModalType(null);
                         }}
-                        actionType="clear"
+                        onSubmit={() => {
+                            if (actionModalType === 'clear') {
+                                clear();
+                            } else {
+                                setTriggerExit(obj => ({
+                                    ...obj,
+                                    onOk: true,
+                                }));
+                            }
+                            setVisibleDialog(false);
+                            setActionModalType(null);
+                        }}
+                        actionType={actionModalType}
                     />
                 )}
 

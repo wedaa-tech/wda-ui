@@ -136,10 +136,6 @@ body,
     }
 }
 
-.react-flow__node-selectorNode {
-    padding: 0 !important;
-}
-
 .react-flow__node-default.selectable.selected,
 .react-flow__node-input.selectable:focus {
     box-shadow: none !important;
@@ -330,6 +326,7 @@ body,
 }
 
 .react-flow__node.react-flow__node-ResizableNode,
+.react-flow__node.react-flow__node-selectorNode,
 .react-flow__node.react-flow__node-selectorNode1,
 .react-flow__node.react-flow__node-selectorNode2,
 .react-flow__node.react-flow__node-selectorNode3,
@@ -371,10 +368,6 @@ body,
         width: 20%;
         max-width: 250px;
     }
-}
-
-.react-flow__node-selectorNode {
-    padding: 0 !important;
 }
 
 .react-flow__node-default.selectable.selected,
