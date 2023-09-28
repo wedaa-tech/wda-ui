@@ -13,7 +13,7 @@ function CustomAuthNode({ data, isConnectable, selected }) {
                 {data?.label && data.label.length > 0 ? (
                     <>
                         <img
-                            style={{ position: 'absolute', top: 0, left: 0, width: '30px' }}
+                            style={{ position: 'absolute', top: 0, left: 0, width: '40px', marginTop: '-6px' }}
                             name={authenticationType}
                             src={keycloak}
                             alt="keycloak"
@@ -26,7 +26,7 @@ function CustomAuthNode({ data, isConnectable, selected }) {
                     </>
                 ) : (
                     <div style={{ display: 'flex', justifyContent: 'center' }}>
-                        <img width="60px" name={authenticationType} src={keycloak} alt="keycloak" />
+                        <img style={{ width: '72px', marginTop: '-5px' }} name={authenticationType} src={keycloak} alt="keycloak" />
                     </div>
                 )}
             </div>

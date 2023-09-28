@@ -10,7 +10,7 @@ function CustomImageNode({ data, isConnectable, selected }) {
                 {data?.label && data.label.length > 0 ? (
                     <>
                         <img
-                            style={{ position: 'absolute', top: 0, left: 0, width: '30px' }}
+                            style={{ position: 'absolute', top: 0, left: 0, width: '35px' }}
                             src={data.prodDatabaseType === 'postgresql' ? postgres : sql}
                             alt="database"
                         />
@@ -22,7 +22,11 @@ function CustomImageNode({ data, isConnectable, selected }) {
                     </>
                 ) : (
                     <div style={{ display: 'flex', justifyContent: 'center' }}>
-                        <img width="80px" src={data.prodDatabaseType === 'postgresql' ? postgres : sql} alt="database" />
+                        <img
+                            style={{ width: '60px', marginTop: '5px' }}
+                            src={data.prodDatabaseType === 'postgresql' ? postgres : sql}
+                            alt="database"
+                        />
                     </div>
                 )}
             </div>
