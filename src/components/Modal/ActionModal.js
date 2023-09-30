@@ -38,15 +38,16 @@ const ActionModal = ({ isOpen = true, onClose, onSubmit, actionType, id, name })
     return (
         <AlertDialog isOpen={isOpen} leastDestructiveRef={cancelRef} onClose={onClose} isCentered>
             <AlertDialogOverlay />
-            <AlertDialogContent style={{ backgroundColor: '#FFFF99', borderRadius: '9px' }}>
+            <AlertDialogContent style={{ backgroundColor: '#FFFF', borderRadius: '9px' }}>
                 <AlertDialogHeader
                     fontSize="lg"
                     fontWeight="bold"
                     borderTopWidth="8px"
-                    borderTopColor="#FFBF00"
+                    borderTopColor="#FFFF"
                     borderTopLeftRadius="8px"
                     borderTopRightRadius="8px"
                 >
+                    Unsaved Changes
                 </AlertDialogHeader>
 
                 <AlertDialogBody>
@@ -67,15 +68,15 @@ const ActionModal = ({ isOpen = true, onClose, onSubmit, actionType, id, name })
                                 />
                             </svg>
                         </span>
-                        <div style={{ flex: '1', fontWeight: 'bold' }}>{config.content}</div>
+                        <div style={{ flex: '1' }}>Warning: {config.content}</div>
                     </div>
                 </AlertDialogBody>
 
                 <AlertDialogFooter>
-                    <Button ref={cancelRef} onClick={onClose} variant="">
+                    <Button ref={cancelRef} onClick={onClose} variant="" color={'#3182ce'}>
                         {config.cancelText}
                     </Button>
-                    <Button onClick={() => onSubmit({ id })} ml={3} style={{ backgroundColor: '#FFBF00' }}>
+                    <Button onClick={() => onSubmit({ id })} ml={3}>
                         {config.submitText}
                     </Button>
                 </AlertDialogFooter>

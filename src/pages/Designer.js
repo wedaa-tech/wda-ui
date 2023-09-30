@@ -207,7 +207,7 @@ const Designer = ({ update, viewMode = false }) => {
             changes.forEach(change => {
                 switch (change.type) {
                     case 'dimensions':
-                        if (change.resizing)
+                        if (change.resizing) {
                             updatedNodes[change.id] = {
                                 ...updatedNodes[change.id],
                                 position: {
@@ -218,6 +218,27 @@ const Designer = ({ update, viewMode = false }) => {
                                     ...change.dimensions,
                                 },
                             };
+                            const label = updatedNodes[change.id].data.label;
+                            const calculatedWidth = label.length * 10 + 30;
+                            const actualWidth = updatedNodes[change.id].style.width;
+                            if (calculatedWidth >= actualWidth) {
+                                const words = label.split(/\s+/);
+                                const nonEmptyWords = words.filter(word => word.length > 0);
+                                const height = nonEmptyWords.length * 25 + 25;
+                                if (updatedNodes[change.id].style.height < height) {
+                                    updatedNodes[change.id].style.height = height;
+                                }
+                                const word = label.split(/\s+/);
+                                const maxLength = Math.max(...word.map(word => word.length));
+                                const width = maxLength * 15 + 36;
+                                const calculatedHeight = 20 * label.length + 20;
+                                if (updatedNodes[change.id].style.width < width) {
+                                    if (calculatedHeight > updatedNodes[change.id].style.height)
+                                        updatedNodes[change.id].style.height = calculatedHeight + 'px';
+                                    updatedNodes[change.id].style.width = '40px';
+                                }
+                            }
+                        }
                         break;
                     case 'position':
                         if (change?.position) {
