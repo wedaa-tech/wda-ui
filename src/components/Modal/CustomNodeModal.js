@@ -7,13 +7,23 @@ const CustomNodeModal = ({ isOpen, onClose, onSubmit, CurrentNode }) => {
         ...CurrentNode,
     };
     const [customData, setCustomData] = useState(IntialState);
-    const [nodeType, setNodeType] = useState('Node');
+    const [nodeType, setNodeType] = useState('Custom Node');
 
     useEffect(() => {
-        var currentNodeType = CurrentNode[Object.keys(CurrentNode)[0]];
-        var capitalizedNodeType = currentNodeType.charAt(0).toUpperCase() + currentNodeType.slice(1);
-        setNodeType(capitalizedNodeType);
-    }, []);
+        if (CurrentNode) {
+            var currentNodeType = CurrentNode[Object.keys(CurrentNode)[0]];
+            var customNodeNames = {
+                oauth2: 'Keycloak',
+                postgresql: 'PostgreSQL',
+                mongodb: 'mongoDB',
+                eureka: 'Eureka',
+                eck: 'Elastic Cloud',
+            };
+
+            var customNodeName = customNodeNames[currentNodeType] || 'Custom Node';
+            setNodeType(customNodeName);
+        }
+    }, [CurrentNode]);
 
     useEffect(() => {
         const handleDeleteKeyPress = event => {
@@ -45,7 +55,7 @@ const CustomNodeModal = ({ isOpen, onClose, onSubmit, CurrentNode }) => {
                     width: '300px',
                 }}
             >
-                <ModalHeader>{nodeType}</ModalHeader>
+                <ModalHeader style={{ textAlign: 'center' }}>{nodeType}</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody>
                     <div

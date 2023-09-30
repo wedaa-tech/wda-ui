@@ -138,7 +138,20 @@ const GatewayModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                         }}
                     >
                         <FormControl>
-                            <FormLabel>Application name</FormLabel>
+                            <FormLabel>Label</FormLabel>
+                            <Input
+                                mb={4}
+                                variant="outline"
+                                id="label"
+                                placeholder="Display Name"
+                                borderColor={'black'}
+                                maxLength="32"
+                                value={ApplicationData.label}
+                                onChange={e => handleData('label', e.target.value)}
+                            />
+                        </FormControl>
+                        <FormControl>
+                            <FormLabel>Name</FormLabel>
                             <Input
                                 mb={4}
                                 variant="outline"
@@ -162,19 +175,6 @@ const GatewayModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                                 Application name already exists. Please choose a unique name.
                             </Alert>
                         )}
-                        <FormControl>
-                            <FormLabel>Label</FormLabel>
-                            <Input
-                                mb={4}
-                                variant="outline"
-                                id="label"
-                                placeholder="Display Name"
-                                borderColor={'black'}
-                                maxLength="32"
-                                value={ApplicationData.label}
-                                onChange={e => handleData('label', e.target.value)}
-                            />
-                        </FormControl>
                         {/* <p>AN: {ApplicationData.AN}</p> */}
                         <FormControl>
                             <FormLabel>Application Framework</FormLabel>

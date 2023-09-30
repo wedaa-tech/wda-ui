@@ -60,7 +60,7 @@ const GroupDataModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorCli
                         }}
                     >
                         <FormControl>
-                            <FormLabel>Group name</FormLabel>
+                            <FormLabel>Name</FormLabel>
                             <Input
                                 mb={3}
                                 variant="outline"
