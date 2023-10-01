@@ -13,6 +13,16 @@ export default function ResizableNode({ id, data, selected }) {
         };
     });
 
+    const boxStyle = {
+        display: 'inline-block',
+        width: '10px',
+        height: '10px',
+    };
+
+    const charStyle = {
+        padding: size.width <= 40 ? '7px' : '0px',
+    };
+
     const connectionNodeId = useStore(connectionNodeIdSelector);
 
     const isConnecting = !!connectionNodeId;
@@ -20,30 +30,23 @@ export default function ResizableNode({ id, data, selected }) {
 
     function maxLength(inputString) {
         const length = inputString.length;
-        return length * 15 + 30;
+        return length * 10 + 30;
     }
 
     const lengthstr = maxLength(data.label);
     const labeledWithSpaces = data.label.split('').map((char, index) =>
         char === ' ' ? (
             <>
-                {size.width <= lengthstr && <br></br>}
-                <div
-                    key={index}
-                    style={{
-                        display: 'inline-block',
-                        width: '10px',
-                        height: '10px',
-                    }}
-                ></div>
+                {size.width <= 40 && (
+                    <>
+                        <br key={`${index}-br`} /> <div key={index} style={boxStyle}></div>
+                    </>
+                )}
+                {size.width > lengthstr && <div key={index} style={boxStyle}></div>}
+                {size.width <= lengthstr && <br key={`${index}-br`} />}
             </>
         ) : (
-            <span
-                key={index}
-                style={{
-                    padding: size.width <= 40 ? '7px' : '0px',
-                }}
-            >
+            <span key={index} style={charStyle}>
                 {char}
             </span>
         ),
