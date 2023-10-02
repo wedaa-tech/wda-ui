@@ -33,7 +33,7 @@ function DownloadButton() {
     };
 
     return (
-        <Button colorScheme="blackAlpha"  onClick={onClick}>
+        <Button colorScheme="blackAlpha" size="sm" onClick={onClick}>
             Download Image
         </Button>
     );

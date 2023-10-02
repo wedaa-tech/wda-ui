@@ -43,6 +43,7 @@ import { useParams } from 'react-router-dom/cjs/react-router-dom.min';
 import Review, { ReviewFlow } from './Rewiew';
 import { toPng } from 'html-to-image';
 import DownloadButton from '../components/DownloadButton';
+import ContextMenu from '../components/ContextMenu';
 
 let serviceId = 1;
 let gatewayId = 1;
@@ -403,7 +404,9 @@ const Designer = ({ update, viewMode = false }) => {
     }, []);
 
     const onclick = (e, node) => {
+        console.log(e, node)
         const Id = e.target.dataset.id || e.target.name || node.id;
+        console.log(Id, CurrentNode);
         if (Id) {
             const type = Id.split('_')[0];
             setNodeType(type);
@@ -412,10 +415,6 @@ const Designer = ({ update, viewMode = false }) => {
             } else setCurrentNode(nodes[Id].data);
             setopen(Id);
         }
-        // };
-
-        // const onSingleClick = (e, node) => {
-        // const Id = e.target.dataset.id || e.target.name || node.id;
         setNodeClick(Id);
     };
     const clear = () => {
@@ -1332,11 +1331,37 @@ const Designer = ({ update, viewMode = false }) => {
     const [selectedColor, setSelectedColor] = useState('');
 
     const handleColorClick = color => {
-        let UpdatedNodes = { ...nodes };
+        console.log(color)
+        let UpdatedNodes = structuredClone(nodes);
         setSelectedColor(color);
         (UpdatedNodes[nodeClick].style ??= {}).backgroundColor = color;
-        setNodes(UpdatedNodes);
+        console.log(nodeClick, UpdatedNodes);
+        setNodes({ ...UpdatedNodes });
     };
+
+    const [menu, setMenu] = useState(null);
+    const ref = useRef(null);
+
+    
+
+    const onNodeContextMenu = useCallback(
+        (event, node) => {
+            event.preventDefault();
+
+            const pane = ref.current.getBoundingClientRect();
+            setMenu({
+                id: node.id,
+                node: node,
+                top: event.clientY < pane.height - 200 && event.clientY,
+                left: event.clientX < pane.width - 200 && event.clientX,
+                right: event.clientX >= pane.width - 200 && pane.width - event.clientX,
+                bottom: event.clientY >= pane.height - 200 && pane.height - event.clientY,
+            });
+        },
+        [setMenu],
+    );
+
+    const onPaneClick = useCallback(() => setMenu(null), [setMenu]);
 
     if (isLoading)
         return (
@@ -1374,6 +1399,7 @@ const Designer = ({ update, viewMode = false }) => {
             <ReactFlowProvider>
                 <div className="reactflow-wrapper" ref={reactFlowWrapper}>
                     <ReactFlow
+                        ref={ref}
                         nodes={Object.values(nodes)}
                         edges={Object.values(edges)}
                         nodeTypes={nodeTypes}
@@ -1384,7 +1410,7 @@ const Designer = ({ update, viewMode = false }) => {
                         onEdgesChange={changes => onEdgesChange(nodes, changes)}
                         onConnect={params => onConnect(params, nodes)}
                         onInit={setReactFlowInstance}
-                        onNodeDrag={onclick}
+                        onNodeDoubleClick={onclick}
                         onDrop={e =>
                             onDrop(
                                 e,
@@ -1397,7 +1423,6 @@ const Designer = ({ update, viewMode = false }) => {
                         }
                         onDragOver={onDragOver}
                         onDragLeave={() => setShowDiv(Object.keys(nodes).length === 0)}
-                        onNodeClick={!viewOnly ? onclick : ''}
                         // onNodeClick={onSingleClick}
                         deleteKeyCode={['Backspace', 'Delete']}
                         fitView
@@ -1409,8 +1434,11 @@ const Designer = ({ update, viewMode = false }) => {
                         nodesDraggable={!viewOnly}
                         elementsSelectable={!viewOnly}
                         nodesConnectable={!viewOnly}
+                        onPaneClick={onPaneClick}
+                        onNodeContextMenu={onNodeContextMenu}
                     >
-                        <Flex height={'100%'} width={'100%'} transition={'all 3s ease-in-out'}>
+                        {menu && <ContextMenu onClick={onPaneClick} {...menu} onEditClick={!viewOnly ? onclick : () => {}} />}
+                        <Flex>
                             <Sidebar
                                 isUINodeEnabled={isUINodeEnabled}
                                 isGatewayNodeEnabled={isGatewayNodeEnabled}
@@ -1491,14 +1519,7 @@ const Designer = ({ update, viewMode = false }) => {
                                         >
                                             Click next to auto generate code and setup infrastructure
                                         </Text>
-                                        <Button
-                                            // mt={4}
-                                            // border="2px"
-                                            // borderColor="#ebaf24"
-                                            // alignContent="center"
-                                            // color="#ebaf24"
-                                            // style={{ margin: '0 auto' }}
-                                        >
+                                        <Button>
                                             Drag & Drop <ArrowRightIcon style={{ marginLeft: '10px', fontSize: '11px' }} />
                                         </Button>
                                     </Box>
@@ -1510,16 +1531,16 @@ const Designer = ({ update, viewMode = false }) => {
                             <VStack spacing={4} alignItems={'stretch'}>
                                 <Button
                                     hidden={true}
-                                    backgroundColor={'blue'}
-                                    color={'white'}
+                                    colorScheme="blackAlpha"
+                                    size="sm"
                                     onClick={() => console.log(nodes, edges, userData, projectParentId, projectName)}
                                 >
                                     Print
                                 </Button>
-                                <Button hidden={!viewOnly} colorScheme="blackAlpha" onClick={() => setViewOnly(false)}>
+                                <Button hidden={!viewOnly} colorScheme="blackAlpha" size="sm" onClick={() => setViewOnly(false)}>
                                     Edit Mode
                                 </Button>
-                                <Button hidden={viewOnly} colorScheme="blackAlpha" onClick={() => setViewOnly(true)}>
+                                <Button hidden={viewOnly} colorScheme="blackAlpha" size="sm" onClick={() => setViewOnly(true)}>
                                     View Mode
                                 </Button>
                                 <DownloadButton />
