@@ -52,11 +52,7 @@ export default function Header({ children }) {
                 </Flex>
                 <HStack spacing={4} display={{ base: 'none', md: 'flex' }}>
                     <Link to="/canvasToCode">
-                        <Text
-                            fontSize="md"
-                            color={color}
-                            fontWeight={location.pathname === '/canvasToCode' || location.pathname === '/' ? 'bold' : 'normal'}
-                        >
+                        <Text fontSize="md" color={color} fontWeight={location.pathname === '/canvasToCode' || "/" ? 'bold' : 'normal'}>
                             CanvasToCode
                         </Text>
                     </Link>

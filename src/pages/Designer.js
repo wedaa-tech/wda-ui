@@ -45,6 +45,7 @@ import { toPng } from 'html-to-image';
 import DownloadButton from '../components/DownloadButton';
 import ContextMenu from '../components/ContextMenu';
 import CustomNodeModal from '../components/Modal/CustomNodeModal';
+import ContextMenu from '../components/ContextMenu';
 
 let serviceId = 1;
 let gatewayId = 1;
@@ -1671,11 +1672,14 @@ const Designer = ({ update, viewMode = false }) => {
         let UpdatedNodes = structuredClone(nodes);
         setSelectedColor(color);
         (UpdatedNodes[nodeClick].style ??= {}).backgroundColor = color;
+        console.log(nodeClick, UpdatedNodes);
         setNodes({ ...UpdatedNodes });
     };
 
     const [menu, setMenu] = useState(null);
     const ref = useRef(null);
+
+    
 
     const onNodeContextMenu = useCallback(
         (event, node) => {
@@ -1876,10 +1880,10 @@ const Designer = ({ update, viewMode = false }) => {
                         <Panel position="top-right">
                             <VStack spacing={4} alignItems={'stretch'}>
                                 <Button
-                                    hidden={false}
+                                    hidden={true}
                                     colorScheme="blackAlpha"
                                     size="sm"
-                                    onClick={() => console.log(nodes, edges, userData, projectParentId, projectName, generatingData)}
+                                    onClick={() => console.log(nodes, edges, userData, projectParentId, projectName)}
                                 >
                                     Print
                                 </Button>

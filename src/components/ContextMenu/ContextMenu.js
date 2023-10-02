@@ -9,8 +9,9 @@ export default function ContextMenu({ id, node, top, left, right, bottom, onEdit
 
     const deleteNode = useCallback(() => {
         setNodes(nodes => {
-            const filteredNodes = nodes.filter(nd => nd.id !== id);
-            return [...structuredClone(filteredNodes)];
+            const test = nodes.filter(nd => nd.id !== id);
+            console.log(test);
+            return [...structuredClone(test)];
         });
         setEdges(edges => edges.filter(ed => ed.source !== id));
     }, [id, setNodes, setEdges]);
