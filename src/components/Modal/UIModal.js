@@ -43,6 +43,8 @@ const UiDataModal = ({
     const [applicationFrameworkError, setApplicationFrameworkError] = useState(false);
     const [themeError, setThemeError] = useState(false);
     const isEmptyUiSubmit = UiData.applicationName === '' || UiData.serverPort === '';
+    const isEmptyUiSubmit =
+        UiData.applicationName === '' || (UiData.applicationFramework === 'ui' && UiData.packageName === '') || UiData.serverPort === '';
 
     const reservedPorts = ['5601', '9200', '15021', '20001', '3000', '8080'];
     const serverPortCheck = UiData.serverPort && reservedPorts.includes(UiData.serverPort);
