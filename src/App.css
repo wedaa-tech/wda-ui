@@ -123,6 +123,7 @@ body,
     justify-content: center;
     width: 80px;
     height: 50px;
+    word-break: break-all;
 }
 
 @media screen and (min-width: 768px) {

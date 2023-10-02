@@ -207,7 +207,7 @@ const Designer = ({ update, viewMode = false }) => {
             changes.forEach(change => {
                 switch (change.type) {
                     case 'dimensions':
-                        if (change.resizing)
+                        if (change.resizing) {
                             updatedNodes[change.id] = {
                                 ...updatedNodes[change.id],
                                 position: {
@@ -218,6 +218,18 @@ const Designer = ({ update, viewMode = false }) => {
                                     ...change.dimensions,
                                 },
                             };
+                            const label = updatedNodes[change.id].data.label;
+                            const calculatedWidth = label.length * 10 + 30;
+                            const actualWidth = updatedNodes[change.id].style.width;
+                            if (calculatedWidth >= actualWidth) {
+                                const words = label.split(/\s+/);
+                                const nonEmptyWords = words.filter(word => word.length > 0);
+                                const height = nonEmptyWords.length  * 12 + 30;
+                                if (updatedNodes[change.id].style.height < height) {
+                                    updatedNodes[change.id].style.height = height;
+                                }
+                            }
+                        }
                         break;
                     case 'position':
                         if (change?.position) {

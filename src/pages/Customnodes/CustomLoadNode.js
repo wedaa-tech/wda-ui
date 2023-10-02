@@ -13,7 +13,7 @@ function CustomLoadNode({ data, selected }) {
                 {data?.label && data.label.length > 0 ? (
                     <>
                         <img
-                            style={{ position: 'absolute', top: 0, left: 0, width: '30px' }}
+                            style={{ position: 'absolute', top: 0, left: 0, width: '30px',marginTop:'-3px' }}
                             name={logManagementType}
                             src={eck}
                             alt="eck"

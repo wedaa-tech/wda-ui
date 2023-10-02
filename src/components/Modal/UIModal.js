@@ -203,7 +203,20 @@ const UiDataModal = ({
                         }}
                     >
                         <FormControl>
-                            <FormLabel>Application name</FormLabel>
+                            <FormLabel>Label</FormLabel>
+                            <Input
+                                mb={4}
+                                variant="outline"
+                                id="label"
+                                placeholder="Display Name"
+                                borderColor={'black'}
+                                maxLength="32"
+                                value={UiData.label}
+                                onChange={e => handleData('label', e.target.value)}
+                            />
+                        </FormControl>
+                        <FormControl>
+                            <FormLabel>Name</FormLabel>
                             <Input
                                 mb={4}
                                 variant="outline"
@@ -226,19 +239,6 @@ const UiDataModal = ({
                                     Application Name should not contain -, _ or numbers.
                                 </Alert>
                             )}
-                        </FormControl>
-                        <FormControl>
-                            <FormLabel>Label</FormLabel>
-                            <Input
-                                mb={4}
-                                variant="outline"
-                                id="label"
-                                placeholder="Display Name"
-                                borderColor={'black'}
-                                maxLength="32"
-                                value={UiData.label}
-                                onChange={e => handleData('label', e.target.value)}
-                            />
                         </FormControl>
                         <FormControl>
                             <FormLabel>Application Framework</FormLabel>

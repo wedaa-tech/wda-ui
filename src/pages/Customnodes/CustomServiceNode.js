@@ -13,7 +13,7 @@ function CustomServiceNode({ data, isConnectable, selected }) {
                 {data?.label && data.label.length > 0 ? (
                     <>
                         <img
-                            style={{ position: 'absolute', top: 0, left: 0, width: '15px' }}
+                            style={{ position: 'absolute', top: 0, left: 0, width: '19px', marginTop: '-3px' }}
                             name={serviceDiscoveryType}
                             src={eureka}
                             alt="eureka"
@@ -26,7 +26,7 @@ function CustomServiceNode({ data, isConnectable, selected }) {
                     </>
                 ) : (
                     <div style={{ display: 'flex', justifyContent: 'center' }}>
-                        <img width="40px" name={serviceDiscoveryType} src={eureka} alt="eureka" />
+                        <img style={{ width: '30px', marginTop: '2px' }} name={serviceDiscoveryType} src={eureka} alt="eureka" />
                     </div>
                 )}
             </div>
