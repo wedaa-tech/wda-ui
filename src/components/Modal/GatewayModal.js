@@ -46,7 +46,7 @@ const GatewayModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
     const validateName = value => {
         const currentApplicationName = CurrentNode?.applicationName;
         const isDuplicateName = uniqueApplicationNames.includes(value) && value !== currentApplicationName;
-        if (isDuplicateName && value !== '') {
+        if (isDuplicateName && value.length > 0) {
             setDuplicateApplicationNameError(true);
             return false;
         } else {
@@ -59,7 +59,7 @@ const GatewayModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
     const validatePortNumber = value => {
         const currentServerPort = CurrentNode?.serverPort;
         const isDuplicatePort = uniquePortNumbers.includes(value) && value !== currentServerPort;
-        if (isDuplicatePort && value !== '') {
+        if (isDuplicatePort && value.length > 0) {
             setPortNumberError(true);
             return false;
         } else {
@@ -79,12 +79,11 @@ const GatewayModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
     };
 
     const handleData = (column, value) => {
-        if (column === 'label') {
+        if (column === 'applicationName') {
             validateName(value);
             setApplicationData(prev => ({
                 ...prev,
                 [column]: value,
-                applicationName: value,
             }));
         } else if (column === 'serverPort') {
             validatePortNumber(value);
@@ -115,13 +114,15 @@ const GatewayModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
 
     const packageNameCheck = ApplicationData.packageName && !/^[a-zA-Z](?:[a-zA-Z0-9_.-]*[a-zA-Z0-9])?$/g.test(ApplicationData.packageName);
 
+    const labelCheck = () => ApplicationData.label.trim() === '';
+
     return (
         <Modal isOpen={isOpen} onClose={() => onClose(false)}>
             {/* <ModalOverlay /> */}
             <ModalContent
                 style={{
                     position: 'absolute',
-                    top: '100px',
+                    top: '20px',
                     right: '10px',
                     width: '300px',
                 }}
@@ -137,16 +138,29 @@ const GatewayModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                         }}
                     >
                         <FormControl>
-                            <FormLabel>Application name</FormLabel>
+                            <FormLabel>Label</FormLabel>
+                            <Input
+                                mb={4}
+                                variant="outline"
+                                id="label"
+                                placeholder="Display Name"
+                                borderColor={'black'}
+                                maxLength="32"
+                                value={ApplicationData.label}
+                                onChange={e => handleData('label', e.target.value)}
+                            />
+                        </FormControl>
+                        <FormControl>
+                            <FormLabel>Name</FormLabel>
                             <Input
                                 mb={4}
                                 variant="outline"
                                 id="applicationName"
                                 placeholder="Name"
-                                borderColor={duplicateApplicationNameError || !ApplicationData.applicationName ? 'red' : 'black'}
+                                borderColor={duplicateApplicationNameError || appNameCheck ? 'red' : 'black'}
                                 maxLength="32"
                                 value={ApplicationData.applicationName}
-                                onChange={e => handleData('label', e.target.value)}
+                                onChange={e => handleData('applicationName', e.target.value)}
                             />
                         </FormControl>
                         {appNameCheck && (
@@ -184,7 +198,7 @@ const GatewayModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                                 variant="outline"
                                 id="packagename"
                                 placeholder="packageName"
-                                borderColor={!ApplicationData.packageName ? 'red' : 'black'}
+                                borderColor={packageNameCheck ? 'red' : 'black'}
                                 maxLength="32"
                                 value={ApplicationData.packageName}
                                 onChange={e => handleData('packageName', e.target.value)}
@@ -293,7 +307,9 @@ const GatewayModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                     <Button
                         onClick={() => !duplicateApplicationNameError && onSubmit(ApplicationData)}
                         style={{ display: 'block', margin: '0 auto' }}
-                        isDisabled={isSubmitDisabled || appNameCheck || serverPortCheck || portNumberError || portNumberRangeCheck}
+                        isDisabled={
+                            isSubmitDisabled || appNameCheck || serverPortCheck || portNumberError || portNumberRangeCheck || labelCheck()
+                        }
                     >
                         Save
                     </Button>

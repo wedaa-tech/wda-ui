@@ -18,7 +18,7 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
     const IntialState = {
         label: 'Service',
         applicationName: '',
-        applicationFramework: 'java',
+        applicationFramework: '',
         packageName: '',
         serverPort: '',
         applicationType: 'microservice',
@@ -43,10 +43,12 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
 
     const [portNumberError, setPortNumberError] = useState(false);
 
+    const [applicationFrameworkError, setApplicationFrameworkError] = useState(false);
+
     const validateName = value => {
         const currentApplicationName = CurrentNode?.applicationName;
         const isDuplicateName = uniqueApplicationNames.includes(value) && value !== currentApplicationName;
-        if (isDuplicateName && value !== '') {
+        if (isDuplicateName && value.length > 0) {
             setDuplicateApplicationNameError(true);
             return false;
         } else {
@@ -59,7 +61,7 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
     const validatePortNumber = value => {
         const currentServerPort = CurrentNode?.serverPort;
         const isDuplicatePort = uniquePortNumbers.includes(value) && value !== currentServerPort;
-        if (isDuplicatePort && value !== '') {
+        if (isDuplicatePort && value.length > 0) {
             setPortNumberError(true);
             return false;
         } else {
@@ -79,12 +81,11 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
     };
 
     const handleData = (column, value) => {
-        if (column === 'label') {
+        if (column === 'applicationName') {
             validateName(value);
             setApplicationData(prev => ({
                 ...prev,
                 [column]: value,
-                applicationName: value,
             }));
         } else if (column === 'serverPort') {
             validatePortNumber(value);
@@ -93,6 +94,14 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                 [column]: value,
                 serverPort: value,
             }));
+        } else if (column === 'applicationFramework') {
+            if (value.length > 0) {
+                setApplicationFrameworkError(false);
+                setApplicationData(prev => ({
+                    ...prev,
+                    [column]: value,
+                }));
+            }
         } else {
             setApplicationData(prev => ({
                 ...prev,
@@ -114,6 +123,18 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
         ApplicationData.applicationName && !/^[a-zA-Z](?:[a-zA-Z0-9_-]*[a-zA-Z0-9])?$/g.test(ApplicationData.applicationName);
 
     const packageNameCheck = ApplicationData.packageName && !/^[a-zA-Z](?:[a-zA-Z0-9_.-]*[a-zA-Z0-9])?$/g.test(ApplicationData.packageName);
+
+    const labelCheck = () => ApplicationData.label.trim() === '';
+
+    const isApplicationFrameworkFilled = () => {
+        if (ApplicationData.applicationFramework === '') {
+            setApplicationFrameworkError(true);
+            return false;
+        } else {
+            setApplicationFrameworkError(false);
+            return true;
+        }
+    };
 
     return (
         <Modal isOpen={isOpen} onClose={() => onClose(false)}>
@@ -137,16 +158,29 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                         }}
                     >
                         <FormControl>
-                            <FormLabel>Application name</FormLabel>
+                            <FormLabel>Label</FormLabel>
+                            <Input
+                                mb={4}
+                                variant="outline"
+                                id="label"
+                                placeholder="Display Name"
+                                borderColor={'black'}
+                                maxLength="32"
+                                value={ApplicationData.label}
+                                onChange={e => handleData('label', e.target.value)}
+                            />
+                        </FormControl>
+                        <FormControl>
+                            <FormLabel>Name</FormLabel>
                             <Input
                                 mb={4}
                                 variant="outline"
                                 id="applicationName"
                                 placeholder="Name"
-                                borderColor={duplicateApplicationNameError || !ApplicationData.applicationName ? 'red' : 'black'}
+                                borderColor={duplicateApplicationNameError || appNameCheck ? 'red' : 'black'}
                                 maxLength="32"
                                 value={ApplicationData.applicationName}
-                                onChange={e => handleData('label', e.target.value)}
+                                onChange={e => handleData('applicationName', e.target.value)}
                             />
                         </FormControl>
                         {appNameCheck && (
@@ -168,7 +202,7 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                                 mb={4}
                                 variant="outline"
                                 id="applicationFramework"
-                                borderColor={'black'}
+                                borderColor={applicationFrameworkError ? 'red' : 'black'}
                                 value={ApplicationData.applicationFramework}
                                 onChange={e => handleData('applicationFramework', e.target.value)}
                             >
@@ -179,7 +213,12 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                                 <option value="gomicro">Go Micro</option>
                             </Select>
                         </FormControl>
-
+                        {applicationFrameworkError && (
+                            <Alert status="error" padding="4px" fontSize="12px" borderRadius="3px" mb={2}>
+                                <AlertIcon style={{ width: '14px', height: '14px' }} />
+                                Select a Valid Application Framework.
+                            </Alert>
+                        )}
                         <FormControl>
                             <FormLabel>Package Name</FormLabel>
                             <Input
@@ -187,7 +226,7 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                                 variant="outline"
                                 id="packagename"
                                 placeholder="packageName"
-                                borderColor={!ApplicationData.packageName ? 'red' : 'black'}
+                                borderColor={packageNameCheck ? 'red' : 'black'}
                                 maxLength="32"
                                 value={ApplicationData.packageName}
                                 onChange={e => handleData('packageName', e.target.value)}
@@ -294,9 +333,17 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                         ></div>
                     </div>
                     <Button
-                        onClick={() => !duplicateApplicationNameError && onSubmit(ApplicationData)}
+                        onClick={() => !duplicateApplicationNameError && isApplicationFrameworkFilled() && onSubmit(ApplicationData)}
                         style={{ display: 'block', margin: '0 auto' }}
-                        isDisabled={isSubmitDisabled || appNameCheck || serverPortCheck || portNumberError || portNumberRangeCheck}
+                        isDisabled={
+                            isSubmitDisabled ||
+                            appNameCheck ||
+                            serverPortCheck ||
+                            portNumberError ||
+                            portNumberRangeCheck ||
+                            labelCheck() ||
+                            applicationFrameworkError
+                        }
                     >
                         Save
                     </Button>

@@ -44,6 +44,7 @@ import Review, { ReviewFlow } from './Rewiew';
 import { toPng } from 'html-to-image';
 import DownloadButton from '../components/DownloadButton';
 import ContextMenu from '../components/ContextMenu';
+import CustomNodeModal from '../components/Modal/CustomNodeModal';
 
 let serviceId = 1;
 let gatewayId = 1;
@@ -110,6 +111,7 @@ const Designer = ({ update, viewMode = false }) => {
 
     const [updated, setUpdated] = useState(false);
     const [isVisibleDialog, setVisibleDialog] = useState(false);
+    const [actionModalType, setActionModalType] = useState(false);
     const history = useHistory();
     const [triggerExit, setTriggerExit] = useState({
         onOk: false,
@@ -206,7 +208,7 @@ const Designer = ({ update, viewMode = false }) => {
             changes.forEach(change => {
                 switch (change.type) {
                     case 'dimensions':
-                        if (change.resizing)
+                        if (change.resizing) {
                             updatedNodes[change.id] = {
                                 ...updatedNodes[change.id],
                                 position: {
@@ -217,6 +219,18 @@ const Designer = ({ update, viewMode = false }) => {
                                     ...change.dimensions,
                                 },
                             };
+                            const label = updatedNodes[change.id].data.label;
+                            const calculatedWidth = label.length * 10 + 30;
+                            const actualWidth = updatedNodes[change.id].style.width;
+                            if (calculatedWidth >= actualWidth) {
+                                const words = label.split(/\s+/);
+                                const nonEmptyWords = words.filter(word => word.length > 0);
+                                const height = nonEmptyWords.length  * 12 + 30;
+                                if (updatedNodes[change.id].style.height < height) {
+                                    updatedNodes[change.id].style.height = height;
+                                }
+                            }
+                        }
                         break;
                     case 'position':
                         if (change?.position) {
@@ -243,6 +257,7 @@ const Designer = ({ update, viewMode = false }) => {
                         };
                         break;
                     case 'remove': // Delete Functionality
+                        var deletedNodeData = updatedNodes[change.id];
                         if (change.id === 'messageBroker') {
                             setIsMessageBroker(false);
                             onCheckEdge(edges);
@@ -251,17 +266,32 @@ const Designer = ({ update, viewMode = false }) => {
                             setIsEmptyUiSubmit(false);
                             setIsUINodeEnabled(false);
                             uiCount--;
-                            if (change?.id && updatedNodes[change?.id]?.data?.applicationFramework) {
+                            if (change?.id && deletedNodeData?.data?.applicationFramework) {
                                 setApplicationData(prev => ({
                                     ...prev,
-                                    [updatedNodes[change.id].data?.framework]: false,
+                                    [deletedNodeData.data.applicationFramework]: false,
                                 }));
                             }
+                            setUiInputCheck(prev => {
+                                const updatedState = { ...prev };
+                                delete updatedState[change.id];
+                                return updatedState;
+                            });
                         } else if (change.id.startsWith('Service')) {
                             setIsEmptyServiceSubmit(false);
+                            setServiceInputCheck(prev => {
+                                const updatedState = { ...prev };
+                                delete updatedState[change.id];
+                                return updatedState;
+                            });
                         } else if (change.id.startsWith('Gateway')) {
                             setIsEmptyGatewaySubmit(false);
                             setIsGatewayNodeEnabled(false);
+                            setGatewayInputCheck(prev => {
+                                const updatedState = { ...prev };
+                                delete updatedState[change.id];
+                                return updatedState;
+                            });
                         } else if (change.id === 'serviceDiscoveryType') {
                             setIsServiceDiscovery(false);
                             setServiceDiscoveryCount(0);
@@ -404,10 +434,11 @@ const Designer = ({ update, viewMode = false }) => {
     }, []);
 
     const onclick = (e, node) => {
-        console.log(e, node)
-        const Id = e.target.dataset.id || e.target.name || node.id;
-        console.log(Id, CurrentNode);
+        var Id = e.target.dataset.id || e.target.name || node.id;
         if (Id) {
+            if (Id === 'oauth2') Id = 'authenticationType';
+            if (Id === 'eck') Id = 'logManagement';
+            if (Id === 'eureka') Id = 'serviceDiscoveryType';
             const type = Id.split('_')[0];
             setNodeType(type);
             if (type === 'aws' || type === 'azure') {
@@ -418,6 +449,7 @@ const Designer = ({ update, viewMode = false }) => {
         setNodeClick(Id);
     };
     const clear = () => {
+        localStorage.clear();
         setuserData({});
         setNodes({});
         setEdges({});
@@ -426,7 +458,7 @@ const Designer = ({ update, viewMode = false }) => {
         setUniqueApplicationNames([]);
         setUniquePortNumbers([]);
         setServiceInputCheck([]);
-        setUiInputCheck([]);
+        setUiInputCheck({});
         setGatewayInputCheck([]);
         databaseId = 1;
         groupId = 1;
@@ -502,7 +534,9 @@ const Designer = ({ update, viewMode = false }) => {
                     style: {
                         border: '1px solid red',
                         padding: '4px 4px',
-                        height: '60px',
+                        width: '120px',
+                        height: '40px',
+                        borderRadius: '15px',
                     },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
@@ -513,7 +547,7 @@ const Designer = ({ update, viewMode = false }) => {
                     type: 'selectorNode1',
                     position,
                     data: { serviceDiscoveryType: serviceDiscoveryType },
-                    style: { border: '1px solid', padding: '4px 4px' },
+                    style: { border: '1px solid', padding: '4px 4px', width: '120px', height: '40px', borderRadius: '15px' },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
                 setIsServiceDiscovery(true);
@@ -527,7 +561,7 @@ const Designer = ({ update, viewMode = false }) => {
                     type: 'selectorNode3',
                     position,
                     data: { authenticationType: authenticationType },
-                    style: { border: '1px solid', padding: '4px 4px' },
+                    style: { border: '1px solid', padding: '4px 4px', width: '120px', height: '40px', borderRadius: '15px' },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
                 setAuthProviderCount(1);
@@ -569,7 +603,7 @@ const Designer = ({ update, viewMode = false }) => {
                     type: 'selectorNode6',
                     position,
                     data: { logManagementType: logManagementType },
-                    style: { border: '1px solid', padding: '4px 4px' },
+                    style: { border: '1px solid', padding: '4px 4px', width: '120px', height: '40px', borderRadius: '15px' },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
                 setLogManagementCount(1);
@@ -781,7 +815,7 @@ const Designer = ({ update, viewMode = false }) => {
             };
             fetchData();
         } else if (!data) {
-            if (localStorage?.data != undefined && localStorage.data != null && localStorage.data?.metadata?.nodes != '') {
+            if (localStorage?.data != undefined && localStorage.data != null && JSON.parse(localStorage.data)?.metadata?.nodes != '') {
                 data = JSON.parse(localStorage.data);
                 setuserData(data);
                 if (data?.metadata?.nodes) {
@@ -827,6 +861,8 @@ const Designer = ({ update, viewMode = false }) => {
         if (update && userData.project_id) {
             var data = { ...userData };
             data.metadata.nodes = nodes;
+            if (Object.keys(nodes).length === 0) setShowDiv(true);
+            else setShowDiv(false);
             (data.metadata ??= {}).edges = edges;
             data.updated = updated;
             setuserData(data);
@@ -836,16 +872,18 @@ const Designer = ({ update, viewMode = false }) => {
         }
         if (!update) {
             try {
-                if (localStorage.data && JSON.parse(localStorage.data).projectName) {
+                if (localStorage?.data && JSON.parse(localStorage.data)?.projectName) {
                     userData.projectName = JSON.parse(localStorage.data).projectName;
                 }
-                if (localStorage.data && JSON.parse(localStorage.data).updated) {
+                if (localStorage?.data && JSON.parse(localStorage.data)?.updated) {
                     userData.updated = JSON.parse(localStorage.data).updated;
                 }
                 var udata = { ...userData };
                 (udata.metadata ??= {}).nodes = nodes;
+                if (Object.keys(nodes).length === 0) setShowDiv(true);
+                else setShowDiv(false);
                 udata.metadata.edges = edges;
-                if (localStorage.data && JSON.parse(localStorage.data)?.metadata?.deployment) {
+                if (localStorage?.data && JSON.parse(localStorage.data)?.metadata?.deployment) {
                     udata.metadata.deployment = JSON.parse(localStorage.data).metadata.deployment;
                 }
                 setuserData(udata);
@@ -869,6 +907,7 @@ const Designer = ({ update, viewMode = false }) => {
         if (updated) {
             unblock = history.block(location => {
                 setVisibleDialog(true);
+                setActionModalType('clearAndNav');
                 setTriggerExit(obj => ({ ...obj, path: location.pathname }));
                 if (triggerExit.onOk) {
                     return true;
@@ -882,6 +921,69 @@ const Designer = ({ update, viewMode = false }) => {
             }
         };
     }, [handleGoToIntendedPage, history, triggerExit.onOk, triggerExit.path, updated]);
+
+    useEffect(() => {
+        let updatedEdges = { ...edges };
+        if (IsEdgeopen) {
+            updatedEdges[IsEdgeopen].style = { stroke: '#3367d9' };
+            updatedEdges[IsEdgeopen].markerEnd = {
+                color: '#3367d9',
+                type: MarkerType.ArrowClosed,
+            };
+        } else {
+            for (const edgeId in updatedEdges) {
+                const targetType = edgeId.split('-')[1];
+                const sourceType = edgeId.split('-')[0];
+                if (updatedEdges[edgeId]?.selected) {
+                    updatedEdges[edgeId].style = { stroke: '#3367d9' };
+                    updatedEdges[edgeId].markerEnd = {
+                        color: '#3367d9',
+                        type: MarkerType.ArrowClosed,
+                    };
+                } else if (updatedEdges[edgeId].label === 'Rest') {
+                    updatedEdges[edgeId].style = { stroke: 'black' };
+                    updatedEdges[edgeId].markerEnd = {
+                        color: 'black',
+                        type: MarkerType.ArrowClosed,
+                    };
+                } else if (updatedEdges[edgeId].label === 'RabbitMQ') {
+                    updatedEdges[edgeId].style = { stroke: '#bcbaba' };
+                    updatedEdges[edgeId].markerEnd = {
+                        color: '#bcbaba',
+                        type: MarkerType.ArrowClosed,
+                    };
+                } else if (targetType.split('_')[0] === 'Database') {
+                    if (updatedEdges[edgeId]?.selected === false) {
+                        updatedEdges[edgeId].style = { stroke: '#000' };
+                        updatedEdges[edgeId].markerEnd = {
+                            color: '#000',
+                            type: MarkerType.ArrowClosed,
+                        };
+                    }
+                } else if (targetType.split('_')[0] === 'group' || sourceType.split('_')[0] === 'group') {
+                    if (updatedEdges[edgeId]?.selected === false) {
+                        updatedEdges[edgeId].style = { stroke: 'black' };
+                        updatedEdges[edgeId].markerEnd = {
+                            color: '#000',
+                            type: MarkerType.ArrowClosed,
+                        };
+                    }
+                } else if (targetType.split('_')[0] === 'Service' && sourceType.split('_')[0] === 'Service') {
+                    updatedEdges[edgeId].style = { stroke: 'red' };
+                    updatedEdges[edgeId].markerEnd = {
+                        color: 'red',
+                        type: MarkerType.ArrowClosed,
+                    };
+                } else {
+                    updatedEdges[edgeId].style = { stroke: 'black' };
+                    updatedEdges[edgeId].markerEnd = {
+                        color: '#000',
+                        type: MarkerType.ArrowClosed,
+                    };
+                }
+            }
+        }
+    }, [IsEdgeopen, edges]);
 
     const onChange = Data => {
         setUpdated(true);
@@ -901,16 +1003,18 @@ const Designer = ({ update, viewMode = false }) => {
         }
         let allGatewayDetailsFilled = false;
         for (let key in gatewayInputCheck) {
-            if (key !== Isopen && gatewayInputCheck[key] === true) {
-                allGatewayDetailsFilled = true;
-                setIsEmptyGatewaySubmit(true);
-            }
-            if (key.startsWith('Gateway') && Isopen === key) {
-                const styleData = gatewayInputCheck[key];
-                if (styleData) {
-                    let updatedNodes = { ...nodes };
-                    updatedNodes[key].style.border = '1px solid black';
-                    setNodes(updatedNodes);
+            if (key.startsWith('Gateway')) {
+                if (key !== Isopen && gatewayInputCheck[key] === true) {
+                    allGatewayDetailsFilled = true;
+                    setIsEmptyGatewaySubmit(true);
+                }
+                if (key.startsWith('Gateway') && Isopen === key) {
+                    const styleData = gatewayInputCheck[key];
+                    if (styleData) {
+                        let updatedNodes = { ...nodes };
+                        updatedNodes[key].style.border = '1px solid black';
+                        setNodes(updatedNodes);
+                    }
                 }
             }
         }
@@ -924,16 +1028,18 @@ const Designer = ({ update, viewMode = false }) => {
 
         let allUiDetailsFilled = false;
         for (let key in uiInputCheck) {
-            if (key !== Isopen && uiInputCheck[key] === true) {
-                allUiDetailsFilled = true;
-                setIsEmptyUiSubmit(true);
-            }
-            if (key.startsWith('UI') && Isopen === key) {
-                const styleData = uiInputCheck[key];
-                if (styleData) {
-                    let updatedNodes = { ...nodes };
-                    updatedNodes[key].style.border = '1px solid black';
-                    setNodes(updatedNodes);
+            if (key.startsWith('UI')) {
+                if (key !== Isopen && uiInputCheck[key] === true) {
+                    allUiDetailsFilled = true;
+                    setIsEmptyUiSubmit(true);
+                }
+                if (key.startsWith('UI') && Isopen === key) {
+                    const styleData = uiInputCheck[key];
+                    if (styleData) {
+                        let updatedNodes = { ...nodes };
+                        updatedNodes[key].style.border = '1px solid black';
+                        setNodes(updatedNodes);
+                    }
                 }
             }
         }
@@ -946,16 +1052,18 @@ const Designer = ({ update, viewMode = false }) => {
         }));
         let allServiceDetailsFilled = false;
         for (let key in serviceInputCheck) {
-            if (key !== Isopen && serviceInputCheck[key] === true) {
-                allServiceDetailsFilled = true;
-                setIsEmptyServiceSubmit(true);
-            }
-            if (key.startsWith('Service') && Isopen === key) {
-                const styleData = serviceInputCheck[key];
-                if (styleData) {
-                    let updatedNodes = { ...nodes };
-                    updatedNodes[key].style.border = '1px solid black';
-                    setNodes(updatedNodes);
+            if (key.startsWith('Service')) {
+                if (key !== Isopen && serviceInputCheck[key] === true) {
+                    allServiceDetailsFilled = true;
+                    setIsEmptyServiceSubmit(true);
+                }
+                if (key.startsWith('Service') && Isopen === key) {
+                    const styleData = serviceInputCheck[key];
+                    if (styleData) {
+                        let updatedNodes = { ...nodes };
+                        updatedNodes[key].style.border = '1px solid black';
+                        setNodes(updatedNodes);
+                    }
                 }
             }
         }
@@ -1041,8 +1149,12 @@ const Designer = ({ update, viewMode = false }) => {
                     ...logManagementData,
                 };
             if (Node.id.startsWith('UI')) {
-                if (Node.data.applicationFramework !== 'docusaurus') Node.data.applicationFramework = Node.data.clientFramework;
-                else Node.data.packageName = 'docs';
+                if (Node.data.applicationFramework === 'docusaurus') {
+                    Node.data.packageName = 'docs';
+                } else {
+                    Node.data.applicationFramework = Node.data.clientFramework;
+                    Node.data.packageName = 'ui';
+                }
             }
         }
         if (Object.values(NewNodes).some(node => node.data)) {
@@ -1134,12 +1246,59 @@ const Designer = ({ update, viewMode = false }) => {
     };
 
     const onEdgeClick = (e, edge) => {
+        let updatedEdges = { ...edges };
         const sourceType = edge.source.split('_')[0];
         const targetType = edge.target.split('_')[0];
+        if (sourceType != 'Database' && targetType != 'Database') {
+            Object.values(updatedEdges).forEach(edge => {
+                if (edge.id.split('-')[1].split('_')[0] === 'Database') {
+                    edge.style = { stroke: 'black' };
+                    edge.markerEnd = {
+                        color: 'black',
+                        type: MarkerType.ArrowClosed,
+                    };
+                    edge.selected = false;
+                } else if (edge.id.split('-')[0].split('_')[0] === 'group' || edge.id.split('-')[1].split('_')[0] === 'group') {
+                    edge.style = { stroke: 'black' };
+                    edge.markerEnd = {
+                        color: 'black',
+                        type: MarkerType.ArrowClosed,
+                    };
+                    edge.selected = false;
+                }
+            });
+        }
         if (sourceType === 'Service' && targetType === 'Service') {
             setEdgeopen(edge.id);
             setCurrentEdge(edges[edge.id].data);
+            updatedEdges[edge.id].selected = true;
+        } else if (targetType === 'Database') {
+            Object.values(updatedEdges).forEach(edge => {
+                edge.style = { stroke: 'black' };
+                edge.markerEnd = 'black';
+                edge.selected = false;
+            });
+            updatedEdges[edge.id].style = { stroke: '#3367d9' };
+            updatedEdges[edge.id].markerEnd = {
+                color: '#3367d9',
+                type: MarkerType.ArrowClosed,
+            };
+            updatedEdges[edge.id].selected = true;
+        } else if (targetType === 'group' || sourceType === 'group') {
+            Object.values(updatedEdges).forEach(edge => {
+                edge.style = { stroke: 'black' };
+                edge.markerEnd = 'black';
+                edge.selected = false;
+            });
+            updatedEdges[edge.id].style = { stroke: '#3367d9' };
+            updatedEdges[edge.id].markerEnd = {
+                color: '#3367d9',
+                type: MarkerType.ArrowClosed,
+            };
+            updatedEdges[edge.id].selected = true;
         }
+        updatedEdges[edge.id].selected = true;
+        setEdges(updatedEdges);
     };
 
     const handleEdgeData = Data => {
@@ -1170,6 +1329,7 @@ const Designer = ({ update, viewMode = false }) => {
             ...UpdatedEdges[IsEdgeopen].data,
             ...Data,
         };
+        UpdatedEdges[IsEdgeopen].selected = false;
 
         setEdges(UpdatedEdges);
         setEdgeopen(false);
@@ -1519,7 +1679,14 @@ const Designer = ({ update, viewMode = false }) => {
                                         >
                                             Click next to auto generate code and setup infrastructure
                                         </Text>
-                                        <Button>
+                                        <Button
+                                        // mt={4}
+                                        // border="2px"
+                                        // borderColor="#ebaf24"
+                                        // alignContent="center"
+                                        // color="#ebaf24"
+                                        // style={{ margin: '0 auto' }}
+                                        >
                                             Drag & Drop <ArrowRightIcon style={{ marginLeft: '10px', fontSize: '11px' }} />
                                         </Button>
                                     </Box>
@@ -1544,6 +1711,16 @@ const Designer = ({ update, viewMode = false }) => {
                                     View Mode
                                 </Button>
                                 <DownloadButton />
+                                <Button
+                                    hidden={viewOnly}
+                                    colorScheme="blackAlpha"
+                                    onClick={() => {
+                                        setVisibleDialog(true);
+                                        setActionModalType('clear');
+                                    }}
+                                >
+                                    Clear
+                                </Button>
                             </VStack>
                         </Panel>
                         <Background gap={10} color="#f2f2f2" variant={BackgroundVariant.Lines} />
@@ -1594,18 +1771,66 @@ const Designer = ({ update, viewMode = false }) => {
                     />
                 )}
 
+                {nodeType === 'Database' && Isopen && (
+                    <CustomNodeModal
+                        isOpen={Isopen}
+                        CurrentNode={CurrentNode}
+                        onClose={setopen}
+                        onSubmit={onChange}
+                        handleColorClick={handleColorClick}
+                    />
+                )}
+
+                {nodeType === 'serviceDiscoveryType' && Isopen && (
+                    <CustomNodeModal
+                        isOpen={Isopen}
+                        CurrentNode={CurrentNode}
+                        onClose={setopen}
+                        onSubmit={onChange}
+                        handleColorClick={handleColorClick}
+                    />
+                )}
+
+                {nodeType === 'authenticationType' && Isopen && (
+                    <CustomNodeModal
+                        isOpen={Isopen}
+                        CurrentNode={CurrentNode}
+                        onClose={setopen}
+                        onSubmit={onChange}
+                        handleColorClick={handleColorClick}
+                    />
+                )}
+
+                {nodeType === 'logManagement' && Isopen && (
+                    <CustomNodeModal
+                        isOpen={Isopen}
+                        CurrentNode={CurrentNode}
+                        onClose={setopen}
+                        onSubmit={onChange}
+                        handleColorClick={handleColorClick}
+                    />
+                )}
+
                 {isVisibleDialog && (
                     <ActionModal
                         isOpen={isVisibleDialog}
-                        onClose={() => setVisibleDialog(false)}
-                        onSubmit={() => {
-                            setTriggerExit(obj => ({
-                                ...obj,
-                                onOk: true,
-                            }));
+                        onClose={() => {
                             setVisibleDialog(false);
+                            setActionModalType(null);
                         }}
-                        actionType="clear"
+                        onSubmit={() => {
+                            if (actionModalType === 'clear') {
+                                clear();
+                            } else {
+                                setTriggerExit(obj => ({
+                                    ...obj,
+                                    onOk: true,
+                                }));
+                            }
+                            setVisibleDialog(false);
+                            setActionModalType(null);
+                        }}
+                        actionType={actionModalType}
                     />
                 )}
 

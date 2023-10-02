@@ -123,6 +123,7 @@ body,
     justify-content: center;
     width: 80px;
     height: 50px;
+    word-break: break-all;
 }
 
 @media screen and (min-width: 768px) {
@@ -134,10 +135,6 @@ body,
         width: 20%;
         max-width: 300px;
     }
-}
-
-.react-flow__node-selectorNode {
-    padding: 0 !important;
 }
 
 .react-flow__node-default.selectable.selected,
@@ -330,6 +327,7 @@ body,
 }
 
 .react-flow__node.react-flow__node-ResizableNode,
+.react-flow__node.react-flow__node-selectorNode,
 .react-flow__node.react-flow__node-selectorNode1,
 .react-flow__node.react-flow__node-selectorNode2,
 .react-flow__node.react-flow__node-selectorNode3,
@@ -371,10 +369,6 @@ body,
         width: 20%;
         max-width: 250px;
     }
-}
-
-.react-flow__node-selectorNode {
-    padding: 0 !important;
 }
 
 .react-flow__node-default.selectable.selected,

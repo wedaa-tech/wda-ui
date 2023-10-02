@@ -1,17 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-    Modal,
-    ModalContent,
-    ModalHeader,
-    ModalCloseButton,
-    ModalBody,
-    Input,
-    Button,
-    FormLabel,
-    FormControl,
-    Alert,
-    AlertIcon,
-} from '@chakra-ui/react';
+import { Modal, ModalContent, ModalHeader, ModalCloseButton, ModalBody, Input, Button, FormLabel, FormControl } from '@chakra-ui/react';
 
 const GroupDataModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick }) => {
     const IntialState = {
@@ -49,7 +37,7 @@ const GroupDataModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorCli
             }));
         }
     };
-    const groupNameCheck = !/^[a-zA-Z](?:[a-zA-Z0-9_]*[a-zA-Z0-9])?$/g.test(groupData.label);
+    const groupNameCheck = !groupData.label;
 
     return (
         <Modal isOpen={isOpen} onClose={() => onClose(false)}>
@@ -72,24 +60,18 @@ const GroupDataModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorCli
                         }}
                     >
                         <FormControl>
-                            <FormLabel>Group name</FormLabel>
+                            <FormLabel>Name</FormLabel>
                             <Input
                                 mb={3}
                                 variant="outline"
                                 id="groupName"
-                                placeholder="Name"
+                                placeholder="Display Name"
                                 borderColor={'black'}
                                 maxLength="32"
                                 value={groupData.label}
                                 onChange={e => handleData('label', e.target.value)}
                             />
                         </FormControl>
-                        {groupNameCheck && (
-                            <Alert status="error" height="10px" fontSize="10px" borderRadius="3px" mb={4}>
-                                <AlertIcon style={{ width: '14px', height: '14px' }} />
-                                Enter valid group name
-                            </Alert>
-                        )}
                     </div>
                     <FormLabel>Background Color</FormLabel>
                     <div
