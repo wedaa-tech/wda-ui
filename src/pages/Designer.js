@@ -224,7 +224,7 @@ const Designer = ({ update, viewMode = false }) => {
                             if (calculatedWidth >= actualWidth) {
                                 const words = label.split(/\s+/);
                                 const nonEmptyWords = words.filter(word => word.length > 0);
-                                const height = nonEmptyWords.length  * 12 + 30;
+                                const height = nonEmptyWords.length * 12 + 30;
                                 if (updatedNodes[change.id].style.height < height) {
                                     updatedNodes[change.id].style.height = height;
                                 }
@@ -1299,6 +1299,11 @@ const Designer = ({ update, viewMode = false }) => {
                 type: MarkerType.ArrowClosed,
             };
             updatedEdges[edge.id].selected = true;
+        }
+        for (var existingEdge in updatedEdges) {
+            if (existingEdge.id != edge.id) {
+                updatedEdges[existingEdge.id].selected = false;
+            }
         }
         updatedEdges[edge.id].selected = true;
         setEdges(updatedEdges);
