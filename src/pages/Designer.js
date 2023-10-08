@@ -1211,7 +1211,6 @@ const Designer = ({ update, viewMode = false }) => {
     const [generatingData, setGeneratingData] = useState({});
 
     const onsubmit = (Data, submit = false) => {
-        console.log('Entered Submit');
         setUpdated(false);
         const NewNodes = { ...nodes };
         const NewEdges = { ...edges };
@@ -1321,11 +1320,10 @@ const Designer = ({ update, viewMode = false }) => {
             Data.parentId = projectParentId;
         }
         setNodes(NewNodes);
-        console.log(Data);
         setGeneratingData(structuredClone(Data));
         setIsLoading(true);
         if (submit) {
-            generateZip(null, Data);
+            generateZip(null, Data)
         }
     };
 
@@ -1678,8 +1676,6 @@ const Designer = ({ update, viewMode = false }) => {
 
     const [menu, setMenu] = useState(null);
     const ref = useRef(null);
-
-    
 
     const onNodeContextMenu = useCallback(
         (event, node) => {

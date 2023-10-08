@@ -13,7 +13,6 @@ function CodeReview({ nodeId, generateMode = false, deployementData = null, onSu
     const [nodeData, setNodeData] = useState(null);
     const [nodeType, setNodeType] = useState(null);
     const [tabIndex, setTabIndex] = useState(0);
-    const [docusaurusCheck, setDocusaurusCheck] = useState(false);
 
     const [node, setNode] = useState(null);
 
@@ -39,7 +38,6 @@ function CodeReview({ nodeId, generateMode = false, deployementData = null, onSu
         setTabIndex(index);
     };
 
-
     return (
         <Flex direction={'column'} height={'inherit'} px={10} py={4} overflowY={'auto'}>
             <Tabs display={'flex'} flexDir={'column'} index={tabIndex} flexGrow={1} onChange={handleTabsChange}>
@@ -47,7 +45,7 @@ function CodeReview({ nodeId, generateMode = false, deployementData = null, onSu
                     <Tab>Configuration</Tab>
                     <Tab hidden={generateMode}>Folder Structure</Tab>
                     <Tab hidden={generateMode}>README.md</Tab>
-                    {!docusaurusCheck && <Tab>{generateMode ? 'Infrastructure' : 'Deployement'}</Tab>}
+                    <Tab>{generateMode ? 'Infrastructure' : 'Deployement'}</Tab>
                 </TabList>
                 <TabPanels height={'100%'}>
                     <TabPanel height={'100%'}>
@@ -59,25 +57,32 @@ function CodeReview({ nodeId, generateMode = false, deployementData = null, onSu
                     <TabPanel height={'100%'}>
                         <Readme nodeType={nodeType} />
                     </TabPanel>
-                    {!docusaurusCheck && (
-                        <TabPanel hidden={docusaurusCheck} padding={0} height={'100%'}>
-                            {!generateMode ? (
-                                <Deployement deployementData={deployementData} />
-                            ) : (
-                                <Infrastructure projectData={deployementData} onSubmit={onSubmit} generateZip={onClick} />
-                            )}
-                        </TabPanel>
-                    )}
+                    <TabPanel padding={0} height={'100%'}>
+                        {!generateMode ? (
+                            <Deployement deployementData={deployementData} />
+                        ) : (
+                            <Infrastructure projectData={deployementData} onSubmit={onSubmit} generateZip={onClick} />
+                        )}
+                    </TabPanel>
                 </TabPanels>
             </Tabs>
+            {/* <Button
+                hidden={!generateMode || tabIndex === 3}
+                mx={4}
+                my={2}
+                colorScheme="blue"
+                onClick={tabIndex !== 3 ? () => setTabIndex(3) : () => {}}
+            >
+                {tabIndex === 3 ? 'Generate with Infrastructure' : 'Configure Infrastructure'}
+            </Button> */}
             <Button
                 hidden={!generateMode}
                 mx={4}
                 my={2}
                 colorScheme="blue"
-                onClick={tabIndex === 3 || docusaurusCheck ? () => onClick() : () => setTabIndex(3)}
+                onClick={tabIndex !== 3 ? () => setTabIndex(3) : onClick}
             >
-                {docusaurusCheck ? 'Generate' : tabIndex === 3 ? 'Skip Infrastructure' : 'Next'}
+                {tabIndex === 3 ? 'Skip Infrastructure' : 'Next'}
             </Button>
         </Flex>
     );

@@ -733,7 +733,8 @@ const Sidebar = ({
                                 display: 'flex',
                                 flexDirection: 'column',
                             }}
-                        ></div>
+                        >
+                        </div>
                     </TabPanel>
                     <TabPanel>
                         <VStack spacing={5}>
