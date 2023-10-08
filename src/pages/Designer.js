@@ -1317,6 +1317,7 @@ const Designer = ({ update, viewMode = false }) => {
             Data.parentId = projectParentId;
         }
         setNodes(NewNodes);
+        console.log(Data)
         setGeneratingData(structuredClone(Data));
         setIsLoading(true);
         if (submit) {

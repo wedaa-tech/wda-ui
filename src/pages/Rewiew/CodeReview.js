@@ -39,6 +39,7 @@ function CodeReview({ nodeId, generateMode = false, deployementData = null, onSu
         setTabIndex(index);
     };
 
+
     return (
         <Flex direction={'column'} height={'inherit'} px={10} py={4} overflowY={'auto'}>
             <Tabs display={'flex'} flexDir={'column'} index={tabIndex} flexGrow={1} onChange={handleTabsChange}>
