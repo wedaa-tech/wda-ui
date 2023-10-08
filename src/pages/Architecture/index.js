@@ -18,6 +18,7 @@ import {
     Wrap,
     WrapItem,
     Grid,
+    IconButton,
 } from '@chakra-ui/react';
 import ArchitectureCard from './ArchitectureCard';
 import design1 from '../../assets/markets/design1.png';
@@ -30,6 +31,7 @@ import './index.css';
 import { useLocation, useParams } from 'react-router-dom/cjs/react-router-dom.min';
 import { useHistory } from 'react-router-dom';
 import { useKeycloak } from '@react-keycloak/web';
+import { ArrowBackIcon } from '@chakra-ui/icons';
 
 const thickPlusIconStyle = {
     display: 'grid',
@@ -50,7 +52,6 @@ function ArchitecturesSection() {
     const history = useHistory();
 
     const { parentId } = useParams();
-
 
     const [projectName, setProjectName] = useState(location?.state?.state?.projectName);
 
@@ -140,6 +141,13 @@ function ArchitecturesSection() {
 
     return (
         <Box p="4" maxWidth="7xl" mx="auto">
+            <IconButton
+                variant="outline"
+                colorScheme="black"
+                aria-label="Send email"
+                icon={<ArrowBackIcon />}
+                onClick={() => history.goBack()}
+            />
             <Flex justifyContent={'space-between'} alignItems={'center'}>
                 <Heading className="not-selectable" as="h1" my="10">
                     Architectures
@@ -152,7 +160,7 @@ function ArchitecturesSection() {
                 </Text>
             </Flex>
 
-            <SimpleGrid minChildWidth="380px" columns={{ base: 1, sm: 1, md: 3 }} spacing={10}>
+            <SimpleGrid className="simple-grid" minChildWidth="null" columns={{ base: 1, sm: 1, md: 3 }} spacing={10}>
                 <Box
                     maxWidth={96}
                     minWidth={96}
@@ -200,7 +208,7 @@ function ArchitecturesSection() {
             <Heading className="not-selectable" as="h3" size="lg" my="10">
                 Your Architectures
             </Heading>
-            <SimpleGrid minChildWidth="380px" columns={{ base: 1, sm: 2, md: 3 }} spacing={10}>
+            <SimpleGrid className="simple-grid" minChildWidth="null" columns={{ base: 1, sm: 2, md: 3 }} spacing={10}>
                 {architectures.map((architecture, index) => (
                     <ArchitectureCard
                         key={index}
