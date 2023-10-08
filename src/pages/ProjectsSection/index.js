@@ -176,7 +176,7 @@ const ProjectsSection = () => {
             <Heading className="not-selectable" as="h1" my="10">
                 Projects
             </Heading>
-            <SimpleGrid minChildWidth="380px" columns={{ base: 1, sm: 1, md: 3 }} spacing={10}>
+            <SimpleGrid className="simple-grid" minChildWidth="null" columns={{ base: 1, sm: 1, md: 3 }} spacing={10}>
                 <Box
                     maxWidth={96}
                     minWidth={96}
@@ -224,7 +224,7 @@ const ProjectsSection = () => {
             <Heading className="not-selectable" as="h3" size="lg" my="10">
                 Your Projects
             </Heading>
-            <SimpleGrid minChildWidth="380px" columns={{ base: 1, sm: 2, md: 3 }} spacing={10}>
+            <SimpleGrid className="simple-grid" minChildWidth="null" columns={{ base: 1, sm: 2, md: 3 }} spacing={10}>
                 {projects.map((project, index) => (
                     <ProjectCard
                         parentId={project.id}
