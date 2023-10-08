@@ -531,24 +531,6 @@ const Sidebar = ({
                                 flexDirection: 'column',
                             }}
                         >
-                            {initialized && keycloak.authenticated && (
-                                <Checkbox size="md" colorScheme="blue" isChecked={saveMetadata} onChange={Togglesave}>
-                                    Save Project
-                                </Checkbox>
-                            )}
-                            <Button onClick={handleButtonClick} type="submit">
-                                Next
-                            </Button>
-                            {showModal && (
-                                <DeployModal
-                                    onSubmit={onSubmit}
-                                    isLoading={isLoading}
-                                    projectData={projectData}
-                                    onClose={handleCloseModal}
-                                    Service_Discovery_Data={Service_Discovery_Data}
-                                    update={update}
-                                />
-                            )}
                         </div>
                     </TabPanel>
                     <TabPanel>

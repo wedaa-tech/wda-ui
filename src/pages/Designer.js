@@ -225,7 +225,7 @@ const Designer = ({ update, viewMode = false }) => {
                             if (calculatedWidth >= actualWidth) {
                                 const words = label.split(/\s+/);
                                 const nonEmptyWords = words.filter(word => word.length > 0);
-                                const height = nonEmptyWords.length  * 12 + 30;
+                                const height = nonEmptyWords.length * 12 + 30;
                                 if (updatedNodes[change.id].style.height < height) {
                                     updatedNodes[change.id].style.height = height;
                                 }
@@ -1127,7 +1127,7 @@ const Designer = ({ update, viewMode = false }) => {
 
     const [generatingData, setGeneratingData] = useState({});
 
-    const onsubmit = Data => {
+    const onsubmit = (Data, submit = false) => {
         setUpdated(false);
         const NewNodes = { ...nodes };
         const NewEdges = { ...edges };
@@ -1196,8 +1196,12 @@ const Designer = ({ update, viewMode = false }) => {
             Data.parentId = projectParentId;
         }
         setNodes(NewNodes);
+        console.log(Data)
         setGeneratingData(structuredClone(Data));
         setIsLoading(true);
+        if (submit) {
+            generateZip(null, Data)
+        }
     };
 
     //
@@ -1205,8 +1209,9 @@ const Designer = ({ update, viewMode = false }) => {
     const [isGenerating, setIsGenerating] = useState(false);
     const [image, setImage] = useState(null);
 
-    const generateZip = async () => {
-        const Data = generatingData;
+    const generateZip = async (e, data = null) => {
+        const Data = data || generatingData;
+        console.log(Data)
         const generatedImage = await CreateImage(Object.values(nodes));
         setIsGenerating(true);
         if (generatedImage) Data.imageUrl = generatedImage;
@@ -1491,7 +1496,7 @@ const Designer = ({ update, viewMode = false }) => {
     const [selectedColor, setSelectedColor] = useState('');
 
     const handleColorClick = color => {
-        console.log(color)
+        console.log(color);
         let UpdatedNodes = structuredClone(nodes);
         setSelectedColor(color);
         (UpdatedNodes[nodeClick].style ??= {}).backgroundColor = color;
@@ -1501,8 +1506,6 @@ const Designer = ({ update, viewMode = false }) => {
 
     const [menu, setMenu] = useState(null);
     const ref = useRef(null);
-
-    
 
     const onNodeContextMenu = useCallback(
         (event, node) => {
@@ -1531,8 +1534,9 @@ const Designer = ({ update, viewMode = false }) => {
                     edgesData={Object.values(edges)}
                     setViewOnly={setIsLoading}
                     generateZip={generateZip}
-                    deployementData={generatingData?.deployment}
+                    deployementData={generatingData}
                     generateMode
+                    onSubmit={onsubmit}
                 />
                 {isGenerating && (
                     <Flex
@@ -1713,13 +1717,14 @@ const Designer = ({ update, viewMode = false }) => {
                                 <DownloadButton />
                                 <Button
                                     hidden={viewOnly}
+                                    size="sm"
                                     colorScheme="blackAlpha"
                                     onClick={() => {
                                         setVisibleDialog(true);
                                         setActionModalType('clear');
                                     }}
                                 >
-                                    Clear
+                                    Clear Canvas
                                 </Button>
                             </VStack>
                         </Panel>

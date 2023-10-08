@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Tabs, TabList, Tab, TabPanels, TabPanel } from '@chakra-ui/react';
+import { Box, Tabs, TabList, Tab, TabPanels, TabPanel, Button, Flex } from '@chakra-ui/react';
 import Documentation from './Documentation';
 import FolderTree from './FolderTree';
 import Readme from './Readme';
 import Deployement from './Deployement';
 import { useReactFlow } from 'reactflow';
+import Infrastructure from './Infrastructure';
 
-function CodeReview({ nodeId, generateMode = false, deployementData = null }) {
+function CodeReview({ nodeId, generateMode = false, deployementData = null, onSubmit = null, onClick = null }) {
     const { getNode } = useReactFlow();
 
     const [nodeData, setNodeData] = useState(null);
     const [nodeType, setNodeType] = useState(null);
+    const [tabIndex, setTabIndex] = useState(0);
 
     const [node, setNode] = useState(null);
 
@@ -26,14 +28,18 @@ function CodeReview({ nodeId, generateMode = false, deployementData = null }) {
         loadData();
     }, [node, getNode, nodeId]);
 
+    const handleTabsChange = index => {
+        setTabIndex(index);
+    };
+
     return (
-        <Box flex="1" bg="white" px={10} py={4} overflowY={'auto'}>
-            <Tabs height={'95%'} display="flex" flexDirection="column">
+        <Flex direction={'column'} height={'inherit'} px={10} py={4} overflowY={'auto'}>
+            <Tabs display={'flex'} flexDir={'column'} index={tabIndex} flexGrow={1} onChange={handleTabsChange}>
                 <TabList position={'sticky'}>
                     <Tab>Configuration</Tab>
                     <Tab hidden={generateMode}>Folder Structure</Tab>
                     <Tab hidden={generateMode}>README.md</Tab>
-                    <Tab>Deployement</Tab>
+                    <Tab>{generateMode ? 'Infrastructure' : 'Deployement'}</Tab>
                 </TabList>
                 <TabPanels height={'100%'}>
                     <TabPanel height={'100%'}>
@@ -45,12 +51,34 @@ function CodeReview({ nodeId, generateMode = false, deployementData = null }) {
                     <TabPanel height={'100%'}>
                         <Readme nodeType={nodeType} />
                     </TabPanel>
-                    <TabPanel height={'inherit'}>
-                        <Deployement deployementData={deployementData} />
+                    <TabPanel padding={0} height={'100%'}>
+                        {!generateMode ? (
+                            <Deployement deployementData={deployementData} />
+                        ) : (
+                            <Infrastructure projectData={deployementData} onSubmit={onSubmit} generateZip={onClick} />
+                        )}
                     </TabPanel>
                 </TabPanels>
             </Tabs>
-        </Box>
+            {/* <Button
+                hidden={!generateMode || tabIndex === 3}
+                mx={4}
+                my={2}
+                colorScheme="blue"
+                onClick={tabIndex !== 3 ? () => setTabIndex(3) : () => {}}
+            >
+                {tabIndex === 3 ? 'Generate with Infrastructure' : 'Configure Infrastructure'}
+            </Button> */}
+            <Button
+                hidden={!generateMode}
+                mx={4}
+                my={2}
+                colorScheme="blue"
+                onClick={tabIndex !== 3 ? () => setTabIndex(3) : onClick}
+            >
+                {tabIndex === 3 ? 'Skip Infrastructure' : 'Next'}
+            </Button>
+        </Flex>
     );
 }
 
