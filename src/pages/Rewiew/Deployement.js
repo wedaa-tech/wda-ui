@@ -3,7 +3,7 @@ import { useReactFlow } from 'reactflow';
 import { Table, Thead, Tbody, Tr, Th, Td, Box, Text } from '@chakra-ui/react';
 
 const Deployement = ({ deployementData }) => {
-    if (deployementData?.deployement == null) {
+    if (!deployementData) {
         return <div>Deployement Data Not Found.</div>;
     } else {
         return (

@@ -15,10 +15,15 @@ import {
     GridItem,
     Flex,
     Tooltip,
-    Wrap,
-    WrapItem,
-    Grid,
+    AlertDialog,
+    AlertDialogBody,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogContent,
+    AlertDialogOverlay,
+    AlertDialogCloseButton,
     IconButton,
+    useDisclosure,
 } from '@chakra-ui/react';
 import ArchitectureCard from './ArchitectureCard';
 import design1 from '../../assets/markets/design1.png';
@@ -32,6 +37,8 @@ import { useLocation, useParams } from 'react-router-dom/cjs/react-router-dom.mi
 import { useHistory } from 'react-router-dom';
 import { useKeycloak } from '@react-keycloak/web';
 import { ArrowBackIcon } from '@chakra-ui/icons';
+import { easeIn } from 'framer-motion';
+import ActionModal from '../../components/Modal/ActionModal';
 
 const thickPlusIconStyle = {
     display: 'grid',
@@ -52,6 +59,13 @@ function ArchitecturesSection() {
     const history = useHistory();
 
     const { parentId } = useParams();
+
+    const { isOpen, onOpen, onClose } = useDisclosure();
+    const cancelRef = React.useRef();
+
+    if (parentId === undefined) {
+        history.push('/projects');
+    }
 
     const [projectName, setProjectName] = useState(location?.state?.state?.projectName);
 
@@ -146,7 +160,7 @@ function ArchitecturesSection() {
                 colorScheme="black"
                 aria-label="Send email"
                 icon={<ArrowBackIcon />}
-                onClick={() => history.goBack()}
+                onClick={() => history.push('/projects')}
             />
             <Flex justifyContent={'space-between'} alignItems={'center'}>
                 <Heading className="not-selectable" as="h1" my="10">
