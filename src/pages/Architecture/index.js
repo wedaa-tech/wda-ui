@@ -158,7 +158,7 @@ function ArchitecturesSection() {
             <IconButton
                 variant="outline"
                 colorScheme="black"
-                aria-label="Send email"
+                aria-label="Delete Projects"
                 icon={<ArrowBackIcon />}
                 onClick={() => history.push('/projects')}
             />

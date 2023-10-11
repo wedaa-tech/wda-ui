@@ -69,15 +69,6 @@ function CodeReview({ nodeId, generateMode = false, deployementData = null, onSu
                     )}
                 </TabPanels>
             </Tabs>
-            {/* <Button
-                hidden={!generateMode || tabIndex === 3}
-                mx={4}
-                my={2}
-                colorScheme="blue"
-                onClick={tabIndex !== 3 ? () => setTabIndex(3) : () => {}}
-            >
-                {tabIndex === 3 ? 'Generate with Infrastructure' : 'Configure Infrastructure'}
-            </Button> */}
             <Button
                 hidden={!generateMode}
                 mx={4}
