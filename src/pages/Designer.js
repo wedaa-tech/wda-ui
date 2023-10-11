@@ -1211,7 +1211,6 @@ const Designer = ({ update, viewMode = false }) => {
     const [generatingData, setGeneratingData] = useState({});
 
     const onsubmit = (Data, submit = false) => {
-        console.log('Entered Submit');
         setUpdated(false);
         const NewNodes = { ...nodes };
         const NewEdges = { ...edges };
@@ -1671,7 +1670,6 @@ const Designer = ({ update, viewMode = false }) => {
         let UpdatedNodes = structuredClone(nodes);
         setSelectedColor(color);
         (UpdatedNodes[nodeClick].style ??= {}).backgroundColor = color;
-        console.log(nodeClick, UpdatedNodes);
         setNodes({ ...UpdatedNodes });
     };
 
@@ -1877,7 +1875,7 @@ const Designer = ({ update, viewMode = false }) => {
                         <Panel position="top-right">
                             <VStack spacing={4} alignItems={'stretch'}>
                                 <Button
-                                    hidden={false}
+                                    hidden={true}
                                     colorScheme="blackAlpha"
                                     size="sm"
                                     onClick={() => console.log(nodes, edges, userData, projectParentId, projectName, generatingData)}

@@ -39,7 +39,7 @@ function DownloadButton() {
 
     return (
         <Button colorScheme="blackAlpha" size="sm" onClick={onClick}>
-            Export to PNG
+            Save as Image
         </Button>
     );
 }
