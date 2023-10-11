@@ -111,7 +111,7 @@ const Designer = ({ update, viewMode = false }) => {
 
     const [updated, setUpdated] = useState(false);
     const [isVisibleDialog, setVisibleDialog] = useState(false);
-    const [actionModalType, setActionModalType] = useState(false);
+    const [actionModalType, setActionModalType] = useState('clear');
     const history = useHistory();
     const [triggerExit, setTriggerExit] = useState({
         onOk: false,
@@ -1128,6 +1128,7 @@ const Designer = ({ update, viewMode = false }) => {
     const [generatingData, setGeneratingData] = useState({});
 
     const onsubmit = (Data, submit = false) => {
+        console.log('Entered Submit');
         setUpdated(false);
         const NewNodes = { ...nodes };
         const NewEdges = { ...edges };
@@ -1196,11 +1197,11 @@ const Designer = ({ update, viewMode = false }) => {
             Data.parentId = projectParentId;
         }
         setNodes(NewNodes);
-        console.log(Data)
+        console.log(Data);
         setGeneratingData(structuredClone(Data));
         setIsLoading(true);
         if (submit) {
-            generateZip(null, Data)
+            generateZip(null, Data);
         }
     };
 
@@ -1211,7 +1212,7 @@ const Designer = ({ update, viewMode = false }) => {
 
     const generateZip = async (e, data = null) => {
         const Data = data || generatingData;
-        console.log(Data)
+        console.log(data, generatingData);
         const generatedImage = await CreateImage(Object.values(nodes));
         setIsGenerating(true);
         if (generatedImage) Data.imageUrl = generatedImage;
@@ -1233,7 +1234,14 @@ const Designer = ({ update, viewMode = false }) => {
             console.error(error);
         } finally {
             localStorage.clear();
-            history.replace('/project/' + projectParentId + '/architectures');
+            if (initialized && keycloak.authenticated) {
+                clear();
+                history.replace('/project/' + projectParentId + '/architectures');
+            } else {
+                clear();
+                setIsLoading(false);
+                history.push('/canvasToCode');
+            }
         }
     };
 
@@ -1701,10 +1709,10 @@ const Designer = ({ update, viewMode = false }) => {
                         <Panel position="top-right">
                             <VStack spacing={4} alignItems={'stretch'}>
                                 <Button
-                                    hidden={true}
+                                    hidden={false}
                                     colorScheme="blackAlpha"
                                     size="sm"
-                                    onClick={() => console.log(nodes, edges, userData, projectParentId, projectName)}
+                                    onClick={() => console.log(nodes, edges, userData, projectParentId, projectName, generatingData)}
                                 >
                                     Print
                                 </Button>
@@ -1816,28 +1824,26 @@ const Designer = ({ update, viewMode = false }) => {
                     />
                 )}
 
-                {isVisibleDialog && (
-                    <ActionModal
-                        isOpen={isVisibleDialog}
-                        onClose={() => {
-                            setVisibleDialog(false);
-                            setActionModalType(null);
-                        }}
-                        onSubmit={() => {
-                            if (actionModalType === 'clear') {
-                                clear();
-                            } else {
-                                setTriggerExit(obj => ({
-                                    ...obj,
-                                    onOk: true,
-                                }));
-                            }
-                            setVisibleDialog(false);
-                            setActionModalType(null);
-                        }}
-                        actionType={actionModalType}
-                    />
-                )}
+                <ActionModal
+                    isOpen={isVisibleDialog}
+                    onClose={() => {
+                        setVisibleDialog(false);
+                        setActionModalType('clear');
+                    }}
+                    onSubmit={() => {
+                        if (actionModalType === 'clear') {
+                            clear();
+                        } else {
+                            setTriggerExit(obj => ({
+                                ...obj,
+                                onOk: true,
+                            }));
+                        }
+                        setVisibleDialog(false);
+                        setActionModalType('clear');
+                    }}
+                    actionType={actionModalType}
+                />
 
                 {IsEdgeopen && (
                     <EdgeModal

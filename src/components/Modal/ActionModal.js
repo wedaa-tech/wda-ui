@@ -31,6 +31,12 @@ const ActionModal = ({ isOpen = true, onClose, onSubmit, actionType, id, name })
             cancelText: 'Cancel',
             submitText: 'Clear',
         },
+        deleteArch: {
+            title: 'Delete Arch',
+            content: `Are you sure you want to delete this arch ${name}?`,
+            cancelText: 'Cancel',
+            submitText: 'Delete',
+        },
     };
 
     const config = actionConfig[actionType];
@@ -76,7 +82,7 @@ const ActionModal = ({ isOpen = true, onClose, onSubmit, actionType, id, name })
                     <Button ref={cancelRef} onClick={onClose} variant="" color={'#3182ce'}>
                         {config.cancelText}
                     </Button>
-                    <Button onClick={() => onSubmit({ id })} ml={3}>
+                    <Button onClick={(e) => onSubmit({ id })} ml={3}>
                         {config.submitText}
                     </Button>
                 </AlertDialogFooter>

@@ -117,12 +117,15 @@ export const ReviewFlow = ({
                     nodesDraggable={false}
                     nodesConnectable={false}
                     nodeTypes={nodeTypes}
-                    showInteractive={false}
+                    // showInteractive={false}
                     fitView
                 >
                     <Panel position="top-right">
                         <Button colorScheme="blue" onClick={generateMode ? () => setViewOnly(false) : handleEditClick}>
                             {generateMode ? 'Go Back' : 'Edit Mode'}
+                        </Button>
+                        <Button hidden={false} colorScheme="blue" onClick={() => console.log(deployementData)}>
+                            Print
                         </Button>
                     </Panel>
                     <Panel position="top-left">

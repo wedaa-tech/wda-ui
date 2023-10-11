@@ -216,13 +216,11 @@ const Sidebar = ({
         });
         if (!isValid) return;
         if (Object.keys(nodes).length === 1 && Object.values(nodes)[0]?.data?.applicationFramework === 'docusaurus') {
-            // }
-            // setIsLoading(true);
-            // setShowModal(true);
-            onSubmit(projectData);
+            setIsLoading(true);
         } else {
-            setShowModal(true);
+            setIsLoading(true);
         }
+        onSubmit(projectData);
     };
 
     const handleToggleContent = () => {
@@ -530,8 +528,7 @@ const Sidebar = ({
                                 display: 'flex',
                                 flexDirection: 'column',
                             }}
-                        >
-                        </div>
+                        ></div>
                     </TabPanel>
                     <TabPanel>
                         <VStack spacing={5}>

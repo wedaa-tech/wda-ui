@@ -13,10 +13,17 @@ function CodeReview({ nodeId, generateMode = false, deployementData = null, onSu
     const [nodeData, setNodeData] = useState(null);
     const [nodeType, setNodeType] = useState(null);
     const [tabIndex, setTabIndex] = useState(0);
+    const [docusaurusCheck, setDocusaurusCheck] = useState(false);
 
     const [node, setNode] = useState(null);
 
     useEffect(() => {
+        if (
+            Object.keys(deployementData.services).length === 1 &&
+            Object.values(deployementData.services)[0]?.applicationFramework === 'docusaurus'
+        ) {
+            setDocusaurusCheck(true);
+        }
         const loadData = () => {
             if (nodeId && getNode(nodeId)) {
                 const nd = getNode(nodeId);
@@ -26,7 +33,7 @@ function CodeReview({ nodeId, generateMode = false, deployementData = null, onSu
             }
         };
         loadData();
-    }, [node, getNode, nodeId]);
+    }, [node, getNode, nodeId, deployementData]);
 
     const handleTabsChange = index => {
         setTabIndex(index);
@@ -39,7 +46,7 @@ function CodeReview({ nodeId, generateMode = false, deployementData = null, onSu
                     <Tab>Configuration</Tab>
                     <Tab hidden={generateMode}>Folder Structure</Tab>
                     <Tab hidden={generateMode}>README.md</Tab>
-                    <Tab>{generateMode ? 'Infrastructure' : 'Deployement'}</Tab>
+                    {!docusaurusCheck && <Tab>{generateMode ? 'Infrastructure' : 'Deployement'}</Tab>}
                 </TabList>
                 <TabPanels height={'100%'}>
                     <TabPanel height={'100%'}>
@@ -51,13 +58,15 @@ function CodeReview({ nodeId, generateMode = false, deployementData = null, onSu
                     <TabPanel height={'100%'}>
                         <Readme nodeType={nodeType} />
                     </TabPanel>
-                    <TabPanel padding={0} height={'100%'}>
-                        {!generateMode ? (
-                            <Deployement deployementData={deployementData} />
-                        ) : (
-                            <Infrastructure projectData={deployementData} onSubmit={onSubmit} generateZip={onClick} />
-                        )}
-                    </TabPanel>
+                    {!docusaurusCheck && (
+                        <TabPanel hidden={docusaurusCheck} padding={0} height={'100%'}>
+                            {!generateMode ? (
+                                <Deployement deployementData={deployementData} />
+                            ) : (
+                                <Infrastructure projectData={deployementData} onSubmit={onSubmit} generateZip={onClick} />
+                            )}
+                        </TabPanel>
+                    )}
                 </TabPanels>
             </Tabs>
             {/* <Button
@@ -74,9 +83,9 @@ function CodeReview({ nodeId, generateMode = false, deployementData = null, onSu
                 mx={4}
                 my={2}
                 colorScheme="blue"
-                onClick={tabIndex !== 3 ? () => setTabIndex(3) : onClick}
+                onClick={tabIndex === 3 || docusaurusCheck ? () => onClick() : () => setTabIndex(3)}
             >
-                {tabIndex === 3 ? 'Skip Infrastructure' : 'Next'}
+                {docusaurusCheck ? 'Generate' : tabIndex === 3 ? 'Skip Infrastructure' : 'Next'}
             </Button>
         </Flex>
     );

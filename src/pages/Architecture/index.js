@@ -15,10 +15,15 @@ import {
     GridItem,
     Flex,
     Tooltip,
-    Wrap,
-    WrapItem,
-    Grid,
+    AlertDialog,
+    AlertDialogBody,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogContent,
+    AlertDialogOverlay,
+    AlertDialogCloseButton,
     IconButton,
+    useDisclosure,
 } from '@chakra-ui/react';
 import ArchitectureCard from './ArchitectureCard';
 import design1 from '../../assets/markets/design1.png';
@@ -32,6 +37,8 @@ import { useLocation, useParams } from 'react-router-dom/cjs/react-router-dom.mi
 import { useHistory } from 'react-router-dom';
 import { useKeycloak } from '@react-keycloak/web';
 import { ArrowBackIcon } from '@chakra-ui/icons';
+import { easeIn } from 'framer-motion';
+import ActionModal from '../../components/Modal/ActionModal';
 
 const thickPlusIconStyle = {
     display: 'grid',
@@ -53,11 +60,23 @@ function ArchitecturesSection() {
 
     const { parentId } = useParams();
 
+    const { isOpen, onOpen, onClose } = useDisclosure();
+    const cancelRef = React.useRef();
+
+    if (parentId === undefined) {
+        history.push('/projects');
+    }
+
     const [projectName, setProjectName] = useState(location?.state?.state?.projectName);
 
     const [isNewArchitectureModalOpen, setNewArchitectureModalOpen] = useState(false);
     const [newArchitectureName, setNewArchitectureName] = useState('');
     const initialRef = useRef(null);
+    const { initialized, keycloak } = useKeycloak();
+    const [architectures, setArchitectures] = useState([]);
+    const [totalArchitectures, setTotalArchitectures] = useState(0);
+    const [architectureId, setArchitectureId] = useState(null);
+    const [architectureTitle, setArchitectureTitle] = useState(null);
 
     const handleOpenNewArchitectureModal = () => {
         setNewArchitectureModalOpen(true);
@@ -81,10 +100,6 @@ function ArchitecturesSection() {
         });
         handleCloseNewArchitectureModal();
     };
-
-    const { initialized, keycloak } = useKeycloak();
-    const [architectures, setArchitectures] = useState([]);
-    const [totalArchitectures, setTotalArchitectures] = useState(0);
 
     useEffect(() => {
         if (initialized) {
@@ -115,6 +130,29 @@ function ArchitecturesSection() {
         });
     };
 
+    const deleteArchitecture = data => {
+        if (initialized) {
+            fetch(process.env.REACT_APP_API_BASE_URL + '/api/blueprints/' + data.id, {
+                method: 'delete',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                },
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // if (data.success) {
+                    const updatedArchitectures = architectures.filter(card => card.id !== data.id);
+                    setArchitectures(updatedArchitectures);
+                    // } else {
+                    //     console.error('Error deleting card:', data.error);
+                    // }
+                })
+                .catch(error => console.error('Error deleting card:', error));
+        }
+        onClose(true);
+    };
+
     return (
         <Box p="4" maxWidth="7xl" mx="auto">
             <IconButton
@@ -122,7 +160,7 @@ function ArchitecturesSection() {
                 colorScheme="black"
                 aria-label="Send email"
                 icon={<ArrowBackIcon />}
-                onClick={() => history.goBack()}
+                onClick={() => history.push('/projects')}
             />
             <Flex justifyContent={'space-between'} alignItems={'center'}>
                 <Heading className="not-selectable" as="h1" my="10">
@@ -194,6 +232,11 @@ function ArchitecturesSection() {
                         description={architecture.description}
                         imageUrl={architecture.imageUrl}
                         onClick={handleOpenArchitecture}
+                        onDelete={(title, projectId) => {
+                            setArchitectureId(projectId);
+                            setArchitectureTitle(title);
+                            onOpen(true);
+                        }}
                     />
                 ))}
             </SimpleGrid>
@@ -234,6 +277,14 @@ function ArchitecturesSection() {
                     <ModalFooter></ModalFooter>
                 </ModalContent>
             </Modal>
+            <ActionModal
+                isOpen={isOpen}
+                onClose={onClose}
+                onSubmit={id => deleteArchitecture(id)}
+                actionType={'deleteArch'}
+                name={architectureTitle}
+                id={architectureId}
+            />
         </Box>
     );
 }
