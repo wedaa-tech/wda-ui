@@ -1208,6 +1208,7 @@ const Designer = ({ update, viewMode = false }) => {
     const [generatingData, setGeneratingData] = useState({});
 
     const onsubmit = (Data, submit = false) => {
+        console.log('Entered Submit');
         setUpdated(false);
         const NewNodes = { ...nodes };
         const NewEdges = { ...edges };
@@ -1317,7 +1318,7 @@ const Designer = ({ update, viewMode = false }) => {
             Data.parentId = projectParentId;
         }
         setNodes(NewNodes);
-        console.log(Data)
+        console.log(Data);
         setGeneratingData(structuredClone(Data));
         setIsLoading(true);
         if (submit) {
@@ -1873,7 +1874,7 @@ const Designer = ({ update, viewMode = false }) => {
                         <Panel position="top-right">
                             <VStack spacing={4} alignItems={'stretch'}>
                                 <Button
-                                    hidden={true}
+                                    hidden={false}
                                     colorScheme="blackAlpha"
                                     size="sm"
                                     onClick={() => console.log(nodes, edges, userData, projectParentId, projectName, generatingData)}
