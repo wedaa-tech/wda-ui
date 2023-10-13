@@ -555,7 +555,6 @@ const Designer = ({ update, viewMode = false }) => {
             });
             if (name.startsWith('Service')) {
                 const serviceType = name.split('_').splice(1)[0];
-                console.log(serviceType, '==-=-=-=-');
                 const newNode = {
                     id: getId('Service'),
                     type: 'ResizableNode',
