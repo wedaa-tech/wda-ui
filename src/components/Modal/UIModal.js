@@ -240,7 +240,7 @@ const UiDataModal = ({
                                 </Alert>
                             )}
                         </FormControl>
-                        <FormControl>
+                        {/* <FormControl>
                             <FormLabel>Application Framework</FormLabel>
                             <Select
                                 mb={4}
@@ -291,7 +291,7 @@ const UiDataModal = ({
                                 <AlertIcon style={{ width: '14px', height: '14px' }} />
                                 Select a Valid Client Framework.
                             </Alert>
-                        )}
+                        )} */}
                         {/* {UiData.applicationFramework === 'ui' && (
                             <FormControl>
                                 <FormLabel>Package Name</FormLabel>

@@ -196,7 +196,7 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                             </Alert>
                         )}
                         {/* <p>AN: {ApplicationData.AN}</p> */}
-                        <FormControl>
+                        {/* <FormControl>
                             <FormLabel>Application Framework</FormLabel>
                             <Select
                                 mb={4}
@@ -218,7 +218,7 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                                 <AlertIcon style={{ width: '14px', height: '14px' }} />
                                 Select a Valid Application Framework.
                             </Alert>
-                        )}
+                        )} */}
                         <FormControl>
                             <FormLabel>Package Name</FormLabel>
                             <Input

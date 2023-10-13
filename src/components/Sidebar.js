@@ -1,6 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import db1 from '../assets/postgresql.png';
 import db2 from '../assets/mongo.png';
+import srv1 from '../assets/spring.png';
+import srv2 from '../assets/go.png';
+import ui1 from '../assets/react.png';
+import ui2 from '../assets/angular.png';
+import grp from '../assets/group.png';
+import gateway from '../assets/cloud gateway.png';
+import docs from '../assets/docusaurus.png';
 import eurkea from '../assets/eureka.png';
 import keycloakIcon from '../assets/keycloak.png';
 import eck from '../assets/eck.png';
@@ -42,6 +49,9 @@ const Sidebar = ({
     architectureName,
     isLoading,
     setIsLoading,
+    serviceDiscoveryCount,
+    authProviderCount,
+    logManagementCount,
     saveMetadata,
     Togglesave,
     nodes,
@@ -165,6 +175,61 @@ const Sidebar = ({
         }
     };
 
+    var isKeycloakConnected = () => {
+        if (authProviderCount) {
+            var authEdge = true;
+            for (const key in edges) {
+                const edge = edges[key];
+                if (edge.target === 'authenticationType') {
+                    authEdge = false;
+                    break;
+                }
+            }
+            return authEdge;
+        } else return false;
+    };
+
+    var isRegistryConnected = () => {
+        if (serviceDiscoveryCount) {
+            var serviceRegistryEdge = true;
+
+            for (const key in edges) {
+                const edge = edges[key];
+                if (edge.target === 'serviceDiscoveryType') {
+                    serviceRegistryEdge = false;
+                    break;
+                }
+            }
+            return serviceRegistryEdge;
+        } else return false;
+    };
+
+    var isEckConnected = () => {
+        if (logManagementCount) {
+            var logManagementEdge = true;
+            for (const key in edges) {
+                const edge = edges[key];
+                if (edge.target === 'logManagement') {
+                    logManagementEdge = false;
+                    break;
+                }
+            }
+            return logManagementEdge;
+        } else return false;
+    };
+
+    var isDatabaseConnected = () => {
+        var dbConnected = false;
+        for (const key in nodes) {
+            let databaseCheck = nodes[key];
+            if (databaseCheck?.id?.startsWith('Database') && !databaseCheck?.data?.isConnected) {
+                dbConnected = true;
+                break;
+            }
+        }
+        return dbConnected;
+    };
+
     const toast = useToast({
         containerStyle: {
             width: '500px',
@@ -197,13 +262,29 @@ const Sidebar = ({
             return { isValid: false, message: 'Gateway is not Configured. Click on the highlighted Gateway node to Configure it.' };
         }
 
+        if (isKeycloakConnected()) {
+            return { isValid: false, message: 'Create an edge connecting the node to Keycloak to enable the integration.' };
+        }
+
+        if (isRegistryConnected()) {
+            return { isValid: false, message: 'Create an edge connecting the node to Service Registry to enable the integration.' };
+        }
+
+        if (isEckConnected()) {
+            return { isValid: false, message: 'Create an edge connecting the node to Eck to enable the integration.' };
+        }
+        console.log('popopop');
+
+        if (isDatabaseConnected()) {
+            return { isValid: false, message: 'Create an edge connecting the node to Database to enable the integration.' };
+        }
+
         return { isValid: true, message: 'Validation successful. Proceed to generate the application.' };
     };
 
     const toastIdRef = useRef();
 
     const handleButtonClick = () => {
-        if (checkEdge()) return;
         const { isValid, message } = checkDisabled();
         const errorMessage = message || 'Validation failed';
         toast.close(toastIdRef.current);
@@ -214,6 +295,7 @@ const Sidebar = ({
             variant: 'left-accent',
             isClosable: true,
         });
+        if (checkEdge()) return;
         if (!isValid) return;
         if (Object.keys(nodes).length === 1 && Object.values(nodes)[0]?.data?.applicationFramework === 'docusaurus') {
             setIsLoading(true);
@@ -383,7 +465,7 @@ const Sidebar = ({
                                 </h2>
                             </div>
 
-                            <div
+                            {/* <div
                                 className={`dndnode output ${isUINodeEnabled ? 'disabled' : ''}`}
                                 onDragStart={event => onDragStart(event, 'default', 'UI')}
                                 draggable={!isUINodeEnabled}
@@ -411,7 +493,132 @@ const Sidebar = ({
                             </div>
                             <div className="dndnode output" onDragStart={event => onDragStart(event, 'default', 'Group')} draggable>
                                 Group
-                            </div>
+                            </div> */}
+                            <h1
+                                style={{
+                                    cursor: 'pointer',
+                                    fontSize: '20px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                }}
+                                onClick={() => toggleOption('Service')}
+                            >
+                                Service {selectedOption === 'Service' ? <span>&#x25B2;</span> : <span>&#x25BC;</span>}
+                            </h1>
+                            {selectedOption === 'Service' && (
+                                <>
+                                    <div
+                                        className="selectorNode"
+                                        onDragStart={event => onDragStart(event, 'default', 'Service_spring')}
+                                        draggable
+                                    >
+                                        <img width="90px" src={srv2} alt="springlogo"></img>
+                                    </div>
+                                    <div
+                                        className="selectorNode"
+                                        onDragStart={event => onDragStart(event, 'default', 'Service_gomicro')}
+                                        draggable
+                                    >
+                                        <img width="100px" style={{ margin: '0px 0px 0px 10px' }} src={srv1} alt="gologo"></img>
+                                    </div>
+                                </>
+                            )}
+
+                            <h1
+                                style={{
+                                    cursor: 'pointer',
+                                    fontSize: '20px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                }}
+                                onClick={() => toggleOption('UI')}
+                            >
+                                UI {selectedOption === 'UI' ? <span>&#x25B2;</span> : <span>&#x25BC;</span>}
+                            </h1>
+                            {selectedOption === 'UI' && (
+                                <>
+                                    <div
+                                        className="selectorNode"
+                                        onDragStart={event => onDragStart(event, 'default', 'UI_react')}
+                                        draggable
+                                    >
+                                        <img width="100px" style={{ margin: '0px 0px 0px 10px' }} src={ui1} alt="reactlogo"></img>
+                                    </div>
+                                    <div
+                                        className="selectorNode"
+                                        onDragStart={event => onDragStart(event, 'default', 'UI_angular')}
+                                        draggable
+                                    >
+                                        <img width="100px" style={{ margin: '0px 0px 0px 10px' }} src={ui2} alt="angularlogo"></img>
+                                    </div>
+                                </>
+                            )}
+                            <h1
+                                style={{
+                                    cursor: 'pointer',
+                                    fontSize: '20px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                }}
+                                onClick={() => toggleOption('Doccumentation')}
+                            >
+                                Doccumentation {selectedOption === 'Doccumentation' ? <span>&#x25B2;</span> : <span>&#x25BC;</span>}
+                            </h1>
+                            {selectedOption === 'Doccumentation' && (
+                                <>
+                                    <div
+                                        className="selectorNode"
+                                        onDragStart={event => onDragStart(event, 'default', 'UI_docusaurus')}
+                                        draggable
+                                    >
+                                        <img width="140px" src={docs} alt="docusauruslogo"></img>
+                                    </div>
+                                </>
+                            )}
+
+                            <h1
+                                style={{
+                                    cursor: 'pointer',
+                                    fontSize: '20px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                }}
+                                onClick={() => toggleOption('Gateway')}
+                            >
+                                Gateway {selectedOption === 'Gateway' ? <span>&#x25B2;</span> : <span>&#x25BC;</span>}
+                            </h1>
+                            {selectedOption === 'Gateway' && (
+                                <>
+                                    <div className="selectorNode" onDragStart={event => onDragStart(event, 'default', 'Gateway')} draggable>
+                                        <img width="160px" style={{ marginTop: '20px' }} src={gateway} alt="postgreslogo"></img>
+                                    </div>
+                                </>
+                            )}
+
+                            <h1
+                                style={{
+                                    cursor: 'pointer',
+                                    fontSize: '20px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                }}
+                                onClick={() => toggleOption('Group')}
+                            >
+                                Group {selectedOption === 'Group' ? <span>&#x25B2;</span> : <span>&#x25BC;</span>}
+                            </h1>
+                            {selectedOption === 'Group' && (
+                                <>
+                                    <div className="selectorNode" onDragStart={event => onDragStart(event, 'default', 'Group')} draggable>
+                                        <img width="145px" style={{ marginTop: '10px' }} src={grp} alt="postgreslogo"></img>
+                                    </div>
+                                </>
+                            )}
+
                             <h1
                                 style={{
                                     cursor: 'pointer',

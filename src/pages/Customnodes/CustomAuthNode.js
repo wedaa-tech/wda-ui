@@ -1,4 +1,4 @@
-import { NodeResizer } from 'reactflow';
+import { Handle, Position, NodeResizer } from 'reactflow';
 import keycloak from '../../assets/keycloak.png';
 
 // const handleStyle = { left: 25 };
@@ -30,6 +30,10 @@ function CustomAuthNode({ data, isConnectable, selected }) {
                     </div>
                 )}
             </div>
+            <Handle position={Position.Left} id="target.Left" type="target" isConnectable={isConnectable} />
+            <Handle position={Position.Top} id="target.Top" type="target" isConnectable={isConnectable} />
+            <Handle position={Position.Bottom} id="target.Bottom" type="target" isConnectable={isConnectable} />
+            <Handle position={Position.Right} id="target.Right" type="target" isConnectable={isConnectable} />
         </>
     );
 }

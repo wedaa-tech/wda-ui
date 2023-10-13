@@ -176,7 +176,7 @@ const GatewayModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                             </Alert>
                         )}
                         {/* <p>AN: {ApplicationData.AN}</p> */}
-                        <FormControl>
+                        {/* <FormControl>
                             <FormLabel>Application Framework</FormLabel>
                             <Select
                                 mb={4}
@@ -189,7 +189,7 @@ const GatewayModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                             >
                                 <option value="java">Spring Cloud Gateway</option>
                             </Select>
-                        </FormControl>
+                        </FormControl> */}
 
                         <FormControl>
                             <FormLabel>Package Name</FormLabel>
