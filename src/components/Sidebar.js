@@ -513,14 +513,14 @@ const Sidebar = ({
                                         onDragStart={event => onDragStart(event, 'default', 'Service_spring')}
                                         draggable
                                     >
-                                        <img width="90px" src={srv2} alt="springlogo"></img>
+                                        <img width="90px" src={srv1} alt="springlogo"></img>
                                     </div>
                                     <div
                                         className="selectorNode"
                                         onDragStart={event => onDragStart(event, 'default', 'Service_gomicro')}
                                         draggable
                                     >
-                                        <img width="100px" style={{ margin: '0px 0px 0px 10px' }} src={srv1} alt="gologo"></img>
+                                        <img width="100px" style={{ margin: '0px 0px 0px 10px' }} src={srv2} alt="gologo"></img>
                                     </div>
                                 </>
                             )}

@@ -25,7 +25,7 @@ const UiDataModal = ({
     applicationData,
 }) => {
     const IntialState = {
-        label: 'UI',
+        label: '',
         applicationName: '',
         clientFramework: 'no',
         applicationFramework: '',

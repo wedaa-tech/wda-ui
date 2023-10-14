@@ -16,7 +16,7 @@ import {
 
 const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick, uniqueApplicationNames, uniquePortNumbers }) => {
     const IntialState = {
-        label: 'Service',
+        label: '',
         applicationName: '',
         applicationFramework: '',
         packageName: '',

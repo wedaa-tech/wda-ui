@@ -435,6 +435,24 @@ const Designer = ({ update, viewMode = false }) => {
                     }
                     setNodes(UpdatedNodes);
                 }
+                if (edge.target.startsWith('log') || edge.target.startsWith('serviceDiscovery') || edge.target.startsWith('auth')) {
+                    var edgeValid = true;
+                    for (const key in edges) {
+                        const edgeExists = edges[key];
+                        console.log(edgeExists);
+                        if (edgeExists.target === edge.target && edge.source != edgeExists.source) {
+                            edgeValid = false;
+                            break;
+                        }
+                    }
+                    if (edgeValid) {
+                        setNodes(nodes => {
+                            var updatedNodes = { ...nodes };
+                            updatedNodes[edge.target].style.border = '1px solid red';
+                            return updatedNodes;
+                        });
+                    }
+                }
                 // else if (edge.target.startsWith('authenticationType')) {
                 //     let UpdatedNodes = { ...Nodes };
                 // } else if (edge.target.startsWith('serviceDiscoveryType')) {
@@ -536,11 +554,12 @@ const Designer = ({ update, viewMode = false }) => {
             });
             if (name.startsWith('Service')) {
                 const serviceType = name.split('_').splice(1)[0];
+                console.log(serviceType, '==-=-=-=-');
                 const newNode = {
                     id: getId('Service'),
                     type: 'ResizableNode',
                     position,
-                    data: { label: 'Service', applicationFramework: serviceType },
+                    data: { applicationFramework: serviceType, label: serviceType },
                     style: {
                         border: '1px solid #ff0000',
                         width: '120px',
@@ -577,7 +596,7 @@ const Designer = ({ update, viewMode = false }) => {
                     type: 'selectorNode1',
                     position,
                     data: { serviceDiscoveryType: serviceDiscoveryType },
-                    style: { border: '1px solid', padding: '4px 4px', width: '120px', height: '40px', borderRadius: '15px' },
+                    style: { border: '1px solid #ff0000', padding: '4px 4px', width: '120px', height: '40px', borderRadius: '15px' },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
                 setIsServiceDiscovery(true);
@@ -591,7 +610,7 @@ const Designer = ({ update, viewMode = false }) => {
                     type: 'selectorNode3',
                     position,
                     data: { authenticationType: authenticationType },
-                    style: { border: '1px solid', padding: '4px 4px', width: '120px', height: '40px', borderRadius: '15px' },
+                    style: { border: '1px solid #ff0000', padding: '4px 4px', width: '120px', height: '40px', borderRadius: '15px' },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
                 setAuthProviderCount(1);
@@ -633,7 +652,7 @@ const Designer = ({ update, viewMode = false }) => {
                     type: 'selectorNode6',
                     position,
                     data: { logManagementType: logManagementType },
-                    style: { border: '1px solid', padding: '4px 4px', width: '120px', height: '40px', borderRadius: '15px' },
+                    style: { border: '1px solid #ff0000', padding: '4px 4px', width: '120px', height: '40px', borderRadius: '15px' },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
                 setLogManagementCount(1);
@@ -694,10 +713,10 @@ const Designer = ({ update, viewMode = false }) => {
                     type: 'ResizableNode',
                     position,
                     data: {
-                        label: 'UI',
                         clientFramework: clientFramework,
                         applicationFramework: uiType,
                         packageName: packageName,
+                        label: uiType,
                     },
                     style: {
                         border: '1px solid #ff0000',
@@ -1488,6 +1507,11 @@ const Designer = ({ update, viewMode = false }) => {
             }
             if (targetNode.id.startsWith('auth') || targetNode.id.startsWith('log') || targetNode.id.startsWith('serviceDiscovery')) {
                 setEdges(eds => addEdge(params, eds, Nodes));
+                setNodes(nodes => {
+                    var updatedNodes = { ...nodes };
+                    updatedNodes[targetNode.id].style.border = '1px solid';
+                    return updatedNodes;
+                });
                 return;
             }
             if (sourceNode.id.startsWith('UI') && targetNode.id.startsWith('Service')) {

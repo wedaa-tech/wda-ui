@@ -16,7 +16,7 @@ import {
 
 const GatewayModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick, uniqueApplicationNames, uniquePortNumbers }) => {
     const IntialState = {
-        label: 'Gateway',
+        label: '',
         applicationName: '',
         applicationFramework: 'java',
         packageName: '',
