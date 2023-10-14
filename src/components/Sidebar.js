@@ -336,12 +336,10 @@ const Sidebar = ({
                     <Tab fontSize={'12px'} fontWeight={'bold'}>
                         Components
                     </Tab>
-                    <Tooltip isDisabled={initialized && keycloak.authenticated} hasArrow label="Login to View" bg="red.600">
-                        <Tab isDisabled={!(initialized && keycloak.authenticated)} fontSize={'12px'} fontWeight={'bold'}>
-                            Reference <br />
-                            Architectures
-                        </Tab>
-                    </Tooltip>
+                    <Tab fontSize={'12px'} fontWeight={'bold'}>
+                        Reference <br />
+                        Architectures
+                    </Tab>
                 </TabList>
                 {/* <TabIndicator
                 index={tabIndex}
