@@ -42,7 +42,6 @@ const UiDataModal = ({
     const [clientFrameworkError, setClientFrameworkError] = useState(false);
     const [applicationFrameworkError, setApplicationFrameworkError] = useState(false);
     const [themeError, setThemeError] = useState(false);
-    const isEmptyUiSubmit = UiData.applicationName === '' || UiData.serverPort === '';
     const isEmptyUiSubmit =
         UiData.applicationName === '' || (UiData.applicationFramework === 'ui' && UiData.packageName === '') || UiData.serverPort === '';
 
