@@ -513,14 +513,14 @@ const Sidebar = ({
                                         onDragStart={event => onDragStart(event, 'default', 'Service_spring')}
                                         draggable
                                     >
-                                        <img width="90px" src={srv1} alt="springlogo"></img>
+                                        <img width="100px" style={{ margin: '0px 0px 0px 15px' }} src={srv1} alt="springlogo"></img>
                                     </div>
                                     <div
                                         className="selectorNode"
                                         onDragStart={event => onDragStart(event, 'default', 'Service_gomicro')}
                                         draggable
                                     >
-                                        <img width="100px" style={{ margin: '0px 0px 0px 10px' }} src={srv2} alt="gologo"></img>
+                                        <img width="80px" style={{ margin: '-20px 0px 0px 10px' }} src={srv2} alt="gologo"></img>
                                     </div>
                                 </>
                             )}
@@ -544,14 +544,14 @@ const Sidebar = ({
                                         onDragStart={event => onDragStart(event, 'default', 'UI_react')}
                                         draggable
                                     >
-                                        <img width="100px" style={{ margin: '0px 0px 0px 10px' }} src={ui1} alt="reactlogo"></img>
+                                        <img width="100px" style={{ margin: '0px 0px 0px 8px' }} src={ui1} alt="reactlogo"></img>
                                     </div>
                                     <div
                                         className="selectorNode"
                                         onDragStart={event => onDragStart(event, 'default', 'UI_angular')}
                                         draggable
                                     >
-                                        <img width="100px" style={{ margin: '0px 0px 0px 10px' }} src={ui2} alt="angularlogo"></img>
+                                        <img width="100px" style={{ margin: '-10px 0px 0px 10px' }} src={ui2} alt="angularlogo"></img>
                                     </div>
                                 </>
                             )}
