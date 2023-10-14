@@ -557,6 +557,7 @@ const Designer = ({ update, viewMode = false }) => {
             });
             if (name.startsWith('Service')) {
                 const serviceType = name.split('_').splice(1)[0];
+                console.log(serviceType, '==-=-=-=-');
                 const newNode = {
                     id: getId('Service'),
                     type: 'ResizableNode',
@@ -718,6 +719,7 @@ const Designer = ({ update, viewMode = false }) => {
                         clientFramework: clientFramework,
                         applicationFramework: uiType,
                         packageName: packageName,
+                        label: uiType,
                     },
                     style: {
                         border: '1px solid #ff0000',
