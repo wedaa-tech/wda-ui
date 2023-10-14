@@ -12,9 +12,18 @@ import {
     ModalFooter,
     ModalBody,
     ModalCloseButton,
-    Input,
+    GridItem,
     Flex,
     Tooltip,
+    AlertDialog,
+    AlertDialogBody,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogContent,
+    AlertDialogOverlay,
+    AlertDialogCloseButton,
+    IconButton,
+    useDisclosure,
 } from '@chakra-ui/react';
 import ArchitectureCard from './ArchitectureCard';
 import design1 from '../../assets/markets/design1.png';
@@ -27,45 +36,9 @@ import './index.css';
 import { useLocation, useParams } from 'react-router-dom/cjs/react-router-dom.min';
 import { useHistory } from 'react-router-dom';
 import { useKeycloak } from '@react-keycloak/web';
-
-const architectures = [
-    {
-        title: 'Architecture 1',
-        description: 'Description for Architecture 1',
-        imageUrl: design1, // Replace with actual image URL
-    },
-    {
-        title: 'Architecture 2',
-        description: 'Description for Architecture 2',
-        imageUrl: design2, // Replace with actual image URL
-    },
-    {
-        title: 'Architecture 3',
-        description: 'Description for Architecture 3',
-        imageUrl: design1, // Replace with actual image URL
-    },
-    {
-        title: 'Architecture 4',
-        description: 'Description for Architecture 4',
-        imageUrl: design2, // Replace with actual image URL
-    },
-    {
-        title: 'Architecture 2',
-        description: 'Description for Architecture 2',
-        imageUrl: design2, // Replace with actual image URL
-    },
-    {
-        title: 'Architecture 3',
-        description: 'Description for Architecture 3',
-        imageUrl: design1, // Replace with actual image URL
-    },
-    {
-        title: 'Architecture 4',
-        description: 'Description for Architecture 4',
-        imageUrl: design2, // Replace with actual image URL
-    },
-    // Add more architectures here
-];
+import { ArrowBackIcon } from '@chakra-ui/icons';
+import { easeIn } from 'framer-motion';
+import ActionModal from '../../components/Modal/ActionModal';
 
 const thickPlusIconStyle = {
     display: 'grid',
@@ -87,17 +60,23 @@ function ArchitecturesSection() {
 
     const { parentId } = useParams();
 
-    // if (location.state === undefined || !parentId) {
-    //   history.push("/projects", {
-    //     replace: true,
-    //   });
-    // }
+    const { isOpen, onOpen, onClose } = useDisclosure();
+    const cancelRef = React.useRef();
+
+    if (parentId === undefined) {
+        history.push('/projects');
+    }
 
     const [projectName, setProjectName] = useState(location?.state?.state?.projectName);
 
     const [isNewArchitectureModalOpen, setNewArchitectureModalOpen] = useState(false);
     const [newArchitectureName, setNewArchitectureName] = useState('');
     const initialRef = useRef(null);
+    const { initialized, keycloak } = useKeycloak();
+    const [architectures, setArchitectures] = useState([]);
+    const [totalArchitectures, setTotalArchitectures] = useState(0);
+    const [architectureId, setArchitectureId] = useState(null);
+    const [architectureTitle, setArchitectureTitle] = useState(null);
 
     const handleOpenNewArchitectureModal = () => {
         setNewArchitectureModalOpen(true);
@@ -122,10 +101,6 @@ function ArchitecturesSection() {
         handleCloseNewArchitectureModal();
     };
 
-    const { initialized, keycloak } = useKeycloak();
-    const [architectures, setArchitectures] = useState([]);
-    const [totalArchitectures, setTotalArchitectures] = useState(0);
-
     useEffect(() => {
         if (initialized) {
             fetch(process.env.REACT_APP_API_BASE_URL + '/api/projects/architectures/' + parentId, {
@@ -140,13 +115,8 @@ function ArchitecturesSection() {
                     if (result?.data) {
                         const archslist = structuredClone(result.data);
 
-                        if (archslist.length === 0) {
-                            setNewArchitectureModalOpen(true);
-                        } else {
-                            setProjectName(archslist[0].projectName);
-                            setArchitectures(archslist);
-                            setTotalArchitectures(archslist.length);
-                        }
+                        setArchitectures(archslist);
+                        setTotalArchitectures(archslist.length);
                     }
                 })
                 .catch(error => console.error(error));
@@ -160,22 +130,54 @@ function ArchitecturesSection() {
         });
     };
 
+    const deleteArchitecture = data => {
+        if (initialized) {
+            fetch(process.env.REACT_APP_API_BASE_URL + '/api/blueprints/' + data.id, {
+                method: 'delete',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                },
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // if (data.success) {
+                    const updatedArchitectures = architectures.filter(card => card.id !== data.id);
+                    setArchitectures(updatedArchitectures);
+                    // } else {
+                    //     console.error('Error deleting card:', data.error);
+                    // }
+                })
+                .catch(error => console.error('Error deleting card:', error));
+        }
+        onClose(true);
+    };
+
     return (
-        <Box p="4" maxWidth="1200px" mx="auto">
+        <Box p="4" maxWidth="7xl" mx="auto">
+            <IconButton
+                variant="outline"
+                colorScheme="black"
+                aria-label="Delete Projects"
+                icon={<ArrowBackIcon />}
+                onClick={() => history.push('/projects')}
+            />
             <Flex justifyContent={'space-between'} alignItems={'center'}>
                 <Heading className="not-selectable" as="h1" my="10">
                     Architectures
                 </Heading>
-                <Text justifyItems={'flex-end'} display={'grid'} className="not-selectable" fontWeight="bold">
+                <Text justifyItems={'flex-end'} display={'grid'} fontWeight="bold">
                     Project Name
-                    <Text className="not-selectable" fontWeight="bold" fontFamily={'monospace'} fontSize={'30px'} color={'#ebaf24'}>
+                    <Text fontWeight="bold" fontFamily={'monospace'} fontSize={'30px'} color={'#ebaf24'}>
                         {projectName}
                     </Text>
                 </Text>
             </Flex>
 
-            <SimpleGrid columns={[2, null, 3]} spacing="40px">
+            <SimpleGrid className="simple-grid" minChildWidth="null" columns={{ base: 1, sm: 1, md: 3 }} spacing={10}>
                 <Box
+                    maxWidth={96}
+                    minWidth={96}
                     cursor="pointer"
                     className="create-architecture"
                     p="4"
@@ -196,6 +198,8 @@ function ArchitecturesSection() {
                     </span>
                 </Box>
                 <Box
+                    maxWidth={96}
+                    minWidth={96}
                     className="total-architecture"
                     p="4"
                     borderWidth="1px"
@@ -213,28 +217,12 @@ function ArchitecturesSection() {
                         {totalArchitectures}
                     </Text>
                 </Box>
-                <Box
-                    className="total-architecture"
-                    borderWidth="1px"
-                    borderRadius="lg"
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="space-between"
-                    px="10%"
-                    height={'100px'}
-                >
-                    <Text className="not-selectable" fontWeight="bold">
-                        Number of Drafts
-                    </Text>
-                    <Text className="not-selectable" fontWeight="bold" fontFamily={'monospace'} fontSize={'30px'} color={'#ebaf24'}>
-                        {totalArchitectures}
-                    </Text>
-                </Box>
+                <Box maxWidth={96} minWidth={96}></Box>
             </SimpleGrid>
             <Heading className="not-selectable" as="h3" size="lg" my="10">
                 Your Architectures
             </Heading>
-            <SimpleGrid columns={{ base: 1, sm: 2, md: 3 }} spacing="10">
+            <SimpleGrid className="simple-grid" minChildWidth="null" columns={{ base: 1, sm: 2, md: 3 }} spacing={10}>
                 {architectures.map((architecture, index) => (
                     <ArchitectureCard
                         key={index}
@@ -244,6 +232,11 @@ function ArchitecturesSection() {
                         description={architecture.description}
                         imageUrl={architecture.imageUrl}
                         onClick={handleOpenArchitecture}
+                        onDelete={(title, projectId) => {
+                            setArchitectureId(projectId);
+                            setArchitectureTitle(title);
+                            onOpen(true);
+                        }}
                     />
                 ))}
             </SimpleGrid>
@@ -284,6 +277,14 @@ function ArchitecturesSection() {
                     <ModalFooter></ModalFooter>
                 </ModalContent>
             </Modal>
+            <ActionModal
+                isOpen={isOpen}
+                onClose={onClose}
+                onSubmit={id => deleteArchitecture(id)}
+                actionType={'deleteArch'}
+                name={architectureTitle}
+                id={architectureId}
+            />
         </Box>
     );
 }

@@ -61,6 +61,7 @@ export const ReviewFlow = ({
     generateZip = voidfunc,
     generateMode = false,
     deployementData = null,
+    onSubmit = null,
 }) => {
     const [nodes, setNodes, onNodesChange] = useNodesState(useExample ? example.nodes : nodesData);
     const [edges, setEdges, onEdgesChange] = useEdgesState(useExample ? example.edges : edgesData);
@@ -80,7 +81,6 @@ export const ReviewFlow = ({
 
     const focusNode = useCallback(
         (_, selectedNode) => {
-
             setNodeId(selectedNode.id);
 
             const x = selectedNode.position.x + selectedNode.width / 2;
@@ -117,7 +117,7 @@ export const ReviewFlow = ({
                     nodesDraggable={false}
                     nodesConnectable={false}
                     nodeTypes={nodeTypes}
-                    showInteractive={false}
+                    // showInteractive={false}
                     fitView
                 >
                     <Panel position="top-right">
@@ -140,12 +140,13 @@ export const ReviewFlow = ({
                 boxShadow={'rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;'}
                 height={'inherit'}
             >
-                <Flex height={"100%"} direction={'column'}>
-                    <CodeReview nodeId={nodeId} generateMode={generateMode} deployementData={deployementData} />
-                    <Button hidden={!generateMode} m={8} colorScheme="blue" onClick={generateZip}>
-                        Generate Architecture
-                    </Button>
-                </Flex>
+                <CodeReview
+                    nodeId={nodeId}
+                    generateMode={generateMode}
+                    deployementData={deployementData}
+                    onSubmit={onSubmit}
+                    onClick={generateZip}
+                />
             </GridItem>
         </Grid>
     );

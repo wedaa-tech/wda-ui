@@ -16,8 +16,13 @@ const imageHeight = 768;
 
 function DownloadButton() {
     const { getNodes } = useReactFlow();
+
     const onClick = () => {
-        const nodesBounds = getRectOfNodes(getNodes());
+        const nodesList = getNodes();
+        if (nodesList.length === 0) {
+            return;
+        }
+        const nodesBounds = getRectOfNodes(nodesList);
         const transform = getTransformForBounds(nodesBounds, imageWidth, imageHeight, 0.5, 2);
 
         toPng(document.querySelector('.react-flow__viewport'), {
@@ -33,8 +38,8 @@ function DownloadButton() {
     };
 
     return (
-        <Button colorScheme="blackAlpha"  onClick={onClick}>
-            Download Image
+        <Button colorScheme="blackAlpha" size="sm" onClick={onClick}>
+            Save as Image
         </Button>
     );
 }

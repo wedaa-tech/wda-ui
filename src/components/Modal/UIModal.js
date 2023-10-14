@@ -33,7 +33,7 @@ const UiDataModal = ({
         serverPort: '',
         withExample: 'false',
         applicationType: 'gateway',
-        theme: '',
+        theme: 'default',
         ...CurrentNode,
     };
     const [UiData, setUiDataData] = useState(IntialState);
@@ -187,7 +187,7 @@ const UiDataModal = ({
             <ModalContent
                 style={{
                     position: 'absolute',
-                    top: '20px',
+                    top: '100px',
                     right: '10px',
                     width: '300px',
                 }}

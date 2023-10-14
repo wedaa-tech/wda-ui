@@ -20,11 +20,12 @@ function App() {
                 <Navbar />
                 <Switch>
                     <Route exact path="/canvasToCode">
-                        <PrivateRoute>
-                            <Designer update={false} />
-                        </PrivateRoute>
+                        <Designer update={false} />
                     </Route>
                     <Route exact path="/">
+                        <Designer update={false} />
+                    </Route>
+                    <Route exact path="/projects">
                         <PrivateRoute>
                             <ProjectsSection />
                         </PrivateRoute>

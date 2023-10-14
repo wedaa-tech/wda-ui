@@ -1,9 +1,12 @@
-import { Box, Image, Text } from '@chakra-ui/react';
+import { DeleteIcon } from '@chakra-ui/icons';
+import { Box, IconButton, Image, Text } from '@chakra-ui/react';
 import React from 'react';
 
-const ArchitectureCard = ({ title, description, imageUrl, projectId, onClick, data }) => {
+const ArchitectureCard = ({ title, description, imageUrl, projectId, onClick, data, onDelete }) => {
     return (
         <Box
+            maxWidth={96}
+            minWidth={96}
             maxW="sm"
             className="project-card"
             height={'300px'}
@@ -26,6 +29,20 @@ const ArchitectureCard = ({ title, description, imageUrl, projectId, onClick, da
                 height="65%"
                 src={imageUrl}
                 alt={title}
+            />
+            <IconButton
+                top="5%"
+                right="5%"
+                variant="outline"
+                colorScheme="blackAlpha"
+                aria-label="Delete Architecture"
+                position="absolute"
+                zIndex={99}
+                icon={<DeleteIcon />}
+                onClick={e => {
+                    onDelete(title, projectId);
+                    e.stopPropagation();
+                }}
             />
             <Box p="6">
                 <Text

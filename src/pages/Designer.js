@@ -43,6 +43,7 @@ import { useParams } from 'react-router-dom/cjs/react-router-dom.min';
 import Review, { ReviewFlow } from './Rewiew';
 import { toPng } from 'html-to-image';
 import DownloadButton from '../components/DownloadButton';
+import ContextMenu from '../components/ContextMenu';
 import CustomNodeModal from '../components/Modal/CustomNodeModal';
 
 let serviceId = 1;
@@ -110,7 +111,7 @@ const Designer = ({ update, viewMode = false }) => {
 
     const [updated, setUpdated] = useState(false);
     const [isVisibleDialog, setVisibleDialog] = useState(false);
-    const [actionModalType, setActionModalType] = useState(false);
+    const [actionModalType, setActionModalType] = useState('clear');
     const history = useHistory();
     const [triggerExit, setTriggerExit] = useState({
         onOk: false,
@@ -388,7 +389,7 @@ const Designer = ({ update, viewMode = false }) => {
     const edgeUpdateSuccessful = useRef(true);
     const [isMessageBroker, setIsMessageBroker] = useState(false);
     const [isServiceDiscovery, setIsServiceDiscovery] = useState(false);
-    const [saveMetadata, setsaveMetadata] = useState(false);
+    const [saveMetadata, setsaveMetadata] = useState(true);
 
     const onEdgeUpdateStart = useCallback(() => {
         edgeUpdateSuccessful.current = false;
@@ -445,10 +446,6 @@ const Designer = ({ update, viewMode = false }) => {
             } else setCurrentNode(nodes[Id].data);
             setopen(Id);
         }
-        // };
-
-        // const onSingleClick = (e, node) => {
-        // const Id = e.target.dataset.id || e.target.name || node.id;
         setNodeClick(Id);
     };
     const clear = () => {
@@ -1130,7 +1127,7 @@ const Designer = ({ update, viewMode = false }) => {
 
     const [generatingData, setGeneratingData] = useState({});
 
-    const onsubmit = Data => {
+    const onsubmit = (Data, submit = false) => {
         setUpdated(false);
         const NewNodes = { ...nodes };
         const NewEdges = { ...edges };
@@ -1201,6 +1198,9 @@ const Designer = ({ update, viewMode = false }) => {
         setNodes(NewNodes);
         setGeneratingData(structuredClone(Data));
         setIsLoading(true);
+        if (submit) {
+            generateZip(null, Data);
+        }
     };
 
     //
@@ -1208,8 +1208,8 @@ const Designer = ({ update, viewMode = false }) => {
     const [isGenerating, setIsGenerating] = useState(false);
     const [image, setImage] = useState(null);
 
-    const generateZip = async () => {
-        const Data = generatingData;
+    const generateZip = async (e, data = null) => {
+        const Data = data || generatingData;
         const generatedImage = await CreateImage(Object.values(nodes));
         setIsGenerating(true);
         if (generatedImage) Data.imageUrl = generatedImage;
@@ -1231,7 +1231,14 @@ const Designer = ({ update, viewMode = false }) => {
             console.error(error);
         } finally {
             localStorage.clear();
-            history.replace('/project/' + projectParentId + '/architectures');
+            if (initialized && keycloak.authenticated) {
+                clear();
+                history.replace('/project/' + projectParentId + '/architectures');
+            } else {
+                clear();
+                setIsLoading(false);
+                history.push('/canvasToCode');
+            }
         }
     };
 
@@ -1499,11 +1506,33 @@ const Designer = ({ update, viewMode = false }) => {
     const [selectedColor, setSelectedColor] = useState('');
 
     const handleColorClick = color => {
-        let UpdatedNodes = { ...nodes };
+        let UpdatedNodes = structuredClone(nodes);
         setSelectedColor(color);
         (UpdatedNodes[nodeClick].style ??= {}).backgroundColor = color;
-        setNodes(UpdatedNodes);
+        setNodes({ ...UpdatedNodes });
     };
+
+    const [menu, setMenu] = useState(null);
+    const ref = useRef(null);
+
+    const onNodeContextMenu = useCallback(
+        (event, node) => {
+            event.preventDefault();
+
+            const pane = ref.current.getBoundingClientRect();
+            setMenu({
+                id: node.id,
+                node: node,
+                top: event.clientY < pane.height - 200 && event.clientY,
+                left: event.clientX < pane.width - 200 && event.clientX,
+                right: event.clientX >= pane.width - 200 && pane.width - event.clientX,
+                bottom: event.clientY >= pane.height - 200 && pane.height - event.clientY,
+            });
+        },
+        [setMenu],
+    );
+
+    const onPaneClick = useCallback(() => setMenu(null), [setMenu]);
 
     if (isLoading)
         return (
@@ -1513,8 +1542,9 @@ const Designer = ({ update, viewMode = false }) => {
                     edgesData={Object.values(edges)}
                     setViewOnly={setIsLoading}
                     generateZip={generateZip}
-                    deployementData={generatingData?.deployment}
+                    deployementData={generatingData}
                     generateMode
+                    onSubmit={onsubmit}
                 />
                 {isGenerating && (
                     <Flex
@@ -1541,6 +1571,7 @@ const Designer = ({ update, viewMode = false }) => {
             <ReactFlowProvider>
                 <div className="reactflow-wrapper" ref={reactFlowWrapper}>
                     <ReactFlow
+                        ref={ref}
                         nodes={Object.values(nodes)}
                         edges={Object.values(edges)}
                         nodeTypes={nodeTypes}
@@ -1551,7 +1582,7 @@ const Designer = ({ update, viewMode = false }) => {
                         onEdgesChange={changes => onEdgesChange(nodes, changes)}
                         onConnect={params => onConnect(params, nodes)}
                         onInit={setReactFlowInstance}
-                        onNodeDrag={onclick}
+                        onNodeDoubleClick={onclick}
                         onDrop={e =>
                             onDrop(
                                 e,
@@ -1564,7 +1595,6 @@ const Designer = ({ update, viewMode = false }) => {
                         }
                         onDragOver={onDragOver}
                         onDragLeave={() => setShowDiv(Object.keys(nodes).length === 0)}
-                        onNodeClick={!viewOnly ? onclick : ''}
                         // onNodeClick={onSingleClick}
                         deleteKeyCode={['Backspace', 'Delete']}
                         fitView
@@ -1576,8 +1606,11 @@ const Designer = ({ update, viewMode = false }) => {
                         nodesDraggable={!viewOnly}
                         elementsSelectable={!viewOnly}
                         nodesConnectable={!viewOnly}
+                        onPaneClick={onPaneClick}
+                        onNodeContextMenu={onNodeContextMenu}
                     >
-                        <Flex height={'100%'} width={'100%'} transition={'all 3s ease-in-out'}>
+                        {menu && <ContextMenu onClick={onPaneClick} {...menu} onEditClick={!viewOnly ? onclick : () => {}} />}
+                        <Flex>
                             <Sidebar
                                 isUINodeEnabled={isUINodeEnabled}
                                 isGatewayNodeEnabled={isGatewayNodeEnabled}
@@ -1677,28 +1710,29 @@ const Designer = ({ update, viewMode = false }) => {
                             <VStack spacing={4} alignItems={'stretch'}>
                                 <Button
                                     hidden={true}
-                                    backgroundColor={'blue'}
-                                    color={'white'}
-                                    onClick={() => console.log(nodes, edges, userData, projectParentId, projectName)}
+                                    colorScheme="blackAlpha"
+                                    size="sm"
+                                    onClick={() => console.log(nodes, edges, userData, projectParentId, projectName, generatingData)}
                                 >
                                     Print
                                 </Button>
-                                <Button hidden={!viewOnly} colorScheme="blackAlpha" onClick={() => setViewOnly(false)}>
+                                <Button hidden={!viewOnly} colorScheme="blackAlpha" size="sm" onClick={() => setViewOnly(false)}>
                                     Edit Mode
                                 </Button>
-                                <Button hidden={viewOnly} colorScheme="blackAlpha" onClick={() => setViewOnly(true)}>
+                                <Button hidden={viewOnly} colorScheme="blackAlpha" size="sm" onClick={() => setViewOnly(true)}>
                                     View Mode
                                 </Button>
                                 <DownloadButton />
                                 <Button
                                     hidden={viewOnly}
+                                    size="sm"
                                     colorScheme="blackAlpha"
                                     onClick={() => {
                                         setVisibleDialog(true);
                                         setActionModalType('clear');
                                     }}
                                 >
-                                    Clear
+                                    Clear Canvas
                                 </Button>
                             </VStack>
                         </Panel>
@@ -1790,28 +1824,26 @@ const Designer = ({ update, viewMode = false }) => {
                     />
                 )}
 
-                {isVisibleDialog && (
-                    <ActionModal
-                        isOpen={isVisibleDialog}
-                        onClose={() => {
-                            setVisibleDialog(false);
-                            setActionModalType(null);
-                        }}
-                        onSubmit={() => {
-                            if (actionModalType === 'clear') {
-                                clear();
-                            } else {
-                                setTriggerExit(obj => ({
-                                    ...obj,
-                                    onOk: true,
-                                }));
-                            }
-                            setVisibleDialog(false);
-                            setActionModalType(null);
-                        }}
-                        actionType={actionModalType}
-                    />
-                )}
+                <ActionModal
+                    isOpen={isVisibleDialog}
+                    onClose={() => {
+                        setVisibleDialog(false);
+                        setActionModalType('clear');
+                    }}
+                    onSubmit={() => {
+                        if (actionModalType === 'clear') {
+                            clear();
+                        } else {
+                            setTriggerExit(obj => ({
+                                ...obj,
+                                onOk: true,
+                            }));
+                        }
+                        setVisibleDialog(false);
+                        setActionModalType('clear');
+                    }}
+                    actionType={actionModalType}
+                />
 
                 {IsEdgeopen && (
                     <EdgeModal

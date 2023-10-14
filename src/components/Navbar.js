@@ -51,59 +51,21 @@ export default function Header({ children }) {
                     </Link>
                 </Flex>
                 <HStack spacing={4} display={{ base: 'none', md: 'flex' }}>
-                    {!keycloak.authenticated && (
-                        <Link to="/canvasToCode">
-                            <Text fontSize="md" color={color} fontWeight={location.pathname === '/canvasToCode' ? 'bold' : 'normal'}>
-                                CanvasToCode
+                    <Link to="/canvasToCode">
+                        <Text
+                            fontSize="md"
+                            color={color}
+                            fontWeight={location.pathname === '/canvasToCode' || location.pathname === '/' ? 'bold' : 'normal'}
+                        >
+                            CanvasToCode
+                        </Text>
+                    </Link>
+                    {initialized && keycloak.authenticated && (
+                        <Link to="/projects">
+                            <Text fontSize="md" color={color} fontWeight={location.pathname === '/projects' ? 'bold' : 'normal'}>
+                                Projects
                             </Text>
                         </Link>
-                    )}
-                    {initialized && keycloak.authenticated && (
-                        <Menu isOpen={isOpenMenu}>
-                            <MenuButton
-                                px={1}
-                                py={1}
-                                fontSize="md"
-                                color={color}
-                                bg={bg}
-                                onMouseEnter={btnMouseEnterEvent}
-                                onMouseLeave={btnMouseLeaveEvent}
-                                style={{ cursor: 'text' }}
-                            >
-                                CanvasToCode {isOpenMenu ? <ChevronUpIcon /> : <ChevronDownIcon />}
-                            </MenuButton>
-                            <MenuList
-                                minWidth="50px"
-                                fontSize="md"
-                                bg={bg}
-                                color={color}
-                                borderColor={bg}
-                                onMouseEnter={menuListMouseEnterEvent}
-                                onMouseLeave={menuListMouseLeaveEvent}
-                            >
-                                <Link to="/canvasToCode">
-                                    <MenuItem
-                                        fontSize="md"
-                                        bg={bg}
-                                        color={color}
-                                        onMouseEnter={e => (e.target.style.color = 'darkblue')}
-                                        onMouseLeave={e => (e.target.style.color = color)}
-                                    >
-                                        New
-                                    </MenuItem>
-                                </Link>
-                                <Link to="/">
-                                    <MenuItem
-                                        fontSize="md"
-                                        bg={bg}
-                                        onMouseEnter={e => (e.target.style.color = 'darkblue')}
-                                        onMouseLeave={e => (e.target.style.color = color)}
-                                    >
-                                        Existing Projects
-                                    </MenuItem>
-                                </Link>
-                            </MenuList>
-                        </Menu>
                     )}
                     <Link onClick={() => window.open(process.env.REACT_APP_DOCS_URL)}>
                         <Text fontSize="md" color={color}>

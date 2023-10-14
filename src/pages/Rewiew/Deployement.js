@@ -3,7 +3,7 @@ import { useReactFlow } from 'reactflow';
 import { Table, Thead, Tbody, Tr, Th, Td, Box, Text } from '@chakra-ui/react';
 
 const Deployement = ({ deployementData }) => {
-    if (deployementData == null) {
+    if (!deployementData) {
         return <div>Deployement Data Not Found.</div>;
     } else {
         return (
@@ -15,10 +15,10 @@ const Deployement = ({ deployementData }) => {
                     </Tr>
                 </Thead>
                 <Tbody>
-                    {Object.keys(deployementData).map(key => (
+                    {Object.keys(deployementData.deployement).map(key => (
                         <Tr key={key}>
                             <Td>{key}</Td>
-                            <Td>{deployementData[key]}</Td>
+                            <Td>{deployementData.deployement[key]}</Td>
                         </Tr>
                     ))}
                 </Tbody>

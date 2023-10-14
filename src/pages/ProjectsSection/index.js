@@ -16,6 +16,7 @@ import {
     ProgressLabel,
     Flex,
     Textarea,
+    useToast,
 } from '@chakra-ui/react';
 import ProjectCard from './ProjectCard';
 import './index.css';
@@ -42,6 +43,8 @@ const ProjectsSection = () => {
     const [newProjectName, setNewProjectName] = useState('');
     const [newProjectDescription, setNewProjectDescription] = useState('');
     const initialRef = useRef(null);
+    const maxCharacterLimit = 12;
+    const maxDescCharacterLimit = 200;
 
     const handleOpenNewProjectModal = () => {
         setNewProjectModalOpen(true);
@@ -99,6 +102,51 @@ const ProjectsSection = () => {
     const { initialized, keycloak } = useKeycloak();
     const [projects, setProjects] = useState([]);
     const [projectsNames, setProjectsNames] = useState([]);
+    const [toastOpen, setToastOpen] = useState(false);
+    const [toastDescOpen, setToastDescOpen] = useState(false);
+
+    const toast = useToast({
+        containerStyle: {
+            width: '500px',
+            maxWidth: '100%',
+        },
+    });
+
+    const handleChange = e => {
+        const inputValue = e.target.value;
+
+        if (inputValue.length <= maxCharacterLimit) {
+            setNewProjectName(inputValue);
+        } else {
+            if (toastOpen) return;
+            toast({
+                title: 'Max characters allowed: 12',
+                status: 'error',
+                duration: 3000,
+                variant: 'left-accent',
+                isClosable: true,
+            });
+            setToastOpen(true);
+        }
+    };
+
+    const handleDescriptionChange = e => {
+        const inputValue = e.target.value;
+
+        if (inputValue.length <= maxDescCharacterLimit) {
+            setNewProjectDescription(inputValue);
+        } else {
+            if (toastDescOpen) return;
+            toast({
+                title: 'Max characters allowed: 200',
+                status: 'error',
+                duration: 3000,
+                variant: 'left-accent',
+                isClosable: true,
+            });
+            setToastDescOpen(true);
+        }
+    };
 
     useEffect(() => {
         if (initialized) {
@@ -124,12 +172,14 @@ const ProjectsSection = () => {
     const totalProjects = projects.length;
 
     return (
-        <Box p="4" maxWidth="1200px" mx="auto">
+        <Box p="4" maxWidth="7xl" mx="auto">
             <Heading className="not-selectable" as="h1" my="10">
                 Projects
             </Heading>
-            <SimpleGrid columns={[2, null, 3]} spacing="40px">
+            <SimpleGrid className="simple-grid" minChildWidth="null" columns={{ base: 1, sm: 1, md: 3 }} spacing={10}>
                 <Box
+                    maxWidth={96}
+                    minWidth={96}
                     cursor="pointer"
                     className="create-project"
                     p="4"
@@ -150,6 +200,8 @@ const ProjectsSection = () => {
                     </span>
                 </Box>
                 <Box
+                    maxWidth={96}
+                    minWidth={96}
                     className="total-project"
                     p="4"
                     borderWidth="1px"
@@ -167,16 +219,17 @@ const ProjectsSection = () => {
                         {totalProjects}
                     </Text>
                 </Box>
+                <Box maxWidth={96} minWidth={96}></Box>
             </SimpleGrid>
             <Heading className="not-selectable" as="h3" size="lg" my="10">
                 Your Projects
             </Heading>
-            <SimpleGrid columns={{ base: 1, sm: 2, md: 3 }} spacing="10">
+            <SimpleGrid className="simple-grid" minChildWidth="null" columns={{ base: 1, sm: 2, md: 3 }} spacing={10}>
                 {projects.map((project, index) => (
                     <ProjectCard
                         parentId={project.id}
                         title={project.name}
-                        description={project?.description || 'gfbdfadfg'}
+                        description={project?.description || 'No description available'}
                         count={project.blueprintCount}
                         imageUrl={
                             project?.imageUrl ||
@@ -200,18 +253,17 @@ const ProjectsSection = () => {
                     <ModalBody>
                         <Flex direction={'column'}>
                             <Input
-                                mb={6}
+                                mb={2}
                                 ref={initialRef}
                                 placeholder="Enter project name"
                                 value={newProjectName}
-                                onChange={e => setNewProjectName(e.target.value)}
-                                // onKeyPress={handleInputKeyPress}
+                                onChange={handleChange}
                             />
                             <Textarea
+                                mb={2}
                                 placeholder="Enter project description (optional)"
                                 value={newProjectDescription}
-                                onChange={e => setNewProjectDescription(e.target.value)}
-                                // onKeyPress={handleInputKeyPress}
+                                onChange={handleDescriptionChange}
                             />
                         </Flex>
                     </ModalBody>
