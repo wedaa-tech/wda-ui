@@ -120,7 +120,7 @@ const Sidebar = ({
 
     useEffect(() => {
         if (initialized) {
-            fetch(process.env.REACT_APP_API_BASE_URL + '/api/refArchs', {
+            fetch(process.env.REACT_APP_API_BASE_URL + '/refArchs', {
                 method: 'get',
                 headers: {
                     'Content-Type': 'application/json',
