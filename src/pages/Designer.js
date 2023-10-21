@@ -225,7 +225,6 @@ const Designer = ({ update, viewMode = false }) => {
                             const actualWidth = updatedNodes[change.id].style.width;
                             if (calculatedWidth >= actualWidth) {
                                 const words = label.split(/\s+/);
-                                
                                 const nonEmptyWords = words.filter(word => word.length > 0);
                                 const height = nonEmptyWords.length * 12 + 30;
                                 if (updatedNodes[change.id].style.height < height) {
