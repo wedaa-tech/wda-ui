@@ -26,7 +26,6 @@ export default function ResizableNode({ id, data, selected }) {
         return appFramework;
     });
     const resizedImage = () => {
-        console.log(nodeType);
         switch (nodeType) {
             case 'spring':
                 return (
@@ -95,7 +94,6 @@ export default function ResizableNode({ id, data, selected }) {
     };
 
     const enlargedImage = () => {
-        console.log(nodeType);
         switch (nodeType) {
             case 'spring':
                 return (

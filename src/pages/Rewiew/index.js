@@ -124,6 +124,9 @@ export const ReviewFlow = ({
                         <Button colorScheme="blue" onClick={generateMode ? () => setViewOnly(false) : handleEditClick}>
                             {generateMode ? 'Go Back' : 'Edit Mode'}
                         </Button>
+                        <Button hidden={true} colorScheme="blue" onClick={() => console.log(deployementData)}>
+                            Print
+                        </Button>
                     </Panel>
                     <Panel position="top-left">
                         <Button hidden={setViewOnly ? true : false} colorScheme="blue" onClick={handleBackClick}>

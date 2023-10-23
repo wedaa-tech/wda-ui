@@ -45,7 +45,6 @@ import { toPng } from 'html-to-image';
 import DownloadButton from '../components/DownloadButton';
 import ContextMenu from '../components/ContextMenu';
 import CustomNodeModal from '../components/Modal/CustomNodeModal';
-import ContextMenu from '../components/ContextMenu';
 
 let serviceId = 1;
 let gatewayId = 1;
@@ -477,7 +476,6 @@ const Designer = ({ update, viewMode = false }) => {
 
     const onclick = (e, node) => {
         var Id = e.target.dataset.id || e.target.name || node.id;
-        console.log(Id, node.id);
         if (Id == 'spring' || Id === 'gomicro' || Id === 'react' || Id === 'angular' || Id === 'docusaurus' || Id === 'gateway')
             Id = node.id;
         if (Id) {

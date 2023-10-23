@@ -113,9 +113,6 @@ const GatewayModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
         ApplicationData.applicationName && !/^[a-zA-Z](?:[a-zA-Z0-9_-]*[a-zA-Z0-9])?$/g.test(ApplicationData.applicationName);
 
     const packageNameCheck = ApplicationData.packageName && !/^[a-zA-Z](?:[a-zA-Z0-9_.-]*[a-zA-Z0-9])?$/g.test(ApplicationData.packageName);
-
-    const labelCheck = () => ApplicationData.label.trim() === '';
-
     return (
         <Modal isOpen={isOpen} onClose={() => onClose(false)}>
             {/* <ModalOverlay /> */}
@@ -175,22 +172,6 @@ const GatewayModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                                 Application name already exists. Please choose a unique name.
                             </Alert>
                         )}
-                        {/* <p>AN: {ApplicationData.AN}</p> */}
-                        {/* <FormControl>
-                            <FormLabel>Application Framework</FormLabel>
-                            <Select
-                                mb={4}
-                                variant="outline"
-                                id="applicationFramework"
-                                borderColor={'black'}
-                                value={ApplicationData.applicationFramework}
-                                onChange={e => handleData('applicationFramework', e.target.value)}
-                                disabled
-                            >
-                                <option value="java">Spring Cloud Gateway</option>
-                            </Select>
-                        </FormControl> */}
-
                         <FormControl>
                             <FormLabel>Package Name</FormLabel>
                             <Input
@@ -307,9 +288,7 @@ const GatewayModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                     <Button
                         onClick={() => !duplicateApplicationNameError && onSubmit(ApplicationData)}
                         style={{ display: 'block', margin: '0 auto' }}
-                        isDisabled={
-                            isSubmitDisabled || appNameCheck || serverPortCheck || portNumberError || portNumberRangeCheck || labelCheck()
-                        }
+                        isDisabled={isSubmitDisabled || appNameCheck || serverPortCheck || portNumberError || portNumberRangeCheck}
                     >
                         Save
                     </Button>
