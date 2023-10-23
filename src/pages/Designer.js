@@ -222,20 +222,20 @@ const Designer = ({ update, viewMode = false }) => {
                                     ...change.dimensions,
                                 },
                             };
-                            const label = updatedNodes[change.id].data.label;
-                            if (label !== undefined && label.length > 1) {
-                            const calculatedWidth = label.length * 10 + 30;
-                            const actualWidth = updatedNodes[change.id].style.width;
-                            if (calculatedWidth >= actualWidth) {
-                                const words = label.split(/\s+/);
-                                const nonEmptyWords = words.filter(word => word.length > 0);
-                                const height = nonEmptyWords.length * 12 + 30;
-                                if (updatedNodes[change.id].style.height < height) {
-                                    updatedNodes[change.id].style.height = height;
+                            const label = updatedNodes[change.id]?.data?.label;
+                            if (label) {
+                                const calculatedWidth = label.length * 10 + 30;
+                                const actualWidth = updatedNodes[change.id].style.width;
+                                if (calculatedWidth >= actualWidth) {
+                                    const words = label.split(/\s+/);
+                                    const nonEmptyWords = words.filter(word => word.length > 0);
+                                    const height = nonEmptyWords.length * 12 + 30;
+                                    if (updatedNodes[change.id].style.height < height) {
+                                        updatedNodes[change.id].style.height = height;
+                                    }
                                 }
                             }
                         }
-                    }
 
                         break;
                     case 'position':
@@ -477,6 +477,9 @@ const Designer = ({ update, viewMode = false }) => {
 
     const onclick = (e, node) => {
         var Id = e.target.dataset.id || e.target.name || node.id;
+        console.log(Id, node.id);
+        if (Id == 'spring' || Id === 'gomicro' || Id === 'react' || Id === 'angular' || Id === 'docusaurus' || Id === 'gateway')
+            Id = node.id;
         if (Id) {
             if (Id === 'oauth2') Id = 'authenticationType';
             if (Id === 'eck') Id = 'logManagement';
@@ -559,7 +562,7 @@ const Designer = ({ update, viewMode = false }) => {
                     id: getId('Service'),
                     type: 'ResizableNode',
                     position,
-                    data: { applicationFramework: serviceType, label: serviceType },
+                    data: { applicationFramework: serviceType },
                     style: {
                         border: '1px solid #ff0000',
                         width: '120px',
@@ -676,7 +679,7 @@ const Designer = ({ update, viewMode = false }) => {
                     id: getId('Gateway'),
                     type: 'ResizableNode',
                     position,
-                    data: { label: 'Gateway' },
+                    data: {},
                     style: {
                         border: '1px solid #ff0000',
                         width: '120px',
@@ -716,7 +719,6 @@ const Designer = ({ update, viewMode = false }) => {
                         clientFramework: clientFramework,
                         applicationFramework: uiType,
                         packageName: packageName,
-                        label: uiType,
                     },
                     style: {
                         border: '1px solid #ff0000',
