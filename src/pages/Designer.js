@@ -719,7 +719,6 @@ const Designer = ({ update, viewMode = false }) => {
                         clientFramework: clientFramework,
                         applicationFramework: uiType,
                         packageName: packageName,
-                        label: uiType,
                     },
                     style: {
                         border: '1px solid #ff0000',
