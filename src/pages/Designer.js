@@ -13,7 +13,7 @@ import ReactFlow, {
     useReactFlow,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { Box, Button, Flex, HStack, Spinner, Text, VStack } from '@chakra-ui/react';
+import { Box, Button, Flex, HStack, Spinner, Text, VStack, useToast } from '@chakra-ui/react';
 import { ArrowRightIcon } from '@chakra-ui/icons';
 import Sidebar from './../components/Sidebar';
 import { saveAs } from 'file-saver';
@@ -89,6 +89,8 @@ const Designer = ({ update, viewMode = false }) => {
     const [nodeType, setNodeType] = useState(null);
     const [ServiceDiscoveryCount, setServiceDiscoveryCount] = useState(0);
     const [MessageBrokerCount, setMessageBrokerCount] = useState(0);
+    const [UICount, setUiCount] = useState(0);
+    const [docsCount, setDocsCount] = useState(0);
     const [CloudProviderCount, setCloudProviderCount] = useState(0);
     const [LocalenvironmentCount, setLocalenvironmentCount] = useState(0);
     const [LogManagemntCount, setLogManagementCount] = useState(0);
@@ -219,20 +221,20 @@ const Designer = ({ update, viewMode = false }) => {
                                     ...change.dimensions,
                                 },
                             };
-                            const label = updatedNodes[change.id].data.label;
-                            if (label !== undefined && label.length > 1) {
-                            const calculatedWidth = label.length * 10 + 30;
-                            const actualWidth = updatedNodes[change.id].style.width;
-                            if (calculatedWidth >= actualWidth) {
-                                const words = label.split(/\s+/);
-                                const nonEmptyWords = words.filter(word => word.length > 0);
-                                const height = nonEmptyWords.length * 12 + 30;
-                                if (updatedNodes[change.id].style.height < height) {
-                                    updatedNodes[change.id].style.height = height;
+                            const label = updatedNodes[change.id]?.data?.label;
+                            if (label) {
+                                const calculatedWidth = label.length * 10 + 30;
+                                const actualWidth = updatedNodes[change.id].style.width;
+                                if (calculatedWidth >= actualWidth) {
+                                    const words = label.split(/\s+/);
+                                    const nonEmptyWords = words.filter(word => word.length > 0);
+                                    const height = nonEmptyWords.length * 12 + 30;
+                                    if (updatedNodes[change.id].style.height < height) {
+                                        updatedNodes[change.id].style.height = height;
+                                    }
                                 }
                             }
                         }
-                    }
 
                         break;
                     case 'position':
@@ -275,6 +277,14 @@ const Designer = ({ update, viewMode = false }) => {
                                     [deletedNodeData.data.applicationFramework]: false,
                                 }));
                             }
+                            if (deletedNodeData?.data?.applicationFramework === 'docusaurus') {
+                                setDocsCount(0);
+                            } else if (
+                                deletedNodeData?.data?.applicationFramework === 'react' ||
+                                deletedNodeData?.data?.applicationFramework === 'angular'
+                            ) {
+                                setUiCount(0);
+                            }
                             setUiInputCheck(prev => {
                                 const updatedState = { ...prev };
                                 delete updatedState[change.id];
@@ -305,6 +315,9 @@ const Designer = ({ update, viewMode = false }) => {
                                     delete Edge?.data?.type;
                                     delete Edge?.data?.framework;
                                     delete Edge?.label;
+                                }
+                                if (key.split('-')[1] == 'serviceDiscoveryType') {
+                                    delete updatedEdges[key];
                                 }
                                 setEdges(updatedEdges);
                             }
@@ -422,6 +435,31 @@ const Designer = ({ update, viewMode = false }) => {
                     }
                     setNodes(UpdatedNodes);
                 }
+                if (edge.target.startsWith('log') || edge.target.startsWith('serviceDiscovery') || edge.target.startsWith('auth')) {
+                    var edgeValid = true;
+                    for (const key in edges) {
+                        const edgeExists = edges[key];
+                        console.log(edgeExists);
+                        if (edgeExists.target === edge.target && edge.source != edgeExists.source) {
+                            edgeValid = false;
+                            break;
+                        }
+                    }
+                    if (edgeValid) {
+                        setNodes(nodes => {
+                            var updatedNodes = { ...nodes };
+                            updatedNodes[edge.target].style.border = '1px solid red';
+                            return updatedNodes;
+                        });
+                    }
+                }
+                // else if (edge.target.startsWith('authenticationType')) {
+                //     let UpdatedNodes = { ...Nodes };
+                // } else if (edge.target.startsWith('serviceDiscoveryType')) {
+                //     let UpdatedNodes = { ...Nodes };
+                // } else if (edge.target.startsWith('logManagement')) {
+                //     let UpdatedNodes = { ...Nodes };
+                // }
                 delete AllEdges[edge.id];
                 return AllEdges;
             });
@@ -438,6 +476,8 @@ const Designer = ({ update, viewMode = false }) => {
 
     const onclick = (e, node) => {
         var Id = e.target.dataset.id || e.target.name || node.id;
+        if (Id == 'spring' || Id === 'gomicro' || Id === 'react' || Id === 'angular' || Id === 'docusaurus' || Id === 'gateway')
+            Id = node.id;
         if (Id) {
             if (Id === 'oauth2') Id = 'authenticationType';
             if (Id === 'eck') Id = 'logManagement';
@@ -480,6 +520,8 @@ const Designer = ({ update, viewMode = false }) => {
         setMessageBrokerCount(0);
         setLogManagementCount(0);
         setLocalenvironmentCount(0);
+        setUiCount(0);
+        setDocsCount(0);
         setApplicationData({
             docusaurus: false,
             ui: false,
@@ -492,7 +534,7 @@ const Designer = ({ update, viewMode = false }) => {
     };
 
     const onDrop = useCallback(
-        (event, servicecount, messagecount, loadcount, authcount, Localenvcount) => {
+        (event, servicecount, messagecount, loadcount, authcount, Localenvcount, UICount, docsCount) => {
             setUpdated(true);
             event.preventDefault();
             const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
@@ -512,12 +554,13 @@ const Designer = ({ update, viewMode = false }) => {
                 x: event.clientX - reactFlowBounds.left,
                 y: event.clientY - reactFlowBounds.top,
             });
-            if (name === 'Service') {
+            if (name.startsWith('Service')) {
+                const serviceType = name.split('_').splice(1)[0];
                 const newNode = {
                     id: getId('Service'),
                     type: 'ResizableNode',
                     position,
-                    data: { label: 'Service' },
+                    data: { applicationFramework: serviceType },
                     style: {
                         border: '1px solid #ff0000',
                         width: '120px',
@@ -554,7 +597,7 @@ const Designer = ({ update, viewMode = false }) => {
                     type: 'selectorNode1',
                     position,
                     data: { serviceDiscoveryType: serviceDiscoveryType },
-                    style: { border: '1px solid', padding: '4px 4px', width: '120px', height: '40px', borderRadius: '15px' },
+                    style: { border: '1px solid #ff0000', padding: '4px 4px', width: '120px', height: '40px', borderRadius: '15px' },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
                 setIsServiceDiscovery(true);
@@ -568,7 +611,7 @@ const Designer = ({ update, viewMode = false }) => {
                     type: 'selectorNode3',
                     position,
                     data: { authenticationType: authenticationType },
-                    style: { border: '1px solid', padding: '4px 4px', width: '120px', height: '40px', borderRadius: '15px' },
+                    style: { border: '1px solid #ff0000', padding: '4px 4px', width: '120px', height: '40px', borderRadius: '15px' },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
                 setAuthProviderCount(1);
@@ -610,7 +653,7 @@ const Designer = ({ update, viewMode = false }) => {
                     type: 'selectorNode6',
                     position,
                     data: { logManagementType: logManagementType },
-                    style: { border: '1px solid', padding: '4px 4px', width: '120px', height: '40px', borderRadius: '15px' },
+                    style: { border: '1px solid #ff0000', padding: '4px 4px', width: '120px', height: '40px', borderRadius: '15px' },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
                 setLogManagementCount(1);
@@ -634,7 +677,7 @@ const Designer = ({ update, viewMode = false }) => {
                     id: getId('Gateway'),
                     type: 'ResizableNode',
                     position,
-                    data: { label: 'Gateway' },
+                    data: {},
                     style: {
                         border: '1px solid #ff0000',
                         width: '120px',
@@ -649,12 +692,32 @@ const Designer = ({ update, viewMode = false }) => {
                     [newNode.id]: true,
                 }));
                 setIsGatewayNodeEnabled(true);
-            } else {
+            } else if (
+                (name.startsWith('UI_docusaurus') && docsCount == 0) ||
+                ((name.startsWith('UI_react') || name.startsWith('UI_angular')) && UICount == 0)
+            ) {
+                const uiType = name.split('_').splice(1)[0];
+                var clientFramework;
+                var packageName;
+                if (uiType == 'docusaurus') {
+                    clientFramework = 'no';
+                    packageName = 'docs';
+                    setDocsCount(1);
+                } else {
+                    clientFramework = uiType;
+                    packageName = 'ui';
+                    setUiCount(1);
+                }
+
                 const newNode = {
                     id: getId('UI'),
                     type: 'ResizableNode',
                     position,
-                    data: { label: 'UI' },
+                    data: {
+                        clientFramework: clientFramework,
+                        applicationFramework: uiType,
+                        packageName: packageName,
+                    },
                     style: {
                         border: '1px solid #ff0000',
                         width: '120px',
@@ -668,8 +731,12 @@ const Designer = ({ update, viewMode = false }) => {
                     ...prev,
                     [newNode.id]: true,
                 }));
-                uiCount++;
-                if (uiCount == 2) setIsUINodeEnabled(true);
+                // uiCount++;
+                // if (uiCount == 2) setIsUINodeEnabled(true);
+            } else if (name.startsWith('UI_docusaurus') && docsCount >= 1) {
+                setDocsCount(2);
+            } else if ((name.startsWith('UI_react') || name.startsWith('UI_angular')) && UICount >= 1) {
+                setUiCount(2);
             }
         },
         [reactFlowInstance],
@@ -764,6 +831,11 @@ const Designer = ({ update, viewMode = false }) => {
                             ...prev,
                             [nodes[key].data?.applicationFramework]: true,
                         }));
+                    }
+                    if (nodes[key].data?.applicationFramework === 'docusaurus') {
+                        setDocsCount(1);
+                    } else if (nodes[key].data?.applicationFramework === 'react' || nodes[key].data?.applicationFramework === 'angular') {
+                        setUiCount(1);
                     }
                     if (uiCount == 2) setIsUINodeEnabled(true);
                     setUniqueApplicationNames(prev => [...prev, data.metadata.nodes[key].data.label]);
@@ -911,7 +983,7 @@ const Designer = ({ update, viewMode = false }) => {
             setShowDiv(true);
         }
         let unblock;
-        if (updated) {
+        if (!(Object.keys(nodes).length === 0) && updated) {
             unblock = history.block(location => {
                 setVisibleDialog(true);
                 setActionModalType('clearAndNav');
@@ -937,59 +1009,59 @@ const Designer = ({ update, viewMode = false }) => {
                 color: '#3367d9',
                 type: MarkerType.ArrowClosed,
             };
-        } else {
-            for (const edgeId in updatedEdges) {
-                const targetType = edgeId.split('-')[1];
-                const sourceType = edgeId.split('-')[0];
-                if (updatedEdges[edgeId]?.selected) {
-                    updatedEdges[edgeId].style = { stroke: '#3367d9' };
+        }
+        for (const edgeId in updatedEdges) {
+            const targetType = edgeId.split('-')[1];
+            const sourceType = edgeId.split('-')[0];
+            if (updatedEdges[edgeId]?.selected) {
+                updatedEdges[edgeId].style = { stroke: '#3367d9' };
+                updatedEdges[edgeId].markerEnd = {
+                    color: '#3367d9',
+                    type: MarkerType.ArrowClosed,
+                };
+            } else if (updatedEdges[edgeId].label === 'Rest') {
+                updatedEdges[edgeId].style = { stroke: 'black' };
+                updatedEdges[edgeId].markerEnd = {
+                    color: 'black',
+                    type: MarkerType.ArrowClosed,
+                };
+            } else if (updatedEdges[edgeId].label === 'RabbitMQ') {
+                updatedEdges[edgeId].style = { stroke: '#bcbaba' };
+                updatedEdges[edgeId].markerEnd = {
+                    color: '#bcbaba',
+                    type: MarkerType.ArrowClosed,
+                };
+            } else if (targetType.split('_')[0] === 'Database') {
+                if (updatedEdges[edgeId]?.selected === false) {
+                    updatedEdges[edgeId].style = { stroke: '#000' };
                     updatedEdges[edgeId].markerEnd = {
-                        color: '#3367d9',
+                        color: '#000',
                         type: MarkerType.ArrowClosed,
                     };
-                } else if (updatedEdges[edgeId].label === 'Rest') {
-                    updatedEdges[edgeId].style = { stroke: 'black' };
-                    updatedEdges[edgeId].markerEnd = {
-                        color: 'black',
-                        type: MarkerType.ArrowClosed,
-                    };
-                } else if (updatedEdges[edgeId].label === 'RabbitMQ') {
-                    updatedEdges[edgeId].style = { stroke: '#bcbaba' };
-                    updatedEdges[edgeId].markerEnd = {
-                        color: '#bcbaba',
-                        type: MarkerType.ArrowClosed,
-                    };
-                } else if (targetType.split('_')[0] === 'Database') {
-                    if (updatedEdges[edgeId]?.selected === false) {
-                        updatedEdges[edgeId].style = { stroke: '#000' };
-                        updatedEdges[edgeId].markerEnd = {
-                            color: '#000',
-                            type: MarkerType.ArrowClosed,
-                        };
-                    }
-                } else if (targetType.split('_')[0] === 'group' || sourceType.split('_')[0] === 'group') {
-                    if (updatedEdges[edgeId]?.selected === false) {
-                        updatedEdges[edgeId].style = { stroke: 'black' };
-                        updatedEdges[edgeId].markerEnd = {
-                            color: '#000',
-                            type: MarkerType.ArrowClosed,
-                        };
-                    }
-                } else if (targetType.split('_')[0] === 'Service' && sourceType.split('_')[0] === 'Service') {
-                    updatedEdges[edgeId].style = { stroke: 'red' };
-                    updatedEdges[edgeId].markerEnd = {
-                        color: 'red',
-                        type: MarkerType.ArrowClosed,
-                    };
-                } else {
+                }
+            } else if (targetType.split('_')[0] === 'group' || sourceType.split('_')[0] === 'group') {
+                if (updatedEdges[edgeId]?.selected === false) {
                     updatedEdges[edgeId].style = { stroke: 'black' };
                     updatedEdges[edgeId].markerEnd = {
                         color: '#000',
                         type: MarkerType.ArrowClosed,
                     };
                 }
+            } else if (targetType.split('_')[0] === 'Service' && sourceType.split('_')[0] === 'Service') {
+                updatedEdges[edgeId].style = { stroke: 'red' };
+                updatedEdges[edgeId].markerEnd = {
+                    color: 'red',
+                    type: MarkerType.ArrowClosed,
+                };
+            } else {
+                updatedEdges[edgeId].style = { stroke: 'black' };
+                updatedEdges[edgeId].markerEnd = {
+                    color: '#000',
+                    type: MarkerType.ArrowClosed,
+                };
             }
         }
+        setEdges(updatedEdges);
     }, [IsEdgeopen, edges]);
 
     const onChange = Data => {
@@ -1138,6 +1210,23 @@ const Designer = ({ update, viewMode = false }) => {
         setUpdated(false);
         const NewNodes = { ...nodes };
         const NewEdges = { ...edges };
+
+        const authEdges = [];
+        const serviceRegistryEdges = [];
+        const logManagementEdges = [];
+
+        for (const key in NewEdges) {
+            const edge = NewEdges[key];
+            const sourceNodeId = edge.source;
+            if (edge.target === 'authenticationType') {
+                authEdges.push(sourceNodeId);
+            } else if (edge.target === 'serviceDiscoveryType') {
+                serviceRegistryEdges.push(sourceNodeId);
+            } else if (edge.target === 'logManagement') {
+                logManagementEdges.push(sourceNodeId);
+            }
+        }
+
         let Service_Discovery_Data = nodes['serviceDiscoveryType']?.data;
         let authenticationData = { authenticationType: 'no' };
         if (nodes['authenticationType']) authenticationData = nodes['authenticationType']?.data;
@@ -1145,16 +1234,40 @@ const Designer = ({ update, viewMode = false }) => {
         if (logManagementData && Data?.deployment) Data.deployment.enableECK = 'true';
         if (Data.deployment && Service_Discovery_Data?.serviceDiscoveryType)
             Data.deployment = { ...Data.deployment, ...Service_Discovery_Data };
+
         for (const key in NewNodes) {
             const Node = NewNodes[key];
             delete Node.data?.color;
-            if (Node.id.startsWith('Service') || Node.id.startsWith('UI') || Node.id.startsWith('Gateway'))
-                Node.data = {
-                    ...Node.data,
-                    ...Service_Discovery_Data,
-                    ...authenticationData,
-                    ...logManagementData,
-                };
+            if (Node.id.startsWith('Service') || Node.id.startsWith('UI') || Node.id.startsWith('Gateway')) {
+                if (serviceRegistryEdges.includes(Node.id)) {
+                    Node.data = {
+                        ...Node.data,
+                        ...Service_Discovery_Data,
+                    };
+                } else if (Node.data?.serviceDiscoveryType) {
+                    delete Node.data.serviceDiscoveryType;
+                }
+                if (authEdges.includes(Node.id)) {
+                    Node.data = {
+                        ...Node.data,
+                        ...authenticationData,
+                    };
+                } else {
+                    Node.data = {
+                        ...Node.data,
+                        ['authenticationType']: 'no',
+                    };
+                }
+                if (logManagementEdges.includes(Node.id)) {
+                    Node.data = {
+                        ...Node.data,
+                        ...logManagementData,
+                    };
+                } else if (Node.data?.logManagementType) {
+                    delete Node.data.logManagementType;
+                }
+            }
+
             if (Node.id.startsWith('UI')) {
                 if (Node.data.applicationFramework === 'docusaurus') {
                     Node.data.packageName = 'docs';
@@ -1357,6 +1470,15 @@ const Designer = ({ update, viewMode = false }) => {
         setEdgeopen(false);
     };
 
+    const toast = useToast({
+        containerStyle: {
+            width: '500px',
+            maxWidth: '100%',
+        },
+    });
+
+    const toastIdRef = useRef();
+
     const onConnect = useCallback(
         (params, Nodes) => {
             setUpdated(true);
@@ -1365,6 +1487,33 @@ const Designer = ({ update, viewMode = false }) => {
             params.data = {};
             const targetNode = Nodes[params.target];
             const sourceNode = Nodes[params.source];
+            var errorMessage = null;
+            if (sourceNode.id.startsWith('UI') && targetNode.id.startsWith('Database')) {
+                errorMessage = 'UI Cannot be connected to a Database';
+            } else if (sourceNode.id.startsWith('Gateway') && targetNode.id.startsWith('UI')) {
+                errorMessage = 'Communication from Gateway to UI is not possible';
+            } else if (sourceNode.id.startsWith('Service') && targetNode.id.startsWith('Gateway')) {
+                errorMessage = 'Communication from Service to Gateway is not possible';
+            }
+            if (errorMessage !== null) {
+                toast.close(toastIdRef.current);
+                toastIdRef.current = toast({
+                    title: errorMessage,
+                    status: 'error',
+                    duration: 3000,
+                    variant: 'left-accent',
+                    isClosable: true,
+                });
+            }
+            if (targetNode.id.startsWith('auth') || targetNode.id.startsWith('log') || targetNode.id.startsWith('serviceDiscovery')) {
+                setEdges(eds => addEdge(params, eds, Nodes));
+                setNodes(nodes => {
+                    var updatedNodes = { ...nodes };
+                    updatedNodes[targetNode.id].style.border = '1px solid';
+                    return updatedNodes;
+                });
+                return;
+            }
             if (sourceNode.id.startsWith('UI') && targetNode.id.startsWith('Service')) {
                 const gatewayNodes = Object.values(nodes).filter(node => node.id.startsWith('Gateway'));
                 const uiConnectToService = gatewayNodes.some(gatewayNode => {
@@ -1477,25 +1626,26 @@ const Designer = ({ update, viewMode = false }) => {
                         setNodes(updatedNodes);
                     }
                 } else if (targetNode.id.startsWith('Gateway') || sourceNode.id.startsWith('Gateway') || sourceNode.id.startsWith('UI')) {
-                    const Data = {
-                        type: 'synchronous',
-                        framework: 'rest-api',
-                    };
-                    setEdges(eds => addEdge(params, eds, Nodes));
-                    const edgeName = sourceNode.id + '-' + targetNode.id;
-                    let UpdatedEdges = { ...edges };
-                    UpdatedEdges[edgeName].markerEnd = {
-                        color: 'black',
-                        type: MarkerType.ArrowClosed,
-                    };
-                    UpdatedEdges[edgeName].style = { stroke: 'black' };
-                    UpdatedEdges[edgeName].data = {
-                        client: UpdatedEdges[edgeName].source,
-                        server: UpdatedEdges[edgeName].target,
-                        ...UpdatedEdges[edgeName].data,
-                        ...Data,
-                    };
-                    setEdges(UpdatedEdges);
+                    setEdges(eds => {
+                        const updatedEdges = addEdge(params, eds, Nodes);
+                        const newEdgeId = `${sourceNode.id}-${targetNode.id}`;
+                        const Data = {
+                            type: 'synchronous',
+                            framework: 'rest-api',
+                        };
+                        updatedEdges[newEdgeId].markerEnd = {
+                            color: 'black',
+                            type: MarkerType.ArrowClosed,
+                        };
+                        updatedEdges[newEdgeId].data = {
+                            client: updatedEdges[newEdgeId].source,
+                            server: updatedEdges[newEdgeId].target,
+                            ...updatedEdges[newEdgeId].data,
+                            ...Data,
+                        };
+                        updatedEdges[newEdgeId].style = { stroke: 'black' };
+                        return updatedEdges;
+                    });
                 } else {
                     setEdges(eds => addEdge(params, eds, Nodes));
                 }
@@ -1598,6 +1748,8 @@ const Designer = ({ update, viewMode = false }) => {
                                 LogManagemntCount,
                                 AuthProviderCount,
                                 LocalenvironmentCount,
+                                UICount,
+                                docsCount,
                             )
                         }
                         onDragOver={onDragOver}
@@ -1605,7 +1757,7 @@ const Designer = ({ update, viewMode = false }) => {
                         // onNodeClick={onSingleClick}
                         deleteKeyCode={['Backspace', 'Delete']}
                         fitView
-                        onEdgeUpdate={(oldEdge, newConnection) => onEdgeUpdate(nodes, oldEdge, newConnection)}
+                        // onEdgeUpdate={(oldEdge, newConnection) => onEdgeUpdate(nodes, oldEdge, newConnection)}
                         onEdgeUpdateStart={onEdgeUpdateStart}
                         onEdgeUpdateEnd={(_, edge) => onEdgeUpdateEnd(nodes, edge)}
                         onEdgeClick={!viewOnly ? onEdgeClick : ''}
@@ -1634,6 +1786,9 @@ const Designer = ({ update, viewMode = false }) => {
                                 isEmptyServiceSubmit={isEmptyServiceSubmit}
                                 isEmptyGatewaySubmit={isEmptyGatewaySubmit}
                                 selectedColor={selectedColor}
+                                serviceDiscoveryCount={ServiceDiscoveryCount}
+                                logManagementCount={LogManagemntCount}
+                                authProviderCount={AuthProviderCount}
                                 nodeClick={nodeClick}
                                 edges={edges}
                                 update={update}
@@ -1735,8 +1890,10 @@ const Designer = ({ update, viewMode = false }) => {
                                     size="sm"
                                     colorScheme="blackAlpha"
                                     onClick={() => {
-                                        setVisibleDialog(true);
-                                        setActionModalType('clear');
+                                        if (!(Object.keys(nodes).length === 0) && updated) {
+                                            setVisibleDialog(true);
+                                            setActionModalType('clear');
+                                        }
                                     }}
                                 >
                                     Clear Canvas
@@ -1870,6 +2027,8 @@ const Designer = ({ update, viewMode = false }) => {
                 {LogManagemntCount === 2 && <AlertModal isOpen={true} onClose={() => setLogManagementCount(1)} />}
                 {LocalenvironmentCount === 2 && <AlertModal isOpen={true} onClose={() => setLocalenvironmentCount(1)} />}
                 {AuthProviderCount === 2 && <AlertModal isOpen={true} onClose={() => setAuthProviderCount(1)} />}
+                {UICount === 2 && <AlertModal isOpen={true} onClose={() => setUiCount(1)} />}
+                {docsCount === 2 && <AlertModal isOpen={true} onClose={() => setDocsCount(1)} />}
             </ReactFlowProvider>
         </div>
     );

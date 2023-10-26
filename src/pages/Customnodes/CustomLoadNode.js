@@ -1,9 +1,9 @@
 import eck from '../../assets/eck.png';
-import { NodeResizer } from 'reactflow';
+import { Handle, Position, NodeResizer } from 'reactflow';
 
 // const handleStyle = { left: 25 };
 
-function CustomLoadNode({ data, selected }) {
+function CustomLoadNode({ data, isConnectable, selected }) {
     const logManagementType = data.logManagementType;
 
     return (
@@ -13,7 +13,7 @@ function CustomLoadNode({ data, selected }) {
                 {data?.label && data.label.length > 0 ? (
                     <>
                         <img
-                            style={{ position: 'absolute', top: 0, left: 0, width: '30px',marginTop:'-3px' }}
+                            style={{ position: 'absolute', top: 0, left: 0, width: '30px', marginTop: '-3px' }}
                             name={logManagementType}
                             src={eck}
                             alt="eck"
@@ -30,6 +30,10 @@ function CustomLoadNode({ data, selected }) {
                     </div>
                 )}
             </div>
+            <Handle position={Position.Left} id="target.Left" type="target" isConnectable={isConnectable} />
+            <Handle position={Position.Top} id="target.Top" type="target" isConnectable={isConnectable} />
+            <Handle position={Position.Bottom} id="target.Bottom" type="target" isConnectable={isConnectable} />
+            <Handle position={Position.Right} id="target.Right" type="target" isConnectable={isConnectable} />
         </>
     );
 }

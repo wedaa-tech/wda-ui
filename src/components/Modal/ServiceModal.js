@@ -16,7 +16,7 @@ import {
 
 const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick, uniqueApplicationNames, uniquePortNumbers }) => {
     const IntialState = {
-        label: 'Service',
+        label: '',
         applicationName: '',
         applicationFramework: '',
         packageName: '',
@@ -124,8 +124,6 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
 
     const packageNameCheck = ApplicationData.packageName && !/^[a-zA-Z](?:[a-zA-Z0-9_.-]*[a-zA-Z0-9])?$/g.test(ApplicationData.packageName);
 
-    const labelCheck = () => ApplicationData.label.trim() === '';
-
     const isApplicationFrameworkFilled = () => {
         if (ApplicationData.applicationFramework === '') {
             setApplicationFrameworkError(true);
@@ -171,12 +169,12 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                             />
                         </FormControl>
                         <FormControl>
-                            <FormLabel>Name</FormLabel>
+                            <FormLabel>Component Name</FormLabel>
                             <Input
                                 mb={4}
                                 variant="outline"
                                 id="applicationName"
-                                placeholder="Name"
+                                placeholder="Component Name"
                                 borderColor={duplicateApplicationNameError || appNameCheck ? 'red' : 'black'}
                                 maxLength="32"
                                 value={ApplicationData.applicationName}
@@ -195,37 +193,13 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                                 Application name already exists. Please choose a unique name.
                             </Alert>
                         )}
-                        {/* <p>AN: {ApplicationData.AN}</p> */}
-                        <FormControl>
-                            <FormLabel>Application Framework</FormLabel>
-                            <Select
-                                mb={4}
-                                variant="outline"
-                                id="applicationFramework"
-                                borderColor={applicationFrameworkError ? 'red' : 'black'}
-                                value={ApplicationData.applicationFramework}
-                                onChange={e => handleData('applicationFramework', e.target.value)}
-                            >
-                                <option value="" disabled>
-                                    Select an option
-                                </option>
-                                <option value="java">Spring Boot</option>
-                                <option value="gomicro">Go Micro</option>
-                            </Select>
-                        </FormControl>
-                        {applicationFrameworkError && (
-                            <Alert status="error" padding="4px" fontSize="12px" borderRadius="3px" mb={2}>
-                                <AlertIcon style={{ width: '14px', height: '14px' }} />
-                                Select a Valid Application Framework.
-                            </Alert>
-                        )}
                         <FormControl>
                             <FormLabel>Package Name</FormLabel>
                             <Input
                                 mb={4}
                                 variant="outline"
                                 id="packagename"
-                                placeholder="packageName"
+                                placeholder="com.example"
                                 borderColor={packageNameCheck ? 'red' : 'black'}
                                 maxLength="32"
                                 value={ApplicationData.packageName}
@@ -341,7 +315,6 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                             serverPortCheck ||
                             portNumberError ||
                             portNumberRangeCheck ||
-                            labelCheck() ||
                             applicationFrameworkError
                         }
                     >
