@@ -33,10 +33,11 @@ import {
     Tooltip,
     TabIndicator,
     IconButton,
+    Divider,
 } from '@chakra-ui/react';
 import DeployModal from './Modal/DeployModal';
 import { useKeycloak } from '@react-keycloak/web';
-import { CloseIcon, HamburgerIcon } from '@chakra-ui/icons';
+import { CloseIcon, HamburgerIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import { useLocation } from 'react-router-dom';
 import ZoomableImageModalWrapper from './ZoomableImageModalWrapper';
 
@@ -273,7 +274,6 @@ const Sidebar = ({
         if (isEckConnected()) {
             return { isValid: false, message: 'Create an edge connecting the node to Eck to enable the integration.' };
         }
-        console.log('popopop');
 
         if (isDatabaseConnected()) {
             return { isValid: false, message: 'Create an edge connecting the node to Database to enable the integration.' };
@@ -380,7 +380,7 @@ const Sidebar = ({
         >
             <Box p={'12px 20px 8px 20px'}>
                 <FormLabel fontWeight="bold" style={{ margin: '0' }}>
-                    Architecture Name
+                    Name
                 </FormLabel>
                 <Input
                     my={2}
@@ -494,17 +494,105 @@ const Sidebar = ({
                             <div className="dndnode output" onDragStart={event => onDragStart(event, 'default', 'Group')} draggable>
                                 Group
                             </div> */}
+                            {/* <div style={{ borderBottom: '1px solid lightgrey' }}></div> */}
+                            <Divider />
                             <h1
                                 style={{
                                     cursor: 'pointer',
                                     fontSize: '20px',
                                     display: 'flex',
                                     alignItems: 'center',
-                                    justifyContent: 'space-between',
+                                    paddingBottom: '3px',
+                                    paddingTop: '3px',
+                                    // justifyContent: 'space-between',
+                                    // borderBottom: '1px solid lightgrey',
+                                }}
+                                onClick={() => toggleOption('UI')}
+                                onMouseEnter={e => (e.currentTarget.style.backgroundColor = '  #f3f2f2 ')}
+                                onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+                            >
+                                {selectedOption === 'UI' ? (
+                                    <span style={{ color: 'lightgrey', fontSize: '12px', marginRight: '10px' }}>&#x25BC;</span>
+                                ) : (
+                                    <span style={{ color: 'lightgrey', fontSize: '12px', marginRight: '10px' }}>&#x25B6;</span>
+                                )}{' '}
+                                Client
+                                {/* {selectedOption === 'UI' ? <span>&#x25B2;</span> : <span>&#x25BC;</span>} */}
+                            </h1>
+                            {selectedOption === 'UI' && (
+                                <>
+                                    <div
+                                        className="selectorNode"
+                                        onDragStart={event => onDragStart(event, 'default', 'UI_react')}
+                                        draggable
+                                        // onMouseEnter={e => (e.currentTarget.style.backgroundColor = '  #f3f2f2 ')}
+                                        // onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+                                    >
+                                        <img width="130px" style={{ margin: '-10px 0px 0px 2px' }} src={ui1} alt="reactlogo"></img>
+                                    </div>
+                                    <div
+                                        className="selectorNode"
+                                        onDragStart={event => onDragStart(event, 'default', 'UI_angular')}
+                                        draggable
+                                        // onMouseEnter={e => (e.currentTarget.style.backgroundColor = '  #f3f2f2 ')}
+                                        // onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+                                    >
+                                        <img width="130px" style={{ margin: '-20px 0px 0px 10px' }} src={ui2} alt="angularlogo"></img>
+                                    </div>
+                                    {/* <div style={{ borderBottom: '1px solid lightgrey' }}></div> */}
+                                </>
+                            )}
+                            <Divider />
+                            <h1
+                                style={{
+                                    cursor: 'pointer',
+                                    fontSize: '20px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    paddingBottom: '3px',
+                                    paddingTop: '3px',
+                                    // justifyContent: 'space-between',
+                                }}
+                                onClick={() => toggleOption('Gateway')}
+                                onMouseEnter={e => (e.currentTarget.style.backgroundColor = '  #f3f2f2 ')}
+                                onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+                            >
+                                {selectedOption === 'Gateway' ? (
+                                    <span style={{ color: 'lightgrey', fontSize: '12px', marginRight: '10px' }}>&#x25BC;</span>
+                                ) : (
+                                    <span style={{ color: 'lightgrey', fontSize: '12px', marginRight: '10px' }}>&#x25B6;</span>
+                                )}
+                                Gateway
+                            </h1>
+                            {selectedOption === 'Gateway' && (
+                                <>
+                                    <div className="selectorNode" onDragStart={event => onDragStart(event, 'default', 'Gateway')} draggable>
+                                        <img width="180px" style={{ marginTop: '10px' }} src={gateway} alt="postgreslogo"></img>
+                                    </div>
+                                </>
+                            )}
+                            <Divider />
+
+                            <h1
+                                style={{
+                                    cursor: 'pointer',
+                                    fontSize: '20px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    paddingBottom: '3px',
+                                    paddingTop: '3px',
+                                    // justifyContent: 'space-between',
                                 }}
                                 onClick={() => toggleOption('Service')}
+                                onMouseEnter={e => (e.currentTarget.style.backgroundColor = '  #f3f2f2 ')}
+                                onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
                             >
-                                Service {selectedOption === 'Service' ? <span>&#x25B2;</span> : <span>&#x25BC;</span>}
+                                {selectedOption === 'Service' ? (
+                                    <span style={{ color: 'lightgrey', fontSize: '12px', marginRight: '10px' }}>&#x25BC;</span>
+                                ) : (
+                                    <span style={{ color: 'lightgrey', fontSize: '12px', marginRight: '10px' }}>&#x25B6;</span>
+                                )}
+                                Service
                             </h1>
                             {selectedOption === 'Service' && (
                                 <>
@@ -513,17 +601,18 @@ const Sidebar = ({
                                         onDragStart={event => onDragStart(event, 'default', 'Service_spring')}
                                         draggable
                                     >
-                                        <img width="100px" style={{ margin: '0px 0px 0px 15px' }} src={srv1} alt="springlogo"></img>
+                                        <img width="130px" style={{ margin: '-10px -50px -30px 5px' }} src={srv1} alt="springlogo"></img>
                                     </div>
                                     <div
                                         className="selectorNode"
                                         onDragStart={event => onDragStart(event, 'default', 'Service_gomicro')}
                                         draggable
                                     >
-                                        <img width="80px" style={{ margin: '-20px 0px 0px 10px' }} src={srv2} alt="gologo"></img>
+                                        <img width="100px" style={{ margin: '-30px 0px -20px 0px' }} src={srv2} alt="gologo"></img>
                                     </div>
                                 </>
                             )}
+                            <Divider />
 
                             <h1
                                 style={{
@@ -531,53 +620,33 @@ const Sidebar = ({
                                     fontSize: '20px',
                                     display: 'flex',
                                     alignItems: 'center',
-                                    justifyContent: 'space-between',
+                                    paddingBottom: '3px',
+                                    paddingTop: '3px',
+                                    // justifyContent: 'space-between',
                                 }}
-                                onClick={() => toggleOption('UI')}
+                                onClick={() => toggleOption('Documentation')}
+                                onMouseEnter={e => (e.currentTarget.style.backgroundColor = '  #f3f2f2 ')}
+                                onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
                             >
-                                UI {selectedOption === 'UI' ? <span>&#x25B2;</span> : <span>&#x25BC;</span>}
+                                {selectedOption === 'Documentation' ? (
+                                    <span style={{ color: 'lightgrey', fontSize: '12px', marginRight: '10px' }}>&#x25BC;</span>
+                                ) : (
+                                    <span style={{ color: 'lightgrey', fontSize: '12px', marginRight: '10px' }}>&#x25B6;</span>
+                                )}
+                                Documentation
                             </h1>
-                            {selectedOption === 'UI' && (
-                                <>
-                                    <div
-                                        className="selectorNode"
-                                        onDragStart={event => onDragStart(event, 'default', 'UI_react')}
-                                        draggable
-                                    >
-                                        <img width="100px" style={{ margin: '0px 0px 0px 8px' }} src={ui1} alt="reactlogo"></img>
-                                    </div>
-                                    <div
-                                        className="selectorNode"
-                                        onDragStart={event => onDragStart(event, 'default', 'UI_angular')}
-                                        draggable
-                                    >
-                                        <img width="100px" style={{ margin: '-10px 0px 0px 10px' }} src={ui2} alt="angularlogo"></img>
-                                    </div>
-                                </>
-                            )}
-                            <h1
-                                style={{
-                                    cursor: 'pointer',
-                                    fontSize: '20px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'space-between',
-                                }}
-                                onClick={() => toggleOption('Doccumentation')}
-                            >
-                                Doccumentation {selectedOption === 'Doccumentation' ? <span>&#x25B2;</span> : <span>&#x25BC;</span>}
-                            </h1>
-                            {selectedOption === 'Doccumentation' && (
+                            {selectedOption === 'Documentation' && (
                                 <>
                                     <div
                                         className="selectorNode"
                                         onDragStart={event => onDragStart(event, 'default', 'UI_docusaurus')}
                                         draggable
                                     >
-                                        <img width="140px" src={docs} alt="docusauruslogo"></img>
+                                        <img width="180px" style={{ margin: '0px 0px 0px -20px' }} src={docs} alt="docusauruslogo"></img>
                                     </div>
                                 </>
                             )}
+                            <Divider />
 
                             <h1
                                 style={{
@@ -585,51 +654,20 @@ const Sidebar = ({
                                     fontSize: '20px',
                                     display: 'flex',
                                     alignItems: 'center',
-                                    justifyContent: 'space-between',
-                                }}
-                                onClick={() => toggleOption('Gateway')}
-                            >
-                                Gateway {selectedOption === 'Gateway' ? <span>&#x25B2;</span> : <span>&#x25BC;</span>}
-                            </h1>
-                            {selectedOption === 'Gateway' && (
-                                <>
-                                    <div className="selectorNode" onDragStart={event => onDragStart(event, 'default', 'Gateway')} draggable>
-                                        <img width="160px" style={{ marginTop: '20px' }} src={gateway} alt="postgreslogo"></img>
-                                    </div>
-                                </>
-                            )}
-
-                            <h1
-                                style={{
-                                    cursor: 'pointer',
-                                    fontSize: '20px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'space-between',
-                                }}
-                                onClick={() => toggleOption('Group')}
-                            >
-                                Group {selectedOption === 'Group' ? <span>&#x25B2;</span> : <span>&#x25BC;</span>}
-                            </h1>
-                            {selectedOption === 'Group' && (
-                                <>
-                                    <div className="selectorNode" onDragStart={event => onDragStart(event, 'default', 'Group')} draggable>
-                                        <img width="145px" style={{ marginTop: '10px' }} src={grp} alt="postgreslogo"></img>
-                                    </div>
-                                </>
-                            )}
-
-                            <h1
-                                style={{
-                                    cursor: 'pointer',
-                                    fontSize: '20px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'space-between',
+                                    paddingBottom: '3px',
+                                    paddingTop: '3px',
+                                    // justifyContent: 'space-between',
                                 }}
                                 onClick={() => toggleOption('Authentication')}
+                                onMouseEnter={e => (e.currentTarget.style.backgroundColor = '  #f3f2f2 ')}
+                                onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
                             >
-                                Authentication {selectedOption === 'Authentication' ? <span>&#x25B2;</span> : <span>&#x25BC;</span>}
+                                {selectedOption === 'Authentication' ? (
+                                    <span style={{ color: 'lightgrey', fontSize: '12px', marginRight: '10px' }}>&#x25BC;</span>
+                                ) : (
+                                    <span style={{ color: 'lightgrey', fontSize: '12px', marginRight: '10px' }}>&#x25B6;</span>
+                                )}
+                                Authentication
                             </h1>
                             {selectedOption === 'Authentication' && (
                                 <>
@@ -642,17 +680,28 @@ const Sidebar = ({
                                     </div>
                                 </>
                             )}
+                            <Divider />
+
                             <h1
                                 style={{
                                     cursor: 'pointer',
                                     fontSize: '20px',
                                     display: 'flex',
                                     alignItems: 'center',
-                                    justifyContent: 'space-between',
+                                    paddingBottom: '3px',
+                                    paddingTop: '3px',
+                                    // justifyContent: 'space-between',
                                 }}
                                 onClick={() => toggleOption('Database')}
+                                onMouseEnter={e => (e.currentTarget.style.backgroundColor = '  #f3f2f2 ')}
+                                onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
                             >
-                                Database {selectedOption === 'Databases' ? <span>&#x25B2;</span> : <span>&#x25BC;</span>}
+                                {selectedOption === 'Database' ? (
+                                    <span style={{ color: 'lightgrey', fontSize: '12px', marginRight: '10px' }}>&#x25BC;</span>
+                                ) : (
+                                    <span style={{ color: 'lightgrey', fontSize: '12px', marginRight: '10px' }}>&#x25B6;</span>
+                                )}
+                                Database
                             </h1>
                             {selectedOption === 'Database' && (
                                 <>
@@ -672,22 +721,33 @@ const Sidebar = ({
                                     </div>
                                 </>
                             )}
+                            <Divider />
 
                             <h1>
                                 <span
                                     style={{
                                         cursor: 'pointer',
                                         fontSize: '20px',
-                                        justifyContent: 'space-between',
+                                        // justifyContent: 'space-between',
                                         display: 'flex',
                                         alignItems: 'center',
+                                        paddingBottom: '3px',
+                                        paddingTop: '3px',
                                     }}
                                     onClick={() => toggleOption('serviceDiscovery')}
+                                    onMouseEnter={e => (e.currentTarget.style.backgroundColor = '  #f3f2f2 ')}
+                                    onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
                                 >
+                                    {selectedOption === 'serviceDiscovery' ? (
+                                        <span style={{ color: 'lightgrey', fontSize: '12px', marginRight: '10px' }}>&#x25BC;</span>
+                                    ) : (
+                                        <span style={{ color: 'lightgrey', fontSize: '12px', marginRight: '10px' }}>&#x25B6;</span>
+                                    )}
                                     Service Discovery{' '}
-                                    {selectedOption === 'serviceDiscovery' ? <span>&#x25B2;</span> : <span>&#x25BC;</span>}
                                 </span>
                             </h1>
+                            <Divider />
+
                             {selectedOption === 'serviceDiscovery' && (
                                 <>
                                     <div
@@ -695,7 +755,7 @@ const Sidebar = ({
                                         onDragStart={event => onDragStart(event, 'default', 'Discovery_eureka')}
                                         draggable
                                     >
-                                        <img width="100px" height="40px" src={eurkea} alt="eurekalogo"></img>
+                                        <img width="80px" height="40px" src={eurkea} alt="eurekalogo"></img>
                                     </div>
                                 </>
                             )}
@@ -706,13 +766,24 @@ const Sidebar = ({
                                         fontSize: '20px',
                                         display: 'flex',
                                         alignItems: 'center',
-                                        justifyContent: 'space-between',
+                                        paddingBottom: '3px',
+                                        paddingTop: '3px',
+                                        // justifyContent: 'space-between',
                                     }}
                                     onClick={() => toggleOption('loadManagement')}
+                                    onMouseEnter={e => (e.currentTarget.style.backgroundColor = '  #f3f2f2 ')}
+                                    onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
                                 >
-                                    Log Management {selectedOption === 'loadManagement' ? <span>&#x25B2;</span> : <span>&#x25BC;</span>}
+                                    {selectedOption === 'loadManagement' ? (
+                                        <span style={{ color: 'lightgrey', fontSize: '12px', marginRight: '10px' }}>&#x25BC;</span>
+                                    ) : (
+                                        <span style={{ color: 'lightgrey', fontSize: '12px', marginRight: '10px' }}>&#x25B6;</span>
+                                    )}
+                                    Log Management
                                 </span>
                             </h1>
+                            <Divider />
+
                             {selectedOption === 'loadManagement' && (
                                 <>
                                     <div
@@ -724,7 +795,43 @@ const Sidebar = ({
                                     </div>
                                 </>
                             )}
+
+                            <h1
+                                style={{
+                                    cursor: 'pointer',
+                                    fontSize: '20px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    paddingBottom: '3px',
+                                    paddingTop: '3px',
+                                    // justifyContent: 'space-between',
+                                }}
+                                onClick={() => toggleOption('Group')}
+                                onMouseEnter={e => (e.currentTarget.style.backgroundColor = '  #f3f2f2 ')}
+                                onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+                            >
+                                {selectedOption === 'Group' ? (
+                                    <span style={{ color: 'lightgrey', fontSize: '12px', marginRight: '10px' }}>&#x25BC;</span>
+                                ) : (
+                                    <span style={{ color: 'lightgrey', fontSize: '12px', marginRight: '10px' }}>&#x25B6;</span>
+                                )}
+                                Group
+                            </h1>
+                            {selectedOption === 'Group' && (
+                                <>
+                                    <div className="selectorNode" onDragStart={event => onDragStart(event, 'default', 'Group')} draggable>
+                                        <img
+                                            width="250px"
+                                            style={{ marginTop: '-10px', marginBottom: '-50px', marginLeft: '-40px' }}
+                                            src={grp}
+                                            alt="postgreslogo"
+                                        ></img>
+                                    </div>
+                                </>
+                            )}
+                            <Divider />
                         </div>
+
                         <div
                             style={{
                                 position: 'sticky',

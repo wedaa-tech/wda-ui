@@ -215,12 +215,12 @@ const UiDataModal = ({
                             />
                         </FormControl>
                         <FormControl>
-                            <FormLabel>Name</FormLabel>
+                            <FormLabel>Component Name</FormLabel>
                             <Input
                                 mb={4}
                                 variant="outline"
                                 id="applicationName"
-                                placeholder="Name"
+                                placeholder="Component Name"
                                 borderColor={duplicateApplicationNameError && !UiData.applicationName ? 'red' : 'black'}
                                 maxLength="32"
                                 value={UiData.applicationName}

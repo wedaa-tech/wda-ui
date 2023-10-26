@@ -148,12 +148,12 @@ const GatewayModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                             />
                         </FormControl>
                         <FormControl>
-                            <FormLabel>Name</FormLabel>
+                            <FormLabel>Component Name</FormLabel>
                             <Input
                                 mb={4}
                                 variant="outline"
                                 id="applicationName"
-                                placeholder="Name"
+                                placeholder="Component Name"
                                 borderColor={duplicateApplicationNameError || appNameCheck ? 'red' : 'black'}
                                 maxLength="32"
                                 value={ApplicationData.applicationName}
@@ -178,7 +178,7 @@ const GatewayModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                                 mb={4}
                                 variant="outline"
                                 id="packagename"
-                                placeholder="packageName"
+                                placeholder="com.example"
                                 borderColor={packageNameCheck ? 'red' : 'black'}
                                 maxLength="32"
                                 value={ApplicationData.packageName}

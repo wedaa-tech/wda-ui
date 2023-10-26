@@ -1757,7 +1757,7 @@ const Designer = ({ update, viewMode = false }) => {
                         // onNodeClick={onSingleClick}
                         deleteKeyCode={['Backspace', 'Delete']}
                         fitView
-                        onEdgeUpdate={(oldEdge, newConnection) => onEdgeUpdate(nodes, oldEdge, newConnection)}
+                        // onEdgeUpdate={(oldEdge, newConnection) => onEdgeUpdate(nodes, oldEdge, newConnection)}
                         onEdgeUpdateStart={onEdgeUpdateStart}
                         onEdgeUpdateEnd={(_, edge) => onEdgeUpdateEnd(nodes, edge)}
                         onEdgeClick={!viewOnly ? onEdgeClick : ''}
