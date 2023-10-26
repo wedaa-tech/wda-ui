@@ -50,7 +50,7 @@ function CodeReview({ nodeId, generateMode = false, deployementData = null, onSu
                 </TabList>
                 <TabPanels height={'100%'}>
                     <TabPanel height={'100%'}>
-                        <Documentation nodeData={nodeData} generateMode />
+                        <Documentation nodeData={deployementData} nodeId={nodeId} generateMode />
                     </TabPanel>
                     <TabPanel height={'inherit'}>
                         <FolderTree nodeType={nodeType} />

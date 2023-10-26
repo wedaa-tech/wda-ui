@@ -446,7 +446,11 @@ const Designer = ({ update, viewMode = false }) => {
             setNodeType(type);
             if (type === 'aws' || type === 'azure') {
                 setCurrentNode(nodes['cloudProvider'].data);
-            } else setCurrentNode(nodes[Id].data);
+            } else {
+                const nodeData = nodes[Id].data;
+                nodeData.Id = Id;
+                setCurrentNode({ ...nodeData });
+            }
             setopen(Id);
         }
         setNodeClick(Id);
