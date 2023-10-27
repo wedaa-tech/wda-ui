@@ -88,6 +88,13 @@ const Sidebar = ({
         projectName: applicationName,
     };
 
+    useEffect(() => {
+        const images = [db1, db2, srv1, srv2, ui1, ui2, grp, gateway, docs, eurkea, keycloakIcon, eck];
+        images.forEach((image) => {
+            new Image().src = image;
+        });
+    }, []);
+
     const [projectData, setprojectData] = useState(IntialState);
     useEffect(() => {
         if (triggerExit.onOk) {
