@@ -16,7 +16,7 @@ import {
 
 const GatewayModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick, uniqueApplicationNames, uniquePortNumbers }) => {
     const IntialState = {
-        label: 'Gateway',
+        label: '',
         applicationName: '',
         applicationFramework: 'java',
         packageName: '',
@@ -113,9 +113,6 @@ const GatewayModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
         ApplicationData.applicationName && !/^[a-zA-Z](?:[a-zA-Z0-9_-]*[a-zA-Z0-9])?$/g.test(ApplicationData.applicationName);
 
     const packageNameCheck = ApplicationData.packageName && !/^[a-zA-Z](?:[a-zA-Z0-9_.-]*[a-zA-Z0-9])?$/g.test(ApplicationData.packageName);
-
-    const labelCheck = () => ApplicationData.label.trim() === '';
-
     return (
         <Modal isOpen={isOpen} onClose={() => onClose(false)}>
             {/* <ModalOverlay /> */}
@@ -151,12 +148,12 @@ const GatewayModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                             />
                         </FormControl>
                         <FormControl>
-                            <FormLabel>Name</FormLabel>
+                            <FormLabel>Component Name</FormLabel>
                             <Input
                                 mb={4}
                                 variant="outline"
                                 id="applicationName"
-                                placeholder="Name"
+                                placeholder="Component Name"
                                 borderColor={duplicateApplicationNameError || appNameCheck ? 'red' : 'black'}
                                 maxLength="32"
                                 value={ApplicationData.applicationName}
@@ -175,29 +172,13 @@ const GatewayModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                                 Application name already exists. Please choose a unique name.
                             </Alert>
                         )}
-                        {/* <p>AN: {ApplicationData.AN}</p> */}
-                        <FormControl>
-                            <FormLabel>Application Framework</FormLabel>
-                            <Select
-                                mb={4}
-                                variant="outline"
-                                id="applicationFramework"
-                                borderColor={'black'}
-                                value={ApplicationData.applicationFramework}
-                                onChange={e => handleData('applicationFramework', e.target.value)}
-                                disabled
-                            >
-                                <option value="java">Spring Cloud Gateway</option>
-                            </Select>
-                        </FormControl>
-
                         <FormControl>
                             <FormLabel>Package Name</FormLabel>
                             <Input
                                 mb={4}
                                 variant="outline"
                                 id="packagename"
-                                placeholder="packageName"
+                                placeholder="com.example"
                                 borderColor={packageNameCheck ? 'red' : 'black'}
                                 maxLength="32"
                                 value={ApplicationData.packageName}
@@ -307,9 +288,7 @@ const GatewayModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                     <Button
                         onClick={() => !duplicateApplicationNameError && onSubmit(ApplicationData)}
                         style={{ display: 'block', margin: '0 auto' }}
-                        isDisabled={
-                            isSubmitDisabled || appNameCheck || serverPortCheck || portNumberError || portNumberRangeCheck || labelCheck()
-                        }
+                        isDisabled={isSubmitDisabled || appNameCheck || serverPortCheck || portNumberError || portNumberRangeCheck}
                     >
                         Save
                     </Button>

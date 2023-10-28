@@ -25,7 +25,7 @@ const UiDataModal = ({
     applicationData,
 }) => {
     const IntialState = {
-        label: 'UI',
+        label: '',
         applicationName: '',
         clientFramework: 'no',
         applicationFramework: '',
@@ -33,7 +33,7 @@ const UiDataModal = ({
         serverPort: '',
         withExample: 'false',
         applicationType: 'gateway',
-        theme: 'default',
+        theme: '',
         ...CurrentNode,
     };
     const [UiData, setUiDataData] = useState(IntialState);
@@ -42,7 +42,8 @@ const UiDataModal = ({
     const [clientFrameworkError, setClientFrameworkError] = useState(false);
     const [applicationFrameworkError, setApplicationFrameworkError] = useState(false);
     const [themeError, setThemeError] = useState(false);
-    const isEmptyUiSubmit = UiData.applicationName === '' || UiData.serverPort === '';
+    const isEmptyUiSubmit =
+        UiData.applicationName === '' || (UiData.applicationFramework === 'ui' && UiData.packageName === '') || UiData.serverPort === '';
 
     const reservedPorts = ['5601', '9200', '15021', '20001', '3000', '8080'];
     const serverPortCheck = UiData.serverPort && reservedPorts.includes(UiData.serverPort);
@@ -50,8 +51,6 @@ const UiDataModal = ({
     const portNumberRangeCheck = UiData.serverPort && (Number(UiData.serverPort) < 1024 || Number(UiData.serverPort) > 65535);
 
     const appNameCheck = UiData.applicationName && !/^[a-zA-Z](?:[a-zA-Z0-9_-]*[a-zA-Z0-9])?$/g.test(UiData.applicationName);
-
-    const labelCheck = () => UiData.label.trim() === '';
 
     const isClientFrameworkFilled = () => {
         if (UiData.applicationFramework === 'ui' && UiData.clientFramework === 'no') {
@@ -216,12 +215,12 @@ const UiDataModal = ({
                             />
                         </FormControl>
                         <FormControl>
-                            <FormLabel>Name</FormLabel>
+                            <FormLabel>Component Name</FormLabel>
                             <Input
                                 mb={4}
                                 variant="outline"
                                 id="applicationName"
-                                placeholder="Name"
+                                placeholder="Component Name"
                                 borderColor={duplicateApplicationNameError && !UiData.applicationName ? 'red' : 'black'}
                                 maxLength="32"
                                 value={UiData.applicationName}
@@ -240,79 +239,6 @@ const UiDataModal = ({
                                 </Alert>
                             )}
                         </FormControl>
-                        <FormControl>
-                            <FormLabel>Application Framework</FormLabel>
-                            <Select
-                                mb={4}
-                                variant="outline"
-                                id="applicationFramework"
-                                borderColor={applicationFrameworkError ? 'red' : 'black'}
-                                value={UiData.applicationFramework}
-                                onChange={e => handleData('applicationFramework', e.target.value)}
-                            >
-                                <option value="" disabled>
-                                    Select an option
-                                </option>
-                                <option value="ui" disabled={applicationData.ui}>
-                                    UI
-                                </option>
-                                <option value="docusaurus" disabled={applicationData.docusaurus}>
-                                    Docusaurus
-                                </option>
-                            </Select>
-                        </FormControl>
-                        {applicationFrameworkError && (
-                            <Alert status="error" padding="4px" fontSize="12px" borderRadius="3px" mb={2}>
-                                <AlertIcon style={{ width: '14px', height: '14px' }} />
-                                Select a Valid Application Framework.
-                            </Alert>
-                        )}
-                        {UiData.applicationFramework === 'ui' && (
-                            <FormControl>
-                                <FormLabel>Client Framework</FormLabel>
-                                <Select
-                                    mb={4}
-                                    variant="outline"
-                                    id="clientFramework"
-                                    borderColor={clientFrameworkError ? 'red' : 'black'}
-                                    value={UiData.clientFramework}
-                                    onChange={e => handleData('clientFramework', e.target.value)}
-                                >
-                                    <option value="no" disabled>
-                                        Select an option
-                                    </option>
-                                    <option value="react">React</option>
-                                    <option value="angular">Angular</option>
-                                </Select>
-                            </FormControl>
-                        )}
-                        {UiData.applicationFramework === 'ui' && clientFrameworkError && (
-                            <Alert status="error" padding="4px" fontSize="12px" borderRadius="3px" mb={2}>
-                                <AlertIcon style={{ width: '14px', height: '14px' }} />
-                                Select a Valid Client Framework.
-                            </Alert>
-                        )}
-                        {/* {UiData.applicationFramework === 'ui' && (
-                            <FormControl>
-                                <FormLabel>Package Name</FormLabel>
-                                <Input
-                                    mb={4}
-                                    variant="outline"
-                                    id="packageName"
-                                    placeholder="packageName"
-                                    borderColor={!UiData.packageName ? 'red' : 'black'}
-                                    maxLength="32"
-                                    value={UiData.packageName}
-                                    onChange={e => handleData('packageName', e.target.value)}
-                                />
-                            </FormControl>
-                        )} */}
-                        {/* {packageNameCheck && (
-                            <Alert status="error" padding="4px" fontSize="12px" borderRadius="3px" mb={2}>
-                                <AlertIcon style={{ width: '14px', height: '14px' }} />
-                                Enter a valid package name
-                            </Alert>
-                        )} */}
                         {UiData.applicationFramework === 'docusaurus' && (
                             <FormControl>
                                 <FormLabel>Theme</FormLabel>
@@ -448,7 +374,6 @@ const UiDataModal = ({
                             portNumberError ||
                             portNumberRangeCheck ||
                             clientFrameworkError ||
-                            labelCheck() ||
                             applicationFrameworkError ||
                             themeError
                         }

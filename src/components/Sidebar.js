@@ -1,6 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import db1 from '../assets/postgresql.png';
 import db2 from '../assets/mongo.png';
+import srv1 from '../assets/spring.png';
+import srv2 from '../assets/go.png';
+import ui1 from '../assets/react.png';
+import ui2 from '../assets/angular.png';
+import grp from '../assets/group.png';
+import gateway from '../assets/cloud gateway.png';
+import docs from '../assets/docusaurus.png';
 import eurkea from '../assets/eureka.png';
 import keycloakIcon from '../assets/keycloak.png';
 import eck from '../assets/eck.png';
@@ -26,10 +33,11 @@ import {
     Tooltip,
     TabIndicator,
     IconButton,
+    Divider,
 } from '@chakra-ui/react';
 import DeployModal from './Modal/DeployModal';
 import { useKeycloak } from '@react-keycloak/web';
-import { CloseIcon, HamburgerIcon } from '@chakra-ui/icons';
+import { CloseIcon, HamburgerIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import { useLocation } from 'react-router-dom';
 import ZoomableImageModalWrapper from './ZoomableImageModalWrapper';
 
@@ -42,6 +50,9 @@ const Sidebar = ({
     architectureName,
     isLoading,
     setIsLoading,
+    serviceDiscoveryCount,
+    authProviderCount,
+    logManagementCount,
     saveMetadata,
     Togglesave,
     nodes,
@@ -76,6 +87,13 @@ const Sidebar = ({
     const IntialState = {
         projectName: applicationName,
     };
+
+    useEffect(() => {
+        const images = [db1, db2, srv1, srv2, ui1, ui2, grp, gateway, docs, eurkea, keycloakIcon, eck];
+        images.forEach((image) => {
+            new Image().src = image;
+        });
+    }, []);
 
     const [projectData, setprojectData] = useState(IntialState);
     useEffect(() => {
@@ -120,7 +138,7 @@ const Sidebar = ({
 
     useEffect(() => {
         if (initialized) {
-            fetch(process.env.REACT_APP_API_BASE_URL + '/api/refArchs', {
+            fetch(process.env.REACT_APP_API_BASE_URL + '/refArchs', {
                 method: 'get',
                 headers: {
                     'Content-Type': 'application/json',
@@ -165,6 +183,61 @@ const Sidebar = ({
         }
     };
 
+    var isKeycloakConnected = () => {
+        if (authProviderCount) {
+            var authEdge = true;
+            for (const key in edges) {
+                const edge = edges[key];
+                if (edge.target === 'authenticationType') {
+                    authEdge = false;
+                    break;
+                }
+            }
+            return authEdge;
+        } else return false;
+    };
+
+    var isRegistryConnected = () => {
+        if (serviceDiscoveryCount) {
+            var serviceRegistryEdge = true;
+
+            for (const key in edges) {
+                const edge = edges[key];
+                if (edge.target === 'serviceDiscoveryType') {
+                    serviceRegistryEdge = false;
+                    break;
+                }
+            }
+            return serviceRegistryEdge;
+        } else return false;
+    };
+
+    var isEckConnected = () => {
+        if (logManagementCount) {
+            var logManagementEdge = true;
+            for (const key in edges) {
+                const edge = edges[key];
+                if (edge.target === 'logManagement') {
+                    logManagementEdge = false;
+                    break;
+                }
+            }
+            return logManagementEdge;
+        } else return false;
+    };
+
+    var isDatabaseConnected = () => {
+        var dbConnected = false;
+        for (const key in nodes) {
+            let databaseCheck = nodes[key];
+            if (databaseCheck?.id?.startsWith('Database') && !databaseCheck?.data?.isConnected) {
+                dbConnected = true;
+                break;
+            }
+        }
+        return dbConnected;
+    };
+
     const toast = useToast({
         containerStyle: {
             width: '500px',
@@ -197,13 +270,28 @@ const Sidebar = ({
             return { isValid: false, message: 'Gateway is not Configured. Click on the highlighted Gateway node to Configure it.' };
         }
 
+        if (isKeycloakConnected()) {
+            return { isValid: false, message: 'Create an edge connecting the node to Keycloak to enable the integration.' };
+        }
+
+        if (isRegistryConnected()) {
+            return { isValid: false, message: 'Create an edge connecting the node to Service Registry to enable the integration.' };
+        }
+
+        if (isEckConnected()) {
+            return { isValid: false, message: 'Create an edge connecting the node to Eck to enable the integration.' };
+        }
+
+        if (isDatabaseConnected()) {
+            return { isValid: false, message: 'Create an edge connecting the node to Database to enable the integration.' };
+        }
+
         return { isValid: true, message: 'Validation successful. Proceed to generate the application.' };
     };
 
     const toastIdRef = useRef();
 
     const handleButtonClick = () => {
-        if (checkEdge()) return;
         const { isValid, message } = checkDisabled();
         const errorMessage = message || 'Validation failed';
         toast.close(toastIdRef.current);
@@ -214,6 +302,7 @@ const Sidebar = ({
             variant: 'left-accent',
             isClosable: true,
         });
+        if (checkEdge()) return;
         if (!isValid) return;
         if (Object.keys(nodes).length === 1 && Object.values(nodes)[0]?.data?.applicationFramework === 'docusaurus') {
             setIsLoading(true);
@@ -298,7 +387,7 @@ const Sidebar = ({
         >
             <Box p={'12px 20px 8px 20px'}>
                 <FormLabel fontWeight="bold" style={{ margin: '0' }}>
-                    Architecture Name
+                    Name
                 </FormLabel>
                 <Input
                     my={2}
@@ -383,7 +472,7 @@ const Sidebar = ({
                                 </h2>
                             </div>
 
-                            <div
+                            {/* <div
                                 className={`dndnode output ${isUINodeEnabled ? 'disabled' : ''}`}
                                 onDragStart={event => onDragStart(event, 'default', 'UI')}
                                 draggable={!isUINodeEnabled}
@@ -411,18 +500,181 @@ const Sidebar = ({
                             </div>
                             <div className="dndnode output" onDragStart={event => onDragStart(event, 'default', 'Group')} draggable>
                                 Group
-                            </div>
+                            </div> */}
+                            {/* <div style={{ borderBottom: '1px solid lightgrey' }}></div> */}
+                            <Divider />
                             <h1
                                 style={{
                                     cursor: 'pointer',
                                     fontSize: '20px',
                                     display: 'flex',
                                     alignItems: 'center',
-                                    justifyContent: 'space-between',
+                                    paddingBottom: '3px',
+                                    paddingTop: '3px',
+                                    // justifyContent: 'space-between',
+                                    // borderBottom: '1px solid lightgrey',
+                                }}
+                                onClick={() => toggleOption('UI')}
+                                onMouseEnter={e => (e.currentTarget.style.backgroundColor = '  #f3f2f2 ')}
+                                onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+                            >
+                                {selectedOption === 'UI' ? (
+                                    <span style={{ color: 'lightgrey', fontSize: '12px', marginRight: '10px' }}>&#x25BC;</span>
+                                ) : (
+                                    <span style={{ color: 'lightgrey', fontSize: '12px', marginRight: '10px' }}>&#x25B6;</span>
+                                )}{' '}
+                                Client
+                                {/* {selectedOption === 'UI' ? <span>&#x25B2;</span> : <span>&#x25BC;</span>} */}
+                            </h1>
+                            {selectedOption === 'UI' && (
+                                <>
+                                    <div
+                                        className="selectorNode"
+                                        onDragStart={event => onDragStart(event, 'default', 'UI_react')}
+                                        draggable
+                                        // onMouseEnter={e => (e.currentTarget.style.backgroundColor = '  #f3f2f2 ')}
+                                        // onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+                                    >
+                                        <img width="130px" style={{ margin: '-10px 0px 0px 2px' }} src={ui1} alt="reactlogo"></img>
+                                    </div>
+                                    <div
+                                        className="selectorNode"
+                                        onDragStart={event => onDragStart(event, 'default', 'UI_angular')}
+                                        draggable
+                                        // onMouseEnter={e => (e.currentTarget.style.backgroundColor = '  #f3f2f2 ')}
+                                        // onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+                                    >
+                                        <img width="130px" style={{ margin: '-20px 0px 0px 10px' }} src={ui2} alt="angularlogo"></img>
+                                    </div>
+                                    {/* <div style={{ borderBottom: '1px solid lightgrey' }}></div> */}
+                                </>
+                            )}
+                            <Divider />
+                            <h1
+                                style={{
+                                    cursor: 'pointer',
+                                    fontSize: '20px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    paddingBottom: '3px',
+                                    paddingTop: '3px',
+                                    // justifyContent: 'space-between',
+                                }}
+                                onClick={() => toggleOption('Gateway')}
+                                onMouseEnter={e => (e.currentTarget.style.backgroundColor = '  #f3f2f2 ')}
+                                onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+                            >
+                                {selectedOption === 'Gateway' ? (
+                                    <span style={{ color: 'lightgrey', fontSize: '12px', marginRight: '10px' }}>&#x25BC;</span>
+                                ) : (
+                                    <span style={{ color: 'lightgrey', fontSize: '12px', marginRight: '10px' }}>&#x25B6;</span>
+                                )}
+                                Gateway
+                            </h1>
+                            {selectedOption === 'Gateway' && (
+                                <>
+                                    <div className="selectorNode" onDragStart={event => onDragStart(event, 'default', 'Gateway')} draggable>
+                                        <img width="180px" style={{ marginTop: '10px' }} src={gateway} alt="postgreslogo"></img>
+                                    </div>
+                                </>
+                            )}
+                            <Divider />
+
+                            <h1
+                                style={{
+                                    cursor: 'pointer',
+                                    fontSize: '20px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    paddingBottom: '3px',
+                                    paddingTop: '3px',
+                                    // justifyContent: 'space-between',
+                                }}
+                                onClick={() => toggleOption('Service')}
+                                onMouseEnter={e => (e.currentTarget.style.backgroundColor = '  #f3f2f2 ')}
+                                onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+                            >
+                                {selectedOption === 'Service' ? (
+                                    <span style={{ color: 'lightgrey', fontSize: '12px', marginRight: '10px' }}>&#x25BC;</span>
+                                ) : (
+                                    <span style={{ color: 'lightgrey', fontSize: '12px', marginRight: '10px' }}>&#x25B6;</span>
+                                )}
+                                Service
+                            </h1>
+                            {selectedOption === 'Service' && (
+                                <>
+                                    <div
+                                        className="selectorNode"
+                                        onDragStart={event => onDragStart(event, 'default', 'Service_spring')}
+                                        draggable
+                                    >
+                                        <img width="130px" style={{ margin: '-10px -50px -30px 5px' }} src={srv1} alt="springlogo"></img>
+                                    </div>
+                                    <div
+                                        className="selectorNode"
+                                        onDragStart={event => onDragStart(event, 'default', 'Service_gomicro')}
+                                        draggable
+                                    >
+                                        <img width="100px" style={{ margin: '-30px 0px -20px 0px' }} src={srv2} alt="gologo"></img>
+                                    </div>
+                                </>
+                            )}
+                            <Divider />
+
+                            <h1
+                                style={{
+                                    cursor: 'pointer',
+                                    fontSize: '20px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    paddingBottom: '3px',
+                                    paddingTop: '3px',
+                                    // justifyContent: 'space-between',
+                                }}
+                                onClick={() => toggleOption('Documentation')}
+                                onMouseEnter={e => (e.currentTarget.style.backgroundColor = '  #f3f2f2 ')}
+                                onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+                            >
+                                {selectedOption === 'Documentation' ? (
+                                    <span style={{ color: 'lightgrey', fontSize: '12px', marginRight: '10px' }}>&#x25BC;</span>
+                                ) : (
+                                    <span style={{ color: 'lightgrey', fontSize: '12px', marginRight: '10px' }}>&#x25B6;</span>
+                                )}
+                                Documentation
+                            </h1>
+                            {selectedOption === 'Documentation' && (
+                                <>
+                                    <div
+                                        className="selectorNode"
+                                        onDragStart={event => onDragStart(event, 'default', 'UI_docusaurus')}
+                                        draggable
+                                    >
+                                        <img width="180px" style={{ margin: '0px 0px 0px -20px' }} src={docs} alt="docusauruslogo"></img>
+                                    </div>
+                                </>
+                            )}
+                            <Divider />
+
+                            <h1
+                                style={{
+                                    cursor: 'pointer',
+                                    fontSize: '20px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    paddingBottom: '3px',
+                                    paddingTop: '3px',
+                                    // justifyContent: 'space-between',
                                 }}
                                 onClick={() => toggleOption('Authentication')}
+                                onMouseEnter={e => (e.currentTarget.style.backgroundColor = '  #f3f2f2 ')}
+                                onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
                             >
-                                Authentication {selectedOption === 'Authentication' ? <span>&#x25B2;</span> : <span>&#x25BC;</span>}
+                                {selectedOption === 'Authentication' ? (
+                                    <span style={{ color: 'lightgrey', fontSize: '12px', marginRight: '10px' }}>&#x25BC;</span>
+                                ) : (
+                                    <span style={{ color: 'lightgrey', fontSize: '12px', marginRight: '10px' }}>&#x25B6;</span>
+                                )}
+                                Authentication
                             </h1>
                             {selectedOption === 'Authentication' && (
                                 <>
@@ -435,17 +687,28 @@ const Sidebar = ({
                                     </div>
                                 </>
                             )}
+                            <Divider />
+
                             <h1
                                 style={{
                                     cursor: 'pointer',
                                     fontSize: '20px',
                                     display: 'flex',
                                     alignItems: 'center',
-                                    justifyContent: 'space-between',
+                                    paddingBottom: '3px',
+                                    paddingTop: '3px',
+                                    // justifyContent: 'space-between',
                                 }}
                                 onClick={() => toggleOption('Database')}
+                                onMouseEnter={e => (e.currentTarget.style.backgroundColor = '  #f3f2f2 ')}
+                                onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
                             >
-                                Database {selectedOption === 'Databases' ? <span>&#x25B2;</span> : <span>&#x25BC;</span>}
+                                {selectedOption === 'Database' ? (
+                                    <span style={{ color: 'lightgrey', fontSize: '12px', marginRight: '10px' }}>&#x25BC;</span>
+                                ) : (
+                                    <span style={{ color: 'lightgrey', fontSize: '12px', marginRight: '10px' }}>&#x25B6;</span>
+                                )}
+                                Database
                             </h1>
                             {selectedOption === 'Database' && (
                                 <>
@@ -465,22 +728,33 @@ const Sidebar = ({
                                     </div>
                                 </>
                             )}
+                            <Divider />
 
                             <h1>
                                 <span
                                     style={{
                                         cursor: 'pointer',
                                         fontSize: '20px',
-                                        justifyContent: 'space-between',
+                                        // justifyContent: 'space-between',
                                         display: 'flex',
                                         alignItems: 'center',
+                                        paddingBottom: '3px',
+                                        paddingTop: '3px',
                                     }}
                                     onClick={() => toggleOption('serviceDiscovery')}
+                                    onMouseEnter={e => (e.currentTarget.style.backgroundColor = '  #f3f2f2 ')}
+                                    onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
                                 >
+                                    {selectedOption === 'serviceDiscovery' ? (
+                                        <span style={{ color: 'lightgrey', fontSize: '12px', marginRight: '10px' }}>&#x25BC;</span>
+                                    ) : (
+                                        <span style={{ color: 'lightgrey', fontSize: '12px', marginRight: '10px' }}>&#x25B6;</span>
+                                    )}
                                     Service Discovery{' '}
-                                    {selectedOption === 'serviceDiscovery' ? <span>&#x25B2;</span> : <span>&#x25BC;</span>}
                                 </span>
                             </h1>
+                            <Divider />
+
                             {selectedOption === 'serviceDiscovery' && (
                                 <>
                                     <div
@@ -488,7 +762,7 @@ const Sidebar = ({
                                         onDragStart={event => onDragStart(event, 'default', 'Discovery_eureka')}
                                         draggable
                                     >
-                                        <img width="100px" height="40px" src={eurkea} alt="eurekalogo"></img>
+                                        <img width="80px" height="40px" src={eurkea} alt="eurekalogo"></img>
                                     </div>
                                 </>
                             )}
@@ -499,13 +773,24 @@ const Sidebar = ({
                                         fontSize: '20px',
                                         display: 'flex',
                                         alignItems: 'center',
-                                        justifyContent: 'space-between',
+                                        paddingBottom: '3px',
+                                        paddingTop: '3px',
+                                        // justifyContent: 'space-between',
                                     }}
                                     onClick={() => toggleOption('loadManagement')}
+                                    onMouseEnter={e => (e.currentTarget.style.backgroundColor = '  #f3f2f2 ')}
+                                    onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
                                 >
-                                    Log Management {selectedOption === 'loadManagement' ? <span>&#x25B2;</span> : <span>&#x25BC;</span>}
+                                    {selectedOption === 'loadManagement' ? (
+                                        <span style={{ color: 'lightgrey', fontSize: '12px', marginRight: '10px' }}>&#x25BC;</span>
+                                    ) : (
+                                        <span style={{ color: 'lightgrey', fontSize: '12px', marginRight: '10px' }}>&#x25B6;</span>
+                                    )}
+                                    Log Management
                                 </span>
                             </h1>
+                            <Divider />
+
                             {selectedOption === 'loadManagement' && (
                                 <>
                                     <div
@@ -517,7 +802,43 @@ const Sidebar = ({
                                     </div>
                                 </>
                             )}
+
+                            <h1
+                                style={{
+                                    cursor: 'pointer',
+                                    fontSize: '20px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    paddingBottom: '3px',
+                                    paddingTop: '3px',
+                                    // justifyContent: 'space-between',
+                                }}
+                                onClick={() => toggleOption('Group')}
+                                onMouseEnter={e => (e.currentTarget.style.backgroundColor = '  #f3f2f2 ')}
+                                onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+                            >
+                                {selectedOption === 'Group' ? (
+                                    <span style={{ color: 'lightgrey', fontSize: '12px', marginRight: '10px' }}>&#x25BC;</span>
+                                ) : (
+                                    <span style={{ color: 'lightgrey', fontSize: '12px', marginRight: '10px' }}>&#x25B6;</span>
+                                )}
+                                Group
+                            </h1>
+                            {selectedOption === 'Group' && (
+                                <>
+                                    <div className="selectorNode" onDragStart={event => onDragStart(event, 'default', 'Group')} draggable>
+                                        <img
+                                            width="250px"
+                                            style={{ marginTop: '-10px', marginBottom: '-50px', marginLeft: '-40px' }}
+                                            src={grp}
+                                            alt="postgreslogo"
+                                        ></img>
+                                    </div>
+                                </>
+                            )}
+                            <Divider />
                         </div>
+
                         <div
                             style={{
                                 position: 'sticky',
