@@ -16,13 +16,9 @@ import {
     Breadcrumb,
     BreadcrumbItem,
     BreadcrumbLink,
-    BreadcrumbSeparator,
-    IconButton,
     useDisclosure,
 } from '@chakra-ui/react';
 import ArchitectureCard from './ArchitectureCard';
-import design1 from '../../assets/markets/design1.png';
-import design2 from '../../assets/markets/design2.png';
 import mlpipeline from '../../assets/archModel/ml.png';
 import cipipeline from '../../assets/archModel/ci.jpeg';
 import cdpipeline from '../../assets/archModel/cd.png';
@@ -31,8 +27,6 @@ import './index.css';
 import { useLocation, useParams } from 'react-router-dom/cjs/react-router-dom.min';
 import { useHistory } from 'react-router-dom';
 import { useKeycloak } from '@react-keycloak/web';
-import { ArrowBackIcon } from '@chakra-ui/icons';
-import { easeIn } from 'framer-motion';
 import ActionModal from '../../components/Modal/ActionModal';
 
 const thickPlusIconStyle = {
@@ -151,7 +145,7 @@ function ArchitecturesSection() {
     return (
         <Box p="4" maxWidth="7xl" mx="auto">
             <Flex justifyContent={'space-between'} alignItems={'center'}>
-                <Breadcrumb alignItems={'baseline'} fontWeight="medium" fontSize="sm">
+                <Breadcrumb fontWeight="medium" fontSize="sm">
                     <BreadcrumbItem>
                         <BreadcrumbLink onClick={() => history.push('/projects')}>Projects</BreadcrumbLink>
                     </BreadcrumbItem>

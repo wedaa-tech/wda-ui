@@ -443,6 +443,7 @@ const Sidebar = ({
                             minHeight: '100%',
                             display: 'flex',
                             flexDirection: 'column',
+                            maxHeight: 'calc(100vh - 333px)'
                         }}
                     >
                         <div

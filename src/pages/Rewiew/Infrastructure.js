@@ -1,15 +1,4 @@
-import {
-    Alert,
-    AlertIcon,
-    Box,
-    Button,
-    Flex,
-    FormControl,
-    FormLabel,
-    HStack, Image,
-    Input,
-    Select
-} from '@chakra-ui/react';
+import { Alert, AlertIcon, Box, Button, Flex, FormControl, FormLabel, HStack, Image, Input, Select } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import azure from '../../../src/assets/Azure.png';
 import aws from '../../../src/assets/aws.png';
@@ -767,7 +756,7 @@ const Infrastructure = ({ onSubmit, projectData, generateZip }) => {
                 my={2}
                 colorScheme="blue"
                 onClick={() => {
-                    handleSubmit(DeploymentData);
+                    selectedImage !== 'none' ? handleSubmit(DeploymentData) : onSubmit(projectData, true);
                 }}
                 minH={'48px'}
                 isDisabled={selectedImage !== 'none' && (!selectedImage || isCheckEmpty() || checkValidation())}
