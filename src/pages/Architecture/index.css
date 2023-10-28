@@ -79,7 +79,8 @@
     border-radius: 10px;
 }
 
-.image-select:disabled {
+.chakra-breadcrumb__list {
+    align-items: baseline;
 }
 
 

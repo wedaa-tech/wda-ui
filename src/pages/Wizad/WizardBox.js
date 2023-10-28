@@ -39,8 +39,6 @@ function RadioCard(props) {
 function WizardBox({ currentQuestion, handleCheckboxChange, archSelect = false, selectedAnswer }) {
     const { question, type, id, options } = currentQuestion;
 
-    console.log(currentQuestion, archSelect, selectedAnswer);
-
     const [optionsList, setOptionsList] = useState([]);
 
     useEffect(() => {

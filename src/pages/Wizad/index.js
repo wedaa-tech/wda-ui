@@ -3,6 +3,7 @@ import {
     Box,
     Button,
     Flex,
+    Grid,
     Step,
     StepIcon,
     StepIndicator,
@@ -11,11 +12,14 @@ import {
     StepStatus,
     StepTitle,
     Stepper,
+    Text,
+    VStack,
     useSteps,
 } from '@chakra-ui/react';
 import './index.css';
 import WizardBox from './WizardBox';
-import { ArrowBackIcon, ArrowForwardIcon } from '@chakra-ui/icons';
+import { ArrowBackIcon, ArrowForwardIcon, CheckIcon } from '@chakra-ui/icons';
+import ReviewBox from './ReviewBox';
 
 const questionsData = {
     ArchList: {
@@ -46,13 +50,21 @@ const questionsData = {
     },
 };
 
+const idMappings = {
+    AT: 'Archtecture Type',
+    FE: 'Frontend',
+    BE: 'Backend',
+    DB: 'Database',
+};
+
 function Wizard() {
     const [currentStep, setCurrentStep] = useState(0);
     const [selectedAnswers, setSelectedAnswers] = useState({ AT: null });
     const [selectedArch, setSelectedArch] = useState(undefined);
     const { ArchList, questionsList } = questionsData;
+    const [review, setReview] = useState(false);
 
-    const currentQuestion = questionsList[ArchList.options[selectedAnswers.AT][currentStep]];
+    const currentQuestion = questionsList[ArchList.options[selectedAnswers.AT]?.[currentStep]];
 
     const handleNext = () => {
         if (!selectedArch) {
@@ -61,11 +73,13 @@ function Wizard() {
         } else if (currentStep < Object.keys(ArchList.options[selectedAnswers.AT]).length - 1) {
             setCurrentStep(currentStep + 1);
         } else {
-            console.log(selectedAnswers);
+            setReview(true);
+            console.log(selectedAnswers)
         }
     };
 
     const handleBack = () => {
+        if (review) setReview(false)
         if (currentStep > 0) {
             setCurrentStep(currentStep - 1);
         } else if (currentStep === 0) {
@@ -76,15 +90,12 @@ function Wizard() {
 
     const handleCheckboxChange = option => {
         let newSelectedAnswers = { ...selectedAnswers };
-        console.log(selectedArch, !selectedArch);
         if (!selectedArch) {
             newSelectedAnswers = { AT: option };
         } else {
             newSelectedAnswers[currentQuestion.id] = option;
         }
-        console.log(newSelectedAnswers);
         setSelectedAnswers(newSelectedAnswers);
-        console.log(selectedAnswers, option);
     };
 
     const { activeStep, setActiveStep } = useSteps({
@@ -113,12 +124,16 @@ function Wizard() {
                     </Stepper>
                 )}
                 <Flex border={'1px solid #d6d6d6'} flexDirection={'column'} boxShadow="2xl" rounded="xl" height={'60%'} width={'50%'}>
-                    <WizardBox
-                        currentQuestion={selectedArch ? currentQuestion : ArchList}
-                        handleCheckboxChange={handleCheckboxChange}
-                        archSelect={!selectedArch}
-                        selectedAnswer={selectedAnswers[selectedArch ? currentQuestion.id : 'AT']}
-                    />
+                    {review ? (
+                        <ReviewBox idMappings={idMappings} selections={selectedAnswers}/>
+                    ) : (
+                        <WizardBox
+                            currentQuestion={selectedArch ? currentQuestion : ArchList}
+                            handleCheckboxChange={handleCheckboxChange}
+                            archSelect={!selectedArch}
+                            selectedAnswer={selectedAnswers[selectedArch ? currentQuestion.id : 'AT']}
+                        />
+                    )}
                     <Flex padding={'30px'} justifyContent={'space-between'}>
                         <Button isDisabled={!selectedArch} rightIcon={<ArrowBackIcon />} onClick={handleBack} colorScheme="blue">
                             Back

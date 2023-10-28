@@ -439,7 +439,6 @@ const Designer = ({ update, viewMode = false }) => {
                     var edgeValid = true;
                     for (const key in edges) {
                         const edgeExists = edges[key];
-                        console.log(edgeExists);
                         if (edgeExists.target === edge.target && edge.source != edgeExists.source) {
                             edgeValid = false;
                             break;

@@ -4,7 +4,6 @@ import {
     Text,
     Heading,
     SimpleGrid,
-    Button,
     Modal,
     ModalOverlay,
     ModalContent,
@@ -12,16 +11,12 @@ import {
     ModalFooter,
     ModalBody,
     ModalCloseButton,
-    GridItem,
     Flex,
     Tooltip,
-    AlertDialog,
-    AlertDialogBody,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogContent,
-    AlertDialogOverlay,
-    AlertDialogCloseButton,
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbSeparator,
     IconButton,
     useDisclosure,
 } from '@chakra-ui/react';
@@ -155,17 +150,21 @@ function ArchitecturesSection() {
 
     return (
         <Box p="4" maxWidth="7xl" mx="auto">
-            <IconButton
-                variant="outline"
-                colorScheme="black"
-                aria-label="Delete Projects"
-                icon={<ArrowBackIcon />}
-                onClick={() => history.push('/projects')}
-            />
             <Flex justifyContent={'space-between'} alignItems={'center'}>
-                <Heading className="not-selectable" as="h1" my="10">
-                    Architectures
-                </Heading>
+                <Breadcrumb alignItems={'baseline'} fontWeight="medium" fontSize="sm">
+                    <BreadcrumbItem>
+                        <BreadcrumbLink onClick={() => history.push('/projects')}>Projects</BreadcrumbLink>
+                    </BreadcrumbItem>
+
+                    <BreadcrumbItem isCurrentPage>
+                        <BreadcrumbLink href="#">
+                            <Heading className="not-selectable" as="h1" my="10">
+                                Architectures
+                            </Heading>
+                        </BreadcrumbLink>
+                    </BreadcrumbItem>
+                </Breadcrumb>
+
                 <Text justifyItems={'flex-end'} display={'grid'} fontWeight="bold">
                     Project Name
                     <Text fontWeight="bold" fontFamily={'monospace'} fontSize={'30px'} color={'#ebaf24'}>
