@@ -23,9 +23,9 @@
     border-radius: 30px;
 }
 
-.chakra-tabs__tab-panel {
+/* .chakra-tabs__tab-panel {
     max-height: calc(100vh - 200px);
-}
+} */
 
 ul {
     list-style-type: none;
