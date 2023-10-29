@@ -160,6 +160,7 @@ const Review = () => {
     const [nodes, setNodes] = useState([]);
     const [edges, setEdges] = useState([]);
     const [deployementData, setDeployementData] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     const { parentId, id } = useParams();
 
@@ -175,16 +176,19 @@ const Review = () => {
                 .then(response => response.json())
                 .then(result => {
                     if (result?.metadata) {
-                        setNodes(Object.values(result.metadata?.nodes));
-                        setEdges(Object.values(result.metadata?.edges));
-                        setDeployementData(result.request_json?.deployement);
+                        setNodes(Object.values(result.metadata?.nodes || []));
+                        setEdges(Object.values(result.metadata?.edges || []));
+                        setDeployementData(structuredClone(result.request_json));
                     }
+                })
+                .then(() => {
+                    setIsLoading(false);
                 })
                 .catch(error => console.error(error));
         }
     }, [id, initialized, keycloak, parentId]);
 
-    useEffect(() => {}, []);
+    if (isLoading) return <></>;
 
     return (
         <ReactFlowProvider>

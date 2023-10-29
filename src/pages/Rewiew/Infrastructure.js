@@ -760,7 +760,7 @@ const Infrastructure = ({ onSubmit, projectData, generateZip }) => {
                 my={2}
                 colorScheme="blue"
                 onClick={() => {
-                    handleSubmit(DeploymentData);
+                    selectedImage !== 'none' ? handleSubmit(DeploymentData) : onSubmit(projectData, true);
                 }}
                 isDisabled={!selectedImage || isCheckEmpty() || checkValidation()}
             >

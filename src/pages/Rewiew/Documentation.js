@@ -13,6 +13,7 @@ const Documentation = ({ nodeData, nodeId }) => {
     const [seperatedServicesByLabel, setSeperatedServicesByLabel] = useState({});
     const [nodesMapping, setNodesMapping] = useState({});
     const [nodesList, setNodesList] = useState([]);
+    const { services } = nodeData || {};
 
     function separateObjectsByLabel(data) {
         const separatedData = {};
@@ -35,8 +36,8 @@ const Documentation = ({ nodeData, nodeId }) => {
     }
 
     useEffect(() => {
-        separateObjectsByLabel(nodeData.services);
-    }, [nodeData.services]);
+        separateObjectsByLabel(services);
+    }, [services]);
 
     useEffect(() => {
         setNodesList([nodesMapping[nodeId]]);
