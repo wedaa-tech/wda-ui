@@ -186,7 +186,7 @@ const Review = () => {
                 })
                 .catch(error => console.error(error));
         }
-    }, [id, initialized, keycloak, parentId, deployementData]);
+    }, [id, initialized, keycloak, parentId]);
 
     if (isLoading) return <></>;
 
