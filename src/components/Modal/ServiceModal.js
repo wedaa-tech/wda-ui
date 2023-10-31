@@ -119,8 +119,7 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
     const portNumberRangeCheck =
         ApplicationData.serverPort && (Number(ApplicationData.serverPort) < 1024 || Number(ApplicationData.serverPort) > 65535);
 
-    const appNameCheck =
-        ApplicationData.applicationName && !/^[a-zA-Z](?:[a-zA-Z0-9_-]*[a-zA-Z0-9])?$/g.test(ApplicationData.applicationName);
+    const appNameCheck = ApplicationData.applicationName && !/^[a-zA-Z](?:[a-zA-Z]*)?$/g.test(ApplicationData.applicationName);
 
     const packageNameCheck = ApplicationData.packageName && !/^[a-zA-Z](?:[a-zA-Z0-9_.-]*[a-zA-Z0-9])?$/g.test(ApplicationData.packageName);
 
