@@ -1172,9 +1172,11 @@ const Designer = ({ update, viewMode = false }) => {
             if (CurrentNode?.applicationName) {
                 setUniqueApplicationNames(prev => prev.filter(appName => CurrentNode.applicationName !== appName));
             }
+            setUniqueApplicationNames(prev => [...prev, Data.applicationName]);
             if (CurrentNode?.serverPort) {
                 setUniquePortNumbers(prev => prev.filter(port => CurrentNode.serverPort !== port));
             }
+            setUniquePortNumbers(prev => [...prev, Data.serverPort]);
             UpdatedNodes[Isopen].data = { ...UpdatedNodes[Isopen].data, ...Data };
             UpdatedNodes[Isopen].selected = false;
             if (Isopen.startsWith('UI') && UpdatedNodes[Isopen].data?.applicationFramework === 'ui')
