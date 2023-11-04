@@ -67,6 +67,14 @@ export default function Header({ children }) {
                             </Text>
                         </Link>
                     )}
+
+                    {initialized && keycloak.authenticated && ((keycloak?.tokenParsed?.given_name === "Admin")) && (
+                        <Link to="/architectures">
+                            <Text fontSize="md" color={color} fontWeight={location.pathname === '/architectures' ? 'bold' : 'normal'}>
+                                Architectures
+                            </Text>
+                        </Link>
+                    )}
                     <Link onClick={() => window.open(process.env.REACT_APP_DOCS_URL)}>
                         <Text fontSize="md" color={color}>
                             Docs

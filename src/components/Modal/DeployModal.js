@@ -802,6 +802,7 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose, update }) => {
                 <ModalFooter>
                     <Button
                         onClick={() => {
+                            localStorage.clear();
                             onSubmit(projectData);
                         }}
                         mt={4}
@@ -814,6 +815,7 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose, update }) => {
                     </Button>
                     <Button
                         onClick={() => {
+                            localStorage.clear();
                             handleSubmit(DeploymentData);
                         }}
                         mt={4}

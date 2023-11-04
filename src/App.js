@@ -30,6 +30,11 @@ function App() {
                             <ProjectsSection />
                         </PrivateRoute>
                     </Route>
+                    <Route exact path="/architectures">
+                        <PrivateRoute>
+                            <ArchitecturesSection />
+                        </PrivateRoute>
+                    </Route>
                     <Route path="/project/:parentId/architectures" exact>
                         <PrivateRoute>
                             <ArchitecturesSection />

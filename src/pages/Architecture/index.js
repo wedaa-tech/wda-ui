@@ -58,10 +58,14 @@ function ArchitecturesSection() {
     let location = useLocation();
     const history = useHistory();
 
-    const { parentId } = useParams();
-
+    var { parentId } = useParams();
     const { isOpen, onOpen, onClose } = useDisclosure();
+    const { initialized, keycloak } = useKeycloak();
     const cancelRef = React.useRef();
+
+    if (keycloak?.tokenParsed?.given_name === 'Admin' && location.pathname === '/architectures') {
+        parentId = 'Admin';
+    }
 
     if (parentId === undefined) {
         history.push('/projects');
@@ -72,7 +76,6 @@ function ArchitecturesSection() {
     const [isNewArchitectureModalOpen, setNewArchitectureModalOpen] = useState(false);
     const [newArchitectureName, setNewArchitectureName] = useState('');
     const initialRef = useRef(null);
-    const { initialized, keycloak } = useKeycloak();
     const [architectures, setArchitectures] = useState([]);
     const [totalArchitectures, setTotalArchitectures] = useState(0);
     const [architectureId, setArchitectureId] = useState(null);
@@ -103,23 +106,42 @@ function ArchitecturesSection() {
 
     useEffect(() => {
         if (initialized) {
-            fetch(process.env.REACT_APP_API_BASE_URL + '/api/projects/architectures/' + parentId, {
-                method: 'get',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
-                },
-            })
-                .then(response => response.json())
-                .then(result => {
-                    if (result?.data) {
-                        const archslist = structuredClone(result.data);
-
-                        setArchitectures(archslist);
-                        setTotalArchitectures(archslist.length);
-                    }
+            if (keycloak?.tokenParsed?.given_name === 'Admin' && location.pathname === '/architectures') {
+                fetch(process.env.REACT_APP_API_BASE_URL + '/api/refArchs/', {
+                    method: 'get',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                    },
                 })
-                .catch(error => console.error(error));
+                    .then(response => response.json())
+                    .then(result => {
+                        if (result?.data) {
+                            const archslist = structuredClone(result.data);
+                            setArchitectures(archslist);
+                            setTotalArchitectures(archslist.length);
+                        }
+                    })
+                    .catch(error => console.error(error));
+            } else {
+                fetch(process.env.REACT_APP_API_BASE_URL + '/api/projects/architectures/' + parentId, {
+                    method: 'get',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                    },
+                })
+                    .then(response => response.json())
+                    .then(result => {
+                        if (result?.data) {
+                            const archslist = structuredClone(result.data);
+
+                            setArchitectures(archslist);
+                            setTotalArchitectures(archslist.length);
+                        }
+                    })
+                    .catch(error => console.error(error));
+            }
         }
     }, [initialized, keycloak, parentId]);
 
@@ -132,46 +154,66 @@ function ArchitecturesSection() {
 
     const deleteArchitecture = data => {
         if (initialized) {
-            fetch(process.env.REACT_APP_API_BASE_URL + '/api/blueprints/' + data.id, {
-                method: 'delete',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
-                },
-            })
-                .then(response => response.json())
-                .then(data => {
-                    // if (data.success) {
-                    const updatedArchitectures = architectures.filter(card => card.id !== data.id);
-                    setArchitectures(updatedArchitectures);
-                    // } else {
-                    //     console.error('Error deleting card:', data.error);
-                    // }
+            if ((parentId = 'Admin' && location.pathname === '/architectures')) {
+                fetch(process.env.REACT_APP_API_BASE_URL + '/api/refArchs/' + data.id, {
+                    method: 'delete',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                    },
                 })
-                .catch(error => console.error('Error deleting card:', error));
+                    .then(response => response.json())
+                    .then(data => {
+                        const updatedArchitectures = architectures.filter(card => card.id !== data.id);
+                        setArchitectures(updatedArchitectures);
+                    })
+                    .catch(error => console.error('Error deleting card:', error));
+            } else {
+                fetch(process.env.REACT_APP_API_BASE_URL + '/api/blueprints/' + data.id, {
+                    method: 'delete',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                    },
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        // if (data.success) {
+                        const updatedArchitectures = architectures.filter(card => card.id !== data.id);
+                        setArchitectures(updatedArchitectures);
+                        // } else {
+                        //     console.error('Error deleting card:', data.error);
+                        // }
+                    })
+                    .catch(error => console.error('Error deleting card:', error));
+            }
         }
         onClose(true);
     };
 
     return (
         <Box p="4" maxWidth="7xl" mx="auto">
-            <IconButton
-                variant="outline"
-                colorScheme="black"
-                aria-label="Delete Projects"
-                icon={<ArrowBackIcon />}
-                onClick={() => history.push('/projects')}
-            />
+            {!(parentId === 'Admin') && (
+                <IconButton
+                    variant="outline"
+                    colorScheme="black"
+                    aria-label="Delete Projects"
+                    icon={<ArrowBackIcon />}
+                    onClick={() => history.push('/projects')}
+                />
+            )}
             <Flex justifyContent={'space-between'} alignItems={'center'}>
                 <Heading className="not-selectable" as="h1" my="10">
-                    Architectures
+                    {parentId == 'Admin' ? 'Reference Architectures' : 'Architectures'}
                 </Heading>
-                <Text justifyItems={'flex-end'} display={'grid'} fontWeight="bold">
-                    Project Name
-                    <Text fontWeight="bold" fontFamily={'monospace'} fontSize={'30px'} color={'#ebaf24'}>
-                        {projectName}
+                {!(parentId === 'Admin') && (
+                    <Text justifyItems={'flex-end'} display={'grid'} fontWeight="bold">
+                        Project Name
+                        <Text fontWeight="bold" fontFamily={'monospace'} fontSize={'30px'} color={'#ebaf24'}>
+                            {projectName}
+                        </Text>
                     </Text>
-                </Text>
+                )}
             </Flex>
 
             <SimpleGrid className="simple-grid" minChildWidth="null" columns={{ base: 1, sm: 1, md: 3 }} spacing={10}>
@@ -191,7 +233,7 @@ function ArchitecturesSection() {
                     onClick={handleOpenNewArchitectureModal}
                 >
                     <Text className="not-selectable" fontWeight="bold">
-                        Create New Architecture
+                        {parentId == 'Admin' ? 'Create New Reference Architecture' : 'Create New Architecture'}
                     </Text>
                     <span className="not-selectable" inputMode="none" style={thickPlusIconStyle}>
                         +
@@ -211,7 +253,7 @@ function ArchitecturesSection() {
                     height={'100px'}
                 >
                     <Text className="not-selectable" fontWeight="bold">
-                        Number of Architectures
+                        {parentId == 'Admin' ? 'Number of Reference Architectures' : 'Number of Architectures'}
                     </Text>
                     <Text className="not-selectable" fontWeight="bold" fontFamily={'monospace'} fontSize={'30px'} color={'#ebaf24'}>
                         {totalArchitectures}
@@ -220,13 +262,13 @@ function ArchitecturesSection() {
                 <Box maxWidth={96} minWidth={96}></Box>
             </SimpleGrid>
             <Heading className="not-selectable" as="h3" size="lg" my="10">
-                Your Architectures
+                {parentId == 'Admin' ? 'Your Reference Architectures' : 'Your Architectures'}
             </Heading>
             <SimpleGrid className="simple-grid" minChildWidth="null" columns={{ base: 1, sm: 2, md: 3 }} spacing={10}>
                 {architectures.map((architecture, index) => (
                     <ArchitectureCard
                         key={index}
-                        projectId={architecture.project_id}
+                        projectId={architecture?.name ? architecture.name : architecture.project_id}
                         title={architecture.projectName}
                         data={architecture}
                         description={architecture.description}
