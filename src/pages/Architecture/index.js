@@ -124,7 +124,6 @@ function ArchitecturesSection() {
                     .then(result => {
                         if (result?.data) {
                             const archslist = structuredClone(result.data);
-
                             setArchitectures(archslist);
                             setTotalArchitectures(archslist.length);
                         }
@@ -152,9 +151,10 @@ function ArchitecturesSection() {
                     },
                 })
                     .then(response => response.json())
-                    .then(data => {
-                        const updatedArchitectures = architectures.filter(card => card.id !== data.id);
+                    .then(res => {
+                        const updatedArchitectures = architectures.filter(card => card.projectId !== data.id);
                         setArchitectures(updatedArchitectures);
+                        setTotalArchitectures(updatedArchitectures.length);
                     })
                     .catch(error => console.error('Error deleting card:', error));
             } else {
@@ -166,10 +166,11 @@ function ArchitecturesSection() {
                     },
                 })
                     .then(response => response.json())
-                    .then(data => {
+                    .then(res => {
                         // if (data.success) {
-                        const updatedArchitectures = architectures.filter(card => card.id !== data.id);
+                        const updatedArchitectures = architectures.filter(card => card.project_id !== data.id);
                         setArchitectures(updatedArchitectures);
+                        setTotalArchitectures(updatedArchitectures.length);
                         // } else {
                         //     console.error('Error deleting card:', data.error);
                         // }
@@ -257,11 +258,13 @@ function ArchitecturesSection() {
                 {architectures.map((architecture, index) => (
                     <ArchitectureCard
                         key={index}
-                        projectId={architecture?.name ? architecture.name : architecture.project_id}
-                        title={architecture.projectName}
+                        projectId={architecture?.name ? architecture._id : architecture.project_id}
+                        title={architecture?.name ? architecture?.name : architecture.projectName}
                         data={architecture}
+                        parentId={parentId}
                         description={architecture.description}
                         imageUrl={architecture.imageUrl}
+                        published={architecture.published}
                         onClick={handleOpenArchitecture}
                         onDelete={(title, projectId) => {
                             setArchitectureId(projectId);

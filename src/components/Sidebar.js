@@ -90,7 +90,7 @@ const Sidebar = ({
 
     useEffect(() => {
         const images = [db1, db2, srv1, srv2, ui1, ui2, grp, gateway, docs, eurkea, keycloakIcon, eck];
-        images.forEach((image) => {
+        images.forEach(image => {
             new Image().src = image;
         });
     }, []);
@@ -138,7 +138,7 @@ const Sidebar = ({
 
     useEffect(() => {
         if (initialized) {
-            fetch(process.env.REACT_APP_API_BASE_URL + '/refArchs', {
+            fetch(process.env.REACT_APP_API_BASE_URL + '/api/refArchs', {
                 method: 'get',
                 headers: {
                     'Content-Type': 'application/json',
@@ -147,8 +147,8 @@ const Sidebar = ({
             })
                 .then(response => response.json())
                 .then(result => {
-                    if (result?.result) {
-                        const archs = structuredClone(result.result);
+                    if (result?.data) {
+                        const archs = structuredClone(result.data);
                         setRefArch(archs);
                     }
                 })
@@ -443,7 +443,7 @@ const Sidebar = ({
                             minHeight: '100%',
                             display: 'flex',
                             flexDirection: 'column',
-                            maxHeight: 'calc(100vh - 333px)'
+                            maxHeight: 'calc(100vh - 333px)',
                         }}
                     >
                         <div
@@ -861,7 +861,7 @@ const Sidebar = ({
                                         draggable
                                     >
                                         <ZoomableImageModalWrapper
-                                            imageUrl={element.image}
+                                            imageUrl={element.imageUrl}
                                             description="Description of image 1."
                                             name={element.name}
                                         />
