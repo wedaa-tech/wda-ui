@@ -744,24 +744,34 @@ const Designer = ({ update, viewMode = false }) => {
 
     const { parentId, id } = useParams();
     const [projectParentId, setProjectParentId] = useState(parentId || location.state?.parentId);
-
     const [projectName, setProjectName] = useState(null);
 
     const loadData = async () => {
         if (initialized && parentId && id) {
             try {
-                const response = await fetch(process.env.REACT_APP_API_BASE_URL + '/blueprints/' + id, {
-                    method: 'get',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
-                    },
-                });
-
+                var response;
+                if (parentId === 'Admin') {
+                    response = await fetch(process.env.REACT_APP_API_BASE_URL + '/api/refArchs/' + id, {
+                        method: 'get',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                        },
+                    });
+                } else {
+                    response = await fetch(process.env.REACT_APP_API_BASE_URL + '/blueprints/' + id, {
+                        method: 'get',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                        },
+                    });
+                }
                 if (response.ok) {
                     const result = await response.json();
                     if (result?.metadata) {
-                        setProjectParentId(result.parentId);
+                        if (parentId === 'Admin') setProjectParentId(parentId);
+                        else setProjectParentId(result.parentId);
                         setProjectName(result.request_json?.projectName);
                         return await result;
                     }
@@ -1304,15 +1314,15 @@ const Designer = ({ update, viewMode = false }) => {
                 }
             }
         }
-        if (saveMetadata || userData?.project_id) {
+        if (saveMetadata || id) {
             Data['metadata'] = {
                 nodes: nodes,
                 edges: edges,
                 deployment: Data?.deployment,
             };
         } else delete Data?.metadata;
-        if (userData?.project_id) {
-            Data.projectId = userData?.project_id;
+        if (id) {
+            Data.projectId = id;
         }
         if (projectParentId) {
             Data.parentId = projectParentId;
@@ -1320,6 +1330,7 @@ const Designer = ({ update, viewMode = false }) => {
         setNodes(NewNodes);
         setGeneratingData(structuredClone(Data));
         setIsLoading(true);
+
         if (submit) {
             generateZip(null, Data);
         }
@@ -1335,7 +1346,6 @@ const Designer = ({ update, viewMode = false }) => {
         const generatedImage = await CreateImage(Object.values(nodes));
         setIsGenerating(true);
         if (generatedImage) Data.imageUrl = generatedImage;
-
         try {
             const response = await fetch(process.env.REACT_APP_API_BASE_URL + '/generate', {
                 method: 'post',
@@ -1355,7 +1365,11 @@ const Designer = ({ update, viewMode = false }) => {
             localStorage.clear();
             if (initialized && keycloak.authenticated) {
                 clear();
-                history.replace('/project/' + projectParentId + '/architectures');
+                if (parentId === 'Admin') {
+                    history.replace('/architectures');
+                } else {
+                    history.replace('/project/' + projectParentId + '/architectures');
+                }
             } else {
                 clear();
                 setIsLoading(false);
