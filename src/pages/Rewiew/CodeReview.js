@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Box, Tabs, TabList, Tab, TabPanels, TabPanel, Button, Flex } from '@chakra-ui/react';
+import React, { useEffect, useState, useRef } from 'react';
+import { Box, Tabs, TabList, Tab, TabPanels, TabPanel, Button, Flex, useToast } from '@chakra-ui/react';
 import Documentation from './Documentation';
 import FolderTree from './FolderTree';
 import Readme from './Readme';
@@ -39,9 +39,19 @@ function CodeReview({ nodeId, generateMode = false, deployementData = null, onSu
         loadData();
     }, [node, getNode, nodeId, deployementData]);
 
+    const toast = useToast({
+        containerStyle: {
+            width: '500px',
+            maxWidth: '100%',
+        },
+    });
+
+    const toastIdRef = useRef();
+
     const publishArchitecture = () => {
         if (initialized) {
-            fetch(process.env.REACT_APP_API_BASE_URL + '/api/publish/' + deployementData._id, {
+            console.log(deployementData);
+            fetch(process.env.REACT_APP_API_BASE_URL + '/api/publish/' + deployementData.projectId, {
                 method: 'put',
                 headers: {
                     'Content-Type': 'application/json',
@@ -54,6 +64,16 @@ function CodeReview({ nodeId, generateMode = false, deployementData = null, onSu
                 })
                 .catch(error => console.error('Error updating Architecture:', error));
         }
+        var name = deployementData.projectName;
+        var msg = `Architecture ${name[0].toUpperCase() + name.slice(1)} is ${isArchPublished ? 'Revoked' : 'Published'}`;
+        toast.close(toastIdRef.current);
+        toast({
+            title: msg,
+            status: isArchPublished ? 'error' : 'success',
+            duration: 3000,
+            variant: 'left-accent',
+            isClosable: true,
+        });
         history.push(`/architectures`);
     };
 

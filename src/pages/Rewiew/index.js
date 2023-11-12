@@ -184,8 +184,7 @@ const Review = () => {
                         if (result?.metadata) {
                             setNodes(Object.values(result.metadata?.nodes || []));
                             setEdges(Object.values(result.metadata?.edges || []));
-                            var result_json = { ...structuredClone(result.request_json), _id: result._id };
-                            setDeployementData(result_json);
+                            setDeployementData(structuredClone(result.request_json));
                             setPublished(result.published);
                         }
                     })

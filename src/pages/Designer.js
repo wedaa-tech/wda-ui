@@ -1291,7 +1291,8 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 },
                 body: JSON.stringify(Data),
             });
-
+            const projectId = response.headers.get('projectId');
+            console.log(response);
             const blob = await response.blob();
             setIsGenerating(false);
             saveAs(blob, `${Data.projectName}.zip`);
