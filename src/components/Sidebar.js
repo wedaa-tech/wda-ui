@@ -149,7 +149,8 @@ const Sidebar = ({
                 .then(result => {
                     if (result?.data) {
                         const archs = structuredClone(result.data);
-                        setRefArch(archs);
+                        const publishedArchitectures = archs.filter(card => card.published === true);
+                        setRefArch(publishedArchitectures);
                     }
                 })
                 .catch(error => console.error(error));
