@@ -41,7 +41,7 @@ export const imageMappings = {
 
 export const questionsData = {
     ArchList: {
-        question: 'Select The scope of your Application',
+        question: 'Select the scope of your Application',
         id: 'AT',
         type: 'radio',
         options: {

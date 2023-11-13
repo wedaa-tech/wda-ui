@@ -52,12 +52,17 @@ export default function Header({ children }) {
                 </Flex>
                 <HStack spacing={4} display={{ base: 'none', md: 'flex' }}>
                     <Link to="/canvasToCode">
+                        <Text fontSize="md" color={color} fontWeight={location.pathname === '/canvasToCode' ? 'bold' : 'normal'}>
+                            CanvasToCode
+                        </Text>
+                    </Link>
+                    <Link to="/wizard">
                         <Text
                             fontSize="md"
                             color={color}
-                            fontWeight={location.pathname === '/canvasToCode' || location.pathname === '/' ? 'bold' : 'normal'}
+                            fontWeight={location.pathname === '/wizard' || location.pathname === '/' ? 'bold' : 'normal'}
                         >
-                            CanvasToCode
+                            Wizard
                         </Text>
                     </Link>
                     {initialized && keycloak.authenticated && (
