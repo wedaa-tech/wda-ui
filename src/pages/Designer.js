@@ -160,22 +160,22 @@ const Designer = ({ update, viewMode = false }) => {
             edges[edgeId] = {
                 id: edgeId,
                 ...edgeParams,
+                className: 'warning',
                 markerEnd: {
                     color: '#ff0000',
                     type: MarkerType.ArrowClosed,
                 },
-                style: { stroke: '#ff0000' },
             };
         }
         if (databaseEdge || groupEdge) {
             edges[edgeId] = {
                 id: edgeId,
                 ...edgeParams,
+                className: 'success',
                 markerEnd: {
                     color: 'black',
                     type: MarkerType.ArrowClosed,
                 },
-                style: { stroke: 'black' },
             };
         }
         return { ...edges };
@@ -1342,13 +1342,13 @@ const Designer = ({ update, viewMode = false }) => {
                 color: 'black',
                 type: MarkerType.ArrowClosed,
             };
-            UpdatedEdges[IsEdgeopen].style = { stroke: 'black' };
+            UpdatedEdges[IsEdgeopen].className = 'success';
         } else {
             UpdatedEdges[IsEdgeopen].markerEnd = {
                 color: '#bcbaba',
                 type: MarkerType.ArrowClosed,
             };
-            UpdatedEdges[IsEdgeopen].style = { stroke: '#bcbaba' };
+            UpdatedEdges[IsEdgeopen].className = 'grey';
         }
 
         UpdatedEdges[IsEdgeopen].data = {
@@ -1445,13 +1445,13 @@ const Designer = ({ update, viewMode = false }) => {
                         color: 'black',
                         type: MarkerType.ArrowClosed,
                     };
+                    updatedEdges[newEdgeId].className = 'success';
                     updatedEdges[newEdgeId].data = {
                         client: updatedEdges[newEdgeId].source,
                         server: updatedEdges[newEdgeId].target,
                         ...updatedEdges[newEdgeId].data,
                         ...Data,
                     };
-                    updatedEdges[newEdgeId].style = { stroke: 'black' };
                     return updatedEdges;
                 });
                 return;
@@ -1484,13 +1484,13 @@ const Designer = ({ update, viewMode = false }) => {
                         color: 'black',
                         type: MarkerType.ArrowClosed,
                     };
+                    updatedEdges[newEdgeId].className = 'success';
                     updatedEdges[newEdgeId].data = {
                         client: updatedEdges[newEdgeId].source,
                         server: updatedEdges[newEdgeId].target,
                         ...updatedEdges[newEdgeId].data,
                         ...Data,
                     };
-                    updatedEdges[newEdgeId].style = { stroke: 'black' };
                     return updatedEdges;
                 });
                 return;
@@ -1530,13 +1530,13 @@ const Designer = ({ update, viewMode = false }) => {
                             color: 'black',
                             type: MarkerType.ArrowClosed,
                         };
+                        updatedEdges[newEdgeId].className = 'success';
                         updatedEdges[newEdgeId].data = {
                             client: updatedEdges[newEdgeId].source,
                             server: updatedEdges[newEdgeId].target,
                             ...updatedEdges[newEdgeId].data,
                             ...Data,
                         };
-                        updatedEdges[newEdgeId].style = { stroke: 'black' };
                         return updatedEdges;
                     });
                 } else {
