@@ -13,9 +13,9 @@
 
 
 .wizard-checkbox {
-   box-shadow:
+   /* box-shadow:
       rgba(0, 0, 0, 0.1) 0px 4px 6px -1px,
-      rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+      rgba(0, 0, 0, 0.06) 0px 2px 4px -1px; */
    transform: none;
    transition: transform 0.3s ease-in-out;
 }
@@ -38,8 +38,10 @@
    display: grid;
    align-items: center;
    height: 100%;
+   width: 100%;
    font-weight: bold;
-   background-color: #0000002e;
-   backdrop-filter: blur(4px) saturate(150%);
+   /* aspect-ratio: 3/2; */
+   /* background-color: #0000002e; */
+   /* backdrop-filter: blur(4px) saturate(150%); */
    border-radius: inherit;
 }

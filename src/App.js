@@ -26,7 +26,8 @@ function App() {
                         <Wizard />
                     </Route>
                     <Route exact path="/">
-                        <Designer update={false} />
+                        <Wizard />
+                    </Route>
                     </Route>
                     <Route exact path="/projects">
                         <PrivateRoute>

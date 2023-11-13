@@ -12,8 +12,9 @@ import ReactFlow, {
     getTransformForBounds,
     useReactFlow,
 } from 'reactflow';
+import { AiOutlineClear } from 'react-icons/ai';
 import 'reactflow/dist/style.css';
-import { Box, Button, Flex, HStack, Spinner, Text, VStack, useToast } from '@chakra-ui/react';
+import { Box, Button, Flex, HStack, Icon, IconButton, Spinner, Text, VStack, useToast } from '@chakra-ui/react';
 import { ArrowRightIcon } from '@chakra-ui/icons';
 import Sidebar from './../components/Sidebar';
 import { saveAs } from 'file-saver';
@@ -81,11 +82,13 @@ const nodeTypes = {
 const imageWidth = 1024;
 const imageHeight = 768;
 
-const Designer = ({ update, viewMode = false }) => {
+const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     const [viewOnly, setViewOnly] = useState(viewMode);
     const reactFlowWrapper = useRef(null);
     const { keycloak, initialized } = useKeycloak();
-    const [nodes, setNodes] = useState({});
+    const [nodes, setNodes] = useState(sharedMetadata?.nodes || {});
+    const [edges, setEdges] = useState(sharedMetadata?.edges || {});
+    const [showDiv, setShowDiv] = useState(false);
     const [nodeType, setNodeType] = useState(null);
     const [ServiceDiscoveryCount, setServiceDiscoveryCount] = useState(0);
     const [MessageBrokerCount, setMessageBrokerCount] = useState(0);
@@ -353,7 +356,6 @@ const Designer = ({ update, viewMode = false }) => {
         });
     }, []);
 
-    const [edges, setEdges] = useState({});
     const onEdgesChange = useCallback((Nodes, changes = []) => {
         setUpdated(true);
         setEdges(oldEdges => {
@@ -855,7 +857,7 @@ const Designer = ({ update, viewMode = false }) => {
 
     useEffect(() => {
         document.title = 'WDA';
-        setShowDiv(true);
+        setShowDiv(sharedMetadata ? false : true);
         let data = location?.state;
         if (parentId) {
             if (!id) {
@@ -915,10 +917,10 @@ const Designer = ({ update, viewMode = false }) => {
             setuserData(data);
             if (data?.metadata?.nodes) {
                 setShowDiv(false);
-                setNodes(data?.metadata.nodes);
+                setNodes({ ...data?.metadata.nodes });
             }
             if (data.metadata?.edges) {
-                setEdges(data?.metadata.edges);
+                setEdges({ ...data?.metadata.edges });
             }
             initData(data);
         }
@@ -1182,8 +1184,6 @@ const Designer = ({ update, viewMode = false }) => {
         setNodes(UpdatedNodes);
         setopen(false);
     };
-
-    const [showDiv, setShowDiv] = useState(false);
 
     const MergeData = (sourceId, targetId, Nodes) => {
         const sourceType = sourceId.split('_')[0];
@@ -1877,26 +1877,18 @@ const Designer = ({ update, viewMode = false }) => {
                                 >
                                     Print
                                 </Button>
-                                <Button hidden={!viewOnly} colorScheme="blackAlpha" size="sm" onClick={() => setViewOnly(false)}>
-                                    Edit Mode
-                                </Button>
-                                <Button hidden={viewOnly} colorScheme="blackAlpha" size="sm" onClick={() => setViewOnly(true)}>
-                                    View Mode
-                                </Button>
                                 <DownloadButton />
-                                <Button
+                                <IconButton
                                     hidden={viewOnly}
-                                    size="sm"
-                                    colorScheme="blackAlpha"
+                                    icon={<Icon as={AiOutlineClear} />}
+                                    size="md"
                                     onClick={() => {
                                         if (!(Object.keys(nodes).length === 0) && updated) {
                                             setVisibleDialog(true);
                                             setActionModalType('clear');
                                         }
                                     }}
-                                >
-                                    Clear Canvas
-                                </Button>
+                                />
                             </VStack>
                         </Panel>
                         <Background gap={10} color="#f2f2f2" variant={BackgroundVariant.Lines} />

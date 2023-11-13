@@ -1,121 +1,128 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
     Box,
     Button,
     Flex,
-    Grid,
     Step,
-    StepIcon,
     StepIndicator,
     StepNumber,
     StepSeparator,
     StepStatus,
     StepTitle,
     Stepper,
-    Text,
-    VStack,
     useSteps,
+    useToast,
 } from '@chakra-ui/react';
 import './index.css';
 import WizardBox from './WizardBox';
-import { ArrowBackIcon, ArrowForwardIcon, CheckIcon } from '@chakra-ui/icons';
+import { ArrowBackIcon, ArrowForwardIcon, CheckIcon, CloseIcon, ExternalLinkIcon } from '@chakra-ui/icons';
 import ReviewBox from './ReviewBox';
 
-const questionsData = {
-    ArchList: {
-        question: 'Choose an architecture type',
-        id: 'AT',
-        type: 'radio',
-        options: { 'Full Stack': [0, 1, 2], Microservices: [0], Serverless: [2], 'Event-Driven': [1] },
-    },
-    questionsList: {
-        0: {
-            question: 'Select a frontend framework',
-            id: 'FE',
-            type: 'radio',
-            options: ['React', 'Angular', 'Vue'],
-        },
-        1: {
-            question: 'Select a backend framework',
-            id: 'BE',
-            type: 'radio',
-            options: ['Spring Boot', 'Go Micro'],
-        },
-        2: {
-            question: 'Select a database',
-            id: 'DB',
-            type: 'radio',
-            options: ['PostgreSQL', 'MongoDB'],
-        },
-    },
-};
-
-const idMappings = {
-    AT: 'Archtecture Type',
-    FE: 'Frontend',
-    BE: 'Backend',
-    DB: 'Database',
-};
+import { idMappings, questionsData } from './CONSTANTS';
+import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
+import { dummydata } from '../../test-remove';
 
 function Wizard() {
-    const [currentStep, setCurrentStep] = useState(0);
+    const history = useHistory();
     const [selectedAnswers, setSelectedAnswers] = useState({ AT: null });
     const [selectedArch, setSelectedArch] = useState(undefined);
+    const [selectedArchQuestions, setSelectedArchQuestions] = useState({});
     const { ArchList, questionsList } = questionsData;
     const [review, setReview] = useState(false);
+    const count = Object.keys(selectedAnswers.AT ? ArchList.options[selectedAnswers.AT] : {}).length;
 
-    const currentQuestion = questionsList[ArchList.options[selectedAnswers.AT]?.[currentStep]];
+    const { activeStep, setActiveStep } = useSteps({
+        index: 1,
+        count: count,
+    });
+
+    const currentQuestion = questionsList[ArchList.options[selectedAnswers.AT]?.[activeStep]];
+
+    const toast = useToast({
+        containerStyle: {
+            width: '500px',
+            maxWidth: '100%',
+        },
+    });
+    const toastIdRef = useRef();
 
     const handleNext = () => {
-        if (!selectedArch) {
+        if (review) console.log(selectedAnswers);
+        else if (!selectedArch) {
             setSelectedArch(selectedAnswers.AT);
-            setCurrentStep(0);
-        } else if (currentStep < Object.keys(ArchList.options[selectedAnswers.AT]).length - 1) {
-            setCurrentStep(currentStep + 1);
+            setActiveStep(0);
+        } else if (activeStep < count - 1) {
+            setActiveStep(activeStep + 1);
         } else {
-            setReview(true);
-            console.log(selectedAnswers)
+            if (Object.keys(selectedAnswers).length === count + 1) {
+                setReview(true);
+                setActiveStep(activeStep + 1);
+            } else {
+                const errorMessage = 'Please Configure all components';
+                toast.close(toastIdRef.current);
+                toastIdRef.current = toast({
+                    title: errorMessage,
+                    status: 'error',
+                    duration: 3000,
+                    variant: 'left-accent',
+                    isClosable: true,
+                });
+            }
         }
     };
 
     const handleBack = () => {
-        if (review) setReview(false)
-        if (currentStep > 0) {
-            setCurrentStep(currentStep - 1);
-        } else if (currentStep === 0) {
-            setCurrentStep(0);
+        if (review) setReview(false);
+        if (activeStep > 0) {
+            setActiveStep(activeStep - 1);
+        } else if (activeStep === 0) {
+            setActiveStep(0);
             setSelectedArch(undefined);
         }
+    };
+
+    const handleSubmit = () => {
+        history.push({
+            pathname: '/canvastocode',
+            state: { metadata: dummydata },
+        });
     };
 
     const handleCheckboxChange = option => {
         let newSelectedAnswers = { ...selectedAnswers };
         if (!selectedArch) {
             newSelectedAnswers = { AT: option };
+            setSelectedArchQuestions(questionsData.ArchList.options[option]);
         } else {
             newSelectedAnswers[currentQuestion.id] = option;
         }
         setSelectedAnswers(newSelectedAnswers);
     };
 
-    const { activeStep, setActiveStep } = useSteps({
-        index: 1,
-        count: Object.keys(selectedAnswers.AT ? ArchList.options[selectedAnswers.AT] : {}).length,
-    });
+    const checkBoxStatus = stepContext => {
+        if (!selectedAnswers[selectedArchQuestions[stepContext.index]]) return <CloseIcon />;
+        else return <CheckIcon />;
+    };
 
     return (
         <>
             <Flex direction={'column'} justifyContent={'space-evenly'} alignItems={'center'} className="pageBox">
                 {selectedArch && (
-                    <Stepper width={'70%'} size="md" index={currentStep}>
+                    <Stepper justifyContent={'center'} width={'70%'} size="md" colorScheme="blue" index={activeStep}>
                         {ArchList.options[selectedArch].map((question, index) => (
-                            <Step key={index} onClick={() => setActiveStep(index)}>
+                            <Step
+                                key={index}
+                                onClick={() =>
+                                    (count === activeStep && setReview(false)) ||
+                                    (Object.keys(selectedAnswers).length - 1 >= index && setActiveStep(index))
+                                }
+                            >
                                 <StepIndicator>
-                                    <StepStatus complete={<StepIcon />} incomplete={<StepNumber />} active={<StepNumber />} />
+                                    <StepStatus complete={checkBoxStatus} incomplete={<StepNumber />} active={<StepNumber />} />
                                 </StepIndicator>
 
                                 <Box flexShrink="0">
-                                    <StepTitle>{questionsList[question].question}</StepTitle>
+                                    <StepTitle>{idMappings[questionsList[question].id]}</StepTitle>
                                 </Box>
 
                                 <StepSeparator />
@@ -125,7 +132,7 @@ function Wizard() {
                 )}
                 <Flex border={'1px solid #d6d6d6'} flexDirection={'column'} boxShadow="2xl" rounded="xl" height={'60%'} width={'50%'}>
                     {review ? (
-                        <ReviewBox idMappings={idMappings} selections={selectedAnswers}/>
+                        <ReviewBox idMappings={idMappings} selections={selectedAnswers} />
                     ) : (
                         <WizardBox
                             currentQuestion={selectedArch ? currentQuestion : ArchList}
@@ -139,12 +146,12 @@ function Wizard() {
                             Back
                         </Button>
                         <Button
-                            isDisabled={!selectedAnswers[selectedArch ? currentQuestion.id : 'AT']}
-                            rightIcon={<ArrowForwardIcon />}
-                            onClick={handleNext}
+                            isDisabled={activeStep === count ? false : !selectedAnswers[selectedArch ? currentQuestion?.id : 'AT']}
+                            rightIcon={activeStep === count ? <ExternalLinkIcon /> : <ArrowForwardIcon />}
+                            onClick={activeStep === count ? handleSubmit : handleNext}
                             colorScheme="blue"
                         >
-                            Next
+                            {activeStep === count ? 'Submit' : 'Next'}
                         </Button>
                     </Flex>
                 </Flex>

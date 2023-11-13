@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Text, VStack, useRadio, useRadioGroup, SimpleGrid } from '@chakra-ui/react';
-import application from '../../assets/archModel/application.png';
+import { Box, Text, VStack, useRadio, useRadioGroup, SimpleGrid, Image } from '@chakra-ui/react';
+import { imageMappings, componentsMapping } from './CONSTANTS';
 import './index.css';
 
 function RadioCard(props) {
@@ -10,17 +10,19 @@ function RadioCard(props) {
     const checkbox = getRadioProps();
 
     return (
-        <Box as="label">
+        <Box as="label" maxH={'250px'}>
             <input {...input} />
             <Box
                 minW={'250px'}
                 {...checkbox}
                 className="wizard-checkbox"
-                bgImage={application}
                 cursor="pointer"
                 borderWidth="1px"
                 borderRadius="md"
                 boxShadow="md"
+                display="flex"
+                alignItems="center"
+                justifyContent={'center'}
                 _checked={{
                     borderWidth: '4px',
                     borderColor: 'blue.600',
@@ -30,7 +32,16 @@ function RadioCard(props) {
                     borderColor: 'blue.400',
                 }}
             >
-                <Text className="not-selectable image-text">{props.children}</Text>
+                {imageMappings[props.value] && (
+                    <Image
+                        objectFit={'contain'}
+                        aspectRatio={5 / 2}
+                        maxW={'240px'}
+                        mixBlendMode={'multiply'}
+                        src={imageMappings[props.value]}
+                    ></Image>
+                )}
+                {!imageMappings[props.value] && <Text className="not-selectable image-text">{componentsMapping[props.children]}</Text>}
             </Box>
         </Box>
     );
@@ -38,7 +49,6 @@ function RadioCard(props) {
 
 function WizardBox({ currentQuestion, handleCheckboxChange, archSelect = false, selectedAnswer }) {
     const { question, type, id, options } = currentQuestion;
-
     const [optionsList, setOptionsList] = useState([]);
 
     useEffect(() => {
@@ -62,11 +72,20 @@ function WizardBox({ currentQuestion, handleCheckboxChange, archSelect = false, 
         <Box flexGrow={1} height={'60%'}>
             <VStack spacing={4} my={8} height={'90%'}>
                 <Text fontSize="lg">{question}</Text>
-                <SimpleGrid className="wizard-grid" py={10} columns={2} spacingX={28} spacingY={10} {...group} overflowY={'scroll'}>
+                <SimpleGrid
+                    className="wizard-grid"
+                    flexGrow={1}
+                    alignContent={'center'}
+                    columns={{ sm: 2, md: 2 }}
+                    spacingX={28}
+                    spacingY={10}
+                    {...group}
+                    overflowY={'scroll'}
+                >
                     {optionsList.map(value => {
                         const radio = getRadioProps({ value });
                         return (
-                            <RadioCard key={value} {...radio}>
+                            <RadioCard key={id + value} {...radio}>
                                 {value}
                             </RadioCard>
                         );
