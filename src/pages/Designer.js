@@ -1001,69 +1001,6 @@ const Designer = ({ update, viewMode = false }) => {
         };
     }, [handleGoToIntendedPage, history, triggerExit.onOk, triggerExit.path, updated]);
 
-    useEffect(() => {
-        let updatedEdges = { ...edges };
-        if (IsEdgeopen) {
-            updatedEdges[IsEdgeopen].style = { stroke: '#3367d9' };
-            updatedEdges[IsEdgeopen].markerEnd = {
-                color: '#3367d9',
-                type: MarkerType.ArrowClosed,
-            };
-        }
-        for (const edgeId in updatedEdges) {
-            const targetType = edgeId.split('-')[1];
-            const sourceType = edgeId.split('-')[0];
-            if (updatedEdges[edgeId]?.selected) {
-                updatedEdges[edgeId].style = { stroke: '#3367d9' };
-                updatedEdges[edgeId].markerEnd = {
-                    color: '#3367d9',
-                    type: MarkerType.ArrowClosed,
-                };
-            } else if (updatedEdges[edgeId].label === 'Rest') {
-                updatedEdges[edgeId].style = { stroke: 'black' };
-                updatedEdges[edgeId].markerEnd = {
-                    color: 'black',
-                    type: MarkerType.ArrowClosed,
-                };
-            } else if (updatedEdges[edgeId].label === 'RabbitMQ') {
-                updatedEdges[edgeId].style = { stroke: '#bcbaba' };
-                updatedEdges[edgeId].markerEnd = {
-                    color: '#bcbaba',
-                    type: MarkerType.ArrowClosed,
-                };
-            } else if (targetType.split('_')[0] === 'Database') {
-                if (updatedEdges[edgeId]?.selected === false) {
-                    updatedEdges[edgeId].style = { stroke: '#000' };
-                    updatedEdges[edgeId].markerEnd = {
-                        color: '#000',
-                        type: MarkerType.ArrowClosed,
-                    };
-                }
-            } else if (targetType.split('_')[0] === 'group' || sourceType.split('_')[0] === 'group') {
-                if (updatedEdges[edgeId]?.selected === false) {
-                    updatedEdges[edgeId].style = { stroke: 'black' };
-                    updatedEdges[edgeId].markerEnd = {
-                        color: '#000',
-                        type: MarkerType.ArrowClosed,
-                    };
-                }
-            } else if (targetType.split('_')[0] === 'Service' && sourceType.split('_')[0] === 'Service') {
-                updatedEdges[edgeId].style = { stroke: 'red' };
-                updatedEdges[edgeId].markerEnd = {
-                    color: 'red',
-                    type: MarkerType.ArrowClosed,
-                };
-            } else {
-                updatedEdges[edgeId].style = { stroke: 'black' };
-                updatedEdges[edgeId].markerEnd = {
-                    color: '#000',
-                    type: MarkerType.ArrowClosed,
-                };
-            }
-        }
-        setEdges(updatedEdges);
-    }, [IsEdgeopen, edges]);
-
     const onChange = Data => {
         setUpdated(true);
         if (Data.applicationFramework === 'ui' || Data.applicationFramework === 'docusaurus') {
@@ -1379,53 +1316,9 @@ const Designer = ({ update, viewMode = false }) => {
         let updatedEdges = { ...edges };
         const sourceType = edge.source.split('_')[0];
         const targetType = edge.target.split('_')[0];
-        if (sourceType != 'Database' && targetType != 'Database') {
-            Object.values(updatedEdges).forEach(edge => {
-                if (edge.id.split('-')[1].split('_')[0] === 'Database') {
-                    edge.style = { stroke: 'black' };
-                    edge.markerEnd = {
-                        color: 'black',
-                        type: MarkerType.ArrowClosed,
-                    };
-                    edge.selected = false;
-                } else if (edge.id.split('-')[0].split('_')[0] === 'group' || edge.id.split('-')[1].split('_')[0] === 'group') {
-                    edge.style = { stroke: 'black' };
-                    edge.markerEnd = {
-                        color: 'black',
-                        type: MarkerType.ArrowClosed,
-                    };
-                    edge.selected = false;
-                }
-            });
-        }
         if (sourceType === 'Service' && targetType === 'Service') {
             setEdgeopen(edge.id);
             setCurrentEdge(edges[edge.id].data);
-            updatedEdges[edge.id].selected = true;
-        } else if (targetType === 'Database') {
-            Object.values(updatedEdges).forEach(edge => {
-                edge.style = { stroke: 'black' };
-                edge.markerEnd = 'black';
-                edge.selected = false;
-            });
-            updatedEdges[edge.id].style = { stroke: '#3367d9' };
-            updatedEdges[edge.id].markerEnd = {
-                color: '#3367d9',
-                type: MarkerType.ArrowClosed,
-            };
-            updatedEdges[edge.id].selected = true;
-        } else if (targetType === 'group' || sourceType === 'group') {
-            Object.values(updatedEdges).forEach(edge => {
-                edge.style = { stroke: 'black' };
-                edge.markerEnd = 'black';
-                edge.selected = false;
-            });
-            updatedEdges[edge.id].style = { stroke: '#3367d9' };
-            updatedEdges[edge.id].markerEnd = {
-                color: '#3367d9',
-                type: MarkerType.ArrowClosed,
-            };
-            updatedEdges[edge.id].selected = true;
         }
         for (var existingEdge in updatedEdges) {
             if (existingEdge.id != edge.id) {
