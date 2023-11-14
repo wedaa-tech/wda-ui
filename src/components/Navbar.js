@@ -97,7 +97,7 @@ export default function Header({ children }) {
                                         backgroundColor: 'darkblue',
                                     }}
                                 >
-                                    Basic
+                                    Quickstart
                                 </MenuItem>
                             </Link>
                             <Link to="/canvasToCode">
