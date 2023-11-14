@@ -28,7 +28,6 @@ function App() {
                     <Route exact path="/">
                         <Wizard />
                     </Route>
-                    </Route>
                     <Route exact path="/projects">
                         <PrivateRoute>
                             <ProjectsSection />
