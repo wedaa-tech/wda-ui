@@ -79,9 +79,6 @@
     border-radius: 10px;
 }
 
-.image-select:disabled {
-}
-
 
 .simple-grid {
     grid-template-columns: repeat(auto-fit, minmax(380px, 380px));

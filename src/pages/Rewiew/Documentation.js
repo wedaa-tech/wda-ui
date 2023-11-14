@@ -1,12 +1,4 @@
-import {
-    Accordion,
-    AccordionButton,
-    AccordionIcon,
-    AccordionItem,
-    AccordionPanel,
-    Box,
-    Code
-} from '@chakra-ui/react';
+import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Box, Code } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 
 const Documentation = ({ nodeData, nodeId }) => {

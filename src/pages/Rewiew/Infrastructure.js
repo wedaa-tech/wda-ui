@@ -1,8 +1,9 @@
-import { Alert, AlertIcon, Box, Button, Flex, FormControl, FormLabel, Input, Select } from '@chakra-ui/react';
+import { Alert, AlertIcon, Box, Button, Flex, FormControl, FormLabel, HStack, Image, Input, Select } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import azure from '../../../src/assets/Azure.png';
 import aws from '../../../src/assets/aws.png';
-import minikube from '../../assets/mini.png';
+import minikube from '../../assets/minikube.png';
+import none from '../../assets/none-icon.jpg';
 
 const Infrastructure = ({ onSubmit, projectData, generateZip }) => {
     const [selectedImage, setSelectedImage] = useState(null);
@@ -319,57 +320,52 @@ const Infrastructure = ({ onSubmit, projectData, generateZip }) => {
     };
 
     return (
-        <Flex direction={'column'} width={'100%'} h={"100%"}>
-            <Box maxH={'calc(100vh - 267px)'} overflowY={'auto'} px={4} py={4} flexGrow={1}>
-                <div
-                    style={{
-                        display: 'flex',
-                        flexDirection: 'row',
-                        justifyContent: 'center',
-                    }}
-                >
-                    <img
-                        width="120px"
-                        src={azure}
-                        alt="azurelogo"
-                        onClick={() => handleImageClick('azure')}
-                        style={{
-                            padding: '10px',
-                            marginBottom: '10px',
-                            width: '120px',
-                            cursor: 'pointer',
-                            marginRight: '10px',
-                            border: selectedImage === 'azure' ? '2px solid #ebaf24' : '2px solid #d9d9d9',
-                        }}
-                    />
-                    <img
-                        width="120px"
-                        src={aws}
-                        alt="awslogo"
-                        onClick={() => handleImageClick('aws')}
-                        style={{
-                            padding: '10px',
-                            marginBottom: '10px',
-                            width: '120px',
-                            marginRight: '10px',
-                            cursor: 'pointer',
-                            border: selectedImage === 'aws' ? '2px solid #ebaf24' : '2px solid #d9d9d9',
-                        }}
-                    />
-                    <img
-                        width="120px"
-                        src={minikube}
-                        alt="minikubelogo"
+        <Flex direction={'column'} width={'100%'} h={'100%'}>
+            <Box maxH={'calc(100vh - 202px)'} overflowY={'auto'} px={4} py={4} flexGrow={1}>
+                {/* <Box shadow={'md'}> */}
+                <HStack height={'120px'} justifyContent={'space-evenly'}>
+                    <Box
                         onClick={() => handleImageClick('minikube')}
-                        style={{
-                            padding: '10px',
-                            marginBottom: '10px',
-                            width: '120px',
-                            cursor: 'pointer',
-                            border: selectedImage === 'minikube' ? '2px solid #ebaf24' : '2px solid #d9d9d9',
-                        }}
-                    />
-                </div>
+                        rounded={'2xl'}
+                        // backgroundColor={'#9e9e9e30'}
+                        overflow={'hidden'}
+                        padding={'7px'}
+                        border={`1px solid ${selectedImage === 'minikube' ? '#0fadff' : '#9e9e9e80'}`}
+                    >
+                        <Image mixBlendMode={'darken'} height={'70px'} src={minikube} />
+                    </Box>
+                    <Box
+                        onClick={() => handleImageClick('aws')}
+                        rounded={'2xl'}
+                        // backgroundColor={'#9e9e9e30'}
+                        overflow={'hidden'}
+                        padding={'7px'}
+                        border={`1px solid ${selectedImage === 'aws' ? '#0fadff' : '#9e9e9e80'}`}
+                    >
+                        <Image mixBlendMode={'darken'} height={'70px'} src={aws} />
+                    </Box>
+                    <Box
+                        onClick={() => handleImageClick('azure')}
+                        rounded={'2xl'}
+                        // backgroundColor={'#9e9e9e30'}
+                        overflow={'hidden'}
+                        padding={'7px'}
+                        border={`1px solid ${selectedImage === 'azure' ? '#0fadff' : '#9e9e9e80'}`}
+                    >
+                        <Image mixBlendMode={'darken'} height={'70px'} src={azure} />
+                    </Box>
+                    <Box
+                        onClick={() => handleImageClick('none')}
+                        rounded={'2xl'}
+                        // backgroundColor={'#9e9e9e30'}
+                        overflow={'hidden'}
+                        padding={'7px'}
+                        border={`1px solid ${selectedImage === 'none' ? '#0fadff' : '#9e9e9e80'}`}
+                    >
+                        <Image mixBlendMode={'darken'} height={'70px'} src={none} />
+                    </Box>
+                </HStack>
+                {/* </Box> */}
                 {selectedImage === 'azure' && (
                     <div>
                         <FormControl>
@@ -486,7 +482,7 @@ const Infrastructure = ({ onSubmit, projectData, generateZip }) => {
                         </FormControl>
                     </div>
                 )}
-                {selectedImage && selectedImage !== 'minikube' ? (
+                {selectedImage && selectedImage !== 'minikube' && selectedImage !== 'none' ? (
                     <FormControl>
                         <FormLabel>Deployment Type</FormLabel>
                         <Select
@@ -762,9 +758,10 @@ const Infrastructure = ({ onSubmit, projectData, generateZip }) => {
                 onClick={() => {
                     selectedImage !== 'none' ? handleSubmit(DeploymentData) : onSubmit(projectData, true);
                 }}
-                isDisabled={!selectedImage || isCheckEmpty() || checkValidation()}
+                minH={'48px'}
+                isDisabled={selectedImage !== 'none' && (!selectedImage || isCheckEmpty() || checkValidation())}
             >
-                Generate with Infrastructure
+                Generate Code
             </Button>
         </Flex>
     );

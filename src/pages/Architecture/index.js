@@ -4,7 +4,6 @@ import {
     Text,
     Heading,
     SimpleGrid,
-    Button,
     Modal,
     ModalOverlay,
     ModalContent,
@@ -12,22 +11,14 @@ import {
     ModalFooter,
     ModalBody,
     ModalCloseButton,
-    GridItem,
     Flex,
     Tooltip,
-    AlertDialog,
-    AlertDialogBody,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogContent,
-    AlertDialogOverlay,
-    AlertDialogCloseButton,
-    IconButton,
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
     useDisclosure,
 } from '@chakra-ui/react';
 import ArchitectureCard from './ArchitectureCard';
-import design1 from '../../assets/markets/design1.png';
-import design2 from '../../assets/markets/design2.png';
 import mlpipeline from '../../assets/archModel/ml.png';
 import cipipeline from '../../assets/archModel/ci.jpeg';
 import cdpipeline from '../../assets/archModel/cd.png';
@@ -36,8 +27,6 @@ import './index.css';
 import { useLocation, useParams } from 'react-router-dom/cjs/react-router-dom.min';
 import { useHistory } from 'react-router-dom';
 import { useKeycloak } from '@react-keycloak/web';
-import { ArrowBackIcon } from '@chakra-ui/icons';
-import { easeIn } from 'framer-motion';
 import ActionModal from '../../components/Modal/ActionModal';
 
 const thickPlusIconStyle = {
@@ -155,17 +144,21 @@ function ArchitecturesSection() {
 
     return (
         <Box p="4" maxWidth="7xl" mx="auto">
-            <IconButton
-                variant="outline"
-                colorScheme="black"
-                aria-label="Delete Projects"
-                icon={<ArrowBackIcon />}
-                onClick={() => history.push('/projects')}
-            />
             <Flex justifyContent={'space-between'} alignItems={'center'}>
-                <Heading className="not-selectable" as="h1" my="10">
-                    Architectures
-                </Heading>
+                <Breadcrumb fontWeight="medium" fontSize="sm">
+                    <BreadcrumbItem>
+                        <BreadcrumbLink onClick={() => history.push('/projects')}>Projects</BreadcrumbLink>
+                    </BreadcrumbItem>
+
+                    <BreadcrumbItem isCurrentPage>
+                        <BreadcrumbLink href="#">
+                            <Heading className="not-selectable" as="h1" my="10">
+                                Architectures
+                            </Heading>
+                        </BreadcrumbLink>
+                    </BreadcrumbItem>
+                </Breadcrumb>
+
                 <Text justifyItems={'flex-end'} display={'grid'} fontWeight="bold">
                     Project Name
                     <Text fontWeight="bold" fontFamily={'monospace'} fontSize={'30px'} color={'#ebaf24'}>

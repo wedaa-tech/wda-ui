@@ -1,7 +1,6 @@
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import DocHome from './pages/Docs/DocHome';
-import Contact from './pages/Contact';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 import Designer from './pages/Designer';
@@ -12,6 +11,7 @@ import PrivateRoute from './helpers/PrivateRoute';
 import ProjectsSection from './pages/ProjectsSection';
 import ArchitecturesSection from './pages/Architecture';
 import Review from './pages/Rewiew';
+import Wizard from './pages/Wizad';
 
 function App() {
     return (
@@ -22,8 +22,11 @@ function App() {
                     <Route exact path="/canvasToCode">
                         <Designer update={false} />
                     </Route>
+                    <Route exact path="/wizard">
+                        <Wizard />
+                    </Route>
                     <Route exact path="/">
-                        <Designer update={false} />
+                        <Wizard />
                     </Route>
                     <Route exact path="/projects">
                         <PrivateRoute>

@@ -1,0 +1,47 @@
+.pageBox {
+   height: calc(100vh - 60px)
+}
+
+.wizard-checkbox {
+   background-size: cover;
+   background-position: center;
+   color: white;
+   height: 100px;
+   text-align: center;
+   border-radius: 10px;
+}
+
+
+.wizard-checkbox {
+   /* box-shadow:
+      rgba(0, 0, 0, 0.1) 0px 4px 6px -1px,
+      rgba(0, 0, 0, 0.06) 0px 2px 4px -1px; */
+   transform: none;
+   transition: transform 0.3s ease-in-out;
+}
+
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.wizard-grid::-webkit-scrollbar {
+   display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.wizard-grid {
+   -ms-overflow-style: none;
+   /* IE and Edge */
+   scrollbar-width: none;
+   /* Firefox */
+}
+
+.image-text {
+   display: grid;
+   align-items: center;
+   height: 100%;
+   width: 100%;
+   font-weight: bold;
+   /* aspect-ratio: 3/2; */
+   /* background-color: #0000002e; */
+   /* backdrop-filter: blur(4px) saturate(150%); */
+   border-radius: inherit;
+}
