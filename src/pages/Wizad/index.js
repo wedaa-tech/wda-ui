@@ -20,7 +20,6 @@ import ReviewBox from './ReviewBox';
 
 import { idMappings, questionsData } from './CONSTANTS';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
-import { dummydata } from '../../test-remove';
 
 function Wizard() {
     const history = useHistory();
@@ -82,10 +81,21 @@ function Wizard() {
     };
 
     const handleSubmit = () => {
-        history.push({
-            pathname: '/canvastocode',
-            state: { metadata: dummydata },
-        });
+        fetch(process.env.REACT_APP_API_BASE_URL + '/wizard-template', {
+            method: 'post',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(selectedAnswers),
+        })
+            .then(response => response.json())
+            .then(data => {
+                history.push({
+                    pathname: '/canvastocode',
+                    state: { metadata: data },
+                });
+            })
+            .catch(error => console.error('Error occured:', error));
     };
 
     const handleCheckboxChange = option => {

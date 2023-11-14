@@ -761,7 +761,7 @@ const Infrastructure = ({ onSubmit, projectData, generateZip }) => {
                 minH={'48px'}
                 isDisabled={selectedImage !== 'none' && (!selectedImage || isCheckEmpty() || checkValidation())}
             >
-                Generate
+                Generate Code
             </Button>
         </Flex>
     );
