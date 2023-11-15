@@ -58,7 +58,7 @@ const ArchitectureCard = ({ title, description, imageUrl, projectId, onClick, da
                     e.stopPropagation();
                 }}
             />
-            {parentId === 'Admin' && (
+            {parentId === 'admin' && (
                 <Box position="absolute" top="24%" right="9%" zIndex={99}>
                     {published ? <GreenCheckIcon /> : <RedCloseIcon />}
                 </Box>

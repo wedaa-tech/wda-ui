@@ -751,7 +751,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         if (initialized && parentId && id) {
             try {
                 var response;
-                if (parentId === 'Admin') {
+                if (parentId === 'admin') {
                     response = await fetch(process.env.REACT_APP_API_BASE_URL + '/api/refArchs/' + id, {
                         method: 'get',
                         headers: {
@@ -771,7 +771,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 if (response.ok) {
                     const result = await response.json();
                     if (result?.metadata) {
-                        if (parentId === 'Admin') setProjectParentId(parentId);
+                        if (parentId === 'admin') setProjectParentId(parentId);
                         else setProjectParentId(result.parentId);
                         setProjectName(result.request_json?.projectName);
                         return await result;
@@ -1293,7 +1293,6 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 body: JSON.stringify(Data),
             });
             blueprintId = response.headers.get('blueprintid');
-            console.log(response);
             const blob = await response.blob();
             setIsGenerating(false);
             saveAs(blob, `${Data.projectName}.zip`);
@@ -1303,8 +1302,8 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             localStorage.clear();
             if (initialized && keycloak.authenticated) {
                 clear();
-                if (parentId === 'Admin') {
-                    history.replace('/project/Admin/architecture/' + blueprintId + '/details');
+                if (parentId === 'admin') {
+                    history.replace('/project/admin/architecture/' + blueprintId + '/details');
                 } else {
                     history.replace('/project/' + projectParentId + '/architecture/' + blueprintId + '/details');
                 }

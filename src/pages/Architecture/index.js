@@ -54,8 +54,8 @@ function ArchitecturesSection() {
     const { initialized, keycloak } = useKeycloak();
     const cancelRef = React.useRef();
 
-    if (keycloak?.tokenParsed?.given_name === 'Admin' && location.pathname === '/architectures') {
-        parentId = 'Admin';
+    if (keycloak?.realmAccess?.roles.includes('ADMIN') && location.pathname === '/architectures') {
+        parentId = 'admin';
     }
 
     if (parentId === undefined) {
@@ -97,7 +97,7 @@ function ArchitecturesSection() {
 
     useEffect(() => {
         if (initialized) {
-            if (keycloak?.tokenParsed?.given_name === 'Admin' && location.pathname === '/architectures') {
+            if (keycloak?.realmAccess?.roles.includes('ADMIN') && location.pathname === '/architectures') {
                 fetch(process.env.REACT_APP_API_BASE_URL + '/refArchs/', {
                     method: 'get',
                     headers: {
@@ -144,7 +144,7 @@ function ArchitecturesSection() {
 
     const deleteArchitecture = data => {
         if (initialized) {
-            if ((parentId = 'Admin' && location.pathname === '/architectures')) {
+            if (parentId === 'admin' && location.pathname === '/architectures') {
                 fetch(process.env.REACT_APP_API_BASE_URL + '/api/refArchs/' + data.id, {
                     method: 'delete',
                     headers: {
@@ -154,12 +154,11 @@ function ArchitecturesSection() {
                 })
                     .then(response => response.json())
                     .then(res => {
-                        console.log(architectures);
                         const updatedArchitectures = architectures.filter(card => card.architecture_id !== data.id);
                         setArchitectures(updatedArchitectures);
                         setTotalArchitectures(updatedArchitectures.length);
                     })
-                    .catch(error => console.error('Error deleting card:', error));
+                    .catch(error => console.error('Error deleting ref.arch:', error));
             } else {
                 fetch(process.env.REACT_APP_API_BASE_URL + '/api/blueprints/' + data.id, {
                     method: 'delete',
@@ -170,13 +169,9 @@ function ArchitecturesSection() {
                 })
                     .then(response => response.json())
                     .then(res => {
-                        // if (data.success) {
                         const updatedArchitectures = architectures.filter(card => card.project_id !== data.id);
                         setArchitectures(updatedArchitectures);
                         setTotalArchitectures(updatedArchitectures.length);
-                        // } else {
-                        //     console.error('Error deleting card:', data.error);
-                        // }
                     })
                     .catch(error => console.error('Error deleting card:', error));
             }
@@ -186,7 +181,7 @@ function ArchitecturesSection() {
 
     return (
         <Box p="4" maxWidth="7xl" mx="auto">
-            {!(parentId === 'Admin') && (
+            {!(parentId === 'admin') && (
                 <IconButton
                     variant="outline"
                     colorScheme="black"
@@ -197,9 +192,9 @@ function ArchitecturesSection() {
             )}
             <Flex justifyContent={'space-between'} alignItems={'center'}>
                 <Heading className="not-selectable" as="h1" my="10">
-                    {parentId == 'Admin' ? 'Reference Architectures' : 'Architectures'}
+                    {parentId === 'admin' ? 'Reference Architectures' : 'Architectures'}
                 </Heading>
-                {!(parentId === 'Admin') && (
+                {!(parentId === 'admin') && (
                     <Text justifyItems={'flex-end'} display={'grid'} fontWeight="bold">
                         Project Name
                         <Text fontWeight="bold" fontFamily={'monospace'} fontSize={'30px'} color={'#ebaf24'}>
@@ -226,7 +221,7 @@ function ArchitecturesSection() {
                     onClick={handleOpenNewArchitectureModal}
                 >
                     <Text className="not-selectable" fontWeight="bold">
-                        {parentId == 'Admin' ? 'Create New Reference Architecture' : 'Create New Architecture'}
+                        Create New Architecture
                     </Text>
                     <span className="not-selectable" inputMode="none" style={thickPlusIconStyle}>
                         +
@@ -246,7 +241,7 @@ function ArchitecturesSection() {
                     height={'100px'}
                 >
                     <Text className="not-selectable" fontWeight="bold">
-                        {parentId == 'Admin' ? 'Number of Reference Architectures' : 'Number of Architectures'}
+                        Number of Architectures
                     </Text>
                     <Text className="not-selectable" fontWeight="bold" fontFamily={'monospace'} fontSize={'30px'} color={'#ebaf24'}>
                         {totalArchitectures}
@@ -255,7 +250,7 @@ function ArchitecturesSection() {
                 <Box maxWidth={96} minWidth={96}></Box>
             </SimpleGrid>
             <Heading className="not-selectable" as="h3" size="lg" my="10">
-                {parentId == 'Admin' ? 'Your Reference Architectures' : 'Your Architectures'}
+                {parentId === 'admin' ? 'Your Reference Architectures' : 'Your Architectures'}
             </Heading>
             <SimpleGrid className="simple-grid" minChildWidth="null" columns={{ base: 1, sm: 2, md: 3 }} spacing={10}>
                 {architectures.map((architecture, index) => (

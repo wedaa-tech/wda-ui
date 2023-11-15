@@ -59,7 +59,7 @@ export default function Header({ children }) {
                         </Link>
                     )}
 
-                    {initialized && keycloak.authenticated && keycloak?.tokenParsed?.given_name === 'Admin' && (
+                    {initialized && keycloak.authenticated && keycloak?.realmAccess?.roles.includes('ADMIN') && (
                         <Link to="/architectures">
                             <Text fontSize="md" color={color} fontWeight={location.pathname === '/architectures' ? 'bold' : 'normal'}>
                                 Ref.Architectures

@@ -50,7 +50,6 @@ function CodeReview({ nodeId, generateMode = false, deployementData = null, onSu
 
     const publishArchitecture = () => {
         if (initialized) {
-            console.log(deployementData);
             fetch(process.env.REACT_APP_API_BASE_URL + '/api/publish/' + deployementData.projectId, {
                 method: 'put',
                 headers: {
@@ -88,7 +87,7 @@ function CodeReview({ nodeId, generateMode = false, deployementData = null, onSu
                     <Tab>Configuration</Tab>
                     <Tab hidden={generateMode}>Folder Structure</Tab>
                     <Tab hidden={generateMode}>README.md</Tab>
-                    {!docusaurusCheck && parentId !== 'Admin' && <Tab>{generateMode ? 'Infrastructure' : 'Deployement'}</Tab>}
+                    {!docusaurusCheck && parentId !== 'admin' && <Tab>{generateMode ? 'Infrastructure' : 'Deployement'}</Tab>}
                 </TabList>
                 <TabPanels height={'100%'}>
                     <TabPanel height={'100%'}>
@@ -121,7 +120,7 @@ function CodeReview({ nodeId, generateMode = false, deployementData = null, onSu
                 {docusaurusCheck ? 'Generate' : 'Next'}
             </Button>
             <Button
-                hidden={generateMode || parentId !== 'Admin'}
+                hidden={generateMode || parentId !== 'admin'}
                 mx={4}
                 my={2}
                 colorScheme={isArchPublished ? 'red' : 'green'}

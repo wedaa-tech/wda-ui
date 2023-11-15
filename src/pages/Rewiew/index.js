@@ -103,7 +103,7 @@ export const ReviewFlow = ({
     };
 
     const handleBackClick = () => {
-        if (parentId === 'Admin') history.replace('/architectures');
+        if (parentId === 'admin') history.replace('/architectures');
         else history.replace('/project/' + parentId + '/architectures');
     };
 
@@ -171,7 +171,7 @@ const Review = () => {
 
     useEffect(() => {
         if (initialized) {
-            if (parentId === 'Admin') {
+            if (parentId === 'admin') {
                 fetch(process.env.REACT_APP_API_BASE_URL + '/api/refArchs/' + id, {
                     method: 'get',
                     headers: {
