@@ -866,7 +866,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     };
 
     useEffect(() => {
-        document.title = 'WDA';
+        document.title = 'WeDAA';
         setShowDiv(sharedMetadata ? false : true);
         let data = location?.state;
         if (parentId) {

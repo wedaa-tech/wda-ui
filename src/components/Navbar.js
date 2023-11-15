@@ -59,10 +59,10 @@ export default function Header({ children }) {
                         </Link>
                     )}
 
-                    {initialized && keycloak.authenticated && ((keycloak?.tokenParsed?.given_name === "Admin")) && (
+                    {initialized && keycloak.authenticated && keycloak?.tokenParsed?.given_name === 'Admin' && (
                         <Link to="/architectures">
                             <Text fontSize="md" color={color} fontWeight={location.pathname === '/architectures' ? 'bold' : 'normal'}>
-                                Architectures
+                                Ref.Architectures
                             </Text>
                         </Link>
                     )}

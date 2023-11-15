@@ -470,7 +470,7 @@ const Sidebar = ({
                                         justifyContent: 'space-between',
                                     }}
                                 >
-                                    You can drag these nodes to the pane on the right.
+                                    Move components onto the canvas to create a design.
                                 </h2>
                             </div>
 

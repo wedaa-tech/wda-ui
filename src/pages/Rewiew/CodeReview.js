@@ -129,15 +129,6 @@ function CodeReview({ nodeId, generateMode = false, deployementData = null, onSu
             >
                 {isArchPublished ? 'Revoke' : 'Publish'}
             </Button>
-            <Button
-                hidden={generateMode || parentId !== 'Admin'}
-                mx={4}
-                my={2}
-                colorScheme={isArchPublished ? 'red' : 'green'}
-                onClick={publishArchitecture}
-            >
-                {isArchPublished ? 'Revoke' : 'Publish'}
-            </Button>
         </Flex>
     );
 }

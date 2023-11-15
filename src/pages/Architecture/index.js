@@ -17,6 +17,7 @@ import {
     BreadcrumbItem,
     BreadcrumbLink,
     useDisclosure,
+    IconButton,
 } from '@chakra-ui/react';
 import ArchitectureCard from './ArchitectureCard';
 import mlpipeline from '../../assets/archModel/ml.png';
@@ -28,6 +29,7 @@ import { useLocation, useParams } from 'react-router-dom/cjs/react-router-dom.mi
 import { useHistory } from 'react-router-dom';
 import { useKeycloak } from '@react-keycloak/web';
 import ActionModal from '../../components/Modal/ActionModal';
+import { ArrowBackIcon } from '@chakra-ui/icons';
 
 const thickPlusIconStyle = {
     display: 'grid',
