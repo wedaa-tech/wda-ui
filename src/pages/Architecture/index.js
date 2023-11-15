@@ -98,7 +98,7 @@ function ArchitecturesSection() {
     useEffect(() => {
         if (initialized) {
             if (keycloak?.tokenParsed?.given_name === 'Admin' && location.pathname === '/architectures') {
-                fetch(process.env.REACT_APP_API_BASE_URL + '/api/refArchs/', {
+                fetch(process.env.REACT_APP_API_BASE_URL + '/refArchs/', {
                     method: 'get',
                     headers: {
                         'Content-Type': 'application/json',

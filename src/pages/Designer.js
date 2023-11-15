@@ -1281,6 +1281,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         const Data = data || generatingData;
         const generatedImage = await CreateImage(Object.values(nodes));
         setIsGenerating(true);
+        var blueprintId;
         if (generatedImage) Data.imageUrl = generatedImage;
         try {
             const response = await fetch(process.env.REACT_APP_API_BASE_URL + '/generate', {
@@ -1291,7 +1292,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 },
                 body: JSON.stringify(Data),
             });
-            const projectId = response.headers.get('projectId');
+            blueprintId = response.headers.get('blueprintid');
             console.log(response);
             const blob = await response.blob();
             setIsGenerating(false);
@@ -1303,9 +1304,9 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             if (initialized && keycloak.authenticated) {
                 clear();
                 if (parentId === 'Admin') {
-                    history.replace('/architectures');
+                    history.replace('/project/Admin/architecture/' + blueprintId + '/details');
                 } else {
-                    history.replace('/project/' + projectParentId + '/architectures');
+                    history.replace('/project/' + projectParentId + '/architecture/' + blueprintId + '/details');
                 }
             } else {
                 clear();
@@ -1420,6 +1421,16 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     var updatedNodes = { ...nodes };
                     updatedNodes[targetNode.id].style.border = '1px solid';
                     return updatedNodes;
+                });
+                setEdges(eds => {
+                    const updatedEdges = { ...eds };
+                    const newEdgeId = `${sourceNode.id}-${targetNode.id}`;
+                    updatedEdges[newEdgeId].markerEnd = {
+                        color: 'black',
+                        type: MarkerType.ArrowClosed,
+                    };
+                    updatedEdges[newEdgeId].className = 'success';
+                    return updatedEdges;
                 });
                 return;
             }
