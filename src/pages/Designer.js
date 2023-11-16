@@ -53,6 +53,7 @@ let databaseId = 1;
 let groupId = 1;
 let uiId = 1;
 let uiCount = 0;
+let dummyId = 1;
 
 const getId = (type = '') => {
     if (type === 'Service') return `Service_${serviceId++}`;
@@ -61,6 +62,7 @@ const getId = (type = '') => {
     else if (type === 'UI') return `UI_${uiId++}`;
     else if (type === 'Gateway') return `Gateway_${gatewayId++}`;
     else if (type === 'Group') return `group_${groupId++}`;
+    else if (type === 'Dummy') return `dummy_${dummyId++}`;
     return 'Id';
 };
 
@@ -510,6 +512,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         setGatewayInputCheck([]);
         databaseId = 1;
         groupId = 1;
+        dummyId = 1;
         serviceId = 1;
         uiId = 1;
         gatewayId = 1;
@@ -638,6 +641,21 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     data: { label: name },
                     style: {
                         border: '1px dashed',
+                        borderRadius: '15px',
+                        width: '120px',
+                        height: '40px',
+                        zIndex: -1,
+                    },
+                };
+                setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
+            } else if (name.startsWith('Dummy')) {
+                const newNode = {
+                    id: getId(name),
+                    type: 'GroupNode',
+                    position,
+                    data: { label: name },
+                    style: {
+                        border: '1px solid',
                         borderRadius: '15px',
                         width: '120px',
                         height: '40px',
@@ -794,6 +812,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             let max_gatewayId = -1;
             let max_uiId = -1;
             let max_databaseId = -1;
+            let max_dummyId = -1;
             for (const key in nodes) {
                 if (key.toLowerCase().includes('servicediscovery')) {
                     setIsServiceDiscovery(true);
@@ -823,6 +842,8 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     databaseId++;
                 } else if (key.toLowerCase().includes('group')) {
                     groupId++;
+                } else if (key.toLowerCase().includes('dummy')) {
+                    dummyId++;
                 } else if (key.toLowerCase().includes('auth')) {
                     setAuthProviderCount(1);
                 } else if (key.toLowerCase().includes('messagebroker')) {
@@ -862,6 +883,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             if (max_gatewayId != -1) gatewayId = max_gatewayId + 1;
             if (max_uiId != -1) uiId = max_uiId + 1;
             if (max_groupId != -1) groupId = max_groupId + 1;
+            if (max_dummyId != -1) dummyId = max_dummyId + 1;
         }
     };
 
@@ -940,6 +962,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             serviceId = 1;
             databaseId = 1;
             groupId = 1;
+            dummyId = 1;
             uiId = 1;
             gatewayId = 1;
             uiCount = 0;

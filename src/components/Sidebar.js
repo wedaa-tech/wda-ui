@@ -11,6 +11,7 @@ import docs from '../assets/docusaurus.png';
 import eurkea from '../assets/eureka.png';
 import keycloakIcon from '../assets/keycloak.png';
 import eck from '../assets/eck.png';
+import dummy from '../assets/dummy.png';
 // import mini from "../assets/mini.png";
 // import docker from "../assets/docker.png";
 import './../App.css';
@@ -495,6 +496,7 @@ const Sidebar = ({
                                 Group
                             </div> */}
                             {/* <div style={{ borderBottom: '1px solid lightgrey' }}></div> */}
+
                             <Divider />
                             <h1
                                 style={{
@@ -746,8 +748,6 @@ const Sidebar = ({
                                     Service Discovery{' '}
                                 </span>
                             </h1>
-                            <Divider />
-
                             {selectedOption === 'serviceDiscovery' && (
                                 <>
                                     <div
@@ -759,6 +759,9 @@ const Sidebar = ({
                                     </div>
                                 </>
                             )}
+
+                            <Divider />
+
                             <h1>
                                 <span
                                     style={{
@@ -782,7 +785,6 @@ const Sidebar = ({
                                     Log Management
                                 </span>
                             </h1>
-                            <Divider />
 
                             {selectedOption === 'loadManagement' && (
                                 <>
@@ -795,6 +797,7 @@ const Sidebar = ({
                                     </div>
                                 </>
                             )}
+                            <Divider />
 
                             <h1
                                 style={{
@@ -806,25 +809,34 @@ const Sidebar = ({
                                     paddingTop: '3px',
                                     // justifyContent: 'space-between',
                                 }}
-                                onClick={() => toggleOption('Group')}
+                                onClick={() => toggleOption('Miscellaneous')}
                                 onMouseEnter={e => (e.currentTarget.style.backgroundColor = '  #f3f2f2 ')}
                                 onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
                             >
-                                {selectedOption === 'Group' ? (
+                                {selectedOption === 'Miscellaneous' ? (
                                     <span style={{ color: 'lightgrey', fontSize: '12px', marginRight: '10px' }}>&#x25BC;</span>
                                 ) : (
                                     <span style={{ color: 'lightgrey', fontSize: '12px', marginRight: '10px' }}>&#x25B6;</span>
                                 )}
-                                Group
+                                Miscellaneous
                             </h1>
-                            {selectedOption === 'Group' && (
+                            {selectedOption === 'Miscellaneous' && (
                                 <>
                                     <div className="selectorNode" onDragStart={event => onDragStart(event, 'default', 'Group')} draggable>
                                         <img
                                             width="250px"
-                                            style={{ marginTop: '-10px', marginBottom: '-50px', marginLeft: '-40px' }}
+                                            style={{ marginTop: '-10px', marginBottom: '0px', marginLeft: '-40px' }}
                                             src={grp}
-                                            alt="postgreslogo"
+                                            alt="GroupLogo"
+                                        ></img>
+                                    </div>
+
+                                    <div className="selectorNode" onDragStart={event => onDragStart(event, 'default', 'Dummy')} draggable>
+                                        <img
+                                            width="200px"
+                                            style={{ marginTop: '-80px', marginBottom: '-20px', marginLeft: '-15px' }}
+                                            src={dummy}
+                                            alt="DummyLogo"
                                         ></img>
                                     </div>
                                 </>
