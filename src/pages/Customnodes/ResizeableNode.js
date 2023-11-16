@@ -25,12 +25,51 @@ export default function ResizableNode({ id, data, selected }) {
         if (node.id.startsWith('Gateway')) appFramework = 'gateway';
         return appFramework;
     });
+
+    const calculatedWidth = () => {
+        let componentWidth;
+        switch (nodeType) {
+            case 'spring':
+                componentWidth = size.width / 3.5;
+                if (componentWidth >= 50) return 50;
+                if (componentWidth >= 32) return componentWidth;
+                return 32;
+            case 'gomicro':
+                componentWidth = size.width / 4.5;
+                if (componentWidth >= 40) return 40;
+                if (componentWidth >= 22) return componentWidth;
+                return 22;
+            case 'react':
+                componentWidth = size.width / 3.5;
+                if (componentWidth >= 50) return 50;
+                if (componentWidth >= 30) return componentWidth;
+                return 30;
+            case 'angular':
+                componentWidth = size.width / 3.5;
+                if (componentWidth >= 50) return 50;
+                if (componentWidth >= 30) return componentWidth;
+                return 30;
+            case 'gateway':
+                componentWidth = size.width;
+                if (componentWidth >= 120) return 80;
+                if (componentWidth > 58) return size.width / 1.7;
+                return 42;
+            case 'docusaurus':
+                componentWidth = size.width / 2;
+                if (componentWidth >= 50) return 50;
+                if (componentWidth >= 40) return componentWidth;
+                return 40;
+            default:
+                return 30;
+        }
+    };
+
     const resizedImage = () => {
         switch (nodeType) {
             case 'spring':
                 return (
                     <img
-                        style={{ position: 'absolute', top: 0, left: '3px', width: '30px', marginTop: '-1px' }}
+                        style={{ position: 'absolute', top: 0, left: '3px', width: calculatedWidth(), marginTop: '-1px' }}
                         name={nodeType}
                         src={srv1}
                         alt={nodeType}
@@ -39,7 +78,7 @@ export default function ResizableNode({ id, data, selected }) {
             case 'gomicro':
                 return (
                     <img
-                        style={{ position: 'absolute', top: 0, left: '2px', width: '22px', marginTop: '-4px' }}
+                        style={{ position: 'absolute', top: 0, left: '2px', width: calculatedWidth(), marginTop: '-4px' }}
                         name={nodeType}
                         src={srv2}
                         alt={nodeType}
@@ -48,7 +87,7 @@ export default function ResizableNode({ id, data, selected }) {
             case 'react':
                 return (
                     <img
-                        style={{ position: 'absolute', top: 0, left: '3px', width: '30px', marginTop: '-1px' }}
+                        style={{ position: 'absolute', top: 0, left: '3px', width: calculatedWidth(), marginTop: '-1px' }}
                         name={nodeType}
                         src={ui1}
                         alt={nodeType}
@@ -57,7 +96,7 @@ export default function ResizableNode({ id, data, selected }) {
             case 'angular':
                 return (
                     <img
-                        style={{ position: 'absolute', top: 0, left: '5px', width: '30px', marginTop: '-1px' }}
+                        style={{ position: 'absolute', top: 0, left: '5px', width: calculatedWidth(), marginTop: '-1px' }}
                         name={nodeType}
                         src={ui2}
                         alt={nodeType}
@@ -66,7 +105,7 @@ export default function ResizableNode({ id, data, selected }) {
             case 'gateway':
                 return (
                     <img
-                        style={{ position: 'absolute', top: 0, left: '4px', width: '30px', marginTop: '2px' }}
+                        style={{ position: 'absolute', top: 0, left: '7px', width: calculatedWidth(), marginTop: '2px' }}
                         name={nodeType}
                         src={gateway}
                         alt={nodeType}
@@ -75,7 +114,7 @@ export default function ResizableNode({ id, data, selected }) {
             case 'docusaurus':
                 return (
                     <img
-                        style={{ position: 'absolute', top: 0, left: '-3px', width: '35px', marginTop: '-1px' }}
+                        style={{ position: 'absolute', top: 0, left: '-3px', width: calculatedWidth(), marginTop: '-1px' }}
                         name={nodeType}
                         src={docs}
                         alt={nodeType}
@@ -182,9 +221,14 @@ export default function ResizableNode({ id, data, selected }) {
         );
     };
 
+    const nodeWidth = () => {
+        if (nodeType == 'gateway') return 58;
+        else return 40;
+    };
+
     return (
         <>
-            <NodeResizer nodeId={data.id} isVisible={selected} minHeight={40} minWidth={40} />
+            <NodeResizer nodeId={data.id} isVisible={selected} minHeight={40} minWidth={nodeWidth()} />
             {data?.label && resizedImage()}
             <div style={{ padding: 10, textAlign: 'center', lineHeight: 1.2 }}>{labeledWithSpaces()}</div>
             <>

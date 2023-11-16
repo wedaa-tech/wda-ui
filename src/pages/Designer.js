@@ -745,24 +745,34 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
 
     const { parentId, id } = useParams();
     const [projectParentId, setProjectParentId] = useState(parentId || location.state?.parentId);
-
     const [projectName, setProjectName] = useState(null);
 
     const loadData = async () => {
         if (initialized && parentId && id) {
             try {
-                const response = await fetch(process.env.REACT_APP_API_BASE_URL + '/blueprints/' + id, {
-                    method: 'get',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
-                    },
-                });
-
+                var response;
+                if (parentId === 'admin') {
+                    response = await fetch(process.env.REACT_APP_API_BASE_URL + '/api/refArchs/' + id, {
+                        method: 'get',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                        },
+                    });
+                } else {
+                    response = await fetch(process.env.REACT_APP_API_BASE_URL + '/blueprints/' + id, {
+                        method: 'get',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                        },
+                    });
+                }
                 if (response.ok) {
                     const result = await response.json();
                     if (result?.metadata) {
-                        setProjectParentId(result.parentId);
+                        if (parentId === 'admin') setProjectParentId(parentId);
+                        else setProjectParentId(result.parentId);
                         setProjectName(result.request_json?.projectName);
                         return await result;
                     }
@@ -856,7 +866,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     };
 
     useEffect(() => {
-        document.title = 'WDA';
+        document.title = 'WeDAA';
         setShowDiv(sharedMetadata ? false : true);
         let data = location?.state;
         if (parentId) {
@@ -1110,9 +1120,11 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             if (CurrentNode?.applicationName) {
                 setUniqueApplicationNames(prev => prev.filter(appName => CurrentNode.applicationName !== appName));
             }
+            setUniqueApplicationNames(prev => [...prev, Data.applicationName]);
             if (CurrentNode?.serverPort) {
                 setUniquePortNumbers(prev => prev.filter(port => CurrentNode.serverPort !== port));
             }
+            setUniquePortNumbers(prev => [...prev, Data.serverPort]);
             UpdatedNodes[Isopen].data = { ...UpdatedNodes[Isopen].data, ...Data };
             UpdatedNodes[Isopen].selected = false;
             if (Isopen.startsWith('UI') && UpdatedNodes[Isopen].data?.applicationFramework === 'ui')
@@ -1238,15 +1250,15 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 }
             }
         }
-        if (saveMetadata || userData?.project_id) {
+        if (saveMetadata || id) {
             Data['metadata'] = {
                 nodes: nodes,
                 edges: edges,
                 deployment: Data?.deployment,
             };
         } else delete Data?.metadata;
-        if (userData?.project_id) {
-            Data.projectId = userData?.project_id;
+        if (id) {
+            Data.projectId = id;
         }
         if (projectParentId) {
             Data.parentId = projectParentId;
@@ -1254,6 +1266,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         setNodes(NewNodes);
         setGeneratingData(structuredClone(Data));
         setIsLoading(true);
+
         if (submit) {
             generateZip(null, Data);
         }
@@ -1268,8 +1281,8 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         const Data = data || generatingData;
         const generatedImage = await CreateImage(Object.values(nodes));
         setIsGenerating(true);
+        var blueprintId;
         if (generatedImage) Data.imageUrl = generatedImage;
-
         try {
             const response = await fetch(process.env.REACT_APP_API_BASE_URL + '/generate', {
                 method: 'post',
@@ -1279,7 +1292,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 },
                 body: JSON.stringify(Data),
             });
-
+            blueprintId = response.headers.get('blueprintid');
             const blob = await response.blob();
             setIsGenerating(false);
             saveAs(blob, `${Data.projectName}.zip`);
@@ -1289,7 +1302,11 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             localStorage.clear();
             if (initialized && keycloak.authenticated) {
                 clear();
-                history.replace('/project/' + projectParentId + '/architectures');
+                if (parentId === 'admin') {
+                    history.replace('/project/admin/architecture/' + blueprintId + '/details');
+                } else {
+                    history.replace('/project/' + projectParentId + '/architecture/' + blueprintId + '/details');
+                }
             } else {
                 clear();
                 setIsLoading(false);
@@ -1403,6 +1420,16 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     var updatedNodes = { ...nodes };
                     updatedNodes[targetNode.id].style.border = '1px solid';
                     return updatedNodes;
+                });
+                setEdges(eds => {
+                    const updatedEdges = { ...eds };
+                    const newEdgeId = `${sourceNode.id}-${targetNode.id}`;
+                    updatedEdges[newEdgeId].markerEnd = {
+                        color: 'black',
+                        type: MarkerType.ArrowClosed,
+                    };
+                    updatedEdges[newEdgeId].className = 'success';
+                    return updatedEdges;
                 });
                 return;
             }

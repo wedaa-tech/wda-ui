@@ -90,7 +90,7 @@ const Sidebar = ({
 
     useEffect(() => {
         const images = [db1, db2, srv1, srv2, ui1, ui2, grp, gateway, docs, eurkea, keycloakIcon, eck];
-        images.forEach((image) => {
+        images.forEach(image => {
             new Image().src = image;
         });
     }, []);
@@ -147,9 +147,10 @@ const Sidebar = ({
             })
                 .then(response => response.json())
                 .then(result => {
-                    if (result?.result) {
-                        const archs = structuredClone(result.result);
-                        setRefArch(archs);
+                    if (result?.data) {
+                        const archs = structuredClone(result.data);
+                        const publishedArchitectures = archs.filter(card => card.published === true);
+                        setRefArch(publishedArchitectures);
                     }
                 })
                 .catch(error => console.error(error));
@@ -443,7 +444,7 @@ const Sidebar = ({
                             minHeight: '100%',
                             display: 'flex',
                             flexDirection: 'column',
-                            maxHeight: 'calc(100vh - 333px)'
+                            maxHeight: 'calc(100vh - 333px)',
                         }}
                     >
                         <div
@@ -469,7 +470,7 @@ const Sidebar = ({
                                         justifyContent: 'space-between',
                                     }}
                                 >
-                                    You can drag these nodes to the pane on the right.
+                                    Move components onto the canvas to create a design.
                                 </h2>
                             </div>
 
@@ -861,7 +862,7 @@ const Sidebar = ({
                                         draggable
                                     >
                                         <ZoomableImageModalWrapper
-                                            imageUrl={element.image}
+                                            imageUrl={element.imageUrl}
                                             description="Description of image 1."
                                             name={element.name}
                                         />
