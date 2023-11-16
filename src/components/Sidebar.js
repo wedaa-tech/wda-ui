@@ -184,7 +184,9 @@ const Sidebar = ({
         }
     };
 
-    var isKeycloakConnected = () => {
+    // For checking whether the keycloak,Registry and Eck has atleast one connection
+    {
+        /* var isKeycloakConnected = () => {
         if (authProviderCount) {
             var authEdge = true;
             for (const key in edges) {
@@ -225,7 +227,8 @@ const Sidebar = ({
             }
             return logManagementEdge;
         } else return false;
-    };
+    }; */
+    }
 
     var isDatabaseConnected = () => {
         var dbConnected = false;
@@ -269,18 +272,6 @@ const Sidebar = ({
 
         if (isEmptyGatewaySubmit) {
             return { isValid: false, message: 'Gateway is not Configured. Click on the highlighted Gateway node to Configure it.' };
-        }
-
-        if (isKeycloakConnected()) {
-            return { isValid: false, message: 'Create an edge connecting the node to Keycloak to enable the integration.' };
-        }
-
-        if (isRegistryConnected()) {
-            return { isValid: false, message: 'Create an edge connecting the node to Service Registry to enable the integration.' };
-        }
-
-        if (isEckConnected()) {
-            return { isValid: false, message: 'Create an edge connecting the node to Eck to enable the integration.' };
         }
 
         if (isDatabaseConnected()) {

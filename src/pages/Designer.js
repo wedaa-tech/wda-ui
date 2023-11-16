@@ -598,7 +598,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     type: 'selectorNode1',
                     position,
                     data: { serviceDiscoveryType: serviceDiscoveryType },
-                    style: { border: '1px solid #ff0000', padding: '4px 4px', width: '120px', height: '40px', borderRadius: '15px' },
+                    style: { border: '1px solid ', padding: '4px 4px', width: '120px', height: '40px', borderRadius: '15px' },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
                 setIsServiceDiscovery(true);
@@ -612,7 +612,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     type: 'selectorNode3',
                     position,
                     data: { authenticationType: authenticationType },
-                    style: { border: '1px solid #ff0000', padding: '4px 4px', width: '120px', height: '40px', borderRadius: '15px' },
+                    style: { border: '1px solid ', padding: '4px 4px', width: '120px', height: '40px', borderRadius: '15px' },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
                 setAuthProviderCount(1);
@@ -654,7 +654,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     type: 'selectorNode6',
                     position,
                     data: { logManagementType: logManagementType },
-                    style: { border: '1px solid #ff0000', padding: '4px 4px', width: '120px', height: '40px', borderRadius: '15px' },
+                    style: { border: '1px solid ', padding: '4px 4px', width: '120px', height: '40px', borderRadius: '15px' },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
                 setLogManagementCount(1);
@@ -1187,7 +1187,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             const Node = NewNodes[key];
             delete Node.data?.color;
             if (Node.id.startsWith('Service') || Node.id.startsWith('UI') || Node.id.startsWith('Gateway')) {
-                if (serviceRegistryEdges.includes(Node.id)) {
+                if (serviceRegistryEdges.length === 0 || serviceRegistryEdges.includes(Node.id)) {
                     Node.data = {
                         ...Node.data,
                         ...Service_Discovery_Data,
@@ -1195,7 +1195,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 } else if (Node.data?.serviceDiscoveryType) {
                     delete Node.data.serviceDiscoveryType;
                 }
-                if (authEdges.includes(Node.id)) {
+                if (authEdges.length === 0 || authEdges.includes(Node.id)) {
                     Node.data = {
                         ...Node.data,
                         ...authenticationData,
@@ -1206,7 +1206,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         ['authenticationType']: 'no',
                     };
                 }
-                if (logManagementEdges.includes(Node.id)) {
+                if (logManagementEdges.length === 0 || logManagementEdges.includes(Node.id)) {
                     Node.data = {
                         ...Node.data,
                         ...logManagementData,
@@ -1416,11 +1416,6 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             }
             if (targetNode.id.startsWith('auth') || targetNode.id.startsWith('log') || targetNode.id.startsWith('serviceDiscovery')) {
                 setEdges(eds => addEdge(params, eds, Nodes));
-                setNodes(nodes => {
-                    var updatedNodes = { ...nodes };
-                    updatedNodes[targetNode.id].style.border = '1px solid';
-                    return updatedNodes;
-                });
                 setEdges(eds => {
                     const updatedEdges = { ...eds };
                     const newEdgeId = `${sourceNode.id}-${targetNode.id}`;
