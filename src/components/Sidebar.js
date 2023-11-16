@@ -68,9 +68,13 @@ const Sidebar = ({
     triggerExit,
     isOpen = true,
     id,
+    clear,
 }) => {
     const location = useLocation();
     const onDragStart = (event, nodeType, Name, metaData = '') => {
+        if (metaData !== '') {
+            clear();
+        }
         event.dataTransfer.setData('Name', Name);
         event.dataTransfer.setData('application/reactflow', nodeType);
         event.dataTransfer.setData('metaData', JSON.stringify(metaData));

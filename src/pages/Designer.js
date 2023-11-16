@@ -1734,6 +1734,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                                 triggerExit={triggerExit}
                                 viewOnly={viewOnly}
                                 id={id}
+                                clear={clear}
                             />
                             {showDiv && (
                                 <Box
