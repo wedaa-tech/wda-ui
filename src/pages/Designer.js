@@ -1816,7 +1816,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                                 >
                                     Print
                                 </Button>
-                                <DownloadButton />
+                                <DownloadButton applicationName={projectName} />
                                 <IconButton
                                     hidden={viewOnly}
                                     icon={<Icon as={AiOutlineClear} />}
