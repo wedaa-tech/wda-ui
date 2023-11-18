@@ -11,6 +11,7 @@ import docs from '../assets/docusaurus.png';
 import eurkea from '../assets/eureka.png';
 import keycloakIcon from '../assets/keycloak.png';
 import eck from '../assets/eck.png';
+import dummy from '../assets/dummy.png';
 // import mini from "../assets/mini.png";
 // import docker from "../assets/docker.png";
 import './../App.css';
@@ -67,9 +68,13 @@ const Sidebar = ({
     triggerExit,
     isOpen = true,
     id,
+    clear,
 }) => {
     const location = useLocation();
     const onDragStart = (event, nodeType, Name, metaData = '') => {
+        if (metaData !== '') {
+            clear();
+        }
         event.dataTransfer.setData('Name', Name);
         event.dataTransfer.setData('application/reactflow', nodeType);
         event.dataTransfer.setData('metaData', JSON.stringify(metaData));
@@ -90,7 +95,7 @@ const Sidebar = ({
 
     useEffect(() => {
         const images = [db1, db2, srv1, srv2, ui1, ui2, grp, gateway, docs, eurkea, keycloakIcon, eck];
-        images.forEach((image) => {
+        images.forEach(image => {
             new Image().src = image;
         });
     }, []);
@@ -147,9 +152,10 @@ const Sidebar = ({
             })
                 .then(response => response.json())
                 .then(result => {
-                    if (result?.result) {
-                        const archs = structuredClone(result.result);
-                        setRefArch(archs);
+                    if (result?.data) {
+                        const archs = structuredClone(result.data);
+                        const publishedArchitectures = archs.filter(card => card.published === true);
+                        setRefArch(publishedArchitectures);
                     }
                 })
                 .catch(error => console.error(error));
@@ -183,7 +189,9 @@ const Sidebar = ({
         }
     };
 
-    var isKeycloakConnected = () => {
+    // For checking whether the keycloak,Registry and Eck has atleast one connection
+    {
+        /* var isKeycloakConnected = () => {
         if (authProviderCount) {
             var authEdge = true;
             for (const key in edges) {
@@ -224,7 +232,8 @@ const Sidebar = ({
             }
             return logManagementEdge;
         } else return false;
-    };
+    }; */
+    }
 
     var isDatabaseConnected = () => {
         var dbConnected = false;
@@ -268,18 +277,6 @@ const Sidebar = ({
 
         if (isEmptyGatewaySubmit) {
             return { isValid: false, message: 'Gateway is not Configured. Click on the highlighted Gateway node to Configure it.' };
-        }
-
-        if (isKeycloakConnected()) {
-            return { isValid: false, message: 'Create an edge connecting the node to Keycloak to enable the integration.' };
-        }
-
-        if (isRegistryConnected()) {
-            return { isValid: false, message: 'Create an edge connecting the node to Service Registry to enable the integration.' };
-        }
-
-        if (isEckConnected()) {
-            return { isValid: false, message: 'Create an edge connecting the node to Eck to enable the integration.' };
         }
 
         if (isDatabaseConnected()) {
@@ -443,7 +440,7 @@ const Sidebar = ({
                             minHeight: '100%',
                             display: 'flex',
                             flexDirection: 'column',
-                            maxHeight: 'calc(100vh - 333px)'
+                            maxHeight: 'calc(100vh - 333px)',
                         }}
                     >
                         <div
@@ -469,7 +466,7 @@ const Sidebar = ({
                                         justifyContent: 'space-between',
                                     }}
                                 >
-                                    You can drag these nodes to the pane on the right.
+                                    Move components onto the canvas to create a design.
                                 </h2>
                             </div>
 
@@ -503,6 +500,7 @@ const Sidebar = ({
                                 Group
                             </div> */}
                             {/* <div style={{ borderBottom: '1px solid lightgrey' }}></div> */}
+
                             <Divider />
                             <h1
                                 style={{
@@ -754,8 +752,6 @@ const Sidebar = ({
                                     Service Discovery{' '}
                                 </span>
                             </h1>
-                            <Divider />
-
                             {selectedOption === 'serviceDiscovery' && (
                                 <>
                                     <div
@@ -767,6 +763,9 @@ const Sidebar = ({
                                     </div>
                                 </>
                             )}
+
+                            <Divider />
+
                             <h1>
                                 <span
                                     style={{
@@ -790,7 +789,6 @@ const Sidebar = ({
                                     Log Management
                                 </span>
                             </h1>
-                            <Divider />
 
                             {selectedOption === 'loadManagement' && (
                                 <>
@@ -803,6 +801,7 @@ const Sidebar = ({
                                     </div>
                                 </>
                             )}
+                            <Divider />
 
                             <h1
                                 style={{
@@ -814,25 +813,34 @@ const Sidebar = ({
                                     paddingTop: '3px',
                                     // justifyContent: 'space-between',
                                 }}
-                                onClick={() => toggleOption('Group')}
+                                onClick={() => toggleOption('Miscellaneous')}
                                 onMouseEnter={e => (e.currentTarget.style.backgroundColor = '  #f3f2f2 ')}
                                 onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
                             >
-                                {selectedOption === 'Group' ? (
+                                {selectedOption === 'Miscellaneous' ? (
                                     <span style={{ color: 'lightgrey', fontSize: '12px', marginRight: '10px' }}>&#x25BC;</span>
                                 ) : (
                                     <span style={{ color: 'lightgrey', fontSize: '12px', marginRight: '10px' }}>&#x25B6;</span>
                                 )}
-                                Group
+                                Miscellaneous
                             </h1>
-                            {selectedOption === 'Group' && (
+                            {selectedOption === 'Miscellaneous' && (
                                 <>
                                     <div className="selectorNode" onDragStart={event => onDragStart(event, 'default', 'Group')} draggable>
                                         <img
                                             width="250px"
-                                            style={{ marginTop: '-10px', marginBottom: '-50px', marginLeft: '-40px' }}
+                                            style={{ marginTop: '-10px', marginBottom: '0px', marginLeft: '-40px' }}
                                             src={grp}
-                                            alt="postgreslogo"
+                                            alt="GroupLogo"
+                                        ></img>
+                                    </div>
+
+                                    <div className="selectorNode" onDragStart={event => onDragStart(event, 'default', 'Dummy')} draggable>
+                                        <img
+                                            width="200px"
+                                            style={{ marginTop: '-80px', marginBottom: '-20px', marginLeft: '-15px' }}
+                                            src={dummy}
+                                            alt="DummyLogo"
                                         ></img>
                                     </div>
                                 </>
@@ -861,7 +869,7 @@ const Sidebar = ({
                                         draggable
                                     >
                                         <ZoomableImageModalWrapper
-                                            imageUrl={element.image}
+                                            imageUrl={element.imageUrl}
                                             description="Description of image 1."
                                             name={element.name}
                                         />

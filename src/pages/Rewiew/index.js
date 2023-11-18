@@ -25,6 +25,7 @@ import GroupNode from '../Customnodes/GroupNode';
 import CodeReview from './CodeReview';
 import { useKeycloak } from '@react-keycloak/web';
 import { useHistory, useParams } from 'react-router-dom/cjs/react-router-dom.min';
+import keycloak from '../../Keycloak';
 
 const useExample = false;
 
@@ -62,6 +63,7 @@ export const ReviewFlow = ({
     generateMode = false,
     deployementData = null,
     onSubmit = null,
+    published = false,
 }) => {
     const [nodes, setNodes, onNodesChange] = useNodesState(useExample ? example.nodes : nodesData);
     const [edges, setEdges, onEdgesChange] = useEdgesState(useExample ? example.edges : edgesData);
@@ -101,7 +103,8 @@ export const ReviewFlow = ({
     };
 
     const handleBackClick = () => {
-        history.replace('/project/' + parentId + '/architectures');
+        if (parentId === 'admin') history.replace('/architectures');
+        else history.replace('/project/' + parentId + '/architectures');
     };
 
     return (
@@ -148,7 +151,9 @@ export const ReviewFlow = ({
                     generateMode={generateMode}
                     deployementData={deployementData}
                     onSubmit={onSubmit}
+                    published={published}
                     onClick={generateZip}
+                    parentId={parentId}
                 />
             </GridItem>
         </Grid>
@@ -161,30 +166,53 @@ const Review = () => {
     const [edges, setEdges] = useState([]);
     const [deployementData, setDeployementData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
-
+    const [published, setPublished] = useState(false);
     const { parentId, id } = useParams();
 
     useEffect(() => {
         if (initialized) {
-            fetch(process.env.REACT_APP_API_BASE_URL + '/blueprints/' + id, {
-                method: 'get',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
-                },
-            })
-                .then(response => response.json())
-                .then(result => {
-                    if (result?.metadata) {
-                        setNodes(Object.values(result.metadata?.nodes || []));
-                        setEdges(Object.values(result.metadata?.edges || []));
-                        setDeployementData(structuredClone(result.request_json));
-                    }
+            if (parentId === 'admin') {
+                fetch(process.env.REACT_APP_API_BASE_URL + '/api/refArchs/' + id, {
+                    method: 'get',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                    },
                 })
-                .then(() => {
-                    setIsLoading(false);
+                    .then(response => response.json())
+                    .then(result => {
+                        if (result?.metadata) {
+                            setNodes(Object.values(result.metadata?.nodes || []));
+                            setEdges(Object.values(result.metadata?.edges || []));
+                            setDeployementData(structuredClone(result.request_json));
+                            setPublished(result.published);
+                        }
+                    })
+                    .then(() => {
+                        setIsLoading(false);
+                    })
+                    .catch(error => console.error(error));
+            } else {
+                fetch(process.env.REACT_APP_API_BASE_URL + '/blueprints/' + id, {
+                    method: 'get',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                    },
                 })
-                .catch(error => console.error(error));
+                    .then(response => response.json())
+                    .then(result => {
+                        if (result?.metadata) {
+                            setNodes(Object.values(result.metadata?.nodes || []));
+                            setEdges(Object.values(result.metadata?.edges || []));
+                            setDeployementData(structuredClone(result.request_json));
+                        }
+                    })
+                    .then(() => {
+                        setIsLoading(false);
+                    })
+                    .catch(error => console.error(error));
+            }
         }
     }, [id, initialized, keycloak, parentId]);
 
@@ -192,7 +220,7 @@ const Review = () => {
 
     return (
         <ReactFlowProvider>
-            <ReviewFlow nodesData={nodes} edgesData={edges} deployementData={deployementData} />
+            <ReviewFlow nodesData={nodes} edgesData={edges} deployementData={deployementData} published={published} />
         </ReactFlowProvider>
     );
 };

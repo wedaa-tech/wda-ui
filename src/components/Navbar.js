@@ -58,6 +58,14 @@ export default function Header({ children }) {
                             </Text>
                         </Link>
                     )}
+
+                    {initialized && keycloak.authenticated && keycloak?.realmAccess?.roles.includes('ADMIN') && (
+                        <Link to="/architectures">
+                            <Text fontSize="md" color={color} fontWeight={location.pathname === '/architectures' ? 'bold' : 'normal'}>
+                                Ref.Architectures
+                            </Text>
+                        </Link>
+                    )}
                     <Menu isOpen={isOpenMenu}>
                         <MenuButton
                             px={1}

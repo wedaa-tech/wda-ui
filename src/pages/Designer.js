@@ -53,6 +53,7 @@ let databaseId = 1;
 let groupId = 1;
 let uiId = 1;
 let uiCount = 0;
+let dummyId = 1;
 
 const getId = (type = '') => {
     if (type === 'Service') return `Service_${serviceId++}`;
@@ -61,6 +62,7 @@ const getId = (type = '') => {
     else if (type === 'UI') return `UI_${uiId++}`;
     else if (type === 'Gateway') return `Gateway_${gatewayId++}`;
     else if (type === 'Group') return `group_${groupId++}`;
+    else if (type === 'Dummy') return `dummy_${dummyId++}`;
     return 'Id';
 };
 
@@ -510,6 +512,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         setGatewayInputCheck([]);
         databaseId = 1;
         groupId = 1;
+        dummyId = 1;
         serviceId = 1;
         uiId = 1;
         gatewayId = 1;
@@ -598,7 +601,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     type: 'selectorNode1',
                     position,
                     data: { serviceDiscoveryType: serviceDiscoveryType },
-                    style: { border: '1px solid #ff0000', padding: '4px 4px', width: '120px', height: '40px', borderRadius: '15px' },
+                    style: { border: '1px solid ', padding: '4px 4px', width: '120px', height: '40px', borderRadius: '15px' },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
                 setIsServiceDiscovery(true);
@@ -612,7 +615,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     type: 'selectorNode3',
                     position,
                     data: { authenticationType: authenticationType },
-                    style: { border: '1px solid #ff0000', padding: '4px 4px', width: '120px', height: '40px', borderRadius: '15px' },
+                    style: { border: '1px solid ', padding: '4px 4px', width: '120px', height: '40px', borderRadius: '15px' },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
                 setAuthProviderCount(1);
@@ -645,6 +648,21 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
+            } else if (name.startsWith('Dummy')) {
+                const newNode = {
+                    id: getId(name),
+                    type: 'GroupNode',
+                    position,
+                    data: { label: name },
+                    style: {
+                        border: '1px solid',
+                        borderRadius: '15px',
+                        width: '120px',
+                        height: '40px',
+                        zIndex: -1,
+                    },
+                };
+                setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
             } else if (name.startsWith('MessageBroker') && messagecount >= 1) {
                 setMessageBrokerCount(2);
             } else if (name.startsWith('Load') && loadcount === 0) {
@@ -654,7 +672,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     type: 'selectorNode6',
                     position,
                     data: { logManagementType: logManagementType },
-                    style: { border: '1px solid #ff0000', padding: '4px 4px', width: '120px', height: '40px', borderRadius: '15px' },
+                    style: { border: '1px solid ', padding: '4px 4px', width: '120px', height: '40px', borderRadius: '15px' },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
                 setLogManagementCount(1);
@@ -745,24 +763,34 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
 
     const { parentId, id } = useParams();
     const [projectParentId, setProjectParentId] = useState(parentId || location.state?.parentId);
-
     const [projectName, setProjectName] = useState(null);
 
     const loadData = async () => {
         if (initialized && parentId && id) {
             try {
-                const response = await fetch(process.env.REACT_APP_API_BASE_URL + '/blueprints/' + id, {
-                    method: 'get',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
-                    },
-                });
-
+                var response;
+                if (parentId === 'admin') {
+                    response = await fetch(process.env.REACT_APP_API_BASE_URL + '/api/refArchs/' + id, {
+                        method: 'get',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                        },
+                    });
+                } else {
+                    response = await fetch(process.env.REACT_APP_API_BASE_URL + '/blueprints/' + id, {
+                        method: 'get',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                        },
+                    });
+                }
                 if (response.ok) {
                     const result = await response.json();
                     if (result?.metadata) {
-                        setProjectParentId(result.parentId);
+                        if (parentId === 'admin') setProjectParentId(parentId);
+                        else setProjectParentId(result.parentId);
                         setProjectName(result.request_json?.projectName);
                         return await result;
                     }
@@ -784,6 +812,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             let max_gatewayId = -1;
             let max_uiId = -1;
             let max_databaseId = -1;
+            let max_dummyId = -1;
             for (const key in nodes) {
                 if (key.toLowerCase().includes('servicediscovery')) {
                     setIsServiceDiscovery(true);
@@ -813,6 +842,8 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     databaseId++;
                 } else if (key.toLowerCase().includes('group')) {
                     groupId++;
+                } else if (key.toLowerCase().includes('dummy')) {
+                    dummyId++;
                 } else if (key.toLowerCase().includes('auth')) {
                     setAuthProviderCount(1);
                 } else if (key.toLowerCase().includes('messagebroker')) {
@@ -852,11 +883,12 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             if (max_gatewayId != -1) gatewayId = max_gatewayId + 1;
             if (max_uiId != -1) uiId = max_uiId + 1;
             if (max_groupId != -1) groupId = max_groupId + 1;
+            if (max_dummyId != -1) dummyId = max_dummyId + 1;
         }
     };
 
     useEffect(() => {
-        document.title = 'WDA';
+        document.title = 'WeDAA';
         setShowDiv(sharedMetadata ? false : true);
         let data = location?.state;
         if (parentId) {
@@ -930,6 +962,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             serviceId = 1;
             databaseId = 1;
             groupId = 1;
+            dummyId = 1;
             uiId = 1;
             gatewayId = 1;
             uiCount = 0;
@@ -1110,9 +1143,11 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             if (CurrentNode?.applicationName) {
                 setUniqueApplicationNames(prev => prev.filter(appName => CurrentNode.applicationName !== appName));
             }
+            setUniqueApplicationNames(prev => [...prev, Data.applicationName]);
             if (CurrentNode?.serverPort) {
                 setUniquePortNumbers(prev => prev.filter(port => CurrentNode.serverPort !== port));
             }
+            setUniquePortNumbers(prev => [...prev, Data.serverPort]);
             UpdatedNodes[Isopen].data = { ...UpdatedNodes[Isopen].data, ...Data };
             UpdatedNodes[Isopen].selected = false;
             if (Isopen.startsWith('UI') && UpdatedNodes[Isopen].data?.applicationFramework === 'ui')
@@ -1175,7 +1210,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             const Node = NewNodes[key];
             delete Node.data?.color;
             if (Node.id.startsWith('Service') || Node.id.startsWith('UI') || Node.id.startsWith('Gateway')) {
-                if (serviceRegistryEdges.includes(Node.id)) {
+                if (serviceRegistryEdges.length === 0 || serviceRegistryEdges.includes(Node.id)) {
                     Node.data = {
                         ...Node.data,
                         ...Service_Discovery_Data,
@@ -1183,7 +1218,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 } else if (Node.data?.serviceDiscoveryType) {
                     delete Node.data.serviceDiscoveryType;
                 }
-                if (authEdges.includes(Node.id)) {
+                if (authEdges.length === 0 || authEdges.includes(Node.id)) {
                     Node.data = {
                         ...Node.data,
                         ...authenticationData,
@@ -1194,7 +1229,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         ['authenticationType']: 'no',
                     };
                 }
-                if (logManagementEdges.includes(Node.id)) {
+                if (logManagementEdges.length === 0 || logManagementEdges.includes(Node.id)) {
                     Node.data = {
                         ...Node.data,
                         ...logManagementData,
@@ -1238,15 +1273,15 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 }
             }
         }
-        if (saveMetadata || userData?.project_id) {
+        if (saveMetadata || id) {
             Data['metadata'] = {
                 nodes: nodes,
                 edges: edges,
                 deployment: Data?.deployment,
             };
         } else delete Data?.metadata;
-        if (userData?.project_id) {
-            Data.projectId = userData?.project_id;
+        if (id) {
+            Data.projectId = id;
         }
         if (projectParentId) {
             Data.parentId = projectParentId;
@@ -1254,6 +1289,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         setNodes(NewNodes);
         setGeneratingData(structuredClone(Data));
         setIsLoading(true);
+
         if (submit) {
             generateZip(null, Data);
         }
@@ -1268,8 +1304,8 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         const Data = data || generatingData;
         const generatedImage = await CreateImage(Object.values(nodes));
         setIsGenerating(true);
+        var blueprintId;
         if (generatedImage) Data.imageUrl = generatedImage;
-
         try {
             const response = await fetch(process.env.REACT_APP_API_BASE_URL + '/generate', {
                 method: 'post',
@@ -1279,7 +1315,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 },
                 body: JSON.stringify(Data),
             });
-
+            blueprintId = response.headers.get('blueprintid');
             const blob = await response.blob();
             setIsGenerating(false);
             saveAs(blob, `${Data.projectName}.zip`);
@@ -1289,7 +1325,11 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             localStorage.clear();
             if (initialized && keycloak.authenticated) {
                 clear();
-                history.replace('/project/' + projectParentId + '/architectures');
+                if (parentId === 'admin') {
+                    history.replace('/project/admin/architecture/' + blueprintId + '/details');
+                } else {
+                    history.replace('/project/' + projectParentId + '/architecture/' + blueprintId + '/details');
+                }
             } else {
                 clear();
                 setIsLoading(false);
@@ -1399,10 +1439,15 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             }
             if (targetNode.id.startsWith('auth') || targetNode.id.startsWith('log') || targetNode.id.startsWith('serviceDiscovery')) {
                 setEdges(eds => addEdge(params, eds, Nodes));
-                setNodes(nodes => {
-                    var updatedNodes = { ...nodes };
-                    updatedNodes[targetNode.id].style.border = '1px solid';
-                    return updatedNodes;
+                setEdges(eds => {
+                    const updatedEdges = { ...eds };
+                    const newEdgeId = `${sourceNode.id}-${targetNode.id}`;
+                    updatedEdges[newEdgeId].markerEnd = {
+                        color: 'black',
+                        type: MarkerType.ArrowClosed,
+                    };
+                    updatedEdges[newEdgeId].className = 'success';
+                    return updatedEdges;
                 });
                 return;
             }
@@ -1689,6 +1734,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                                 triggerExit={triggerExit}
                                 viewOnly={viewOnly}
                                 id={id}
+                                clear={clear}
                             />
                             {showDiv && (
                                 <Box
