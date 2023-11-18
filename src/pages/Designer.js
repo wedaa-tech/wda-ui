@@ -1311,7 +1311,6 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         const Data = data || generatingData;
         const generatedImage = await CreateImage(Object.values(nodes));
         if (generatedImage) Data.imageUrl = generatedImage;
-        console.log(Data);
         try {
             var response;
             if (parentId === 'admin') {
