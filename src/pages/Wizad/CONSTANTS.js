@@ -47,8 +47,8 @@ export const questionsData = {
         options: {
             fullStack: ['frontend', 'backend', 'database', 'authentication', 'serviceDiscovery', 'logManagement'],
             headless: ['backend', 'authentication', 'serviceDiscovery', 'logManagement'],
-            spa: ['frontend', 'authentication', 'logManagement'],
-            profilePage: ['frontend'],
+            spa: ['frontend', 'authentication'],
+            profilePage: ['docusaurus'],
         },
     },
     questionsList: {
@@ -57,6 +57,12 @@ export const questionsData = {
             id: 'frontend',
             type: 'radio',
             options: ['react', 'angular'],
+        },
+        docusaurus: {
+            question: 'Select a frontend framework',
+            id: 'docusaurus',
+            type: 'radio',
+            options: ['docusaurus'],
         },
         backend: {
             question: 'Select a backend technology Stack',

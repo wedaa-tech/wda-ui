@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
     Box,
     Button,
@@ -17,8 +17,9 @@ import './index.css';
 import WizardBox from './WizardBox';
 import { ArrowBackIcon, ArrowForwardIcon, CheckIcon, CloseIcon, ExternalLinkIcon } from '@chakra-ui/icons';
 import ReviewBox from './ReviewBox';
+import design2 from '../../assets/markets/design2.png';
 
-import { idMappings, questionsData } from './CONSTANTS';
+import { idMappings, imageMappings, questionsData } from './CONSTANTS';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 
 function Wizard() {
@@ -34,6 +35,13 @@ function Wizard() {
         index: 1,
         count: count,
     });
+
+    useEffect(() => {
+        const images = Object.values(imageMappings);
+        images.forEach(image => {
+            new Image().src = image;
+        });
+    }, []);
 
     const currentQuestion = questionsList[ArchList.options[selectedAnswers.AT]?.[activeStep]];
 
@@ -115,58 +123,67 @@ function Wizard() {
     };
 
     return (
-        <>
-            <Flex direction={'column'} justifyContent={'space-evenly'} alignItems={'center'} className="pageBox">
-                {selectedArch && (
-                    <Stepper justifyContent={'center'} width={'70%'} size="md" colorScheme="blue" index={activeStep}>
-                        {ArchList.options[selectedArch].map((question, index) => (
-                            <Step
-                                key={index}
-                                onClick={() =>
-                                    (count === activeStep && setReview(false)) ||
-                                    (Object.keys(selectedAnswers).length - 1 >= index && setActiveStep(index))
-                                }
-                            >
-                                <StepIndicator>
-                                    <StepStatus complete={checkBoxStatus} incomplete={<StepNumber />} active={<StepNumber />} />
-                                </StepIndicator>
-
-                                <Box flexShrink="0">
-                                    <StepTitle>{idMappings[questionsList[question].id]}</StepTitle>
-                                </Box>
-
-                                <StepSeparator />
-                            </Step>
-                        ))}
-                    </Stepper>
-                )}
-                <Flex border={'1px solid #d6d6d6'} flexDirection={'column'} boxShadow="2xl" rounded="xl" height={'60%'} width={'50%'}>
-                    {review ? (
-                        <ReviewBox idMappings={idMappings} selections={selectedAnswers} />
-                    ) : (
-                        <WizardBox
-                            currentQuestion={selectedArch ? currentQuestion : ArchList}
-                            handleCheckboxChange={handleCheckboxChange}
-                            archSelect={!selectedArch}
-                            selectedAnswer={selectedAnswers[selectedArch ? currentQuestion.id : 'AT']}
-                        />
-                    )}
-                    <Flex padding={'30px'} justifyContent={'space-between'}>
-                        <Button isDisabled={!selectedArch} rightIcon={<ArrowBackIcon />} onClick={handleBack} colorScheme="blue">
-                            Back
-                        </Button>
-                        <Button
-                            isDisabled={activeStep === count ? false : !selectedAnswers[selectedArch ? currentQuestion?.id : 'AT']}
-                            rightIcon={activeStep === count ? <ExternalLinkIcon /> : <ArrowForwardIcon />}
-                            onClick={activeStep === count ? handleSubmit : handleNext}
-                            colorScheme="blue"
+        <Flex direction={'column'} justifyContent={'space-evenly'} alignItems={'center'} className="pageBox">
+            {selectedArch && (
+                <Stepper justifyContent={'center'} width={'70%'} size="md" colorScheme="blue" index={activeStep}>
+                    {ArchList.options[selectedArch].map((question, index) => (
+                        <Step
+                            key={index}
+                            onClick={() =>
+                                (count === activeStep && setReview(false)) ||
+                                (Object.keys(selectedAnswers).length - 1 >= index && setActiveStep(index))
+                            }
                         >
-                            {activeStep === count ? 'Submit' : 'Next'}
-                        </Button>
-                    </Flex>
+                            <StepIndicator>
+                                <StepStatus complete={checkBoxStatus} incomplete={<StepNumber />} active={<StepNumber />} />
+                            </StepIndicator>
+
+                            <Box flexShrink="0">
+                                <StepTitle>{idMappings[questionsList[question].id]}</StepTitle>
+                            </Box>
+
+                            <StepSeparator />
+                        </Step>
+                    ))}
+                </Stepper>
+            )}
+            <Flex
+                border={'1px solid #d6d6d6'}
+                flexDirection={'column'}
+                boxShadow="2xl"
+                rounded="xl"
+                height={'60%'}
+                width={'50%'}
+            >
+                {review ? (
+                    <ReviewBox idMappings={idMappings} selections={selectedAnswers} />
+                ) : (
+                    <WizardBox
+                        currentQuestion={selectedArch ? currentQuestion : ArchList}
+                        handleCheckboxChange={handleCheckboxChange}
+                        archSelect={!selectedArch}
+                        selectedAnswer={selectedAnswers[selectedArch ? currentQuestion.id : 'AT']}
+                    />
+                )}
+                <Flex padding={'30px'} justifyContent={'space-between'}>
+                    <Button
+                        rightIcon={selectedArch ? <ArrowBackIcon /> : <ExternalLinkIcon />}
+                        onClick={selectedArch ? handleBack : () => history.push('/canvastocode')}
+                        colorScheme="blue"
+                    >
+                        {selectedArch ? 'Back' : 'Skip'}
+                    </Button>
+                    <Button
+                        isDisabled={activeStep === count ? false : !selectedAnswers[selectedArch ? currentQuestion?.id : 'AT']}
+                        rightIcon={activeStep === count ? <ExternalLinkIcon /> : <ArrowForwardIcon />}
+                        onClick={activeStep === count ? handleSubmit : handleNext}
+                        colorScheme="blue"
+                    >
+                        {activeStep === count ? 'Submit' : 'Next'}
+                    </Button>
                 </Flex>
             </Flex>
-        </>
+        </Flex>
     );
 }
 
