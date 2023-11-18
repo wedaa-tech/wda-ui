@@ -136,10 +136,16 @@ function ArchitecturesSection() {
     }, [initialized, keycloak, parentId]);
 
     const handleOpenArchitecture = (project_id, data) => {
-        history.push('/project/' + parentId + '/architecture/' + project_id + '/details', {
-            replace: true,
-            state: data,
-        });
+        if (data.draft || data?.request_json?.services)
+            history.push('/project/' + parentId + '/architecture/' + project_id + '/details', {
+                replace: true,
+                state: data,
+            });
+        else
+            history.push('/project/' + parentId + '/architecture/' + project_id + '/edit', {
+                replace: true,
+                state: data,
+            });
     };
 
     const deleteArchitecture = data => {
