@@ -48,7 +48,7 @@ export const questionsData = {
             fullStack: ['frontend', 'backend', 'database', 'authentication', 'serviceDiscovery', 'logManagement'],
             headless: ['backend', 'authentication', 'serviceDiscovery', 'logManagement'],
             spa: ['frontend', 'authentication'],
-            profilePage: ['docusaurus'],
+            profilePage: ['frontend', 'authentication'],
         },
     },
     questionsList: {

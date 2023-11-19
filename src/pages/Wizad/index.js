@@ -1,190 +1,191 @@
-import React, { useState, useRef, useEffect } from 'react';
-import {
-    Box,
-    Button,
-    Flex,
-    Step,
-    StepIndicator,
-    StepNumber,
-    StepSeparator,
-    StepStatus,
-    StepTitle,
-    Stepper,
-    useSteps,
-    useToast,
-} from '@chakra-ui/react';
-import './index.css';
-import WizardBox from './WizardBox';
-import { ArrowBackIcon, ArrowForwardIcon, CheckIcon, CloseIcon, ExternalLinkIcon } from '@chakra-ui/icons';
-import ReviewBox from './ReviewBox';
-import design2 from '../../assets/markets/design2.png';
-
-import { idMappings, imageMappings, questionsData } from './CONSTANTS';
+import { Box, Button, Flex, SimpleGrid, Text } from '@chakra-ui/react';
+import React, { useEffect, useRef, useState } from 'react';
+import './style.css';
+import ReferenceArchCard from './WizardComponents/ReferenceArchCard';
+import ArchSelectorComponent from './WizardComponents/ArchSelectorComponent';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
+import WizardSelection from './WizardSelection';
+import { useKeycloak } from '@react-keycloak/web';
 
-function Wizard() {
+const thickPlusIconStyle = {
+    display: 'grid',
+    width: '50px',
+    height: '50px',
+    fontSize: '20px',
+    fontWeight: 'bold',
+    border: '3px',
+    borderRadius: '50%',
+    alignContent: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#e6eaff',
+    color: '#574799',
+};
+
+const Wizard = () => {
     const history = useHistory();
-    const [selectedAnswers, setSelectedAnswers] = useState({ AT: null });
-    const [selectedArch, setSelectedArch] = useState(undefined);
-    const [selectedArchQuestions, setSelectedArchQuestions] = useState({});
-    const { ArchList, questionsList } = questionsData;
-    const [review, setReview] = useState(false);
-    const count = Object.keys(selectedAnswers.AT ? ArchList.options[selectedAnswers.AT] : {}).length;
-
-    const { activeStep, setActiveStep } = useSteps({
-        index: 1,
-        count: count,
-    });
+    const [selectedArch, setSelectedArch] = useState(null);
+    const [archsList, setArchsList] = useState([]);
+    const { initialized, keycloak } = useKeycloak();
+    const archSelectorRef = useRef();
+    const handleSelect = arch => {
+        history.push({
+            pathname: '/wizardselection',
+            state: arch,
+        });
+    };
 
     useEffect(() => {
-        const images = Object.values(imageMappings);
-        images.forEach(image => {
-            new Image().src = image;
-        });
-    }, []);
-
-    const currentQuestion = questionsList[ArchList.options[selectedAnswers.AT]?.[activeStep]];
-
-    const toast = useToast({
-        containerStyle: {
-            width: '500px',
-            maxWidth: '100%',
-        },
-    });
-    const toastIdRef = useRef();
-
-    const handleNext = () => {
-        if (review) console.log(selectedAnswers);
-        else if (!selectedArch) {
-            setSelectedArch(selectedAnswers.AT);
-            setActiveStep(0);
-        } else if (activeStep < count - 1) {
-            setActiveStep(activeStep + 1);
-        } else {
-            if (Object.keys(selectedAnswers).length === count + 1) {
-                setReview(true);
-                setActiveStep(activeStep + 1);
-            } else {
-                const errorMessage = 'Please Configure all components';
-                toast.close(toastIdRef.current);
-                toastIdRef.current = toast({
-                    title: errorMessage,
-                    status: 'error',
-                    duration: 3000,
-                    variant: 'left-accent',
-                    isClosable: true,
-                });
-            }
-        }
-    };
-
-    const handleBack = () => {
-        if (review) setReview(false);
-        if (activeStep > 0) {
-            setActiveStep(activeStep - 1);
-        } else if (activeStep === 0) {
-            setActiveStep(0);
-            setSelectedArch(undefined);
-        }
-    };
-
-    const handleSubmit = () => {
-        fetch(process.env.REACT_APP_API_BASE_URL + '/wizard-template', {
-            method: 'post',
+        // if (initialized) {
+        fetch(process.env.REACT_APP_API_BASE_URL + '/refArchs', {
+            method: 'get',
             headers: {
                 'Content-Type': 'application/json',
+                Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
             },
-            body: JSON.stringify(selectedAnswers),
         })
             .then(response => response.json())
-            .then(data => {
-                history.push({
-                    pathname: '/canvastocode',
-                    state: { metadata: data },
-                });
+            .then(result => {
+                if (result?.data) {
+                    const archs = structuredClone(result.data);
+                    const publishedArchitectures = archs.filter(card => card.published === true);
+                    setArchsList(publishedArchitectures);
+                }
             })
-            .catch(error => console.error('Error occured:', error));
-    };
+            .catch(error => console.error(error));
+        // }
+    }, [initialized, keycloak]);
 
-    const handleCheckboxChange = option => {
-        let newSelectedAnswers = { ...selectedAnswers };
-        if (!selectedArch) {
-            newSelectedAnswers = { AT: option };
-            setSelectedArchQuestions(questionsData.ArchList.options[option]);
-        } else {
-            newSelectedAnswers[currentQuestion.id] = option;
+    useEffect(() => {
+        if (history.location.hash === '#arch-selection') {
+            archSelectorRef.current.scrollIntoView({ behavior: 'smooth' });
         }
-        setSelectedAnswers(newSelectedAnswers);
-    };
+    }, [history.location.hash]);
 
-    const checkBoxStatus = stepContext => {
-        if (!selectedAnswers[selectedArchQuestions[stepContext.index]]) return <CloseIcon />;
-        else return <CheckIcon />;
-    };
-
-    return (
-        <Flex direction={'column'} justifyContent={'space-evenly'} alignItems={'center'} className="pageBox">
-            {selectedArch && (
-                <Stepper justifyContent={'center'} width={'70%'} size="md" colorScheme="blue" index={activeStep}>
-                    {ArchList.options[selectedArch].map((question, index) => (
-                        <Step
-                            key={index}
-                            onClick={() =>
-                                (count === activeStep && setReview(false)) ||
-                                (Object.keys(selectedAnswers).length - 1 >= index && setActiveStep(index))
-                            }
-                        >
-                            <StepIndicator>
-                                <StepStatus complete={checkBoxStatus} incomplete={<StepNumber />} active={<StepNumber />} />
-                            </StepIndicator>
-
-                            <Box flexShrink="0">
-                                <StepTitle>{idMappings[questionsList[question].id]}</StepTitle>
-                            </Box>
-
-                            <StepSeparator />
-                        </Step>
-                    ))}
-                </Stepper>
-            )}
-            <Flex
-                border={'1px solid #d6d6d6'}
-                flexDirection={'column'}
-                boxShadow="2xl"
-                rounded="xl"
-                height={'60%'}
-                width={'50%'}
-            >
-                {review ? (
-                    <ReviewBox idMappings={idMappings} selections={selectedAnswers} />
-                ) : (
-                    <WizardBox
-                        currentQuestion={selectedArch ? currentQuestion : ArchList}
-                        handleCheckboxChange={handleCheckboxChange}
-                        archSelect={!selectedArch}
-                        selectedAnswer={selectedAnswers[selectedArch ? currentQuestion.id : 'AT']}
-                    />
-                )}
-                <Flex padding={'30px'} justifyContent={'space-between'}>
-                    <Button
-                        rightIcon={selectedArch ? <ArrowBackIcon /> : <ExternalLinkIcon />}
-                        onClick={selectedArch ? handleBack : () => history.push('/canvastocode')}
-                        colorScheme="blue"
-                    >
-                        {selectedArch ? 'Back' : 'Skip'}
-                    </Button>
-                    <Button
-                        isDisabled={activeStep === count ? false : !selectedAnswers[selectedArch ? currentQuestion?.id : 'AT']}
-                        rightIcon={activeStep === count ? <ExternalLinkIcon /> : <ArrowForwardIcon />}
-                        onClick={activeStep === count ? handleSubmit : handleNext}
-                        colorScheme="blue"
-                    >
-                        {activeStep === count ? 'Submit' : 'Next'}
-                    </Button>
+    return selectedArch ? (
+        <WizardSelection sharedSelectedArch={selectedArch} setSharedSelectedArch={setSelectedArch} />
+    ) : (
+        <Flex className="page">
+            <Flex className="background">
+                <Text fontSize={'5xl'} color={'white'} fontWeight={'bold'}>
+                    Let's prototype with <span style={{ color: 'gold' }}>WeDAA</span>
+                </Text>
+                <Text color={'white'}>A platform for you to move quicker & easier</Text>
+                <Button div marginTop={6} backgroundColor={'white'} colorScheme="whiteAlpha" textColor={'black'} size="md">
+                    Know more about WeDAA
+                </Button>
+            </Flex>
+            <Flex paddingBlock={24} className="box">
+                <Flex
+                    onClick={() => history.push('/wizardselection')}
+                    alignItems={'center'}
+                    justifyContent={'space-around'}
+                    borderLeft={'4px solid #397EF6'}
+                    shadow={'lg'}
+                    _hover={{
+                        shadow: 'xl',
+                    }}
+                    height={'120px'}
+                    width={'30%'}
+                    backgroundColor={'white'}
+                    roundedRight={10}
+                >
+                    <Flex justifyContent={'space-evenly'} flexDir={'column'} gap={2}>
+                        <Text fontSize={'xl'} fontWeight={'bold'}>
+                            Build Your Own
+                        </Text>
+                        <Text fontSize={'xs'}>New Project with a tour</Text>
+                    </Flex>
+                    <svg width="64" height="64" viewBox="0 0 65 65" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="64" height="64" rx="32.5" fill="#E7EBFF" />
+                        <path
+                            fill-rule="evenodd"
+                            clip-rule="evenodd"
+                            d="M33.75 26.25C33.75 25.5596 33.1904 25 32.5 25C31.8096 25 31.25 25.5596 31.25 26.25V31.25H26.25C25.5596 31.25 25 31.8096 25 32.5C25 33.1904 25.5596 33.75 26.25 33.75H31.25V38.75C31.25 39.4404 31.8096 40 32.5 40C33.1904 40 33.75 39.4404 33.75 38.75V33.75H38.75C39.4404 33.75 40 33.1904 40 32.5C40 31.8096 39.4404 31.25 38.75 31.25H33.75V26.25Z"
+                            fill="#422F8A"
+                            fill-opacity="0.87"
+                        />
+                    </svg>
                 </Flex>
+            </Flex>
+            <Flex className="box" alignItems={'flex-start'} gap={6}>
+                <Box
+                    style={{
+                        display: 'flex',
+                        width: '1140px',
+                        flexDirection: 'column',
+                        alignItems: 'flex-start',
+                        gap: '20px',
+                    }}
+                >
+                    <Text fontSize={'sm'}>PROTOTYPE CATEGORIES</Text>
+                    <Text fontSize={'5xl'} fontWeight={'bold'}>
+                        Browse by category
+                    </Text>
+                    <Text fontSize={'sm'}>Find the one you want to work on</Text>
+                </Box>
+                <Flex
+                    style={{
+                        display: 'flex',
+                        width: '100%',
+                        justifyContent: 'space-between',
+                        gap: '40px',
+                    }}
+                >
+                    <ArchSelectorComponent value="fullStack" setSelectedArch={handleSelect} />
+
+                    <ArchSelectorComponent value="headless" setSelectedArch={handleSelect} />
+
+                    <ArchSelectorComponent value="spa" setSelectedArch={handleSelect} />
+
+                    <ArchSelectorComponent value="profilePage" setSelectedArch={handleSelect} />
+                </Flex>
+            </Flex>
+            <Flex
+                style={{
+                    display: 'flex',
+                    width: '1200px',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'flex-start',
+                    gap: '60px',
+                    paddingBlock: '120px',
+                }}
+            >
+                <Box
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'flex-start',
+                        gap: '20px',
+                    }}
+                >
+                    <Text style={{ display: 'flex', alignItems: 'center', gap: '10px', alignSelf: 'stretch' }}>SAMPLES</Text>
+                    <Text
+                        style={{
+                            color: '#0E1E2F',
+                            fontFeatureSettings: "'clig' off, 'liga' off",
+                            fontSize: '44px',
+                            fontStyle: 'normal',
+                            fontWeight: '600',
+                            lineHeight: '130%',
+                        }}
+                    >
+                        Other Reference Architectures
+                    </Text>
+                </Box>
+                <SimpleGrid
+                    columns={3}
+                    style={{
+                        gap: '60px',
+                    }}
+                >
+                    {Object.keys(archsList).map(key => {
+                        return <ReferenceArchCard id={key} archData={archsList[key]} />;
+                    })}
+                </SimpleGrid>
             </Flex>
         </Flex>
     );
-}
+};
 
 export default Wizard;
