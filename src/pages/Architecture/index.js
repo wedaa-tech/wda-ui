@@ -31,25 +31,24 @@ import { useKeycloak } from '@react-keycloak/web';
 import ActionModal from '../../components/Modal/ActionModal';
 import { ArrowBackIcon } from '@chakra-ui/icons';
 
-const thickPlusIconStyle = {
-    display: 'grid',
-    width: '50px',
-    height: '50px',
-    fontSize: '50px',
-    fontWeight: 'bold',
-    border: '3px',
-    borderRadius: '50%',
-    alignContent: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#ebaf2482',
-    color: 'white',
-};
+function generateRandomString() {
+    const letters = 'abcdefghijklmnopqrstuvwxyz';
+    let randomString = '';
+
+    for (let i = 0; i < 5; i++) {
+        const randomIndex = Math.floor(Math.random() * letters.length);
+        randomString += letters.charAt(randomIndex);
+    }
+
+    return randomString;
+}
 
 function ArchitecturesSection() {
     let location = useLocation();
     const history = useHistory();
 
-    var { parentId } = useParams();
+    // var { parentId } = useParams();
+    const [parentId, setParentId] = useState(undefined);
     const { isOpen, onOpen, onClose } = useDisclosure();
     const { initialized, keycloak } = useKeycloak();
     const cancelRef = React.useRef();
@@ -58,11 +57,11 @@ function ArchitecturesSection() {
         parentId = 'admin';
     }
 
-    if (parentId === undefined) {
-        history.push('/projects');
-    }
+    // if (parentId === undefined) {
+    //     history.push('/projects');
+    // }
 
-    const [projectName, setProjectName] = useState(location?.state?.state?.projectName);
+    // const [projectName, setProjectName] = useState(location?.state?.state?.projectName);
 
     const [isNewArchitectureModalOpen, setNewArchitectureModalOpen] = useState(false);
     const [newArchitectureName, setNewArchitectureName] = useState('');
@@ -115,7 +114,8 @@ function ArchitecturesSection() {
                     })
                     .catch(error => console.error(error));
             } else {
-                fetch(process.env.REACT_APP_API_BASE_URL + '/api/projects/architectures/' + parentId, {
+                let defaultProjectId;
+                fetch(process.env.REACT_APP_API_BASE_URL + '/api/projects', {
                     method: 'get',
                     headers: {
                         'Content-Type': 'application/json',
@@ -125,15 +125,55 @@ function ArchitecturesSection() {
                     .then(response => response.json())
                     .then(result => {
                         if (result?.data) {
-                            const archslist = structuredClone(result.data);
-                            setArchitectures(archslist);
-                            setTotalArchitectures(archslist.length);
+                            defaultProjectId = result.data.find(project => project.name.startsWith('default'))?.id;
+                            if (!defaultProjectId) {
+                                const randomString = generateRandomString();
+                                fetch(process.env.REACT_APP_API_BASE_URL + '/api/projects', {
+                                    method: 'post',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                                    },
+                                    body: JSON.stringify({
+                                        name: 'default' + randomString,
+                                        description: 'Default Project',
+                                    }),
+                                })
+                                    .then(response => response.json())
+                                    .then(result => {
+                                        if (result?.data) {
+                                            defaultProjectId = result.data.id;
+                                            setParentId(defaultProjectId);
+                                        }
+                                    })
+                                    .catch(error => console.error(error));
+                            } else {
+                                setParentId(defaultProjectId);
+                                fetch(process.env.REACT_APP_API_BASE_URL + '/api/projects/architectures/' + defaultProjectId, {
+                                    method: 'get',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                                    },
+                                })
+                                    .then(response => response.json())
+                                    .then(result => {
+                                        if (result?.data) {
+                                            const archslist = structuredClone(result.data);
+                                            setArchitectures(archslist);
+                                            setTotalArchitectures(archslist.length);
+                                        }
+                                    })
+                                    .catch(error => console.error(error));
+                            }
                         }
                     })
-                    .catch(error => console.error(error));
+                    .catch(error => {
+                        console.error(error);
+                    });
             }
         }
-    }, [initialized, keycloak, parentId]);
+    }, [initialized, keycloak]);
 
     const handleOpenArchitecture = (project_id, data) => {
         if (data.draft || data?.request_json?.services)
@@ -187,7 +227,7 @@ function ArchitecturesSection() {
 
     return (
         <Box p="4" maxWidth="7xl" mx="auto">
-            {!(parentId === 'admin') && (
+            {/* {!(parentId === 'admin') && (
                 <IconButton
                     variant="outline"
                     colorScheme="black"
@@ -195,19 +235,19 @@ function ArchitecturesSection() {
                     icon={<ArrowBackIcon />}
                     onClick={() => history.push('/projects')}
                 />
-            )}
+            )} */}
             <Flex justifyContent={'space-between'} alignItems={'center'}>
                 <Heading className="not-selectable" as="h1" my="10">
-                    {parentId === 'admin' ? 'Reference Architectures' : 'Architectures'}
+                    {parentId === 'admin' ? 'Reference Architectures' : 'Prototypes'}
                 </Heading>
-                {!(parentId === 'admin') && (
+                {/* {!(parentId === 'admin') && (
                     <Text justifyItems={'flex-end'} display={'grid'} fontWeight="bold">
                         Project Name
                         <Text fontWeight="bold" fontFamily={'monospace'} fontSize={'30px'} color={'#ebaf24'}>
                             {projectName}
                         </Text>
                     </Text>
-                )}
+                )} */}
             </Flex>
 
             <SimpleGrid className="simple-grid" minChildWidth="null" columns={{ base: 1, sm: 1, md: 3 }} spacing={10}>
@@ -227,11 +267,17 @@ function ArchitecturesSection() {
                     onClick={handleOpenNewArchitectureModal}
                 >
                     <Text className="not-selectable" fontWeight="bold">
-                        Create New Architecture
+                        Create New Prototype
                     </Text>
-                    <span className="not-selectable" inputMode="none" style={thickPlusIconStyle}>
-                        +
-                    </span>
+                    <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+                        <rect width="56" height="56" rx="28" fill="#EBAF24" fill-opacity="0.5" />
+                        <path
+                            fill-rule="evenodd"
+                            clip-rule="evenodd"
+                            d="M30.6667 14.6667C30.6667 13.1939 29.4728 12 28 12C26.5273 12 25.3334 13.1939 25.3334 14.6667V25.3332H14.6667C13.1939 25.3332 12 26.5271 12 27.9999C12 29.4726 13.1939 30.6665 14.6667 30.6665H25.3334V41.3333C25.3334 42.8061 26.5273 44 28 44C29.4728 44 30.6667 42.8061 30.6667 41.3333V30.6665H41.3333C42.8061 30.6665 44 29.4726 44 27.9999C44 26.5271 42.8061 25.3332 41.3333 25.3332H30.6667V14.6667Z"
+                            fill="white"
+                        />
+                    </svg>
                 </Box>
                 <Box
                     maxWidth={96}
@@ -247,7 +293,7 @@ function ArchitecturesSection() {
                     height={'100px'}
                 >
                     <Text className="not-selectable" fontWeight="bold">
-                        Number of Architectures
+                        Number of Prototypes
                     </Text>
                     <Text className="not-selectable" fontWeight="bold" fontFamily={'monospace'} fontSize={'30px'} color={'#ebaf24'}>
                         {totalArchitectures}
@@ -256,7 +302,7 @@ function ArchitecturesSection() {
                 <Box maxWidth={96} minWidth={96}></Box>
             </SimpleGrid>
             <Heading className="not-selectable" as="h3" size="lg" my="10">
-                {parentId === 'admin' ? 'Your Reference Architectures' : 'Your Architectures'}
+                {parentId === 'admin' ? 'Your Reference Architectures' : 'Your Prototypes'}
             </Heading>
             <SimpleGrid className="simple-grid" minChildWidth="null" columns={{ base: 1, sm: 2, md: 3 }} spacing={10}>
                 {architectures.map((architecture, index) => (
@@ -288,7 +334,7 @@ function ArchitecturesSection() {
             >
                 <ModalOverlay />
                 <ModalContent>
-                    <ModalHeader>Create New Architecture</ModalHeader>
+                    <ModalHeader>Create New Prototype</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
                         <SimpleGrid columns={2} spacing="10" padding={'10px'}>
