@@ -382,7 +382,7 @@ const Sidebar = ({
             direction={'column'}
         >
             <Box p={'12px 20px 8px 20px'}>
-                <FormLabel fontWeight="bold" style={{ margin: '0' }}>
+                <FormLabel fontWeight="bold" style={{ margin: '0' }} className="required">
                     Name
                 </FormLabel>
                 <Input

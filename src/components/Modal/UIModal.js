@@ -215,7 +215,7 @@ const UiDataModal = ({
                             />
                         </FormControl>
                         <FormControl>
-                            <FormLabel>Component Name</FormLabel>
+                            <FormLabel className="required">Component Name</FormLabel>
                             <Input
                                 mb={4}
                                 variant="outline"
@@ -241,7 +241,7 @@ const UiDataModal = ({
                         </FormControl>
                         {UiData.applicationFramework === 'docusaurus' && (
                             <FormControl>
-                                <FormLabel>Theme</FormLabel>
+                                <FormLabel className="required">Theme</FormLabel>
                                 <Select
                                     mb={4}
                                     variant="outline"
@@ -265,7 +265,7 @@ const UiDataModal = ({
                             </Alert>
                         )}
                         <FormControl>
-                            <FormLabel>Server Port</FormLabel>
+                            <FormLabel className="required">Server Port</FormLabel>
                             <Input
                                 mb={4}
                                 variant="outline"

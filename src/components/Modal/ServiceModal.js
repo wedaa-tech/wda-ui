@@ -168,7 +168,7 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                             />
                         </FormControl>
                         <FormControl>
-                            <FormLabel>Component Name</FormLabel>
+                            <FormLabel className="required">Component Name</FormLabel>
                             <Input
                                 mb={4}
                                 variant="outline"
@@ -193,7 +193,7 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                             </Alert>
                         )}
                         <FormControl>
-                            <FormLabel>Package Name</FormLabel>
+                            <FormLabel className="required">Package Name</FormLabel>
                             <Input
                                 mb={4}
                                 variant="outline"
@@ -212,7 +212,7 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                             </Alert>
                         )}
                         <FormControl>
-                            <FormLabel>Server Port</FormLabel>
+                            <FormLabel className="required">Server Port</FormLabel>
                             <Input
                                 mb={4}
                                 variant="outline"
