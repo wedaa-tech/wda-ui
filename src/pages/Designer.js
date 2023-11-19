@@ -2060,6 +2060,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         uniquePortNumbers={uniquePortNumbers}
                     />
                 )}
+
                 {nodeType === 'group' && Isopen && (
                     <GroupDataModal
                         isOpen={Isopen}
@@ -2067,6 +2068,17 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         onClose={setopen}
                         onSubmit={onChange}
                         handleColorClick={handleColorClick}
+                    />
+                )}
+
+                {nodeType === 'dummy' && Isopen && (
+                    <GroupDataModal
+                        isOpen={Isopen}
+                        CurrentNode={CurrentNode}
+                        onClose={setopen}
+                        onSubmit={onChange}
+                        handleColorClick={handleColorClick}
+                        nodeType={'Dummy'}
                     />
                 )}
 
