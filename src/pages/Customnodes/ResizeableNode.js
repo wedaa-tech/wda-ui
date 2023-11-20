@@ -51,9 +51,9 @@ export default function ResizableNode({ id, data, selected }) {
                 return 30;
             case 'gateway':
                 componentWidth = size.width;
-                if (componentWidth >= 120) return 80;
-                if (componentWidth > 58) return size.width / 1.7;
-                return 42;
+                if (componentWidth >= 160) return 70;
+                if (componentWidth > 90) return size.width / 2.7;
+                return 40;
             case 'docusaurus':
                 componentWidth = size.width / 2;
                 if (componentWidth >= 50) return 50;

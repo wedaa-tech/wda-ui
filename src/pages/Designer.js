@@ -12,8 +12,8 @@ import ReactFlow, {
     getTransformForBounds,
     useReactFlow,
 } from 'reactflow';
-import { AiOutlineClear, AiOutlineSave } from 'react-icons/ai';
-import { FaCode } from 'react-icons/fa6';
+import { AiOutlineSave } from 'react-icons/ai';
+import { FaCode, FaEraser } from 'react-icons/fa6';
 import 'reactflow/dist/style.css';
 import { Box, Button, Flex, HStack, Icon, IconButton, Spinner, Text, VStack, useToast } from '@chakra-ui/react';
 import { ArrowRightIcon } from '@chakra-ui/icons';
@@ -2003,7 +2003,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                                 <DownloadButton applicationName={projectName} />
                                 <IconButton
                                     hidden={viewOnly}
-                                    icon={<Icon as={AiOutlineClear} />}
+                                    icon={<Icon as={FaEraser} />}
                                     size="md"
                                     onClick={() => {
                                         if (!(Object.keys(nodes).length === 0)) {
