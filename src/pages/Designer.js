@@ -808,6 +808,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     const initData = data => {
         if (data != null && !(Object.keys(data).length === 0) && data?.metadata?.nodes) {
             const nodes = data?.metadata?.nodes;
+            if (data?.projectName) setProjectName(data.projectName);
             if (!(Object.keys(nodes).length === 0)) setShowDiv(false);
             let max_groupId = -1;
             let max_serviceId = -1;
@@ -1335,7 +1336,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             if (response.ok) {
                 toast.close(toastIdRef.current);
                 toastIdRef.current = toast({
-                    title: 'Blueprint is saved as a draft.',
+                    title: `Blueprint ${projectName}  is saved as a draft.`,
                     status: 'success',
                     duration: 3000,
                     variant: 'left-accent',
@@ -1746,6 +1747,70 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         }
     };
 
+    const handleSave = () => {
+        if (projectName && projectName !== 'clear') {
+            if (!keycloak.authenticated) {
+                keycloak.login({
+                    redirectUri: process.env.REACT_APP_UI_BASE_URL + 'canvasToCode',
+                });
+            }
+            saveData(true);
+        } else {
+            handleInvalidProjectName();
+        }
+    };
+
+    const handleSubmit = () => {
+        const { isValid, message } = checkDisabled();
+        const errorMessage = message || 'Validation failed';
+        toast.close(toastIdRef.current);
+        toastIdRef.current = toast({
+            title: errorMessage,
+            status: isValid ? 'success' : 'error',
+            duration: 3000,
+            variant: 'left-accent',
+            isClosable: true,
+        });
+        if (checkEdge()) return;
+        if (!isValid) return;
+        saveData(false);
+    };
+
+    const saveData = isSave => {
+        var servicesData = nodes;
+        var edgesData = edges;
+        let data = { metadata: {} };
+        let currentIndex = 0;
+        data.metadata.nodes = servicesData;
+        data.metadata.edges = edgesData;
+        data.projectName = projectName;
+        data.services = {};
+        for (var val in nodes) {
+            if (val.startsWith('UI') || val.startsWith('Service') || val.startsWith('Gateway')) {
+                data.services[currentIndex] = data.metadata.nodes[val].data;
+                currentIndex++;
+            }
+        }
+
+        if (isSave) {
+            data.save = true;
+        }
+
+        onsubmit(data);
+    };
+
+    const handleInvalidProjectName = () => {
+        console.log(projectName);
+        toast.close(toastIdRef.current);
+        toastIdRef.current = toast({
+            title: 'Enter a valid ProjectName',
+            status: 'error',
+            duration: 3000,
+            variant: 'left-accent',
+            isClosable: true,
+        });
+    };
+
     if (isLoading)
         return (
             <ReactFlowProvider>
@@ -1947,79 +2012,8 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                                         }
                                     }}
                                 />
-                                <IconButton
-                                    hidden={viewOnly}
-                                    icon={<Icon as={AiOutlineSave} />}
-                                    size="md"
-                                    onClick={() => {
-                                        if (!keycloak.authenticated) {
-                                            keycloak.login({
-                                                redirectUri: process.env.REACT_APP_UI_BASE_URL + 'canvasToCode',
-                                            });
-                                        }
-                                        if (projectName && projectName != 'clear') {
-                                            var servicesData = nodes;
-                                            var edgesData = edges;
-                                            let data = { metadata: {} };
-                                            let currentIndex = 0;
-                                            data.metadata.nodes = servicesData;
-                                            data.metadata.edges = edgesData;
-                                            data.projectName = projectName;
-                                            data.services = {};
-                                            for (var val in nodes) {
-                                                if (val.startsWith('UI') || val.startsWith('Service') || val.startsWith('Gateway')) {
-                                                    data.services[currentIndex] = data.metadata.nodes[val].data;
-                                                    currentIndex++;
-                                                }
-                                            }
-                                            data.save = true;
-                                            onsubmit(data);
-                                        } else {
-                                            toast.close(toastIdRef.current);
-                                            toastIdRef.current = toast({
-                                                title: 'Enter a valid ProjectName',
-                                                status: 'error',
-                                                duration: 3000,
-                                                variant: 'left-accent',
-                                                isClosable: true,
-                                            });
-                                        }
-                                    }}
-                                />
-                                <IconButton
-                                    hidden={viewOnly}
-                                    icon={<Icon as={FaCode} />}
-                                    size="md"
-                                    onClick={() => {
-                                        const { isValid, message } = checkDisabled();
-                                        const errorMessage = message || 'Validation failed';
-                                        toast.close(toastIdRef.current);
-                                        toastIdRef.current = toast({
-                                            title: errorMessage,
-                                            status: isValid ? 'success' : 'error',
-                                            duration: 3000,
-                                            variant: 'left-accent',
-                                            isClosable: true,
-                                        });
-                                        if (checkEdge()) return;
-                                        if (!isValid) return;
-                                        var servicesData = nodes;
-                                        var edgesData = edges;
-                                        let data = { metadata: {} };
-                                        let currentIndex = 0;
-                                        data.metadata.nodes = servicesData;
-                                        data.metadata.edges = edgesData;
-                                        data.projectName = projectName;
-                                        data.services = {};
-                                        for (var val in nodes) {
-                                            if (val.startsWith('UI') || val.startsWith('Service') || val.startsWith('Gateway')) {
-                                                data.services[currentIndex] = data.metadata.nodes[val].data;
-                                                currentIndex++;
-                                            }
-                                        }
-                                        onsubmit(data);
-                                    }}
-                                />
+                                <IconButton hidden={viewOnly} icon={<Icon as={AiOutlineSave} />} size="md" onClick={handleSave} />
+                                <IconButton hidden={viewOnly} icon={<Icon as={FaCode} />} size="md" onClick={handleSubmit} />
                             </VStack>
                         </Panel>
                         <Background gap={10} color="#f2f2f2" variant={BackgroundVariant.Lines} />
