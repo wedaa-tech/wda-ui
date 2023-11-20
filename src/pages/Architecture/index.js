@@ -160,7 +160,7 @@ function ArchitecturesSection() {
                 })
                     .then(response => response.json())
                     .then(res => {
-                        const updatedArchitectures = architectures.filter(card => card.architecture_id !== data.id);
+                        const updatedArchitectures = architectures.filter(card => card.id !== data.id);
                         setArchitectures(updatedArchitectures);
                         setTotalArchitectures(updatedArchitectures.length);
                     })
@@ -262,7 +262,7 @@ function ArchitecturesSection() {
                 {architectures.map((architecture, index) => (
                     <ArchitectureCard
                         key={index}
-                        projectId={architecture?.name ? architecture.architecture_id : architecture.project_id}
+                        projectId={architecture?.name ? architecture.id : architecture.project_id}
                         title={architecture?.name ? architecture?.name : architecture.projectName}
                         data={architecture}
                         parentId={parentId}
