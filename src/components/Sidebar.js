@@ -103,7 +103,7 @@ const Sidebar = ({
     const [projectData, setprojectData] = useState(IntialState);
 
     useEffect(() => {
-        if (architectureName === 'clear') {
+        if (architectureName === 'clear#canvas') {
             setprojectData(pd => ({
                 ...pd,
                 projectName: '',

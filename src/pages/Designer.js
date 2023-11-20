@@ -502,7 +502,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     };
     const clear = () => {
         localStorage.clear();
-        setProjectName('clear');
+        setProjectName('clear#canvas');
         setuserData({});
         setNodes({});
         setEdges({});
@@ -1017,7 +1017,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             localStorage.clear();
             clear();
             setShowDiv(true);
-            setProjectName('clear');
+            setProjectName('clear#canvas');
         }
         let unblock;
         if (!(Object.keys(nodes).length === 0) && updated) {
