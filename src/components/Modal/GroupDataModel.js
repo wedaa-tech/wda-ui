@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, ModalContent, ModalHeader, ModalCloseButton, ModalBody, Input, Button, FormLabel, FormControl } from '@chakra-ui/react';
 
-const GroupDataModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick }) => {
+const GroupDataModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick, nodeType = 'Group' }) => {
     const IntialState = {
         label: 'Group',
         type: 'Group',
@@ -49,7 +49,7 @@ const GroupDataModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorCli
                     width: '300px',
                 }}
             >
-                <ModalHeader>Group</ModalHeader>
+                <ModalHeader>{nodeType}</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody>
                     <div

@@ -65,10 +65,10 @@ const Sidebar = ({
     update,
     updated,
     setUpdated,
-    triggerExit,
     isOpen = true,
     id,
     clear,
+    setArchitectureName,
 }) => {
     const location = useLocation();
     const onDragStart = (event, nodeType, Name, metaData = '') => {
@@ -101,16 +101,14 @@ const Sidebar = ({
     }, []);
 
     const [projectData, setprojectData] = useState(IntialState);
-    useEffect(() => {
-        if (triggerExit.onOk) {
-            setprojectData({
-                projectName: '',
-            });
-        }
-    }, [triggerExit]);
 
     useEffect(() => {
-        if (architectureName) {
+        if (architectureName === 'clear#canvas') {
+            setprojectData(pd => ({
+                ...pd,
+                projectName: '',
+            }));
+        } else {
             setprojectData(pd => ({
                 ...pd,
                 projectName: architectureName,
@@ -125,6 +123,7 @@ const Sidebar = ({
         data.projectName = value;
         data.updated = updated;
         localStorage.data = JSON.stringify(data);
+        if (column === 'projectName') setArchitectureName(value);
         setprojectData(prev => ({ ...prev, [column]: value }));
     };
     const [showModal, setShowModal] = useState(false);
@@ -383,7 +382,7 @@ const Sidebar = ({
             direction={'column'}
         >
             <Box p={'12px 20px 8px 20px'}>
-                <FormLabel fontWeight="bold" style={{ margin: '0' }}>
+                <FormLabel fontWeight="bold" style={{ margin: '0' }} className="required">
                     Name
                 </FormLabel>
                 <Input
@@ -880,13 +879,13 @@ const Sidebar = ({
                     </TabPanel>
                 </TabPanels>
             </Tabs>
-            {initialized && keycloak.authenticated && (
+            {/* {initialized && keycloak.authenticated && (
                 <Checkbox mx={4} size="md" colorScheme="blue" isChecked={saveMetadata} onChange={Togglesave}>
                     Save Project
                 </Checkbox>
-            )}
+            )} */}
             <Button m={4} onClick={handleButtonClick} type="submit">
-                Next
+                Get Code
             </Button>
             {showModal && (
                 <DeployModal

@@ -4,10 +4,9 @@ import { toPng } from 'html-to-image';
 import { IconButton, Icon } from '@chakra-ui/react';
 import { FiDownload } from 'react-icons/fi';
 
-function downloadImage(dataUrl) {
+function downloadImage(dataUrl, imageName) {
     const a = document.createElement('a');
-
-    a.setAttribute('download', 'reactflow.png');
+    a.setAttribute('download', imageName);
     a.setAttribute('href', dataUrl);
     a.click();
 }
@@ -15,10 +14,11 @@ function downloadImage(dataUrl) {
 const imageWidth = 1024;
 const imageHeight = 768;
 
-function DownloadButton() {
+function DownloadButton(applicationName) {
     const { getNodes } = useReactFlow();
 
     const onClick = () => {
+        var projectName = JSON.parse(localStorage.data).projectName || applicationName?.applicationName || 'wedaa-prototype';
         const nodesList = getNodes();
         if (nodesList.length === 0) {
             return;
@@ -35,7 +35,7 @@ function DownloadButton() {
                 height: imageHeight,
                 transform: `translate(${transform[0]}px, ${transform[1]}px) scale(${transform[2]})`,
             },
-        }).then(downloadImage);
+        }).then(dataUrl => downloadImage(dataUrl, `${projectName}.png`));
     };
 
     return <IconButton icon={<Icon as={FiDownload} />} size="md" onClick={onClick} />;
