@@ -56,7 +56,7 @@ const Wizard = () => {
     }, [initialized, keycloak]);
 
     useEffect(() => {
-        if (history.location.hash === '#arch-selection') {
+        if (history.location.hash === '#arch-selection' && archSelectorRef.current) {
             archSelectorRef.current.scrollIntoView({ behavior: 'smooth' });
         }
     }, [history.location.hash]);
@@ -89,7 +89,7 @@ const Wizard = () => {
                     backgroundColor={'white'}
                     roundedRight={10}
                 >
-                    <Flex justifyContent={'space-evenly'} flexDir={'column'} gap={2}>
+                    <Flex id={archSelectorRef} justifyContent={'space-evenly'} flexDir={'column'} gap={2}>
                         <Text fontSize={'xl'} fontWeight={'bold'}>
                             Build Your Own
                         </Text>
@@ -119,7 +119,7 @@ const Wizard = () => {
                 >
                     <Text fontSize={'sm'}>PROTOTYPE CATEGORIES</Text>
                     <Text fontSize={'5xl'} fontWeight={'bold'}>
-                        Browse by category
+                        Our Top Picks
                     </Text>
                     <Text fontSize={'sm'}>Find the one you want to work on</Text>
                 </Box>
@@ -131,13 +131,13 @@ const Wizard = () => {
                         gap: '40px',
                     }}
                 >
-                    <ArchSelectorComponent value="fullStack" setSelectedArch={handleSelect} />
+                    <ArchSelectorComponent samples={3} value="fullStack" setSelectedArch={handleSelect} />
 
-                    <ArchSelectorComponent value="headless" setSelectedArch={handleSelect} />
+                    <ArchSelectorComponent samples={2} value="headless" setSelectedArch={handleSelect} />
 
-                    <ArchSelectorComponent value="spa" setSelectedArch={handleSelect} />
+                    <ArchSelectorComponent samples={6} value="spa" setSelectedArch={handleSelect} />
 
-                    <ArchSelectorComponent value="profilePage" setSelectedArch={handleSelect} />
+                    <ArchSelectorComponent samples={1} value="profilePage" setSelectedArch={handleSelect} />
                 </Flex>
             </Flex>
             <Flex
