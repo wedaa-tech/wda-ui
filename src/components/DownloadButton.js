@@ -1,7 +1,7 @@
 import React from 'react';
 import { Panel, useReactFlow, getRectOfNodes, getTransformForBounds } from 'reactflow';
 import { toPng } from 'html-to-image';
-import { IconButton, Icon } from '@chakra-ui/react';
+import { IconButton, Icon, Tooltip } from '@chakra-ui/react';
 import { FiDownload } from 'react-icons/fi';
 
 function downloadImage(dataUrl, imageName) {
@@ -38,7 +38,13 @@ function DownloadButton(applicationName) {
         }).then(dataUrl => downloadImage(dataUrl, `${projectName}.png`));
     };
 
-    return <IconButton icon={<Icon as={FiDownload} />} size="md" onClick={onClick} />;
+    return (
+        <>
+            <Tooltip label="Download As Image" placement="left" bg="blue.500" color="white" borderRadius="md" fontSize="sm">
+                <IconButton icon={<Icon as={FiDownload} />} size="md" onClick={onClick} />
+            </Tooltip>
+        </>
+    );
 }
 
 export default DownloadButton;
