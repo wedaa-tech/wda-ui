@@ -53,10 +53,6 @@ function ArchitecturesSection() {
     const { initialized, keycloak } = useKeycloak();
     const cancelRef = React.useRef();
 
-    if (keycloak?.realmAccess?.roles.includes('ADMIN') && location.pathname === '/architectures') {
-        parentId = 'admin';
-    }
-
     // if (parentId === undefined) {
     //     history.push('/projects');
     // }
@@ -95,6 +91,9 @@ function ArchitecturesSection() {
     };
 
     useEffect(() => {
+        if (keycloak?.realmAccess?.roles.includes('ADMIN') && location.pathname === '/architectures') {
+            setParentId('admin');
+        }
         if (initialized) {
             if (keycloak?.realmAccess?.roles.includes('ADMIN') && location.pathname === '/architectures') {
                 fetch(process.env.REACT_APP_API_BASE_URL + '/refArchs/', {
@@ -173,7 +172,7 @@ function ArchitecturesSection() {
                     });
             }
         }
-    }, [initialized, keycloak]);
+    }, [initialized, keycloak?.realmAccess?.roles, keycloak?.token, location.pathname]);
 
     const handleOpenArchitecture = (project_id, data) => {
         if (data.draft || data?.request_json?.services)

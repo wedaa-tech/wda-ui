@@ -23,6 +23,7 @@ export const componentsMapping = {
     keycloak: 'KeyCloak',
     eureka: 'Spring Cloud Gateway',
     eck: 'Elastic Cloud on Kubernetes (ECK)',
+    docusaurus: 'Docusarous',
     skip: 'Not Selected',
 };
 
@@ -36,6 +37,7 @@ export const imageMappings = {
     eck: eck,
     keycloak: keycloak,
     eureka: eureka,
+    docusaurus: eureka,
     skip: none,
 };
 
@@ -48,7 +50,7 @@ export const questionsData = {
             fullStack: ['frontend', 'backend', 'database', 'authentication', 'serviceDiscovery', 'logManagement'],
             headless: ['backend', 'authentication', 'serviceDiscovery', 'logManagement'],
             spa: ['frontend', 'authentication'],
-            profilePage: ['frontend', 'authentication'],
+            profilePage: ['docusaurus'],
         },
     },
     questionsList: {
