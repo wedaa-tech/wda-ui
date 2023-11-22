@@ -355,7 +355,7 @@ const UiDataModal = ({
                                 backgroundColor: '#fff',
                                 cursor: 'pointer',
                             }}
-                            onClick={() => handleColorClick('#fff')}
+                            onClick={() => handleColorClick('rgba(255, 255, 255, 0)')}
                         ></div>
                     </div>
                     <Button

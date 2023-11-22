@@ -1400,24 +1400,27 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
 
     const onEdgeClick = (e, edge) => {
         let updatedEdges = { ...edges };
-        const sourceType = edge.source.split('_')[0];
-        const targetType = edge.target.split('_')[0];
-        if (sourceType === 'Service' && targetType === 'Service') {
-            setEdgeopen(edge.id);
-            setCurrentEdge(edges[edge.id].data);
-        }
-        for (var existingEdge in updatedEdges) {
-            if (existingEdge.id != edge.id) {
-                updatedEdges[existingEdge.id].selected = false;
+        setEdgeopen(edge.id);
+        setCurrentEdge(updatedEdges[edge.id].data);
+        Object.keys(updatedEdges).forEach(existingEdgeId => {
+            existingEdgeId = parseInt(existingEdgeId, 10);
+
+            if (existingEdgeId !== edge.id) {
+                if (updatedEdges[existingEdgeId]?.selected) {
+                    updatedEdges[existingEdgeId].selected = false;
+                }
             }
-        }
+        });
         updatedEdges[edge.id].selected = true;
         setEdges(updatedEdges);
     };
 
     const handleEdgeData = Data => {
         let UpdatedEdges = { ...edges };
-        if (Data.framework === 'rest-api') {
+        const [source, destination] = IsEdgeopen.split('-');
+        if (!(source.startsWith('Service') && destination.startsWith('Service'))) {
+            UpdatedEdges[IsEdgeopen].label = Data.label;
+        } else if (Data.framework === 'rest-api') {
             UpdatedEdges[IsEdgeopen].label = 'Rest';
         } else {
             UpdatedEdges[IsEdgeopen].label = 'RabbitMQ';
@@ -1586,7 +1589,18 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 });
                 return;
             }
-
+            if (sourceNode.id.startsWith('dummy') || targetNode.id.startsWith('dummy')) {
+                setEdges(eds => {
+                    const updatedEdges = addEdge(params, eds, Nodes);
+                    const newEdgeId = `${sourceNode.id}-${targetNode.id}`;
+                    updatedEdges[newEdgeId].markerEnd = {
+                        color: 'black',
+                        type: MarkerType.ArrowClosed,
+                    };
+                    updatedEdges[newEdgeId].className = 'success';
+                    return updatedEdges;
+                });
+            }
             if (
                 !(
                     targetNode.id.startsWith('UI') ||
@@ -1651,6 +1665,13 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         setSelectedColor(color);
         (UpdatedNodes[nodeClick].style ??= {}).backgroundColor = color;
         setNodes({ ...UpdatedNodes });
+    };
+
+    const handleEdgeColorClick = color => {
+        let UpdatedEdges = structuredClone(edges);
+        setSelectedColor(color);
+        (UpdatedEdges[IsEdgeopen].style ??= {}).stroke = color;
+        setEdges({ ...UpdatedEdges });
     };
 
     const [menu, setMenu] = useState(null);
@@ -1800,7 +1821,6 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     };
 
     const handleInvalidProjectName = () => {
-        console.log(projectName);
         toast.close(toastIdRef.current);
         toastIdRef.current = toast({
             title: 'Enter a valid ProjectName',
@@ -2150,6 +2170,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         onClose={setEdgeopen}
                         handleEdgeData={handleEdgeData}
                         isMessageBroker={isMessageBroker}
+                        handleColorClick={handleEdgeColorClick}
                     />
                 )}
 

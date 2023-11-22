@@ -40,7 +40,7 @@ function DownloadButton(applicationName) {
 
     return (
         <>
-            <Tooltip label="Download As Image" placement="left" bg="blue.500" color="white" borderRadius="md" fontSize="sm">
+            <Tooltip label="Download Image" placement="left" bg="blue.500" color="white" borderRadius="md" fontSize="sm">
                 <IconButton icon={<Icon as={FiDownload} />} size="md" onClick={onClick} />
             </Tooltip>
         </>

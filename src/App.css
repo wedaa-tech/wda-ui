@@ -113,7 +113,7 @@ body,
 .react-flow__edge.selected .react-flow__edge-path,
 .react-flow__edge:focus .react-flow__edge-path,
 .react-flow__edge:focus-visible .react-flow__edge-path {
-    stroke: #0041d0;
+    stroke: #0041d0 !important;
 }
 
 .dndflow .reactflow-wrapper {
@@ -470,4 +470,4 @@ body,
 .required::after {
     content: ' *';
     color: red;
-  }
+}

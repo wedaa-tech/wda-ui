@@ -184,15 +184,15 @@ const Infrastructure = ({ onSubmit, projectData, generateZip }) => {
         }
         ProviderStates = {
             ...ProviderStates,
-            deploymentType: '',
+            deploymentType: 'kubernetes',
             enableECK: 'false',
             clusterName: '',
             kubernetesUseDynamicStorage: 'true',
             kubernetesNamespace: '',
             ingressType: 'istio',
-            monitoring: '',
+            monitoring: 'false',
             ingressDomain: '',
-            k8sWebUI: '',
+            k8sWebUI: 'false',
         };
 
         setDeploymentData(prevState => ({
@@ -369,7 +369,7 @@ const Infrastructure = ({ onSubmit, projectData, generateZip }) => {
                 {selectedImage === 'azure' && (
                     <div>
                         <FormControl>
-                            <FormLabel>Subscription Id</FormLabel>
+                            <FormLabel className="required">Subscription Id</FormLabel>
                             <Input
                                 mb={4}
                                 variant="outline"
@@ -397,7 +397,7 @@ const Infrastructure = ({ onSubmit, projectData, generateZip }) => {
                             </>
                         )}
                         <FormControl>
-                            <FormLabel>Tenant ID</FormLabel>
+                            <FormLabel className="required">Tenant Id</FormLabel>
                             <Input
                                 mb={4}
                                 variant="outline"
@@ -425,12 +425,14 @@ const Infrastructure = ({ onSubmit, projectData, generateZip }) => {
                             </>
                         )}
                         <FormControl>
-                            <FormLabel>Location</FormLabel>
+                            <FormLabel className="required">Location</FormLabel>
                             <Select
                                 mb={4}
                                 variant="outline"
                                 id="location"
                                 borderColor={'black'}
+                                backgroundColor={'  #F2F2F2'}
+                                disabled="true"
                                 value={DeploymentData.location}
                                 onChange={e => handleData('location', e.target.value)}
                             >
@@ -442,7 +444,7 @@ const Infrastructure = ({ onSubmit, projectData, generateZip }) => {
                 {selectedImage === 'aws' && (
                     <div>
                         <FormControl>
-                            <FormLabel>AWS Account ID</FormLabel>
+                            <FormLabel className="required">AWS Account Id</FormLabel>
                             <Input
                                 mb={4}
                                 variant="outline"
@@ -463,7 +465,7 @@ const Infrastructure = ({ onSubmit, projectData, generateZip }) => {
                             </Alert>
                         )}
                         <FormControl>
-                            <FormLabel>AWS Region</FormLabel>
+                            <FormLabel className="required">AWS Region</FormLabel>
                             <Select
                                 mb={4}
                                 variant="outline"
@@ -484,7 +486,7 @@ const Infrastructure = ({ onSubmit, projectData, generateZip }) => {
                 )}
                 {selectedImage && selectedImage !== 'minikube' && selectedImage !== 'none' ? (
                     <FormControl>
-                        <FormLabel>Deployment Type</FormLabel>
+                        <FormLabel className="required">Deployment Type</FormLabel>
                         <Select
                             mb={4}
                             variant="outline"
@@ -492,6 +494,8 @@ const Infrastructure = ({ onSubmit, projectData, generateZip }) => {
                             borderColor={'black'}
                             value={DeploymentData.deploymentType}
                             onChange={e => handleData('deploymentType', e.target.value)}
+                            backgroundColor={'  #F2F2F2'}
+                            disabled="true"
                         >
                             <option value="" disabled>
                                 Select an option
@@ -503,10 +507,10 @@ const Infrastructure = ({ onSubmit, projectData, generateZip }) => {
                     <></>
                 )}
 
-                {DeploymentData.deploymentType === 'kubernetes' && (
+                {DeploymentData.deploymentType === 'kubernetes' && selectedImage !== 'none' && selectedImage !== 'minikube' && (
                     <div>
                         <FormControl>
-                            <FormLabel>Cluster Name</FormLabel>
+                            <FormLabel className="required">Cluster Name</FormLabel>
                             <Input
                                 mb={4}
                                 variant="outline"
@@ -515,6 +519,19 @@ const Infrastructure = ({ onSubmit, projectData, generateZip }) => {
                                 maxLength="63"
                                 value={DeploymentData.clusterName}
                                 onChange={e => handleData('clusterName', e.target.value)}
+                            />
+                        </FormControl>
+                        <FormControl>
+                            <FormLabel className="required">Namespace</FormLabel>
+                            <Input
+                                mb={4}
+                                variant="outline"
+                                id="kubernetesnamespace"
+                                maxLength="63"
+                                placeholder="Kubernetes Namespace"
+                                borderColor={'black'}
+                                value={DeploymentData.kubernetesNamespace}
+                                onChange={e => handleData('kubernetesNamespace', e.target.value)}
                             />
                         </FormControl>
                         {DeploymentData.clusterName && !clusterNameCheck ? (
@@ -532,7 +549,7 @@ const Infrastructure = ({ onSubmit, projectData, generateZip }) => {
                             </Alert>
                         )}
                         <FormControl>
-                            <FormLabel>Enable Dynamic Storage</FormLabel>
+                            <FormLabel className="required">Enable Dynamic Storage</FormLabel>
                             <Select
                                 mb={4}
                                 variant="outline"
@@ -550,7 +567,7 @@ const Infrastructure = ({ onSubmit, projectData, generateZip }) => {
                         </FormControl>
                         {DeploymentData.kubernetesUseDynamicStorage === 'true' && selectedImage !== 'azure' && (
                             <FormControl>
-                                <FormLabel>Storage Class Name</FormLabel>
+                                <FormLabel className="required">Storage Class Name</FormLabel>
                                 <Input
                                     mb={4}
                                     variant="outline"
@@ -572,19 +589,6 @@ const Infrastructure = ({ onSubmit, projectData, generateZip }) => {
                             </FormControl>
                         )}
 
-                        <FormControl>
-                            <FormLabel>Namespace</FormLabel>
-                            <Input
-                                mb={4}
-                                variant="outline"
-                                id="kubernetesnamespace"
-                                maxLength="63"
-                                placeholder="Kubernetes Namespace"
-                                borderColor={'black'}
-                                value={DeploymentData.kubernetesNamespace}
-                                onChange={e => handleData('kubernetesNamespace', e.target.value)}
-                            />
-                        </FormControl>
                         {DeploymentData.kubernetesNamespace && !namespaceCheck ? (
                             <Alert status="error" height="38px" fontSize="12px" borderRadius="3px" mb={2}>
                                 <AlertIcon style={{ width: '14px', height: '14px' }} />
@@ -594,13 +598,15 @@ const Infrastructure = ({ onSubmit, projectData, generateZip }) => {
                             <></>
                         )}
                         <FormControl>
-                            <FormLabel>Ingress Type</FormLabel>
+                            <FormLabel className="required">Ingress Type</FormLabel>
                             <Select
                                 mb={4}
                                 variant="outline"
                                 id="ingressType"
                                 borderColor={'black'}
                                 value={DeploymentData.ingressType}
+                                backgroundColor={'#F2F2F2'}
+                                disabled="true"
                                 onChange={e => handleData('ingress', e.target.value)}
                             >
                                 <option value="istio">Istio</option>
@@ -630,7 +636,7 @@ const Infrastructure = ({ onSubmit, projectData, generateZip }) => {
                             </FormControl>
                         )}
                         <FormControl>
-                            <FormLabel>Enable Service Monitoring</FormLabel>
+                            <FormLabel className="required">Enable Service Monitoring</FormLabel>
                             <Select
                                 mb={4}
                                 variant="outline"
@@ -647,7 +653,7 @@ const Infrastructure = ({ onSubmit, projectData, generateZip }) => {
                             </Select>
                         </FormControl>
                         <FormControl>
-                            <FormLabel>Enable Kubernetes Dashboard</FormLabel>
+                            <FormLabel className="required">Enable Kubernetes Dashboard</FormLabel>
                             <Select
                                 mb={4}
                                 variant="outline"
@@ -668,7 +674,7 @@ const Infrastructure = ({ onSubmit, projectData, generateZip }) => {
                 {selectedImage === 'minikube' && (
                     <>
                         <FormControl>
-                            <FormLabel>Namespace</FormLabel>
+                            <FormLabel className="required">Namespace</FormLabel>
                             <Input
                                 mb={4}
                                 variant="outline"
@@ -689,7 +695,7 @@ const Infrastructure = ({ onSubmit, projectData, generateZip }) => {
                             <></>
                         )}
                         <FormControl>
-                            <FormLabel>Repository Name</FormLabel>
+                            <FormLabel className="required">Repository Name</FormLabel>
                             <Input
                                 mb={4}
                                 variant="outline"
@@ -702,7 +708,7 @@ const Infrastructure = ({ onSubmit, projectData, generateZip }) => {
                             />
                         </FormControl>
                         <FormControl>
-                            <FormLabel>Ingress Type</FormLabel>
+                            <FormLabel className="required">Ingress Type</FormLabel>
                             <Select
                                 mb={4}
                                 variant="outline"
@@ -710,12 +716,14 @@ const Infrastructure = ({ onSubmit, projectData, generateZip }) => {
                                 borderColor={'black'}
                                 value={DeploymentData.ingressType}
                                 onChange={e => handleData('ingress', e.target.value)}
+                                backgroundColor={'#F2F2F2'}
+                                disabled="true"
                             >
                                 <option value="istio">Istio</option>
                             </Select>
                         </FormControl>
                         <FormControl>
-                            <FormLabel>Enable Dynamic Storage</FormLabel>
+                            <FormLabel className="required">Enable Dynamic Storage</FormLabel>
                             <Select
                                 mb={4}
                                 variant="outline"
@@ -732,7 +740,7 @@ const Infrastructure = ({ onSubmit, projectData, generateZip }) => {
                             </Select>
                         </FormControl>
                         <FormControl>
-                            <FormLabel>Enable Monitoring</FormLabel>
+                            <FormLabel className="required">Enable Monitoring</FormLabel>
                             <Select
                                 mb={4}
                                 variant="outline"
