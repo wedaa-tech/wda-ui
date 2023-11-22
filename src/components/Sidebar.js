@@ -165,7 +165,7 @@ const Sidebar = ({
         setContentVisible(!viewOnly);
     }, [viewOnly]);
 
-    const projectNameCheck = !/^[a-zA-Z](?:[a-zA-Z0-9_-]*[a-zA-Z0-9])?$/g.test(projectData.projectName);
+    const projectNameCheck = !/^[a-zA-Z](?:[a-zA-Z0-9_ -]*[a-zA-Z0-9])? *$/.test(projectData.projectName);
     const checkEdge = () => {
         let updatedEdges = { ...edges };
         let updatedNodes = { ...nodes };

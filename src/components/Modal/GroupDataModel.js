@@ -44,7 +44,7 @@ const GroupDataModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorCli
             <ModalContent
                 style={{
                     position: 'absolute',
-                    top: '100px',
+                    top:  `100px`,
                     right: '10px',
                     width: '300px',
                 }}

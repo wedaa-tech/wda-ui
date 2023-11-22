@@ -15,7 +15,7 @@ import ReactFlow, {
 import { AiOutlineSave } from 'react-icons/ai';
 import { FaCode, FaEraser } from 'react-icons/fa6';
 import 'reactflow/dist/style.css';
-import { Box, Button, Flex, HStack, Icon, IconButton, Spinner, Text, VStack, useToast } from '@chakra-ui/react';
+import { Box, Button, Flex, HStack, Icon, IconButton, Spinner, Text, VStack, useToast, Tooltip } from '@chakra-ui/react';
 import { ArrowRightIcon } from '@chakra-ui/icons';
 import Sidebar from './../components/Sidebar';
 import { saveAs } from 'file-saver';
@@ -1400,24 +1400,27 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
 
     const onEdgeClick = (e, edge) => {
         let updatedEdges = { ...edges };
-        const sourceType = edge.source.split('_')[0];
-        const targetType = edge.target.split('_')[0];
-        if (sourceType === 'Service' && targetType === 'Service') {
-            setEdgeopen(edge.id);
-            setCurrentEdge(edges[edge.id].data);
-        }
-        for (var existingEdge in updatedEdges) {
-            if (existingEdge.id != edge.id) {
-                updatedEdges[existingEdge.id].selected = false;
+        setEdgeopen(edge.id);
+        setCurrentEdge(updatedEdges[edge.id].data);
+        Object.keys(updatedEdges).forEach(existingEdgeId => {
+            existingEdgeId = parseInt(existingEdgeId, 10);
+
+            if (existingEdgeId !== edge.id) {
+                if (updatedEdges[existingEdgeId]?.selected) {
+                    updatedEdges[existingEdgeId].selected = false;
+                }
             }
-        }
+        });
         updatedEdges[edge.id].selected = true;
         setEdges(updatedEdges);
     };
 
     const handleEdgeData = Data => {
         let UpdatedEdges = { ...edges };
-        if (Data.framework === 'rest-api') {
+        const [source, destination] = IsEdgeopen.split('-');
+        if (!(source.startsWith('Service') && destination.startsWith('Service'))) {
+            UpdatedEdges[IsEdgeopen].label = Data.label;
+        } else if (Data.framework === 'rest-api') {
             UpdatedEdges[IsEdgeopen].label = 'Rest';
         } else {
             UpdatedEdges[IsEdgeopen].label = 'RabbitMQ';
@@ -1586,7 +1589,18 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 });
                 return;
             }
-
+            if (sourceNode.id.startsWith('dummy') || targetNode.id.startsWith('dummy')) {
+                setEdges(eds => {
+                    const updatedEdges = addEdge(params, eds, Nodes);
+                    const newEdgeId = `${sourceNode.id}-${targetNode.id}`;
+                    updatedEdges[newEdgeId].markerEnd = {
+                        color: 'black',
+                        type: MarkerType.ArrowClosed,
+                    };
+                    updatedEdges[newEdgeId].className = 'success';
+                    return updatedEdges;
+                });
+            }
             if (
                 !(
                     targetNode.id.startsWith('UI') ||
@@ -1653,6 +1667,13 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         setNodes({ ...UpdatedNodes });
     };
 
+    const handleEdgeColorClick = color => {
+        let UpdatedEdges = structuredClone(edges);
+        setSelectedColor(color);
+        (UpdatedEdges[IsEdgeopen].style ??= {}).stroke = color;
+        setEdges({ ...UpdatedEdges });
+    };
+
     const [menu, setMenu] = useState(null);
     const ref = useRef(null);
 
@@ -1679,7 +1700,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         node => node.id.startsWith('Service') || node.id.startsWith('Gateway') || node.id.startsWith('UI'),
     );
 
-    const projectNameCheck = !/^[a-zA-Z](?:[a-zA-Z0-9_-]*[a-zA-Z0-9])?$/g.test(projectName);
+    const projectNameCheck = !/^[a-zA-Z](?:[a-zA-Z0-9_ -]*[a-zA-Z0-9])? *$/.test(projectName);
 
     var isDatabaseConnected = () => {
         var dbConnected = false;
@@ -1800,7 +1821,6 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     };
 
     const handleInvalidProjectName = () => {
-        console.log(projectName);
         toast.close(toastIdRef.current);
         toastIdRef.current = toast({
             title: 'Enter a valid ProjectName',
@@ -2001,19 +2021,25 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                                     Print
                                 </Button>
                                 <DownloadButton applicationName={projectName} />
-                                <IconButton
-                                    hidden={viewOnly}
-                                    icon={<Icon as={FaEraser} />}
-                                    size="md"
-                                    onClick={() => {
-                                        if (!(Object.keys(nodes).length === 0)) {
-                                            setVisibleDialog(true);
-                                            setActionModalType('clear');
-                                        }
-                                    }}
-                                />
-                                <IconButton hidden={viewOnly} icon={<Icon as={AiOutlineSave} />} size="md" onClick={handleSave} />
-                                <IconButton hidden={viewOnly} icon={<Icon as={FaCode} />} size="md" onClick={handleSubmit} />
+                                <Tooltip label="Clear" placement="left" bg="blue.500" color="white" borderRadius="md" fontSize="sm">
+                                    <IconButton
+                                        hidden={viewOnly}
+                                        icon={<Icon as={FaEraser} />}
+                                        size="md"
+                                        onClick={() => {
+                                            if (!(Object.keys(nodes).length === 0)) {
+                                                setVisibleDialog(true);
+                                                setActionModalType('clear');
+                                            }
+                                        }}
+                                    />
+                                </Tooltip>
+                                <Tooltip label="Save" placement="left" bg="blue.500" color="white" borderRadius="md" fontSize="sm">
+                                    <IconButton hidden={viewOnly} icon={<Icon as={AiOutlineSave} />} size="md" onClick={handleSave} />
+                                </Tooltip>
+                                <Tooltip label="Get Code" placement="left" bg="blue.500" color="white" borderRadius="md" fontSize="sm">
+                                    <IconButton hidden={viewOnly} icon={<Icon as={FaCode} />} size="md" onClick={handleSubmit} />
+                                </Tooltip>
                             </VStack>
                         </Panel>
                         <Background gap={10} color="#f2f2f2" variant={BackgroundVariant.Lines} />
@@ -2144,6 +2170,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         onClose={setEdgeopen}
                         handleEdgeData={handleEdgeData}
                         isMessageBroker={isMessageBroker}
+                        handleColorClick={handleEdgeColorClick}
                     />
                 )}
 
