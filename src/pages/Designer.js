@@ -1700,7 +1700,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         node => node.id.startsWith('Service') || node.id.startsWith('Gateway') || node.id.startsWith('UI'),
     );
 
-    const projectNameCheck = !/^[a-zA-Z](?:[a-zA-Z0-9_-]*[a-zA-Z0-9])?$/g.test(projectName);
+    const projectNameCheck = !/^[a-zA-Z](?:[a-zA-Z0-9_ -]*[a-zA-Z0-9])? *$/.test(projectName);
 
     var isDatabaseConnected = () => {
         var dbConnected = false;
