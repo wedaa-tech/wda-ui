@@ -136,10 +136,16 @@ function ArchitecturesSection() {
     }, [initialized, keycloak, parentId]);
 
     const handleOpenArchitecture = (project_id, data) => {
-        history.push('/project/' + parentId + '/architecture/' + project_id + '/details', {
-            replace: true,
-            state: data,
-        });
+        if (data.draft || data?.request_json?.services)
+            history.push('/project/' + parentId + '/architecture/' + project_id + '/details', {
+                replace: true,
+                state: data,
+            });
+        else
+            history.push('/project/' + parentId + '/architecture/' + project_id + '/edit', {
+                replace: true,
+                state: data,
+            });
     };
 
     const deleteArchitecture = data => {
@@ -154,7 +160,7 @@ function ArchitecturesSection() {
                 })
                     .then(response => response.json())
                     .then(res => {
-                        const updatedArchitectures = architectures.filter(card => card.architecture_id !== data.id);
+                        const updatedArchitectures = architectures.filter(card => card.id !== data.id);
                         setArchitectures(updatedArchitectures);
                         setTotalArchitectures(updatedArchitectures.length);
                     })
@@ -256,7 +262,7 @@ function ArchitecturesSection() {
                 {architectures.map((architecture, index) => (
                     <ArchitectureCard
                         key={index}
-                        projectId={architecture?.name ? architecture.architecture_id : architecture.project_id}
+                        projectId={architecture?.name ? architecture.id : architecture.project_id}
                         title={architecture?.name ? architecture?.name : architecture.projectName}
                         data={architecture}
                         parentId={parentId}

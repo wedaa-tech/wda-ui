@@ -12,9 +12,10 @@ import ReactFlow, {
     getTransformForBounds,
     useReactFlow,
 } from 'reactflow';
-import { AiOutlineClear } from 'react-icons/ai';
+import { AiOutlineSave } from 'react-icons/ai';
+import { FaCode, FaEraser } from 'react-icons/fa6';
 import 'reactflow/dist/style.css';
-import { Box, Button, Flex, HStack, Icon, IconButton, Spinner, Text, VStack, useToast } from '@chakra-ui/react';
+import { Box, Button, Flex, HStack, Icon, IconButton, Spinner, Text, VStack, useToast, Tooltip } from '@chakra-ui/react';
 import { ArrowRightIcon } from '@chakra-ui/icons';
 import Sidebar from './../components/Sidebar';
 import { saveAs } from 'file-saver';
@@ -124,6 +125,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         onOk: false,
         path: '',
     });
+    const [projectName, setProjectName] = useState(null);
 
     const CreateImage = async nodes => {
         const nodesBounds = getRectOfNodes(nodes);
@@ -500,6 +502,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     };
     const clear = () => {
         localStorage.clear();
+        setProjectName('clear#canvas');
         setuserData({});
         setNodes({});
         setEdges({});
@@ -763,7 +766,6 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
 
     const { parentId, id } = useParams();
     const [projectParentId, setProjectParentId] = useState(parentId || location.state?.parentId);
-    const [projectName, setProjectName] = useState(null);
 
     const loadData = async () => {
         if (initialized && parentId && id) {
@@ -806,6 +808,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     const initData = data => {
         if (data != null && !(Object.keys(data).length === 0) && data?.metadata?.nodes) {
             const nodes = data?.metadata?.nodes;
+            if (data?.projectName) setProjectName(data.projectName);
             if (!(Object.keys(nodes).length === 0)) setShowDiv(false);
             let max_groupId = -1;
             let max_serviceId = -1;
@@ -958,7 +961,6 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         }
 
         return () => {
-            localStorage.clear();
             serviceId = 1;
             databaseId = 1;
             groupId = 1;
@@ -1015,6 +1017,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             localStorage.clear();
             clear();
             setShowDiv(true);
+            setProjectName('clear#canvas');
         }
         let unblock;
         if (!(Object.keys(nodes).length === 0) && updated) {
@@ -1273,13 +1276,13 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 }
             }
         }
-        if (saveMetadata || id) {
-            Data['metadata'] = {
-                nodes: nodes,
-                edges: edges,
-                deployment: Data?.deployment,
-            };
-        } else delete Data?.metadata;
+        // if (saveMetadata || id) {
+        Data['metadata'] = {
+            nodes: nodes,
+            edges: edges,
+            deployment: Data?.deployment,
+        };
+        // } else delete Data?.metadata;
         if (id) {
             Data.projectId = id;
         }
@@ -1288,8 +1291,13 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         }
         setNodes(NewNodes);
         setGeneratingData(structuredClone(Data));
-        setIsLoading(true);
 
+        if (Data?.save) {
+            delete Data?.save;
+            SaveData(Data);
+        } else {
+            setIsLoading(true);
+        }
         if (submit) {
             generateZip(null, Data);
         }
@@ -1299,6 +1307,46 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
 
     const [isGenerating, setIsGenerating] = useState(false);
     const [image, setImage] = useState(null);
+
+    const SaveData = async data => {
+        const Data = data || generatingData;
+        const generatedImage = await CreateImage(Object.values(nodes));
+        if (generatedImage) Data.imageUrl = generatedImage;
+        try {
+            var response;
+            if (parentId === 'admin') {
+                response = await fetch(process.env.REACT_APP_API_BASE_URL + '/api/refArchs', {
+                    method: 'post',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                    },
+                    body: JSON.stringify(Data),
+                });
+            } else {
+                response = await fetch(process.env.REACT_APP_API_BASE_URL + '/api/blueprints', {
+                    method: 'post',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                    },
+                    body: JSON.stringify(Data),
+                });
+            }
+            if (response.ok) {
+                toast.close(toastIdRef.current);
+                toastIdRef.current = toast({
+                    title: `Blueprint ${projectName}  is saved as a draft.`,
+                    status: 'success',
+                    duration: 3000,
+                    variant: 'left-accent',
+                    isClosable: true,
+                });
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
     const generateZip = async (e, data = null) => {
         const Data = data || generatingData;
@@ -1322,7 +1370,6 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         } catch (error) {
             console.error(error);
         } finally {
-            localStorage.clear();
             if (initialized && keycloak.authenticated) {
                 clear();
                 if (parentId === 'admin') {
@@ -1353,24 +1400,27 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
 
     const onEdgeClick = (e, edge) => {
         let updatedEdges = { ...edges };
-        const sourceType = edge.source.split('_')[0];
-        const targetType = edge.target.split('_')[0];
-        if (sourceType === 'Service' && targetType === 'Service') {
-            setEdgeopen(edge.id);
-            setCurrentEdge(edges[edge.id].data);
-        }
-        for (var existingEdge in updatedEdges) {
-            if (existingEdge.id != edge.id) {
-                updatedEdges[existingEdge.id].selected = false;
+        setEdgeopen(edge.id);
+        setCurrentEdge(updatedEdges[edge.id].data);
+        Object.keys(updatedEdges).forEach(existingEdgeId => {
+            existingEdgeId = parseInt(existingEdgeId, 10);
+
+            if (existingEdgeId !== edge.id) {
+                if (updatedEdges[existingEdgeId]?.selected) {
+                    updatedEdges[existingEdgeId].selected = false;
+                }
             }
-        }
+        });
         updatedEdges[edge.id].selected = true;
         setEdges(updatedEdges);
     };
 
     const handleEdgeData = Data => {
         let UpdatedEdges = { ...edges };
-        if (Data.framework === 'rest-api') {
+        const [source, destination] = IsEdgeopen.split('-');
+        if (!(source.startsWith('Service') && destination.startsWith('Service'))) {
+            UpdatedEdges[IsEdgeopen].label = Data.label;
+        } else if (Data.framework === 'rest-api') {
             UpdatedEdges[IsEdgeopen].label = 'Rest';
         } else {
             UpdatedEdges[IsEdgeopen].label = 'RabbitMQ';
@@ -1539,7 +1589,18 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 });
                 return;
             }
-
+            if (sourceNode.id.startsWith('dummy') || targetNode.id.startsWith('dummy')) {
+                setEdges(eds => {
+                    const updatedEdges = addEdge(params, eds, Nodes);
+                    const newEdgeId = `${sourceNode.id}-${targetNode.id}`;
+                    updatedEdges[newEdgeId].markerEnd = {
+                        color: 'black',
+                        type: MarkerType.ArrowClosed,
+                    };
+                    updatedEdges[newEdgeId].className = 'success';
+                    return updatedEdges;
+                });
+            }
             if (
                 !(
                     targetNode.id.startsWith('UI') ||
@@ -1606,6 +1667,13 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         setNodes({ ...UpdatedNodes });
     };
 
+    const handleEdgeColorClick = color => {
+        let UpdatedEdges = structuredClone(edges);
+        setSelectedColor(color);
+        (UpdatedEdges[IsEdgeopen].style ??= {}).stroke = color;
+        setEdges({ ...UpdatedEdges });
+    };
+
     const [menu, setMenu] = useState(null);
     const ref = useRef(null);
 
@@ -1627,6 +1695,141 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     );
 
     const onPaneClick = useCallback(() => setMenu(null), [setMenu]);
+
+    const checkNodeExists = Object.values(nodes).some(
+        node => node.id.startsWith('Service') || node.id.startsWith('Gateway') || node.id.startsWith('UI'),
+    );
+
+    const projectNameCheck = !/^[a-zA-Z](?:[a-zA-Z0-9_ -]*[a-zA-Z0-9])? *$/.test(projectName);
+
+    var isDatabaseConnected = () => {
+        var dbConnected = false;
+        for (const key in nodes) {
+            let databaseCheck = nodes[key];
+            if (databaseCheck?.id?.startsWith('Database') && !databaseCheck?.data?.isConnected) {
+                dbConnected = true;
+                break;
+            }
+        }
+        return dbConnected;
+    };
+
+    const checkDisabled = () => {
+        if (!checkNodeExists) {
+            return { isValid: false, message: 'Drag and drop atleast one Application to generate the code' };
+        }
+
+        if (projectNameCheck) {
+            return { isValid: false, message: 'Architecture name should be valid.' };
+        }
+
+        if (projectName === '') {
+            return { isValid: false, message: 'Architecture name is empty.' };
+        }
+
+        if (isEmptyUiSubmit) {
+            return { isValid: false, message: 'UI is not Configured. Click on the highlighted UI Node to Configure it.' };
+        }
+
+        if (isEmptyServiceSubmit) {
+            return { isValid: false, message: 'Service is not Configured. Click on the highlighted Service node to Configure it.' };
+        }
+
+        if (isEmptyGatewaySubmit) {
+            return { isValid: false, message: 'Gateway is not Configured. Click on the highlighted Gateway node to Configure it.' };
+        }
+
+        if (isDatabaseConnected()) {
+            return { isValid: false, message: 'Create an edge connecting the node to Database to enable the integration.' };
+        }
+
+        return { isValid: true, message: 'Validation successful. Proceed to generate the application.' };
+    };
+
+    const checkEdge = () => {
+        let updatedEdges = { ...edges };
+        let updatedNodes = { ...nodes };
+        if (Object.keys(updatedNodes).length !== 0) {
+            for (const key in updatedNodes) {
+                let databaseCheck = updatedNodes[key];
+                if (databaseCheck?.id?.startsWith('Database') && !databaseCheck?.data?.isConnected) {
+                    return true;
+                }
+            }
+        }
+        if (Object.keys(updatedEdges).length !== 0) {
+            for (const key in updatedEdges) {
+                let edgeCheck = updatedEdges[key];
+                if (edgeCheck?.target?.startsWith('Service') && !edgeCheck?.data?.framework) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    };
+
+    const handleSave = () => {
+        if (projectName && projectName !== 'clear') {
+            if (!keycloak.authenticated) {
+                keycloak.login({
+                    redirectUri: process.env.REACT_APP_UI_BASE_URL + 'canvasToCode',
+                });
+            }
+            saveData(true);
+        } else {
+            handleInvalidProjectName();
+        }
+    };
+
+    const handleSubmit = () => {
+        const { isValid, message } = checkDisabled();
+        const errorMessage = message || 'Validation failed';
+        toast.close(toastIdRef.current);
+        toastIdRef.current = toast({
+            title: errorMessage,
+            status: isValid ? 'success' : 'error',
+            duration: 3000,
+            variant: 'left-accent',
+            isClosable: true,
+        });
+        if (checkEdge()) return;
+        if (!isValid) return;
+        saveData(false);
+    };
+
+    const saveData = isSave => {
+        var servicesData = nodes;
+        var edgesData = edges;
+        let data = { metadata: {} };
+        let currentIndex = 0;
+        data.metadata.nodes = servicesData;
+        data.metadata.edges = edgesData;
+        data.projectName = projectName;
+        data.services = {};
+        for (var val in nodes) {
+            if (val.startsWith('UI') || val.startsWith('Service') || val.startsWith('Gateway')) {
+                data.services[currentIndex] = data.metadata.nodes[val].data;
+                currentIndex++;
+            }
+        }
+
+        if (isSave) {
+            data.save = true;
+        }
+
+        onsubmit(data);
+    };
+
+    const handleInvalidProjectName = () => {
+        toast.close(toastIdRef.current);
+        toastIdRef.current = toast({
+            title: 'Enter a valid ProjectName',
+            status: 'error',
+            duration: 3000,
+            variant: 'left-accent',
+            isClosable: true,
+        });
+    };
 
     if (isLoading)
         return (
@@ -1714,6 +1917,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                                 authenticationData={nodes['authenticationType']?.data}
                                 nodes={nodes}
                                 architectureName={projectName}
+                                setArchitectureName={setProjectName}
                                 onSubmit={onsubmit}
                                 saveMetadata={saveMetadata}
                                 Togglesave={UpdateSave}
@@ -1731,7 +1935,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                                 update={update}
                                 updated={updated}
                                 setUpdated={setUpdated}
-                                triggerExit={triggerExit}
+                                clearName={triggerExit.onOk}
                                 viewOnly={viewOnly}
                                 id={id}
                                 clear={clear}
@@ -1816,18 +2020,26 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                                 >
                                     Print
                                 </Button>
-                                <DownloadButton />
-                                <IconButton
-                                    hidden={viewOnly}
-                                    icon={<Icon as={AiOutlineClear} />}
-                                    size="md"
-                                    onClick={() => {
-                                        if (!(Object.keys(nodes).length === 0) && updated) {
-                                            setVisibleDialog(true);
-                                            setActionModalType('clear');
-                                        }
-                                    }}
-                                />
+                                <DownloadButton applicationName={projectName} />
+                                <Tooltip label="Clear" placement="left" bg="blue.500" color="white" borderRadius="md" fontSize="sm">
+                                    <IconButton
+                                        hidden={viewOnly}
+                                        icon={<Icon as={FaEraser} />}
+                                        size="md"
+                                        onClick={() => {
+                                            if (!(Object.keys(nodes).length === 0)) {
+                                                setVisibleDialog(true);
+                                                setActionModalType('clear');
+                                            }
+                                        }}
+                                    />
+                                </Tooltip>
+                                <Tooltip label="Save" placement="left" bg="blue.500" color="white" borderRadius="md" fontSize="sm">
+                                    <IconButton hidden={viewOnly} icon={<Icon as={AiOutlineSave} />} size="md" onClick={handleSave} />
+                                </Tooltip>
+                                <Tooltip label="Get Code" placement="left" bg="blue.500" color="white" borderRadius="md" fontSize="sm">
+                                    <IconButton hidden={viewOnly} icon={<Icon as={FaCode} />} size="md" onClick={handleSubmit} />
+                                </Tooltip>
                             </VStack>
                         </Panel>
                         <Background gap={10} color="#f2f2f2" variant={BackgroundVariant.Lines} />
@@ -1868,6 +2080,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         uniquePortNumbers={uniquePortNumbers}
                     />
                 )}
+
                 {nodeType === 'group' && Isopen && (
                     <GroupDataModal
                         isOpen={Isopen}
@@ -1875,6 +2088,17 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         onClose={setopen}
                         onSubmit={onChange}
                         handleColorClick={handleColorClick}
+                    />
+                )}
+
+                {nodeType === 'dummy' && Isopen && (
+                    <GroupDataModal
+                        isOpen={Isopen}
+                        CurrentNode={CurrentNode}
+                        onClose={setopen}
+                        onSubmit={onChange}
+                        handleColorClick={handleColorClick}
+                        nodeType={'Dummy'}
                     />
                 )}
 
@@ -1946,6 +2170,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         onClose={setEdgeopen}
                         handleEdgeData={handleEdgeData}
                         isMessageBroker={isMessageBroker}
+                        handleColorClick={handleEdgeColorClick}
                     />
                 )}
 

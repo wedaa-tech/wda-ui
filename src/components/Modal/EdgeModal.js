@@ -12,12 +12,14 @@ import {
     FormControl,
     Alert,
     AlertIcon,
+    Input,
 } from '@chakra-ui/react';
 
-const EdgeModal = ({ isOpen, CurrentEdge, onClose, handleEdgeData }) => {
+const EdgeModal = ({ isOpen, CurrentEdge, onClose, handleEdgeData, handleColorClick }) => {
     const initialState = {
         type: '',
         framework: '',
+        label: '',
         ...CurrentEdge,
     };
     const [edgeData, setEdgeData] = useState(initialState);
@@ -56,6 +58,11 @@ const EdgeModal = ({ isOpen, CurrentEdge, onClose, handleEdgeData }) => {
         handleEdgeData(edgeData);
     }
 
+    const checkIfBothAreServices = edgeName => {
+        const [source, destination] = edgeName.split('-');
+        return source.startsWith('Service') && destination.startsWith('Service') ? true : false;
+    };
+
     return (
         <Modal isOpen={isOpen} onClose={() => onClose(false)}>
             <ModalContent
@@ -69,70 +76,71 @@ const EdgeModal = ({ isOpen, CurrentEdge, onClose, handleEdgeData }) => {
                 <ModalHeader>Communication</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody>
-                    <div
-                        style={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'left',
-                        }}
-                    >
-                        <FormControl>
-                            <FormLabel>Type</FormLabel>
-                            <Select
-                                mb={4}
-                                variant="outline"
-                                id="type"
-                                borderColor={'black'}
-                                value={edgeData.type}
-                                onChange={e => handleData('type', e.target.value)}
-                            >
-                                <option value="" disabled>
-                                    Select an option
-                                </option>
-                                <option value="asynchronous">Asynchronous</option>
-                                <option value="synchronous">Synchronous</option>
-                            </Select>
-                        </FormControl>
+                    {checkIfBothAreServices(isOpen) && (
+                        <div
+                            style={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'left',
+                            }}
+                        >
+                            <FormControl>
+                                <FormLabel>Type</FormLabel>
+                                <Select
+                                    mb={4}
+                                    variant="outline"
+                                    id="type"
+                                    borderColor={'black'}
+                                    value={edgeData.type}
+                                    onChange={e => handleData('type', e.target.value)}
+                                >
+                                    <option value="" disabled>
+                                        Select an option
+                                    </option>
+                                    <option value="asynchronous">Asynchronous</option>
+                                    <option value="synchronous">Synchronous</option>
+                                </Select>
+                            </FormControl>
 
-                        {edgeData.type === 'synchronous' && (
-                            <FormControl>
-                                <FormLabel>Framework</FormLabel>
-                                <Select
-                                    mb={4}
-                                    variant="outline"
-                                    id="framework"
-                                    borderColor={'black'}
-                                    value={edgeData.framework}
-                                    onChange={e => handleData('framework', e.target.value)}
-                                >
-                                    <option value="" disabled>
-                                        Select an option
-                                    </option>
-                                    <option value="rest-api">REST</option>
-                                </Select>
-                            </FormControl>
-                        )}
-                        {edgeData.type === 'asynchronous' && (
-                            <FormControl>
-                                <FormLabel>Framework</FormLabel>
-                                <Select
-                                    mb={4}
-                                    variant="outline"
-                                    id="framework"
-                                    borderColor={'black'}
-                                    value={edgeData.framework}
-                                    onChange={e => handleData('framework', e.target.value)}
-                                >
-                                    <option value="" disabled>
-                                        Select an option
-                                    </option>
-                                    <option value="rabbitmq">Rabbit MQ</option>
-                                    {/* <option value="kafka">Kafka</option>
+                            {edgeData.type === 'synchronous' && (
+                                <FormControl>
+                                    <FormLabel>Framework</FormLabel>
+                                    <Select
+                                        mb={4}
+                                        variant="outline"
+                                        id="framework"
+                                        borderColor={'black'}
+                                        value={edgeData.framework}
+                                        onChange={e => handleData('framework', e.target.value)}
+                                    >
+                                        <option value="" disabled>
+                                            Select an option
+                                        </option>
+                                        <option value="rest-api">REST</option>
+                                    </Select>
+                                </FormControl>
+                            )}
+                            {edgeData.type === 'asynchronous' && (
+                                <FormControl>
+                                    <FormLabel>Framework</FormLabel>
+                                    <Select
+                                        mb={4}
+                                        variant="outline"
+                                        id="framework"
+                                        borderColor={'black'}
+                                        value={edgeData.framework}
+                                        onChange={e => handleData('framework', e.target.value)}
+                                    >
+                                        <option value="" disabled>
+                                            Select an option
+                                        </option>
+                                        <option value="rabbitmq">Rabbit MQ</option>
+                                        {/* <option value="kafka">Kafka</option>
                   <option value="pulsar">Pulsar</option> */}
-                                </Select>
-                            </FormControl>
-                        )}
-                        {/* {edgeData.type === "synchronous" &&
+                                    </Select>
+                                </FormControl>
+                            )}
+                            {/* {edgeData.type === "synchronous" &&
               edgeData.framework === "rest" &&
               !isMessageBroker && (
                 <Alert
@@ -146,6 +154,82 @@ const EdgeModal = ({ isOpen, CurrentEdge, onClose, handleEdgeData }) => {
                   Please select a message broker to save
                 </Alert>
               )} */}
+                        </div>
+                    )}
+                    {!checkIfBothAreServices(isOpen) && (
+                        <FormControl>
+                            <FormLabel>Label</FormLabel>
+                            <Input
+                                mb={4}
+                                variant="outline"
+                                id="label"
+                                placeholder="Display Name"
+                                borderColor={'black'}
+                                maxLength="32"
+                                value={edgeData.label}
+                                onChange={e => handleData('label', e.target.value)}
+                            />
+                        </FormControl>
+                    )}
+                    <FormLabel>Background Color</FormLabel>
+                    <div
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            marginBottom: '20px',
+                            gap: '15px',
+                        }}
+                    >
+                        <div
+                            style={{
+                                width: '30px',
+                                height: '30px',
+                                borderRadius: '50%',
+                                backgroundColor: '#ffc9c9',
+                                cursor: 'pointer',
+                            }}
+                            onClick={() => handleColorClick('#ffc9c9')}
+                        ></div>
+                        <div
+                            style={{
+                                width: '30px',
+                                height: '30px',
+                                borderRadius: '50%',
+                                backgroundColor: '#b2f2bb',
+                                cursor: 'pointer',
+                            }}
+                            onClick={() => handleColorClick('#b2f2bb')}
+                        ></div>
+                        <div
+                            style={{
+                                width: '30px',
+                                height: '30px',
+                                borderRadius: '50%',
+                                backgroundColor: '#a5d8ff',
+                                cursor: 'pointer',
+                            }}
+                            onClick={() => handleColorClick('#a5d8ff')}
+                        ></div>
+                        <div
+                            style={{
+                                width: '30px',
+                                height: '30px',
+                                borderRadius: '50%',
+                                backgroundColor: '#ffec99',
+                                cursor: 'pointer',
+                            }}
+                            onClick={() => handleColorClick('#ffec99')}
+                        ></div>
+                        <div
+                            style={{
+                                width: '30px',
+                                height: '30px',
+                                borderRadius: '50%',
+                                backgroundColor: '#000000',
+                                cursor: 'pointer',
+                            }}
+                            onClick={() => handleColorClick('#000000')}
+                        ></div>
                     </div>
                 </ModalBody>
                 <ModalFooter>

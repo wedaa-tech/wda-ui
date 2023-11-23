@@ -7,11 +7,14 @@ export default function GroupNode({ id, data, selected }) {
 
     const isConnecting = !!connectionNodeId;
     const sourceStyle = { zIndex: !isConnecting ? 1 : 0 };
-
     return (
         <>
             <NodeResizer nodeId={data.id} isVisible={selected} minWidth={100} minHeight={30} />
-            <div style={{ textAlign: 'center' }}>{data.label}</div>
+            {id.startsWith('group') ? (
+                <div style={{ textAlign: 'center' }}>{data?.label}</div>
+            ) : (
+                <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>{data.label}</div>
+            )}
             <>
                 <Handle id="source.Right" position={Position.Right} type="source" style={sourceStyle} />
                 <Handle id="source.Bottom" position={Position.Bottom} type="source" style={sourceStyle} />
