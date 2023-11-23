@@ -12,6 +12,7 @@ import ProjectsSection from './pages/ProjectsSection';
 import ArchitecturesSection from './pages/Architecture';
 import Review from './pages/Rewiew';
 import Wizard from './pages/Wizad';
+import WizardSelection from './pages/Wizad/WizardSelection';
 
 function App() {
     return (
@@ -25,12 +26,15 @@ function App() {
                     <Route exact path="/wizard">
                         <Wizard />
                     </Route>
+                    <Route exact path="/wizardselection">
+                        <WizardSelection />
+                    </Route>
                     <Route exact path="/">
                         <Wizard />
                     </Route>
                     <Route exact path="/projects">
                         <PrivateRoute>
-                            <ProjectsSection />
+                            <ArchitecturesSection />
                         </PrivateRoute>
                     </Route>
                     <Route exact path="/architectures">
@@ -38,7 +42,7 @@ function App() {
                             <ArchitecturesSection />
                         </PrivateRoute>
                     </Route>
-                    <Route path="/project/:parentId/architectures" exact>
+                    <Route path="/prototypes" exact>
                         <PrivateRoute>
                             <ArchitecturesSection />
                         </PrivateRoute>

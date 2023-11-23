@@ -47,7 +47,7 @@ function RadioCard(props) {
     );
 }
 
-function WizardBox({ currentQuestion, handleCheckboxChange, archSelect = false, selectedAnswer }) {
+function WizardBox({ currentQuestion, handleCheckboxChange, archSelect = false, selectedAnswer, componentId = null }) {
     const { question, type, id, options } = currentQuestion;
     const [optionsList, setOptionsList] = useState([]);
 
@@ -69,11 +69,11 @@ function WizardBox({ currentQuestion, handleCheckboxChange, archSelect = false, 
     const group = getRootProps();
 
     return (
-        <Box flexGrow={1} height={'60%'}>
+        <Box flexGrow={1} height={'60%'} rounded="xl">
             <VStack spacing={4} my={8} height={'90%'}>
                 <Text fontSize="lg">{question}</Text>
                 <SimpleGrid
-                    className="wizard-grid"
+                    className={'wizard-grid ' + componentId}
                     flexGrow={1}
                     alignContent={'center'}
                     columns={{ sm: 2, md: 2 }}
@@ -81,6 +81,7 @@ function WizardBox({ currentQuestion, handleCheckboxChange, archSelect = false, 
                     spacingY={10}
                     {...group}
                     overflowY={'scroll'}
+                    minWidth={'200px'}
                 >
                     {optionsList.map(value => {
                         const radio = getRadioProps({ value });

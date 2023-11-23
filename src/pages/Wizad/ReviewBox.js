@@ -8,7 +8,7 @@ const ReviewBox = ({ selections, idMappings }) => {
         <Box flexGrow={1} height={'60%'}>
             <Box mx={12} my={8} height={'90%'}>
                 <Text pb={8} textAlign={'center'} fontSize={'2xl'} fontWeight={'bold'}>
-                    Project Options:
+                    Project Composition
                 </Text>
                 {Object.keys(selections).map((key, index) => (
                     <Text flexGrow={1} my={2}>

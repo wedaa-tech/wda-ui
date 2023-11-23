@@ -23,20 +23,6 @@ import './index.css';
 import { useHistory } from 'react-router-dom';
 import { useKeycloak } from '@react-keycloak/web';
 
-const thickPlusIconStyle = {
-    display: 'grid',
-    width: '50px',
-    height: '50px',
-    fontSize: '50px',
-    fontWeight: 'bold',
-    border: '3px',
-    borderRadius: '50%',
-    alignContent: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#ebaf2482',
-    color: 'white',
-};
-
 const ProjectsSection = () => {
     const history = useHistory();
     const [isNewProjectModalOpen, setNewProjectModalOpen] = useState(false);
@@ -195,9 +181,15 @@ const ProjectsSection = () => {
                     <Text className="not-selectable" fontWeight="bold">
                         Create New Project
                     </Text>
-                    <span className="not-selectable" inputMode="none" style={thickPlusIconStyle}>
-                        +
-                    </span>
+                    <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+                        <rect width="56" height="56" rx="28" fill="#EBAF24" fill-opacity="0.5" />
+                        <path
+                            fill-rule="evenodd"
+                            clip-rule="evenodd"
+                            d="M30.6667 14.6667C30.6667 13.1939 29.4728 12 28 12C26.5273 12 25.3334 13.1939 25.3334 14.6667V25.3332H14.6667C13.1939 25.3332 12 26.5271 12 27.9999C12 29.4726 13.1939 30.6665 14.6667 30.6665H25.3334V41.3333C25.3334 42.8061 26.5273 44 28 44C29.4728 44 30.6667 42.8061 30.6667 41.3333V30.6665H41.3333C42.8061 30.6665 44 29.4726 44 27.9999C44 26.5271 42.8061 25.3332 41.3333 25.3332H30.6667V14.6667Z"
+                            fill="white"
+                        />
+                    </svg>
                 </Box>
                 <Box
                     maxWidth={96}

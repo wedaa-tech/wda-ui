@@ -52,9 +52,9 @@ export default function Header({ children }) {
                 </Flex>
                 <HStack spacing={4} display={{ base: 'none', md: 'flex' }}>
                     {initialized && keycloak.authenticated && (
-                        <Link to="/projects">
-                            <Text fontSize="md" color={color} fontWeight={location.pathname === '/projects' ? 'bold' : 'normal'}>
-                                Projects
+                        <Link to="/prototypes">
+                            <Text fontSize="md" color={color} fontWeight={location.pathname === '/prototypes' ? 'bold' : 'normal'}>
+                                Prototypes
                             </Text>
                         </Link>
                     )}
