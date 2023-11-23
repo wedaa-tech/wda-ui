@@ -85,7 +85,7 @@ function CodeReview({ nodeId, generateMode = false, deployementData = null, onSu
             <Tabs display={'flex'} flexDir={'column'} index={tabIndex} flexGrow={1} onChange={handleTabsChange}>
                 <TabList position={'sticky'}>
                     <Tab>Configuration</Tab>
-                    <Tab hidden={generateMode}>Folder Structure</Tab>
+                    {/* <Tab hidden={generateMode}>Folder Structure</Tab> */}
                     <Tab hidden={generateMode}>README.md</Tab>
                     {!docusaurusCheck && parentId !== 'admin' && <Tab>{generateMode ? 'Infrastructure' : 'Deployement'}</Tab>}
                 </TabList>
@@ -93,9 +93,9 @@ function CodeReview({ nodeId, generateMode = false, deployementData = null, onSu
                     <TabPanel height={'100%'}>
                         <Documentation nodeData={deployementData} nodeId={nodeId} generateMode />
                     </TabPanel>
-                    <TabPanel height={'inherit'}>
+                    {/* <TabPanel height={'inherit'}>
                         <FolderTree nodeType={nodeType} />
-                    </TabPanel>
+                    </TabPanel> */}
                     <TabPanel height={'100%'}>
                         <Readme nodeType={nodeType} />
                     </TabPanel>
