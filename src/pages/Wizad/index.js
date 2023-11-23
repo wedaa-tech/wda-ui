@@ -1,4 +1,4 @@
-import { Box, Button, Flex, SimpleGrid, Text } from '@chakra-ui/react';
+import { Box, Button, Flex, Link, SimpleGrid, Text } from '@chakra-ui/react';
 import React, { useEffect, useRef, useState } from 'react';
 import './style.css';
 import ReferenceArchCard from './WizardComponents/ReferenceArchCard';
@@ -56,9 +56,11 @@ const Wizard = () => {
                     Let's prototype with <span style={{ color: 'gold' }}>WeDAA</span>
                 </Text>
                 <Text color={'white'}>A platform for you to move quicker & easier</Text>
-                <Button div marginTop={6} backgroundColor={'white'} colorScheme="whiteAlpha" textColor={'black'} size="md">
-                    Know more about WeDAA
-                </Button>
+                <Link onClick={() => window.open(process.env.REACT_APP_DOCS_URL)}>
+                    <Button div marginTop={6} backgroundColor={'white'} colorScheme="whiteAlpha" textColor={'black'} size="md">
+                        Know more about WeDAA
+                    </Button>
+                </Link>
             </Flex>
             <Flex paddingBlock={24} className="box">
                 <Flex
