@@ -31,17 +31,6 @@ import { useKeycloak } from '@react-keycloak/web';
 import ActionModal from '../../components/Modal/ActionModal';
 import { ArrowBackIcon } from '@chakra-ui/icons';
 
-function generateRandomString() {
-    const letters = 'abcdefghijklmnopqrstuvwxyz';
-    let randomString = '';
-
-    for (let i = 0; i < 5; i++) {
-        const randomIndex = Math.floor(Math.random() * letters.length);
-        randomString += letters.charAt(randomIndex);
-    }
-
-    return randomString;
-}
 
 function ArchitecturesSection() {
     let location = useLocation();
@@ -126,7 +115,6 @@ function ArchitecturesSection() {
                         if (result?.data) {
                             defaultProjectId = result.data.find(project => project.name.startsWith('default'))?.id;
                             if (!defaultProjectId) {
-                                const randomString = generateRandomString();
                                 fetch(process.env.REACT_APP_API_BASE_URL + '/api/projects', {
                                     method: 'post',
                                     headers: {
@@ -134,7 +122,7 @@ function ArchitecturesSection() {
                                         Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
                                     },
                                     body: JSON.stringify({
-                                        name: 'default' + randomString,
+                                        name: 'default',
                                         description: 'Default Project',
                                     }),
                                 })
