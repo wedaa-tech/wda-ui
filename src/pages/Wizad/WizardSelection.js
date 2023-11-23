@@ -27,7 +27,9 @@ function WizardSelection() {
     const sharedSelectedArch = history.location.state;
     const [selectedAnswers, setSelectedAnswers] = useState({ AT: sharedSelectedArch });
     const [selectedArch, setSelectedArch] = useState(sharedSelectedArch);
-    const [selectedArchQuestions, setSelectedArchQuestions] = useState({});
+    const [selectedArchQuestions, setSelectedArchQuestions] = useState(
+        sharedSelectedArch ? questionsData.ArchList.options[sharedSelectedArch] : {},
+    );
     const { ArchList, questionsList } = questionsData;
     const [review, setReview] = useState(false);
     const count = Object.keys(selectedAnswers.AT ? ArchList.options[selectedAnswers.AT] : {}).length;
@@ -119,6 +121,7 @@ function WizardSelection() {
     };
 
     const checkBoxStatus = stepContext => {
+        console.log(selectedAnswers[selectedArchQuestions[stepContext.index]], stepContext.index, selectedArchQuestions, selectedAnswers);
         if (!selectedAnswers[selectedArchQuestions[stepContext.index]]) return <CloseIcon />;
         else return <CheckIcon />;
     };
@@ -157,6 +160,7 @@ function WizardSelection() {
                         handleCheckboxChange={handleCheckboxChange}
                         archSelect={!selectedArch}
                         selectedAnswer={selectedAnswers[selectedArch ? currentQuestion.id : 'AT']}
+                        componentId={selectedArch ? 'components' : 'archt'}
                     />
                 )}
                 <Flex padding={'30px'} justifyContent={'space-between'}>
@@ -178,12 +182,14 @@ function WizardSelection() {
                         Back
                     </Button>
                     <Button
-                        isDisabled={activeStep === count ? false : !selectedAnswers[selectedArch ? currentQuestion?.id : 'AT']}
-                        rightIcon={activeStep === count ? <ExternalLinkIcon /> : <ArrowForwardIcon />}
-                        onClick={activeStep === count ? handleSubmit : handleNext}
+                        isDisabled={
+                            activeStep === count && count !== 0 ? false : !selectedAnswers[selectedArch ? currentQuestion?.id : 'AT']
+                        }
+                        rightIcon={activeStep === count && count !== 0 ? <ExternalLinkIcon /> : <ArrowForwardIcon />}
+                        onClick={activeStep === count && count !== 0 ? handleSubmit : handleNext}
                         colorScheme="blue"
                     >
-                        {activeStep === count ? 'Submit' : 'Next'}
+                        {activeStep === count && count !== 0 ? 'Submit' : 'Next'}
                     </Button>
                 </Flex>
             </Flex>

@@ -137,7 +137,7 @@ const Wizard = () => {
 
                     <ArchSelectorComponent samples={6} value="spa" setSelectedArch={handleSelect} />
 
-                    <ArchSelectorComponent samples={1} value="profilePage" setSelectedArch={handleSelect} />
+                    <ArchSelectorComponent samples={1} value="personalWebsite" setSelectedArch={handleSelect} />
                 </Flex>
             </Flex>
             <Flex
