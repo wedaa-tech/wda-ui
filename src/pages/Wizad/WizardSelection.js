@@ -57,7 +57,7 @@ function WizardSelection() {
     const toastIdRef = useRef();
 
     const handleNext = () => {
-        if (review) console.log(selectedAnswers);
+        if (review) return
         else if (!selectedArch) {
             setSelectedArch(selectedAnswers.AT);
             setActiveStep(0);
@@ -121,7 +121,6 @@ function WizardSelection() {
     };
 
     const checkBoxStatus = stepContext => {
-        console.log(selectedAnswers[selectedArchQuestions[stepContext.index]], stepContext.index, selectedArchQuestions, selectedAnswers);
         if (!selectedAnswers[selectedArchQuestions[stepContext.index]]) return <CloseIcon />;
         else return <CheckIcon />;
     };
