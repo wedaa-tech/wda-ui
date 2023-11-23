@@ -1,6 +1,5 @@
 import { Box, Image, Text } from '@chakra-ui/react';
 import { ArrowForwardIcon } from '@chakra-ui/icons';
-import imagetest from '../../../assets/85ba684ecb48e373ee3e18204e789164.png'; // Replace with your image path
 
 const ReferenceArchCard = ({id = null, archData = []}) => {
     return (
