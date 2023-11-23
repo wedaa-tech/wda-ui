@@ -7,20 +7,6 @@ import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 import WizardSelection from './WizardSelection';
 import { useKeycloak } from '@react-keycloak/web';
 
-const thickPlusIconStyle = {
-    display: 'grid',
-    width: '50px',
-    height: '50px',
-    fontSize: '20px',
-    fontWeight: 'bold',
-    border: '3px',
-    borderRadius: '50%',
-    alignContent: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#e6eaff',
-    color: '#574799',
-};
-
 const Wizard = () => {
     const history = useHistory();
     const [selectedArch, setSelectedArch] = useState(null);
