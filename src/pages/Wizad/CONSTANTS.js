@@ -8,13 +8,14 @@ import eck from '../../assets/eck.png';
 import keycloak from '../../assets/keycloak.png';
 import eureka from '../../assets/eureka.png';
 import none from '../../assets/none-icon.jpg';
-import docusaurus from '../../assets/docusaurus.png';
+import docusaurus_profile from '../../assets/docusaurus-profile.png';
+import docusaurus_default from '../../assets/docusaurus-default.png';
 
 export const componentsMapping = {
     fullStack: 'Full Stack',
     headless: 'Headless',
     spa: 'Static Web Page',
-    personalWebsite: 'Personal Profile Page',
+    personalWebsite: 'Personal Website',
     react: 'React',
     angular: 'Angular',
     spring: 'Spring Boot',
@@ -24,7 +25,8 @@ export const componentsMapping = {
     keycloak: 'KeyCloak',
     eureka: 'Spring Cloud Gateway',
     eck: 'Elastic Cloud on Kubernetes (ECK)',
-    docusaurus: 'Docusaurus',
+    profile: 'Profile',
+    default: 'Default',
     skip: 'Not Selected',
 };
 
@@ -38,7 +40,8 @@ export const imageMappings = {
     eck: eck,
     keycloak: keycloak,
     eureka: eureka,
-    docusaurus: docusaurus,
+    profile: docusaurus_profile,
+    default: docusaurus_default,
     skip: none,
 };
 
@@ -65,7 +68,7 @@ export const questionsData = {
             question: 'Select a Docusaurus Theme',
             id: 'docusaurus',
             type: 'radio',
-            options: ['docusaurus', 'docusaurus'],
+            options: ['profile', 'default'],
         },
         backend: {
             question: 'Select a backend technology Stack',
@@ -108,4 +111,5 @@ export const idMappings = {
     authentication: 'Authentication',
     serviceDiscovery: 'Service Discovery',
     logManagement: 'Log Management',
+    docusaurus: 'Docusaurus theme',
 };

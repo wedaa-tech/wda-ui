@@ -95,7 +95,7 @@ export default function Header({ children }) {
                             onMouseEnter={menuListMouseEnterEvent}
                             onMouseLeave={menuListMouseLeaveEvent}
                         >
-                            <Link to="/wizard">
+                            <Link to="/wizard" onClick={() => setIsOpenMenu(false)}>
                                 <MenuItem
                                     fontSize="md"
                                     fontWeight="bold"
@@ -108,7 +108,7 @@ export default function Header({ children }) {
                                     Quickstart
                                 </MenuItem>
                             </Link>
-                            <Link to="/canvasToCode">
+                            <Link to="/canvasToCode" onClick={() => setIsOpenMenu(false)}>
                                 <MenuItem
                                     fontSize="md"
                                     fontWeight="bold"
