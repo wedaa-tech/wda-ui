@@ -1,4 +1,4 @@
-import { Box, Button, Flex, SimpleGrid, Text } from '@chakra-ui/react';
+import { Box, Button, Flex, Link, SimpleGrid, Text } from '@chakra-ui/react';
 import React, { useEffect, useRef, useState } from 'react';
 import './style.css';
 import ReferenceArchCard from './WizardComponents/ReferenceArchCard';
@@ -53,12 +53,13 @@ const Wizard = () => {
         <Flex className="page">
             <Flex className="background">
                 <Text fontSize={'5xl'} color={'white'} fontWeight={'bold'}>
-                    Let's prototype with <span style={{ color: 'gold' }}>WeDAA</span>
+                    Start your application journey with <span style={{ color: 'gold' }}>WeDAA</span>
                 </Text>
-                <Text color={'white'}>A platform for you to move quicker & easier</Text>
-                <Button div marginTop={6} backgroundColor={'white'} colorScheme="whiteAlpha" textColor={'black'} size="md">
-                    Know more about WeDAA
-                </Button>
+                <Text color={'white'}>
+                    A platform for you to move quicker & easier.
+                    <br />
+                    Get ready for instant prototyping, and rapid code generation.
+                </Text>
             </Flex>
             <Flex paddingBlock={24} className="box">
                 <Flex
@@ -67,8 +68,11 @@ const Wizard = () => {
                     justifyContent={'space-around'}
                     borderLeft={'4px solid #397EF6'}
                     shadow={'lg'}
+                    cursor={'pointer'}
                     _hover={{
                         shadow: 'xl',
+                        transform: 'scale(1.05)',
+                        transition: 'transform 0.3s ease-in-out',
                     }}
                     height={'120px'}
                     width={'30%'}
@@ -156,7 +160,7 @@ const Wizard = () => {
                             lineHeight: '130%',
                         }}
                     >
-                        Other Reference Architectures
+                        Reference Architectures
                     </Text>
                 </Box>
                 <SimpleGrid

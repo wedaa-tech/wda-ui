@@ -111,11 +111,11 @@ function CodeReview({ nodeId, generateMode = false, deployementData = null, onSu
                 </TabPanels>
             </Tabs>
             <Button
-                hidden={!generateMode || tabIndex === 3}
+                hidden={!generateMode || tabIndex === 2}
                 mx={4}
                 my={2}
                 colorScheme="blue"
-                onClick={tabIndex === 3 || docusaurusCheck ? () => onClick() : () => setTabIndex(3)}
+                onClick={tabIndex === 2 || docusaurusCheck ? () => onClick() : () => setTabIndex(2)}
             >
                 {docusaurusCheck ? 'Generate' : 'Next'}
             </Button>
