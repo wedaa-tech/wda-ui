@@ -34,30 +34,33 @@
    /* Firefox */
 }
 
-.image-text {
+.arch-image-text {
    display: grid;
    align-items: center;
    height: 100%;
    width: 100%;
    font-weight: bold;
-   /* aspect-ratio: 3/2; */
-   /* background-color: #accceb; */
-   /* backdrop-filter: blur(4px) saturate(150%); */
+   aspect-ratio: 3/2;
+   color: black;
    border-radius: inherit;
 }
 
-div.archt.wizard-grid label:nth-child(1) {
+div.archt.wizard-grid label:nth-child(1),
+div.arch-selector:nth-child(1) {
    background: linear-gradient(#F8BBD0, #E1BEE7);
 }
 
-div.archt.wizard-grid label:nth-child(2) {
+div.archt.wizard-grid label:nth-child(2),
+div.arch-selector:nth-child(2) {
    background: linear-gradient(#B2DFDB, #BBDEFB);
 }
 
-div.archt.wizard-grid label:nth-child(3) {
+div.archt.wizard-grid label:nth-child(3),
+div.arch-selector:nth-child(3) {
    background: linear-gradient(#FFCC80, #FFF59D);
 }
 
-div.archt.wizard-grid label:nth-child(4) {
+div.archt.wizard-grid label:nth-child(4),
+div.arch-selector:nth-child(4) {
    background: linear-gradient(#E1BEE7, #90CAF9);
 }
