@@ -127,9 +127,54 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     });
     const [projectName, setProjectName] = useState(null);
 
+    useEffect(() => {
+        if (initialized) {
+            let defaultProjectId;
+            fetch(process.env.REACT_APP_API_BASE_URL + '/api/projects', {
+                method: 'get',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                },
+            })
+                .then(response => response.json())
+                .then(result => {
+                    if (result?.data) {
+                        defaultProjectId = result.data.find(project => project.name.startsWith('default'))?.id;
+                        if (!defaultProjectId) {
+                            fetch(process.env.REACT_APP_API_BASE_URL + '/api/projects', {
+                                method: 'post',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                                },
+                                body: JSON.stringify({
+                                    name: 'default',
+                                    description: 'Default Project',
+                                }),
+                            })
+                                .then(response => response.json())
+                                .then(result => {
+                                    if (result?.data) {
+                                        defaultProjectId = result.data.id;
+                                        setProjectParentId(defaultProjectId);
+                                    }
+                                })
+                                .catch(error => console.error(error));
+                        } else {
+                            setProjectParentId(defaultProjectId);
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        }
+    }, [initialized, keycloak?.realmAccess?.roles, keycloak?.token]);
+
     const CreateImage = async nodes => {
         const nodesBounds = getRectOfNodes(nodes);
-        const transform = getTransformForBounds(nodesBounds, imageWidth, imageHeight, 0.5, 2);
+        const transform = getTransformForBounds(nodesBounds, imageWidth, imageHeight, 0, 2, 0.7);
 
         try {
             const response = await toPng(document.querySelector('.react-flow__viewport'), {
@@ -207,7 +252,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     };
 
     const onNodesChange = useCallback((setShowDiv, edges, changes = []) => {
-        setMenu(false)
+        setMenu(false);
         setUpdated(true);
         setNodes(oldNodes => {
             const updatedNodes = { ...oldNodes };

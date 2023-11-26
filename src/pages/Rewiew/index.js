@@ -106,14 +106,11 @@ export const ReviewFlow = ({
 
     const handleBackClick = () => {
         if (parentId === 'admin') history.replace('/architectures');
-        else history.replace('/project/' + parentId + '/architectures');
+        else history.replace('/prototypes');
     };
 
     const handleToggleContent = () => {
-        // if (sideBarOpen) {
-        console.log(sideBarOpen);
         setSideBarOpen(!sideBarOpen);
-        // }
     };
 
     return (
@@ -133,16 +130,11 @@ export const ReviewFlow = ({
                     fitView
                 >
                     <Panel position="top-left">
-                        <Button colorScheme="blue" onClick={generateMode ? () => setViewOnly(false) : handleEditClick}>
-                            {generateMode ? 'Back' : 'Edit Mode'}
+                        <Button colorScheme="blue" onClick={generateMode ? () => setViewOnly(false) : handleBackClick}>
+                            Back
                         </Button>
                         <Button hidden={true} colorScheme="blue" onClick={() => console.log(deployementData)}>
                             Print
-                        </Button>
-                    </Panel>
-                    <Panel position="top-left">
-                        <Button hidden={setViewOnly ? true : false} colorScheme="blue" onClick={handleBackClick}>
-                            Back
                         </Button>
                     </Panel>
                     <Controls position="bottom-right" showInteractive={false} />
