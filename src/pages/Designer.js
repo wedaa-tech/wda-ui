@@ -129,7 +129,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
 
     const CreateImage = async nodes => {
         const nodesBounds = getRectOfNodes(nodes);
-        const transform = getTransformForBounds(nodesBounds, imageWidth, imageHeight, 0.5, 2);
+        const transform = getTransformForBounds(nodesBounds, imageWidth, imageHeight, 0, 2, 0.7);
 
         try {
             const response = await toPng(document.querySelector('.react-flow__viewport'), {
@@ -207,7 +207,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     };
 
     const onNodesChange = useCallback((setShowDiv, edges, changes = []) => {
-        setMenu(false)
+        setMenu(false);
         setUpdated(true);
         setNodes(oldNodes => {
             const updatedNodes = { ...oldNodes };

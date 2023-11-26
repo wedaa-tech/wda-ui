@@ -66,7 +66,11 @@ export default function Header({ children }) {
 
                     {initialized && keycloak.authenticated && keycloak?.realmAccess?.roles.includes('ADMIN') && (
                         <Link to="/architectures">
-                            <Text fontSize="md" color={location.pathname === '/architectures' ? 'hsl(42, 83%, 53%)' : color} fontWeight="bold">
+                            <Text
+                                fontSize="md"
+                                color={location.pathname === '/architectures' ? 'hsl(42, 83%, 53%)' : color}
+                                fontWeight="bold"
+                            >
                                 Ref.Architectures
                             </Text>
                         </Link>
@@ -151,6 +155,7 @@ export default function Header({ children }) {
                             fontSize="md"
                             color={color}
                             cursor="pointer"
+                            fontWeight="bold"
                             onClick={() =>
                                 keycloak.logout({
                                     redirectUri: process.env.REACT_APP_UI_BASE_URL,
