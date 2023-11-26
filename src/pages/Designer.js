@@ -207,6 +207,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     };
 
     const onNodesChange = useCallback((setShowDiv, edges, changes = []) => {
+        setMenu(false)
         setUpdated(true);
         setNodes(oldNodes => {
             const updatedNodes = { ...oldNodes };
@@ -1685,16 +1686,14 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             setMenu({
                 id: node.id,
                 node: node,
-                top: event.clientY < pane.height - 200 && event.clientY,
-                left: event.clientX < pane.width - 200 && event.clientX,
-                right: event.clientX >= pane.width - 200 && pane.width - event.clientX,
-                bottom: event.clientY >= pane.height - 200 && pane.height - event.clientY,
+                top: event.clientY - 50,
+                left: event.clientX + 10,
             });
         },
         [setMenu],
     );
 
-    const onPaneClick = useCallback(() => setMenu(null), [setMenu]);
+    const onPaneClick = useCallback(() => setMenu(false), [setMenu]);
 
     const checkNodeExists = Object.values(nodes).some(
         node => node.id.startsWith('Service') || node.id.startsWith('Gateway') || node.id.startsWith('UI'),

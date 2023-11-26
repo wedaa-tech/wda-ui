@@ -41,7 +41,7 @@ function RadioCard(props) {
                         src={imageMappings[props.value]}
                     ></Image>
                 )}
-                {!imageMappings[props.value] && <Text className="not-selectable image-text">{componentsMapping[props.children]}</Text>}
+                {!imageMappings[props.value] && <Text className="not-selectable arch-image-text">{componentsMapping[props.children]}</Text>}
             </Box>
         </Box>
     );

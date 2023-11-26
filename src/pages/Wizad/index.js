@@ -52,52 +52,29 @@ const Wizard = () => {
     ) : (
         <Flex className="page">
             <Flex className="background">
-                <Text fontSize={'5xl'} color={'white'} fontWeight={'bold'}>
-                    Start your application journey with <span style={{ color: 'gold' }}>WeDAA</span>
+                <Text fontSize={'4xl'} color={'white'} fontWeight={'bold'}>
+                    QuickStart your application journey with <span style={{ color: 'hsl(42, 83%, 53%)' }}>WeDAA</span>
                 </Text>
-                <Text color={'white'}>
-                    A platform for you to move quicker & easier.
+                <Text fontSize={'lg'} color={'white'}>
+                    Generate complete code on a modern tech stack that’s ready to deploy and run.
                     <br />
-                    Get ready for instant prototyping, and rapid code generation.
+                    Build your modern application prototype with WeDAA accelerator.
                 </Text>
-            </Flex>
-            <Flex paddingBlock={24} className="box">
-                <Flex
+                <Button
+                    div
                     onClick={() => history.push('/wizardselection')}
-                    alignItems={'center'}
-                    justifyContent={'space-around'}
-                    borderLeft={'4px solid #397EF6'}
-                    shadow={'lg'}
-                    cursor={'pointer'}
-                    _hover={{
-                        shadow: 'xl',
-                        transform: 'scale(1.05)',
-                        transition: 'transform 0.3s ease-in-out',
-                    }}
-                    height={'120px'}
-                    width={'30%'}
-                    backgroundColor={'white'}
-                    roundedRight={10}
+                    marginTop={6}
+                    background={'hsl(42, 83%, 53%)'}
+                    colorScheme="yellow"
+                    textColor={'black'}
+                    border={'2px solid white'}
+                    height={'50px'}
+                    size="md"
                 >
-                    <Flex id={archSelectorRef} justifyContent={'space-evenly'} flexDir={'column'} gap={2}>
-                        <Text fontSize={'xl'} fontWeight={'bold'}>
-                            Build Your Own
-                        </Text>
-                        <Text fontSize={'xs'}>New Project with a tour</Text>
-                    </Flex>
-                    <svg width="64" height="64" viewBox="0 0 65 65" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="64" height="64" rx="32.5" fill="#E7EBFF" />
-                        <path
-                            fill-rule="evenodd"
-                            clip-rule="evenodd"
-                            d="M33.75 26.25C33.75 25.5596 33.1904 25 32.5 25C31.8096 25 31.25 25.5596 31.25 26.25V31.25H26.25C25.5596 31.25 25 31.8096 25 32.5C25 33.1904 25.5596 33.75 26.25 33.75H31.25V38.75C31.25 39.4404 31.8096 40 32.5 40C33.1904 40 33.75 39.4404 33.75 38.75V33.75H38.75C39.4404 33.75 40 33.1904 40 32.5C40 31.8096 39.4404 31.25 38.75 31.25H33.75V26.25Z"
-                            fill="#422F8A"
-                            fill-opacity="0.87"
-                        />
-                    </svg>
-                </Flex>
+                    Build Your Own
+                </Button>
             </Flex>
-            <Flex className="box" alignItems={'flex-start'} gap={6}>
+            <Flex paddingTop={12} className="box" alignItems={'flex-start'} gap={6}>
                 <Box
                     style={{
                         display: 'flex',
@@ -107,11 +84,9 @@ const Wizard = () => {
                         gap: '20px',
                     }}
                 >
-                    <Text fontSize={'sm'}>PROTOTYPE CATEGORIES</Text>
                     <Text fontSize={'5xl'} fontWeight={'bold'}>
                         Our Top Picks
                     </Text>
-                    <Text fontSize={'sm'}>Find the one you want to work on</Text>
                 </Box>
                 <Flex
                     style={{

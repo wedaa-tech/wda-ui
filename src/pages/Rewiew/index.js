@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Grid, Button, GridItem, Flex } from '@chakra-ui/react';
+import { Grid, Button, GridItem, Flex, IconButton, useColorModeValue } from '@chakra-ui/react';
 import './index.css';
 import ReactFlow, {
     Background,
@@ -26,6 +26,7 @@ import CodeReview from './CodeReview';
 import { useKeycloak } from '@react-keycloak/web';
 import { useHistory, useParams } from 'react-router-dom/cjs/react-router-dom.min';
 import keycloak from '../../Keycloak';
+import { CloseIcon, HamburgerIcon } from '@chakra-ui/icons';
 
 const useExample = false;
 
@@ -71,6 +72,7 @@ export const ReviewFlow = ({
     const history = useHistory();
 
     const { parentId, id } = useParams();
+    const [sideBarOpen, setSideBarOpen] = useState(true);
 
     useEffect(() => {
         setNodes(nodesData);
@@ -107,9 +109,16 @@ export const ReviewFlow = ({
         else history.replace('/project/' + parentId + '/architectures');
     };
 
+    const handleToggleContent = () => {
+        // if (sideBarOpen) {
+        console.log(sideBarOpen);
+        setSideBarOpen(!sideBarOpen);
+        // }
+    };
+
     return (
-        <Grid templateColumns="repeat(7, 1fr)" height={'calc(100vh - 64px)'} maxH={'calc(100vh - 64px)'}>
-            <GridItem colSpan={4}>
+        <Grid height={'calc(100vh - 64px)'} maxH={'calc(100vh - 64px)'}>
+            <GridItem width={sideBarOpen ? 'calc(100% - 700px);' : '100%'} transition="width 0.3s">
                 <ReactFlow
                     nodes={nodes}
                     edges={edges}
@@ -123,9 +132,9 @@ export const ReviewFlow = ({
                     // showInteractive={false}
                     fitView
                 >
-                    <Panel position="top-right">
+                    <Panel position="top-left">
                         <Button colorScheme="blue" onClick={generateMode ? () => setViewOnly(false) : handleEditClick}>
-                            {generateMode ? 'Go Back' : 'Edit Mode'}
+                            {generateMode ? 'Back' : 'Edit Mode'}
                         </Button>
                         <Button hidden={true} colorScheme="blue" onClick={() => console.log(deployementData)}>
                             Print
@@ -141,11 +150,28 @@ export const ReviewFlow = ({
                 </ReactFlow>
             </GridItem>
             <GridItem
-                colSpan={3}
-                backgroundColor={'white.100'}
+                backgroundColor={'white'}
                 boxShadow={'rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;'}
                 height={'inherit'}
+                position={'fixed'}
+                width={'700px'}
+                right={0}
+                style={{
+                    transition: 'transform 0.3s',
+                    transform: sideBarOpen ? 'translateX(0px)' : 'translateX(700px)',
+                }}
             >
+                <IconButton
+                    onClick={handleToggleContent}
+                    colorScheme="blue"
+                    alignSelf="flex-end"
+                    position={'absolute'}
+                    top="10px"
+                    boxShadow="0 4px 12px rgba(0, 0, 0, 0.3)"
+                    left={'-64px'}
+                    zIndex={999}
+                    icon={sideBarOpen ? <CloseIcon /> : <HamburgerIcon />}
+                />
                 <CodeReview
                     nodeId={nodeId}
                     generateMode={generateMode}

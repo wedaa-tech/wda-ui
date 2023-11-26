@@ -34,7 +34,7 @@ export default function Header({ children }) {
         setIsOpenMenu(false);
     };
     return (
-        <Box bg={bg} py={4} px={6} shadow="md">
+        <Box bg={bg} py={4} px={6} top={0} position={'sticky'} width={'100%'} zIndex={9999} shadow="md">
             <Flex alignItems="center" justifyContent="space-between" maxW="7xl" mx="auto">
                 <Flex alignItems="center">
                     <Link to="/">
@@ -51,9 +51,14 @@ export default function Header({ children }) {
                     </Link>
                 </Flex>
                 <HStack spacing={4} display={{ base: 'none', md: 'flex' }}>
+                    <Link to="/">
+                        <Text fontSize="md" color={location.pathname === '/' ? 'hsl(42, 83%, 53%)' : color} fontWeight="bold">
+                            Home
+                        </Text>
+                    </Link>
                     {initialized && keycloak.authenticated && (
                         <Link to="/prototypes">
-                            <Text fontSize="md" color={color} fontWeight={location.pathname === '/prototypes' ? 'bold' : 'normal'}>
+                            <Text fontSize="md" color={location.pathname === '/prototypes' ? 'hsl(42, 83%, 53%)' : color} fontWeight="bold">
                                 Prototypes
                             </Text>
                         </Link>
@@ -61,7 +66,7 @@ export default function Header({ children }) {
 
                     {initialized && keycloak.authenticated && keycloak?.realmAccess?.roles.includes('ADMIN') && (
                         <Link to="/architectures">
-                            <Text fontSize="md" color={color} fontWeight={location.pathname === '/architectures' ? 'bold' : 'normal'}>
+                            <Text fontSize="md" color={location.pathname === '/architectures' ? 'hsl(42, 83%, 53%)' : color} fontWeight="bold">
                                 Ref.Architectures
                             </Text>
                         </Link>
@@ -71,18 +76,16 @@ export default function Header({ children }) {
                             px={1}
                             py={1}
                             fontSize="md"
-                            color={color}
+                            color={
+                                location.pathname.startsWith('/wizard') || location.pathname.toLowerCase() === '/canvastocode'
+                                    ? 'hsl(42, 83%, 53%)'
+                                    : color
+                            }
                             bg={bg}
                             onMouseEnter={btnMouseEnterEvent}
                             onMouseLeave={btnMouseLeaveEvent}
                             style={{ cursor: 'text' }}
-                            fontWeight={
-                                location.pathname === '/wizard' ||
-                                location.pathname === '/' ||
-                                location.pathname.toLowerCase() === '/canvastocode'
-                                    ? 'bold'
-                                    : 'normal'
-                            }
+                            fontWeight="bold"
                         >
                             CanvasToCode {isOpenMenu ? <ChevronUpIcon /> : <ChevronDownIcon />}
                         </MenuButton>
@@ -95,14 +98,14 @@ export default function Header({ children }) {
                             onMouseEnter={menuListMouseEnterEvent}
                             onMouseLeave={menuListMouseLeaveEvent}
                         >
-                            <Link to="/wizard" onClick={() => setIsOpenMenu(false)}>
+                            <Link to="/wizardselection" onClick={() => setIsOpenMenu(false)}>
                                 <MenuItem
                                     fontSize="md"
                                     fontWeight="bold"
                                     bg={bg}
                                     color={color}
                                     _hover={{
-                                        backgroundColor: 'darkblue',
+                                        color: 'hsl(42, 83%, 53%)',
                                     }}
                                 >
                                     Quickstart
@@ -114,7 +117,7 @@ export default function Header({ children }) {
                                     fontWeight="bold"
                                     bg={bg}
                                     _hover={{
-                                        backgroundColor: 'darkblue',
+                                        color: 'hsl(42, 83%, 53%)',
                                     }}
                                 >
                                     Advanced
@@ -123,7 +126,7 @@ export default function Header({ children }) {
                         </MenuList>
                     </Menu>
                     <Link onClick={() => window.open(process.env.REACT_APP_DOCS_URL)}>
-                        <Text fontSize="md" color={color}>
+                        <Text fontSize="md" color={color} fontWeight="bold">
                             Docs
                         </Text>
                     </Link>
@@ -137,6 +140,7 @@ export default function Header({ children }) {
                                 })
                             }
                             cursor="pointer"
+                            fontWeight="bold"
                         >
                             Login
                         </Text>
