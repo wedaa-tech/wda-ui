@@ -1763,7 +1763,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             return { isValid: false, message: 'Drag and drop atleast one Application to generate the code' };
         }
 
-        if (projectNameCheck) {
+        if (!projectName || projectNameCheck) {
             return { isValid: false, message: 'Architecture name should be valid.' };
         }
 
@@ -1813,7 +1813,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     };
 
     const handleSave = () => {
-        if (projectName && projectName !== 'clear') {
+        if (projectName && projectName !== 'clear#canvas') {
             if (!keycloak.authenticated) {
                 keycloak.login({
                     redirectUri: process.env.REACT_APP_UI_BASE_URL + 'canvasToCode',

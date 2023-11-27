@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import logo from '../assets/wedaa_logo.png';
 import { useKeycloak } from '@react-keycloak/web';
 import { useLocation } from 'react-router-dom/cjs/react-router-dom.min';
+import FeedbackModal from './Modal/FeedbackModal';
 
 export default function Header({ children }) {
     const color = '#ffffff';
@@ -13,6 +14,7 @@ export default function Header({ children }) {
     const location = useLocation();
     const timerRef = useRef();
     const [isOpenMenu, setIsOpenMenu] = useState(false);
+    const [isFeedbackModalOpen, setFeedbackModalOpen] = useState(false);
 
     const btnMouseEnterEvent = () => {
         setIsOpenMenu(true);
@@ -33,6 +35,15 @@ export default function Header({ children }) {
     const menuListMouseLeaveEvent = () => {
         setIsOpenMenu(false);
     };
+
+    const handleFeedbackClick = () => {
+        setFeedbackModalOpen(true);
+    };
+
+    const handleFeedbackModalClose = () => {
+        setFeedbackModalOpen(false);
+    };
+
     return (
         <Box bg={bg} py={4} px={6} top={0} position={'sticky'} width={'100%'} zIndex={9999} shadow="md">
             <Flex alignItems="center" justifyContent="space-between" maxW="7xl" mx="auto">
@@ -134,6 +145,23 @@ export default function Header({ children }) {
                             Docs
                         </Text>
                     </Link>
+                    {!keycloak?.realmAccess?.roles.includes('ADMIN') && (
+                        <Text fontSize="md" color={color} onClick={handleFeedbackClick} cursor="pointer" fontWeight="bold">
+                            Feedback
+                        </Text>
+                    )}
+                    {keycloak?.realmAccess?.roles.includes('ADMIN') && (
+                        <Link to="/feedbacks">
+                            <Text
+                                fontSize="md"
+                                color={location.pathname === '/feedbacks' ? 'hsl(42, 83%, 53%)' : color}
+                                cursor="pointer"
+                                fontWeight="bold"
+                            >
+                                Feedback
+                            </Text>
+                        </Link>
+                    )}
                     {!keycloak.authenticated && (
                         <Text
                             fontSize="md"
@@ -172,6 +200,7 @@ export default function Header({ children }) {
                     </Button>
                 </Box>
             </Flex>
+            <FeedbackModal isOpen={isFeedbackModalOpen} onClose={handleFeedbackModalClose} />
             {children}
         </Box>
     );

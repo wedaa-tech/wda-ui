@@ -258,7 +258,7 @@ const Sidebar = ({
             return { isValid: false, message: 'Drag and drop atleast one Application to generate the code' };
         }
 
-        if (projectNameCheck) {
+        if (!projectData.projectName || projectNameCheck) {
             return { isValid: false, message: 'Architecture name should be valid.' };
         }
 

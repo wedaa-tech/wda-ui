@@ -73,7 +73,6 @@ function CodeReview({ nodeId, generateMode = false, deployementData = null, onSu
             variant: 'left-accent',
             isClosable: true,
         });
-        history.push(`/architectures`);
     };
 
     const handleTabsChange = index => {

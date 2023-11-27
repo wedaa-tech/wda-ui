@@ -13,6 +13,7 @@ import ArchitecturesSection from './pages/Architecture';
 import Review from './pages/Rewiew';
 import Wizard from './pages/Wizad';
 import WizardSelection from './pages/Wizad/WizardSelection';
+import FeedbackPage from './components/FeedbackTable';
 
 function App() {
     return (
@@ -75,6 +76,11 @@ function App() {
                     </Route>
                     <Route exact path="/signup">
                         <SignUp />
+                    </Route>
+                    <Route exact path="/feedbacks">
+                        <PrivateRoute>
+                            <FeedbackPage />
+                        </PrivateRoute>
                     </Route>
                 </Switch>
             </Router>
