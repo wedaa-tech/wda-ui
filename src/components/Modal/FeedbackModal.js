@@ -99,7 +99,7 @@ const FeedbackModal = ({ isOpen, onClose }) => {
     ];
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} initialFocusRef={initialRef} isCentered size="xl">
+        <Modal isOpen={isOpen} onClose={onClose} initialFocusRef={initialRef} isCentered size="md">
             <ModalOverlay />
             <ModalContent>
                 <ModalHeader borderTopRadius="md" p={4}>
@@ -179,7 +179,7 @@ const FeedbackModal = ({ isOpen, onClose }) => {
                         />
                     </Flex>
 
-                    <Flex direction="column" mb={4}>
+                    <Flex direction="column" mb={1}>
                         <input
                             type="email"
                             placeholder="Email"
@@ -198,7 +198,7 @@ const FeedbackModal = ({ isOpen, onClose }) => {
                 </ModalBody>
 
                 <ModalFooter>
-                    <Button backgroundColor="blue.500" mr={3} onClick={() => handleSubmit(feedbackData)}>
+                    <Button mr={150} backgroundColor="blue.500" onClick={() => handleSubmit(feedbackData)}>
                         Submit
                     </Button>
                 </ModalFooter>
