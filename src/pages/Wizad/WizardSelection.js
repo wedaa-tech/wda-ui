@@ -57,7 +57,7 @@ function WizardSelection() {
     const toastIdRef = useRef();
 
     const handleNext = () => {
-        if (review) return
+        if (review) return;
         else if (!selectedArch) {
             setSelectedArch(selectedAnswers.AT);
             setActiveStep(0);
@@ -188,7 +188,7 @@ function WizardSelection() {
                         onClick={activeStep === count && count !== 0 ? handleSubmit : handleNext}
                         colorScheme="blue"
                     >
-                        {activeStep === count && count !== 0 ? 'Submit' : 'Next'}
+                        {activeStep === count && count !== 0 ? 'Go to Canvas' : 'Next'}
                     </Button>
                 </Flex>
             </Flex>
