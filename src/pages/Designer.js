@@ -1382,8 +1382,17 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             if (response.ok) {
                 toast.close(toastIdRef.current);
                 toastIdRef.current = toast({
-                    title: `Blueprint ${projectName}  is saved as a draft.`,
+                    title: `Prototype ${projectName}  is saved.`,
                     status: 'success',
+                    duration: 3000,
+                    variant: 'left-accent',
+                    isClosable: true,
+                });
+            } else {
+                toast.close(toastIdRef.current);
+                toastIdRef.current = toast({
+                    title: `Unable to save prototype.Please try again`,
+                    status: 'error',
                     duration: 3000,
                     variant: 'left-accent',
                     isClosable: true,

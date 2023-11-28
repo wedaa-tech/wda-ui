@@ -24,12 +24,6 @@ const ReferenceArchCard = ({ id = null, archData = [] }) => {
                 <Text fontWeight={'bold'} fontSize={'lg'}>
                     {archData.name}
                 </Text>
-                <Text lineHeight={'160%'} color={'#757F87'} fontSize={'sm'}>
-                    Stack used <ArrowForwardIcon />
-                </Text>
-                <Text fontSize={'sm'} fontWeight={'bold'}>
-                    Free
-                </Text>
             </Box>
         </Box>
     );

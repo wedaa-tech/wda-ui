@@ -104,13 +104,13 @@ const FeedbackModal = ({ isOpen, onClose }) => {
             <ModalContent>
                 <ModalHeader borderTopRadius="md" p={4}>
                     <FormLabel fontSize="2xl" fontWeight="bold" textAlign="center">
-                        Feedback
+                        WeDAA values your Feedback!
                     </FormLabel>
                 </ModalHeader>
 
                 <ModalCloseButton />
                 <ModalBody pb={6}>
-                    <FormLabel fontSize="md" textAlign="center" mb={4}>
+                    <FormLabel fontSize="xl" textAlign="center" mb={4} color={'hsl(42, 83%, 53%)'}>
                         Help us to get better!
                     </FormLabel>
 

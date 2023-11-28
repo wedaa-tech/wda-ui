@@ -31,7 +31,6 @@ import { useKeycloak } from '@react-keycloak/web';
 import ActionModal from '../../components/Modal/ActionModal';
 import { ArrowBackIcon } from '@chakra-ui/icons';
 
-
 function ArchitecturesSection() {
     let location = useLocation();
     const history = useHistory();
@@ -251,10 +250,10 @@ function ArchitecturesSection() {
                     justifyContent="space-between"
                     px="10%"
                     height={'100px'}
-                    onClick={handleOpenNewArchitectureModal}
+                    onClick={handleCreateNewArchitecture}
                 >
                     <Text className="not-selectable" fontWeight="bold">
-                        Create New Prototype
+                        Create New {parentId === 'admin' ? 'Architectures' : 'Prototype'}
                     </Text>
                     <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
                         <rect width="56" height="56" rx="28" fill="#EBAF24" fill-opacity="0.5" />
@@ -280,7 +279,7 @@ function ArchitecturesSection() {
                     height={'100px'}
                 >
                     <Text className="not-selectable" fontWeight="bold">
-                        Number of Prototypes
+                        Number of {parentId === 'admin' ? 'Architectures' : 'Prototypes'}
                     </Text>
                     <Text className="not-selectable" fontWeight="bold" fontFamily={'monospace'} fontSize={'30px'} color={'#ebaf24'}>
                         {totalArchitectures}
@@ -311,7 +310,7 @@ function ArchitecturesSection() {
                     />
                 ))}
             </SimpleGrid>
-            <Modal
+            {/* <Modal
                 initialFocusRef={initialRef}
                 isOpen={isNewArchitectureModalOpen}
                 onClose={handleCloseNewArchitectureModal}
@@ -347,7 +346,7 @@ function ArchitecturesSection() {
                     </ModalBody>
                     <ModalFooter></ModalFooter>
                 </ModalContent>
-            </Modal>
+            </Modal> */}
             <ActionModal
                 isOpen={isOpen}
                 onClose={onClose}

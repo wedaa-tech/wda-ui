@@ -282,7 +282,7 @@ const Sidebar = ({
             return { isValid: false, message: 'Create an edge connecting the node to Database to enable the integration.' };
         }
 
-        return { isValid: true, message: 'Validation successful. Proceed to generate the application.' };
+        return { isValid: true, message: 'Validation successful. Proceed to generate the application code.' };
     };
 
     const toastIdRef = useRef();

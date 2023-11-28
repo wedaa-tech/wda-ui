@@ -86,7 +86,7 @@ function CodeReview({ nodeId, generateMode = false, deployementData = null, onSu
                     <Tab>Configuration</Tab>
                     {/* <Tab hidden={generateMode}>Folder Structure</Tab> */}
                     <Tab hidden={generateMode}>README.md</Tab>
-                    {!docusaurusCheck && parentId !== 'admin' && <Tab>{generateMode ? 'Infrastructure' : 'Deployement'}</Tab>}
+                    {!docusaurusCheck && parentId !== 'admin' && <Tab>{generateMode ? 'Iasc' : 'Deployement'}</Tab>}
                 </TabList>
                 <TabPanels height={'100%'}>
                     <TabPanel height={'100%'}>

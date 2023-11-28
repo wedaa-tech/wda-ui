@@ -53,7 +53,7 @@ const Wizard = () => {
         <Flex className="page">
             <Flex className="background">
                 <Text fontSize={'4xl'} color={'white'} fontWeight={'bold'}>
-                    QuickStart your application journey with <span style={{ color: 'hsl(42, 83%, 53%)' }}>WeDAA</span>
+                    Quickstart your application journey with <span style={{ color: 'hsl(42, 83%, 53%)' }}>WeDAA</span>
                 </Text>
                 <Text fontSize={'lg'} color={'white'}>
                     Generate complete code on a modern tech stack that’s ready to deploy and run.
@@ -124,7 +124,6 @@ const Wizard = () => {
                         gap: '20px',
                     }}
                 >
-                    <Text style={{ display: 'flex', alignItems: 'center', gap: '10px', alignSelf: 'stretch' }}>SAMPLES</Text>
                     <Text
                         style={{
                             color: '#0E1E2F',
