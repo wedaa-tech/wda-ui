@@ -168,7 +168,7 @@ export default function Header({ children }) {
                             color={color}
                             onClick={() =>
                                 keycloak.login({
-                                    redirectUri: process.env.REACT_APP_UI_BASE_URL + 'projects',
+                                    redirectUri: process.env.REACT_APP_UI_BASE_URL + location.pathname,
                                 })
                             }
                             cursor="pointer"

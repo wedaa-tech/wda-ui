@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Grid, Button, GridItem, Flex, IconButton, useColorModeValue } from '@chakra-ui/react';
+import { Grid, Button, GridItem, Flex, IconButton, useColorModeValue, Box } from '@chakra-ui/react';
 import './index.css';
 import ReactFlow, {
     Background,
@@ -26,7 +26,7 @@ import CodeReview from './CodeReview';
 import { useKeycloak } from '@react-keycloak/web';
 import { useHistory, useParams } from 'react-router-dom/cjs/react-router-dom.min';
 import keycloak from '../../Keycloak';
-import { CloseIcon, HamburgerIcon } from '@chakra-ui/icons';
+import { CloseIcon, HamburgerIcon, EditIcon } from '@chakra-ui/icons';
 
 const useExample = false;
 
@@ -153,17 +153,31 @@ export const ReviewFlow = ({
                     transform: sideBarOpen ? 'translateX(0px)' : 'translateX(700px)',
                 }}
             >
-                <IconButton
-                    onClick={handleToggleContent}
-                    colorScheme="blue"
-                    alignSelf="flex-end"
-                    position={'absolute'}
-                    top="10px"
-                    boxShadow="0 4px 12px rgba(0, 0, 0, 0.3)"
-                    left={'-64px'}
-                    zIndex={999}
-                    icon={sideBarOpen ? <CloseIcon /> : <HamburgerIcon />}
-                />
+                <Box position="relative">
+                    <IconButton
+                        onClick={handleToggleContent}
+                        colorScheme="blue"
+                        position="absolute"
+                        top="10px"
+                        left="-64px"
+                        zIndex={999}
+                        icon={sideBarOpen ? <CloseIcon /> : <HamburgerIcon />}
+                        mb={2}
+                        marginRight={4}
+                    />
+                    {!generateMode && (
+                        <IconButton
+                            onClick={handleEditClick}
+                            colorScheme="blue"
+                            position="absolute"
+                            top="50px"
+                            left="-64px"
+                            zIndex={999}
+                            icon={<EditIcon />}
+                            marginTop={4}
+                        />
+                    )}
+                </Box>
                 <CodeReview
                     nodeId={nodeId}
                     generateMode={generateMode}

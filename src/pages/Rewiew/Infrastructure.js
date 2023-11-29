@@ -1,4 +1,4 @@
-import { Alert, AlertIcon, Box, Button, Flex, FormControl, FormLabel, HStack, Image, Input, Select } from '@chakra-ui/react';
+import { Alert, AlertIcon, Box, Button, Flex, FormControl, FormLabel, HStack, Image, Input, Select, Text } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import azure from '../../../src/assets/Azure.png';
 import aws from '../../../src/assets/aws.png';
@@ -330,7 +330,7 @@ const Infrastructure = ({ onSubmit, projectData, generateZip }) => {
                         // backgroundColor={'#9e9e9e30'}
                         overflow={'hidden'}
                         padding={'7px'}
-                        border={`1px solid ${selectedImage === 'minikube' ? '#0fadff' : '#9e9e9e80'}`}
+                        border={` ${selectedImage === 'minikube' ? '2px solid #0fadff' : '1px solid #9e9e9e80'}`}
                     >
                         <Image mixBlendMode={'darken'} height={'70px'} src={minikube} />
                     </Box>
@@ -340,7 +340,7 @@ const Infrastructure = ({ onSubmit, projectData, generateZip }) => {
                         // backgroundColor={'#9e9e9e30'}
                         overflow={'hidden'}
                         padding={'7px'}
-                        border={`1px solid ${selectedImage === 'aws' ? '#0fadff' : '#9e9e9e80'}`}
+                        border={` ${selectedImage === 'aws' ? '2px solid #0fadff' : '1px solid #9e9e9e80'}`}
                     >
                         <Image mixBlendMode={'darken'} height={'70px'} src={aws} />
                     </Box>
@@ -350,7 +350,7 @@ const Infrastructure = ({ onSubmit, projectData, generateZip }) => {
                         // backgroundColor={'#9e9e9e30'}
                         overflow={'hidden'}
                         padding={'7px'}
-                        border={`1px solid ${selectedImage === 'azure' ? '#0fadff' : '#9e9e9e80'}`}
+                        border={`${selectedImage === 'azure' ? '2px solid #0fadff' : '1px solid #9e9e9e80'}`}
                     >
                         <Image mixBlendMode={'darken'} height={'70px'} src={azure} />
                     </Box>
@@ -360,12 +360,28 @@ const Infrastructure = ({ onSubmit, projectData, generateZip }) => {
                         // backgroundColor={'#9e9e9e30'}
                         overflow={'hidden'}
                         padding={'7px'}
-                        border={`1px solid ${selectedImage === 'none' ? '#0fadff' : '#9e9e9e80'}`}
+                        border={`${selectedImage === 'none' ? '2px solid #0fadff' : '1px solid #9e9e9e80'}`}
                     >
                         <Image mixBlendMode={'darken'} height={'70px'} src={none} />
                     </Box>
                 </HStack>
                 {/* </Box> */}
+                {selectedImage === 'none' && (
+                    <Box p={4} borderWidth="1px" borderRadius="md" boxShadow="md">
+                        <Text>
+                            <strong>Minikube:</strong> A tool that enables users to run Kubernetes clusters locally.
+                        </Text>
+                        <Text>
+                            <strong>Azure:</strong> Cloud Computing platform provided by Microsoft for deploying and managing applications.
+                        </Text>
+                        <Text>
+                            <strong>AWS:</strong> Cloud Computing platform provided by Amazon for deploying and managing applications.
+                        </Text>
+                        <Text>
+                            <strong>None:</strong> Skip Infrastructure code Generation.
+                        </Text>
+                    </Box>
+                )}
                 {selectedImage === 'azure' && (
                     <div>
                         <FormControl>
