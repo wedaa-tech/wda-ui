@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
     Modal,
     ModalOverlay,
@@ -12,10 +12,8 @@ import {
     Textarea,
     Box,
     Flex,
-    Text,
     Button,
     useToast,
-    Image,
 } from '@chakra-ui/react';
 import { BsEmojiNeutral } from 'react-icons/bs';
 import { GrEmoji } from 'react-icons/gr';
@@ -24,7 +22,8 @@ import { BsEmojiFrown } from 'react-icons/bs';
 import { HiOutlineFaceFrown } from 'react-icons/hi2';
 import { useKeycloak } from '@react-keycloak/web';
 import wedaaImg from '../../assets/wedaa_logo.png';
-const FeedbackModal = ({ isOpen, onClose }) => {
+
+export const FeedbackModal = ({ isOpen, onClose }) => {
     const initialRef = useRef();
     const toastIdRef = useRef();
     const { initialized, keycloak } = useKeycloak();
@@ -103,17 +102,9 @@ const FeedbackModal = ({ isOpen, onClose }) => {
         <Modal isOpen={isOpen} onClose={onClose} initialFocusRef={initialRef} isCentered size="md">
             <ModalOverlay />
             <ModalContent>
-                <ModalHeader borderTopRadius="md" p={4}>
+                <ModalHeader borderTopRadius="md" p={1}>
                     <Flex alignItems="center" justify="center" direction="column">
-                        <FormLabel fontSize="2xl" fontWeight="bold" textAlign="center">
-                            <Text>
-                                W
-                                <Text as="span" color={'hsl(42, 83%, 53%)'}>
-                                    e
-                                </Text>
-                                DAA
-                            </Text>
-                        </FormLabel>
+                        <img src={wedaaImg} alt="Feedback Image" boxSize="40px" height="70px" width="70px" mb={2} />
                         <FormLabel fontSize="2xl" fontWeight="bold" textAlign="center">
                             Values your Feedback!
                         </FormLabel>
@@ -218,5 +209,3 @@ const FeedbackModal = ({ isOpen, onClose }) => {
         </Modal>
     );
 };
-
-export default FeedbackModal;
