@@ -77,6 +77,11 @@ const ArchitectureCard = ({ title, description, imageUrl, projectId, onClick, da
                 >
                     {title}
                 </Text>
+                {!(data.draft || data?.request_json?.services) && (
+                    <Text className="not-selectable" color="gray.600">
+                        #draft
+                    </Text>
+                )}
                 <Text className="not-selectable" color="gray.600">
                     {description}
                 </Text>
