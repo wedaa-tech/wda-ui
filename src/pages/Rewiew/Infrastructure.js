@@ -379,7 +379,7 @@ const Infrastructure = ({ onSubmit, projectData, generateZip }) => {
                             needing a full-scale cluster.
                         </Text>
 
-                        <Divider my={4} />
+                        <Divider my={2} />
 
                         <Text fontWeight="bold" mb={2}>
                             AWS:
@@ -389,7 +389,7 @@ const Infrastructure = ({ onSubmit, projectData, generateZip }) => {
                             orchestration service provided by Amazon Web Services (AWS).
                         </Text>
 
-                        <Divider my={4} />
+                        <Divider my={2} />
 
                         <Text fontWeight="bold" mb={2}>
                             AZURE:
@@ -398,7 +398,13 @@ const Infrastructure = ({ onSubmit, projectData, generateZip }) => {
                             Generate code along with Terraform scripts for Microsoft Azure Kubernetes Service (AKS). AKS is a managed
                             container orchestration service provided by Microsoft Azure.
                         </Text>
-                        <Text pl={2}>Local: Generate project code without infrastructure deployment scripts.</Text>
+
+                        <Divider my={2} />
+
+                        <Text fontWeight="bold" mb={3}>
+                            LOCAL:
+                        </Text>
+                        <Text pl={2}> Generate project code without infrastructure deployment scripts.</Text>
                     </Box>
                 )}
                 {selectedImage === 'azure' && (
