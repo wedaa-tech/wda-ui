@@ -885,7 +885,7 @@ const Sidebar = ({
                 </Checkbox>
             )} */}
             <Button m={4} onClick={handleButtonClick} type="submit">
-                Get Code
+                Review
             </Button>
             {showModal && (
                 <DeployModal

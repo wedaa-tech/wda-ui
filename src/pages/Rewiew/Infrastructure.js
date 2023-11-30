@@ -1,4 +1,4 @@
-import { Alert, AlertIcon, Box, Button, Flex, FormControl, FormLabel, HStack, Image, Input, Select, Text } from '@chakra-ui/react';
+import { Alert, AlertIcon, Box, Button, Flex, FormControl, FormLabel, HStack, Image, Input, Select, Text, Divider } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import azure from '../../../src/assets/Azure.png';
 import aws from '../../../src/assets/aws.png';
@@ -321,7 +321,10 @@ const Infrastructure = ({ onSubmit, projectData, generateZip }) => {
 
     return (
         <Flex direction={'column'} width={'100%'} h={'100%'}>
-            <Box maxH={'calc(100vh - 202px)'} overflowY={'auto'} px={4} py={4} flexGrow={1}>
+            <Text fontSize="md" pt={2} px={8} font="15px">
+                Select, Customize and Deploy Your Infrastructure with Ease!
+            </Text>
+            <Box maxH={'calc(100vh - 202px)'} overflowY={'auto'} px={4} py={1} flexGrow={1}>
                 {/* <Box shadow={'md'}> */}
                 <HStack height={'120px'} justifyContent={'space-evenly'}>
                     <Box
@@ -368,18 +371,40 @@ const Infrastructure = ({ onSubmit, projectData, generateZip }) => {
                 {/* </Box> */}
                 {selectedImage === 'none' && (
                     <Box p={4} borderWidth="1px" borderRadius="md" boxShadow="md">
-                        <Text>
-                            <strong>Minikube:</strong> A tool that enables users to run Kubernetes clusters locally.
+                        <Text fontWeight="bold" mb={2}>
+                            Minikube:
                         </Text>
-                        <Text>
-                            <strong>Azure:</strong> Cloud Computing platform provided by Microsoft for deploying and managing applications.
+                        <Text pl={2}>
+                            Set up a single-node Kubernetes cluster at the local machine. Helpful for learning Kubernetes concepts without
+                            needing a full-scale cluster.
                         </Text>
-                        <Text>
-                            <strong>AWS:</strong> Cloud Computing platform provided by Amazon for deploying and managing applications.
+
+                        <Divider my={2} />
+
+                        <Text fontWeight="bold" mb={2}>
+                            AWS:
                         </Text>
-                        <Text>
-                            <strong>None:</strong> Skip Infrastructure code Generation.
+                        <Text pl={2}>
+                            Generate code along with Terraform scripts for AWS Elastic Kubernetes Service (EKS). EKS is a managed container
+                            orchestration service provided by Amazon Web Services (AWS).
                         </Text>
+
+                        <Divider my={2} />
+
+                        <Text fontWeight="bold" mb={2}>
+                            AZURE:
+                        </Text>
+                        <Text pl={2}>
+                            Generate code along with Terraform scripts for Microsoft Azure Kubernetes Service (AKS). AKS is a managed
+                            container orchestration service provided by Microsoft Azure.
+                        </Text>
+
+                        <Divider my={2} />
+
+                        <Text fontWeight="bold" mb={3}>
+                            LOCAL:
+                        </Text>
+                        <Text pl={2}> Generate project code without infrastructure deployment scripts.</Text>
                     </Box>
                 )}
                 {selectedImage === 'azure' && (

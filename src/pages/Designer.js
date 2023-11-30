@@ -14,6 +14,7 @@ import ReactFlow, {
 } from 'reactflow';
 import { AiOutlineSave } from 'react-icons/ai';
 import { FaCode, FaEraser } from 'react-icons/fa6';
+import { GoCodeReview } from 'react-icons/go';
 import 'reactflow/dist/style.css';
 import { Box, Button, Flex, HStack, Icon, IconButton, Spinner, Text, VStack, useToast, Tooltip } from '@chakra-ui/react';
 import { ArrowRightIcon } from '@chakra-ui/icons';
@@ -253,7 +254,6 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
 
     const onNodesChange = useCallback((setShowDiv, edges, changes = []) => {
         setMenu(false);
-        setUpdated(true);
         setNodes(oldNodes => {
             const updatedNodes = { ...oldNodes };
             const updatedEdges = { ...edges };
@@ -870,22 +870,38 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     const id = key.split('_');
                     const numberId = parseInt(id[1], 10);
                     max_serviceId = Math.max(numberId, max_serviceId);
-                    setUniqueApplicationNames(prev => [...prev, data.metadata.nodes[key].data.label]);
-                    setUniquePortNumbers(prev => [...prev, data.metadata.nodes[key].data.serverPort]);
-                    setServiceInputCheck(prev => ({
-                        ...prev,
-                        [key.id]: false,
-                    }));
+                    if (!nodes[key]?.data?.serverPort) {
+                        setIsEmptyServiceSubmit(true);
+                        setServiceInputCheck(prev => ({
+                            ...prev,
+                            [key]: true,
+                        }));
+                    } else {
+                        setUniqueApplicationNames(prev => [...prev, data.metadata.nodes[key].data.label]);
+                        setUniquePortNumbers(prev => [...prev, data.metadata.nodes[key].data.serverPort]);
+                        setServiceInputCheck(prev => ({
+                            ...prev,
+                            [key]: false,
+                        }));
+                    }
                 } else if (key.toLowerCase().includes('gateway')) {
                     const id = key.split('_');
                     const numberId = parseInt(id[1], 10);
                     max_gatewayId = Math.max(numberId, max_gatewayId);
-                    setUniqueApplicationNames(prev => [...prev, data.metadata.nodes[key].data.label]);
-                    setUniquePortNumbers(prev => [...prev, data.metadata.nodes[key].data.serverPort]);
-                    setGatewayInputCheck(prev => ({
-                        ...prev,
-                        [key.id]: false,
-                    }));
+                    if (!nodes[key]?.data?.serverPort) {
+                        setIsEmptyGatewaySubmit(true);
+                        setGatewayInputCheck(prev => ({
+                            ...prev,
+                            [key]: true,
+                        }));
+                    } else {
+                        setUniqueApplicationNames(prev => [...prev, data.metadata.nodes[key].data.label]);
+                        setUniquePortNumbers(prev => [...prev, data.metadata.nodes[key].data.serverPort]);
+                        setGatewayInputCheck(prev => ({
+                            ...prev,
+                            [key]: false,
+                        }));
+                    }
                     setIsGatewayNodeEnabled(true);
                 } else if (key.toLowerCase().includes('database')) {
                     databaseId++;
@@ -919,12 +935,20 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         setUiCount(1);
                     }
                     if (uiCount == 2) setIsUINodeEnabled(true);
-                    setUniqueApplicationNames(prev => [...prev, data.metadata.nodes[key].data.label]);
-                    setUniquePortNumbers(prev => [...prev, data.metadata.nodes[key].data.serverPort]);
-                    setUiInputCheck(prev => ({
-                        ...prev,
-                        [key.id]: false,
-                    }));
+                    if (!nodes[key]?.data?.serverPort) {
+                        setIsEmptyUiSubmit(true);
+                        setUiInputCheck(prev => ({
+                            ...prev,
+                            [key]: true,
+                        }));
+                    } else {
+                        setUniqueApplicationNames(prev => [...prev, data.metadata.nodes[key].data.label]);
+                        setUniquePortNumbers(prev => [...prev, data.metadata.nodes[key].data.serverPort]);
+                        setUiInputCheck(prev => ({
+                            ...prev,
+                            [key]: false,
+                        }));
+                    }
                 }
             }
             if (max_serviceId != -1) serviceId = max_serviceId + 1;
@@ -956,9 +980,6 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     if (data.metadata?.edges) {
                         setEdges(data?.metadata.edges);
                     }
-                    if (data?.updated) {
-                        setUpdated(data.updated);
-                    }
                 }
                 initData(data);
                 return;
@@ -988,9 +1009,6 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 }
                 if (data.metadata?.edges) {
                     setEdges(data?.metadata.edges);
-                }
-                if (data?.updated) {
-                    setUpdated(data.updated);
                 }
             }
             initData(data);
@@ -2088,10 +2106,18 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                                     />
                                 </Tooltip>
                                 <Tooltip label="Save" placement="left" bg="blue.500" color="white" borderRadius="md" fontSize="sm">
-                                    <IconButton hidden={viewOnly} icon={<Icon as={AiOutlineSave} />} size="md" onClick={handleSave} />
+                                    <IconButton
+                                        hidden={viewOnly}
+                                        icon={<Icon as={AiOutlineSave} />}
+                                        size="md"
+                                        onClick={() => {
+                                            setUpdated(false);
+                                            handleSave();
+                                        }}
+                                    />
                                 </Tooltip>
-                                <Tooltip label="Get Code" placement="left" bg="blue.500" color="white" borderRadius="md" fontSize="sm">
-                                    <IconButton hidden={viewOnly} icon={<Icon as={FaCode} />} size="md" onClick={handleSubmit} />
+                                <Tooltip label="Review" placement="left" bg="blue.500" color="white" borderRadius="md" fontSize="sm">
+                                    <IconButton hidden={viewOnly} icon={<Icon as={GoCodeReview} />} size="md" onClick={handleSubmit} />
                                 </Tooltip>
                             </VStack>
                         </Panel>
