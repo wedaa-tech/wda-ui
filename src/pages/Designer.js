@@ -1355,7 +1355,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         }
         setNodes(NewNodes);
         setGeneratingData(structuredClone(Data));
-        Data.validate = 'VALIDATED';
+        Data.validationStatus = 'VALIDATED';
         if (Data?.save) {
             var saved = Data.save;
             delete Data?.save;
@@ -1378,7 +1378,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         const Data = data || generatingData;
         const generatedImage = await CreateImage(Object.values(nodes));
         if (generatedImage) Data.imageUrl = generatedImage;
-        if (saved != 'VALIDATED') data.validate = 'DRAFT';
+        if (saved != 'VALIDATED') data.validationStatus = 'DRAFT';
         try {
             var response;
             if (parentId === 'admin') {

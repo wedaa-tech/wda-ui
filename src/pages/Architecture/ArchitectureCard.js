@@ -77,12 +77,12 @@ const ArchitectureCard = ({ title, description, imageUrl, projectId, onClick, da
                 >
                     {title}
                 </Text>
-                {data.validate === 'DRAFT' && (
+                {data.validationStatus === 'DRAFT' && (
                     <Text className="not-selectable" color="yellow.600">
                         Draft
                     </Text>
                 )}
-                {data.validate === 'VALIDATED' && (
+                {data.validationStatus === 'VALIDATED' && (
                     <Text className="not-selectable" color="green.600">
                         Validated
                     </Text>

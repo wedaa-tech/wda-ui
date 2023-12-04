@@ -162,7 +162,7 @@ function ArchitecturesSection() {
     }, [initialized, keycloak?.realmAccess?.roles, keycloak?.token, location.pathname]);
 
     const handleOpenArchitecture = (project_id, data) => {
-        if (data.validate === 'VALIDATED')
+        if (data.validationStatus === 'VALIDATED')
             history.push('/project/' + parentId + '/architecture/' + project_id + '/details', {
                 replace: true,
                 state: data,

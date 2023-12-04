@@ -102,7 +102,7 @@ export const ReviewFlow = ({
     const handleEditClick = async () => {
         if (!setViewOnly) {
             try {
-                reviewData.validate = 'DRAFT';
+                reviewData.validationStatus = 'DRAFT';
                 var response;
                 if (reviewData?.request_json?.projectName) reviewData.projectName = reviewData?.request_json?.projectName;
                 if (reviewData?.id) reviewData.projectId = reviewData?.id;
@@ -138,7 +138,7 @@ export const ReviewFlow = ({
 
     const handleBackClick = async () => {
         try {
-            reviewData.validate = 'DRAFT';
+            reviewData.validationStatus = 'DRAFT';
             var response;
             if (parentId === 'admin') {
                 response = await fetch(process.env.REACT_APP_API_BASE_URL + '/api/refArchs', {
