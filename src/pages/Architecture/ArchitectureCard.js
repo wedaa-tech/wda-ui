@@ -77,9 +77,14 @@ const ArchitectureCard = ({ title, description, imageUrl, projectId, onClick, da
                 >
                     {title}
                 </Text>
-                {!(data.draft || data?.request_json?.services) && (
-                    <Text className="not-selectable" color="gray.600">
-                        #draft
+                {data.validate === 'DRAFT' && (
+                    <Text className="not-selectable" color="yellow.600">
+                        Draft
+                    </Text>
+                )}
+                {data.validate === 'VALIDATED' && (
+                    <Text className="not-selectable" color="green.600">
+                        Validated
                     </Text>
                 )}
                 <Text className="not-selectable" color="gray.600">

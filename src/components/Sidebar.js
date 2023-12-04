@@ -35,6 +35,7 @@ import {
     TabIndicator,
     IconButton,
     Divider,
+    Link,
 } from '@chakra-ui/react';
 import DeployModal from './Modal/DeployModal';
 import { useKeycloak } from '@react-keycloak/web';
@@ -879,13 +880,26 @@ const Sidebar = ({
                     </TabPanel>
                 </TabPanels>
             </Tabs>
-            {/* {initialized && keycloak.authenticated && (
-                <Checkbox mx={4} size="md" colorScheme="blue" isChecked={saveMetadata} onChange={Togglesave}>
-                    Save Project
-                </Checkbox>
-            )} */}
+            {initialized && !keycloak.authenticated && (
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <Link
+                        fontSize="14px"
+                        fontWeight="bold"
+                        color="blue.500"
+                        onClick={() =>
+                            keycloak.login({
+                                redirectUri: process.env.REACT_APP_UI_BASE_URL + location.pathname,
+                            })
+                        }
+                        _hover={{ textDecoration: 'none' }}
+                    >
+                        Login to Save Your Prototype
+                    </Link>
+                </div>
+            )}
+
             <Button m={4} onClick={handleButtonClick} type="submit">
-                Review
+                Validate
             </Button>
             {showModal && (
                 <DeployModal

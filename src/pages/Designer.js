@@ -810,15 +810,15 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         [reactFlowInstance],
     );
 
-    const { parentId, id } = useParams();
+    var { parentId, id } = useParams();
     const [projectParentId, setProjectParentId] = useState(parentId || location.state?.parentId);
-
+    const [projectProjectId, setProjectprojectId] = useState(id);
     const loadData = async () => {
-        if (initialized && parentId && id) {
+        if (initialized && parentId && projectProjectId) {
             try {
                 var response;
                 if (parentId === 'admin') {
-                    response = await fetch(process.env.REACT_APP_API_BASE_URL + '/api/refArchs/' + id, {
+                    response = await fetch(process.env.REACT_APP_API_BASE_URL + '/api/refArchs/' + projectProjectId, {
                         method: 'get',
                         headers: {
                             'Content-Type': 'application/json',
@@ -826,7 +826,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         },
                     });
                 } else {
-                    response = await fetch(process.env.REACT_APP_API_BASE_URL + '/blueprints/' + id, {
+                    response = await fetch(process.env.REACT_APP_API_BASE_URL + '/blueprints/' + projectProjectId, {
                         method: 'get',
                         headers: {
                             'Content-Type': 'application/json',
@@ -1347,19 +1347,21 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             deployment: Data?.deployment,
         };
         // } else delete Data?.metadata;
-        if (id) {
-            Data.projectId = id;
+        if (projectProjectId) {
+            Data.projectId = projectProjectId;
         }
         if (projectParentId) {
             Data.parentId = projectParentId;
         }
         setNodes(NewNodes);
         setGeneratingData(structuredClone(Data));
-
+        Data.validate = 'VALIDATED';
         if (Data?.save) {
+            var saved = Data.save;
             delete Data?.save;
-            SaveData(Data);
+            SaveData(Data, saved);
         } else {
+            SaveData(Data, 'VALIDATED');
             setIsLoading(true);
         }
         if (submit) {
@@ -1372,10 +1374,11 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     const [isGenerating, setIsGenerating] = useState(false);
     const [image, setImage] = useState(null);
 
-    const SaveData = async data => {
+    const SaveData = async (data, saved) => {
         const Data = data || generatingData;
         const generatedImage = await CreateImage(Object.values(nodes));
         if (generatedImage) Data.imageUrl = generatedImage;
+        if (saved != 'VALIDATED') data.validate = 'DRAFT';
         try {
             var response;
             if (parentId === 'admin') {
@@ -1398,23 +1401,29 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 });
             }
             if (response.ok) {
-                toast.close(toastIdRef.current);
-                toastIdRef.current = toast({
-                    title: `Prototype ${projectName}  is saved.`,
-                    status: 'success',
-                    duration: 3000,
-                    variant: 'left-accent',
-                    isClosable: true,
-                });
+                const responseData = await response.json();
+                if (!projectProjectId) setProjectprojectId(responseData.projectId);
+                if (saved == 'save') {
+                    toast.close(toastIdRef.current);
+                    toastIdRef.current = toast({
+                        title: `Prototype ${projectName}  is saved as draft.`,
+                        status: 'success',
+                        duration: 3000,
+                        variant: 'left-accent',
+                        isClosable: true,
+                    });
+                }
             } else {
-                toast.close(toastIdRef.current);
-                toastIdRef.current = toast({
-                    title: `Unable to save prototype.Please try again`,
-                    status: 'error',
-                    duration: 3000,
-                    variant: 'left-accent',
-                    isClosable: true,
-                });
+                if (saved == 'save') {
+                    toast.close(toastIdRef.current);
+                    toastIdRef.current = toast({
+                        title: `Unable to save prototype.Please try again`,
+                        status: 'error',
+                        duration: 3000,
+                        variant: 'left-accent',
+                        isClosable: true,
+                    });
+                }
             }
         } catch (error) {
             console.error(error);
@@ -1839,14 +1848,17 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         }
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
         if (projectName && projectName !== 'clear#canvas') {
             if (!keycloak.authenticated) {
-                keycloak.login({
-                    redirectUri: process.env.REACT_APP_UI_BASE_URL + 'canvasToCode',
-                });
+                try {
+                    await keycloak.login({
+                        redirectUri: process.env.REACT_APP_UI_BASE_URL + 'canvasToCode',
+                    });
+                    saveData('save');
+                } catch (error) {}
+                saveData('save');
             }
-            saveData(true);
         } else {
             handleInvalidProjectName();
         }
@@ -1877,15 +1889,21 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         data.metadata.edges = edgesData;
         data.projectName = projectName;
         data.services = {};
+        data.communications = {};
         for (var val in nodes) {
             if (val.startsWith('UI') || val.startsWith('Service') || val.startsWith('Gateway')) {
                 data.services[currentIndex] = data.metadata.nodes[val].data;
                 currentIndex++;
             }
         }
+        currentIndex = 0;
+        for (var val in edges) {
+            data.communications[currentIndex] = data.metadata.edges[val].data;
+            currentIndex++;
+        }
 
         if (isSave) {
-            data.save = true;
+            data.save = isSave;
         }
 
         onsubmit(data);
@@ -1913,6 +1931,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     deployementData={generatingData}
                     generateMode
                     onSubmit={onsubmit}
+                    saveData={saveData}
                 />
                 {isGenerating && (
                     <Flex
@@ -2116,7 +2135,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                                         }}
                                     />
                                 </Tooltip>
-                                <Tooltip label="Review" placement="left" bg="blue.500" color="white" borderRadius="md" fontSize="sm">
+                                <Tooltip label="Validate" placement="left" bg="blue.500" color="white" borderRadius="md" fontSize="sm">
                                     <IconButton hidden={viewOnly} icon={<Icon as={GoCodeReview} />} size="md" onClick={handleSubmit} />
                                 </Tooltip>
                             </VStack>

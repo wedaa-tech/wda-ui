@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Grid, Button, GridItem, Flex, IconButton, useColorModeValue, Box } from '@chakra-ui/react';
+import { Grid, Button, GridItem, Flex, IconButton, useColorModeValue, Box, Tooltip } from '@chakra-ui/react';
 import './index.css';
 import ReactFlow, {
     Background,
@@ -65,11 +65,14 @@ export const ReviewFlow = ({
     deployementData = null,
     onSubmit = null,
     published = false,
+    saveData,
+    reviewData = null,
 }) => {
     const [nodes, setNodes, onNodesChange] = useNodesState(useExample ? example.nodes : nodesData);
     const [edges, setEdges, onEdgesChange] = useEdgesState(useExample ? example.edges : edgesData);
 
     const history = useHistory();
+    const { initialized, keycloak } = useKeycloak();
 
     const { parentId, id } = useParams();
     const [sideBarOpen, setSideBarOpen] = useState(true);
@@ -96,17 +99,76 @@ export const ReviewFlow = ({
         [setCenter],
     );
 
-    const handleEditClick = () => {
+    const handleEditClick = async () => {
         if (!setViewOnly) {
+            try {
+                reviewData.validate = 'DRAFT';
+                var response;
+                if (reviewData?.request_json?.projectName) reviewData.projectName = reviewData?.request_json?.projectName;
+                if (reviewData?.id) reviewData.projectId = reviewData?.id;
+                if (reviewData?.project_id) reviewData.projectId = reviewData.project_id;
+                if (parentId === 'admin') {
+                    response = await fetch(process.env.REACT_APP_API_BASE_URL + '/api/refArchs', {
+                        method: 'post',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                        },
+                        body: JSON.stringify(reviewData),
+                    });
+                } else {
+                    response = await fetch(process.env.REACT_APP_API_BASE_URL + '/api/blueprints', {
+                        method: 'post',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                        },
+                        body: JSON.stringify(reviewData),
+                    });
+                }
+            } catch (error) {
+                console.error(error);
+            }
             history.replace('/project/' + parentId + '/architecture/' + id + '/edit');
         } else {
+            saveData('draft');
             setViewOnly(false);
         }
     };
 
-    const handleBackClick = () => {
+    const handleBackClick = async () => {
+        try {
+            reviewData.validate = 'DRAFT';
+            var response;
+            if (parentId === 'admin') {
+                response = await fetch(process.env.REACT_APP_API_BASE_URL + '/api/refArchs', {
+                    method: 'post',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                    },
+                    body: JSON.stringify(reviewData),
+                });
+            } else {
+                response = await fetch(process.env.REACT_APP_API_BASE_URL + '/api/blueprints', {
+                    method: 'post',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                    },
+                    body: JSON.stringify(reviewData),
+                });
+            }
+        } catch (error) {
+            console.error(error);
+        }
         if (parentId === 'admin') history.replace('/architectures');
         else history.replace('/prototypes');
+    };
+
+    const setViewMode = () => {
+        saveData('draft');
+        setViewOnly(false);
     };
 
     const handleToggleContent = () => {
@@ -130,9 +192,21 @@ export const ReviewFlow = ({
                     fitView
                 >
                     <Panel position="top-left">
-                        <Button colorScheme="blue" onClick={generateMode ? () => setViewOnly(false) : handleBackClick}>
+                        {/* <Button colorScheme="blue" onClick={generateMode ? () => setViewMode : handleBackClick}>
                             Back
-                        </Button>
+                        </Button> */}
+                        <Tooltip label="Back to Canvas" placement="left" bg="blue.500" color="white" borderRadius="md" fontSize="sm">
+                            <IconButton
+                                onClick={handleEditClick}
+                                colorScheme="blue"
+                                position="absolute"
+                                top="0px"
+                                // left="-64px"
+                                zIndex={999}
+                                icon={<EditIcon />}
+                                // marginTop={1}
+                            />
+                        </Tooltip>
                         <Button hidden={true} colorScheme="blue" onClick={() => console.log(deployementData)}>
                             Print
                         </Button>
@@ -158,14 +232,14 @@ export const ReviewFlow = ({
                         onClick={handleToggleContent}
                         colorScheme="blue"
                         position="absolute"
-                        top="10px"
+                        top="15px"
                         left="-64px"
                         zIndex={999}
                         icon={sideBarOpen ? <CloseIcon /> : <HamburgerIcon />}
                         mb={2}
                         marginRight={4}
                     />
-                    {!generateMode && (
+                    {/* {!generateMode && (
                         <IconButton
                             onClick={handleEditClick}
                             colorScheme="blue"
@@ -176,7 +250,7 @@ export const ReviewFlow = ({
                             icon={<EditIcon />}
                             marginTop={4}
                         />
-                    )}
+                    )} */}
                 </Box>
                 <CodeReview
                     nodeId={nodeId}
@@ -200,7 +274,7 @@ const Review = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [published, setPublished] = useState(false);
     const { parentId, id } = useParams();
-
+    const [reviewData, setReviewData] = useState(null);
     useEffect(() => {
         if (initialized) {
             if (parentId === 'admin') {
@@ -214,6 +288,7 @@ const Review = () => {
                     .then(response => response.json())
                     .then(result => {
                         if (result?.metadata) {
+                            setReviewData(result);
                             setNodes(Object.values(result.metadata?.nodes || []));
                             setEdges(Object.values(result.metadata?.edges || []));
                             setDeployementData(structuredClone(result.request_json));
@@ -235,6 +310,7 @@ const Review = () => {
                     .then(response => response.json())
                     .then(result => {
                         if (result?.metadata) {
+                            setReviewData(result);
                             setNodes(Object.values(result.metadata?.nodes || []));
                             setEdges(Object.values(result.metadata?.edges || []));
                             setDeployementData(structuredClone(result.request_json));
@@ -252,7 +328,13 @@ const Review = () => {
 
     return (
         <ReactFlowProvider>
-            <ReviewFlow nodesData={nodes} edgesData={edges} deployementData={deployementData} published={published} />
+            <ReviewFlow
+                nodesData={nodes}
+                edgesData={edges}
+                deployementData={deployementData}
+                published={published}
+                reviewData={reviewData}
+            />
         </ReactFlowProvider>
     );
 };
