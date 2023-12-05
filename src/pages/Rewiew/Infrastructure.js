@@ -6,7 +6,7 @@ import minikube from '../../assets/minikube.png';
 import none from '../../assets/none-icon.jpg';
 
 const Infrastructure = ({ onSubmit, projectData, generateZip }) => {
-    const [selectedImage, setSelectedImage] = useState(null);
+    const [selectedImage, setSelectedImage] = useState('none');
     const [checkLength, setCheckLength] = useState(false);
     const [DeploymentData, setDeploymentData] = useState({});
     const [userData, setUserData] = useState({});
@@ -402,7 +402,7 @@ const Infrastructure = ({ onSubmit, projectData, generateZip }) => {
                         <Divider my={2} />
 
                         <Text fontWeight="bold" mb={3}>
-                            LOCAL:
+                            None:
                         </Text>
                         <Text pl={2}> Generate project code without infrastructure deployment scripts.</Text>
                     </Box>

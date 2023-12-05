@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, ModalContent, ModalHeader, ModalCloseButton, ModalBody, Input, Button, FormLabel, FormControl } from '@chakra-ui/react';
 
-const CustomNodeModal = ({ isOpen, onClose, onSubmit, CurrentNode,handleColorClick }) => {
+const CustomNodeModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick }) => {
     const IntialState = {
         label: '',
         ...CurrentNode,
@@ -79,66 +79,66 @@ const CustomNodeModal = ({ isOpen, onClose, onSubmit, CurrentNode,handleColorCli
                             />
                         </FormControl>
                         <FormLabel>Background Color</FormLabel>
-                    <div
-                        style={{
-                            display: 'flex',
-                            flexDirection: 'row',
-                            marginBottom: '20px',
-                            gap: '15px',
-                        }}
-                    >
                         <div
                             style={{
-                                width: '30px',
-                                height: '30px',
-                                borderRadius: '50%',
-                                backgroundColor: '#D5E8D4',
-                                cursor: 'pointer',
+                                display: 'flex',
+                                flexDirection: 'row',
+                                marginBottom: '20px',
+                                gap: '15px',
                             }}
-                            onClick={() => handleColorClick('#D5E8D4')}
-                        ></div>
-                        <div
-                            style={{
-                                width: '30px',
-                                height: '30px',
-                                borderRadius: '50%',
-                                backgroundColor: '#FFF2CC',
-                                cursor: 'pointer',
-                            }}
-                            onClick={() => handleColorClick('#FFF2CC')}
-                        ></div>
-                        <div
-                            style={{
-                                width: '30px',
-                                height: '30px',
-                                borderRadius: '50%',
-                                backgroundColor: '#DAE8FC',
-                                cursor: 'pointer',
-                            }}
-                            onClick={() => handleColorClick('#DAE8FC')}
-                        ></div>
-                        <div
-                            style={{
-                                width: '30px',
-                                height: '30px',
-                                borderRadius: '50%',
-                                backgroundColor: '#FFE6CC',
-                                cursor: 'pointer',
-                            }}
-                            onClick={() => handleColorClick('#FFE6CC')}
-                        ></div>
-                        <div
-                            style={{
-                                width: '30px',
-                                height: '30px',
-                                border: '1px solid #cfcfcf',
-                                borderRadius: '50%',
-                                backgroundColor: '#fff',
-                                cursor: 'pointer',
-                            }}
-                            onClick={() => handleColorClick('rgba(255, 255, 255, 0)')}
-                        ></div>
-                    </div>
+                        >
+                            <div
+                                style={{
+                                    width: '30px',
+                                    height: '30px',
+                                    borderRadius: '50%',
+                                    backgroundColor: '#ffc9c9',
+                                    cursor: 'pointer',
+                                }}
+                                onClick={() => handleColorClick('#ffc9c9')}
+                            ></div>
+                            <div
+                                style={{
+                                    width: '30px',
+                                    height: '30px',
+                                    borderRadius: '50%',
+                                    backgroundColor: '#b2f2bb',
+                                    cursor: 'pointer',
+                                }}
+                                onClick={() => handleColorClick('#b2f2bb')}
+                            ></div>
+                            <div
+                                style={{
+                                    width: '30px',
+                                    height: '30px',
+                                    borderRadius: '50%',
+                                    backgroundColor: '#a5d8ff',
+                                    cursor: 'pointer',
+                                }}
+                                onClick={() => handleColorClick('#a5d8ff')}
+                            ></div>
+                            <div
+                                style={{
+                                    width: '30px',
+                                    height: '30px',
+                                    borderRadius: '50%',
+                                    backgroundColor: '#ffec99',
+                                    cursor: 'pointer',
+                                }}
+                                onClick={() => handleColorClick('#ffec99')}
+                            ></div>
+                            <div
+                                style={{
+                                    width: '30px',
+                                    height: '30px',
+                                    border: '1px solid #cfcfcf',
+                                    borderRadius: '50%',
+                                    backgroundColor: '#fff',
+                                    cursor: 'pointer',
+                                }}
+                                onClick={() => handleColorClick('rgba(255, 255, 255, 0)')}
+                            ></div>
+                        </div>
                     </div>
                     <Button onClick={() => onSubmit(customData)} style={{ display: 'block', margin: '0 auto' }}>
                         Save

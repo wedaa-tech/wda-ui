@@ -162,7 +162,7 @@ function ArchitecturesSection() {
     }, [initialized, keycloak?.realmAccess?.roles, keycloak?.token, location.pathname]);
 
     const handleOpenArchitecture = (project_id, data) => {
-        if (data.draft || data?.request_json?.services)
+        if (data.validationStatus === 'VALIDATED')
             history.push('/project/' + parentId + '/architecture/' + project_id + '/details', {
                 replace: true,
                 state: data,
@@ -288,7 +288,7 @@ function ArchitecturesSection() {
                 <Box maxWidth={96} minWidth={96}></Box>
             </SimpleGrid>
             <Heading className="not-selectable" as="h3" size="lg" my="10">
-                {parentId === 'admin' ? 'Your Reference Architectures' : 'Your Prototypes'}
+                {parentId === 'admin' ? 'Your Reference Architectures' : 'My Prototypes'}
             </Heading>
             <SimpleGrid className="simple-grid" minChildWidth="null" columns={{ base: 1, sm: 2, md: 3 }} spacing={10}>
                 {architectures.map((architecture, index) => (
