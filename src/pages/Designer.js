@@ -1851,14 +1851,11 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     const handleSave = async () => {
         if (projectName && projectName !== 'clear#canvas') {
             if (!keycloak.authenticated) {
-                try {
-                    await keycloak.login({
-                        redirectUri: process.env.REACT_APP_UI_BASE_URL + 'canvasToCode',
-                    });
-                    saveData('save');
-                } catch (error) {}
-                saveData('save');
+                await keycloak.login({
+                    redirectUri: process.env.REACT_APP_UI_BASE_URL + 'canvasToCode',
+                });
             }
+            saveData('save');
         } else {
             handleInvalidProjectName();
         }

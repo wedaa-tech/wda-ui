@@ -62,7 +62,7 @@ const Wizard = () => {
                 </Text>
                 <Button
                     div
-                    onClick={() => history.push('/wizardselection')}
+                    onClick={() => history.push('/canvasToCode')}
                     marginTop={6}
                     background={'hsl(42, 83%, 53%)'}
                     colorScheme="yellow"
@@ -84,8 +84,8 @@ const Wizard = () => {
                         gap: '20px',
                     }}
                 >
-                    <Text fontSize={'5xl'} fontWeight={'bold'}>
-                        Our Top Picks
+                    <Text fontSize={'4xl'} fontWeight={'bold'}>
+                        Quickstart with App Wizard
                     </Text>
                 </Box>
                 <Flex
@@ -128,7 +128,7 @@ const Wizard = () => {
                         style={{
                             color: '#0E1E2F',
                             fontFeatureSettings: "'clig' off, 'liga' off",
-                            fontSize: '44px',
+                            fontSize: '4xl',
                             fontStyle: 'normal',
                             fontWeight: '600',
                             lineHeight: '130%',

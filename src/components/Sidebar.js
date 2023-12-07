@@ -568,12 +568,17 @@ const Sidebar = ({
                                 ) : (
                                     <span style={{ color: 'lightgrey', fontSize: '12px', marginRight: '10px' }}>&#x25B6;</span>
                                 )}
-                                Gateway
+                                API Gateway
                             </h1>
                             {selectedOption === 'Gateway' && (
                                 <>
                                     <div className="selectorNode" onDragStart={event => onDragStart(event, 'default', 'Gateway')} draggable>
-                                        <img width="180px" style={{ marginTop: '10px' }} src={gateway} alt="postgreslogo"></img>
+                                        <img
+                                            width="180px"
+                                            style={{ marginTop: '10px', marginLeft: '14px' }}
+                                            src={gateway}
+                                            alt="postgreslogo"
+                                        ></img>
                                     </div>
                                 </>
                             )}
@@ -607,14 +612,14 @@ const Sidebar = ({
                                         onDragStart={event => onDragStart(event, 'default', 'Service_spring')}
                                         draggable
                                     >
-                                        <img width="130px" style={{ margin: '-10px -50px -30px 5px' }} src={srv1} alt="springlogo"></img>
+                                        <img width="130px" style={{ margin: '-10px -50px -30px 10px' }} src={srv1} alt="springlogo"></img>
                                     </div>
                                     <div
                                         className="selectorNode"
                                         onDragStart={event => onDragStart(event, 'default', 'Service_gomicro')}
                                         draggable
                                     >
-                                        <img width="100px" style={{ margin: '-30px 0px -20px 0px' }} src={srv2} alt="gologo"></img>
+                                        <img width="100px" style={{ margin: '-30px 0px -20px 8px' }} src={srv2} alt="gologo"></img>
                                     </div>
                                 </>
                             )}
@@ -648,7 +653,7 @@ const Sidebar = ({
                                         onDragStart={event => onDragStart(event, 'default', 'UI_docusaurus')}
                                         draggable
                                     >
-                                        <img width="180px" style={{ margin: '0px 0px 0px -20px' }} src={docs} alt="docusauruslogo"></img>
+                                        <img width="140px" style={{ margin: '0px 0px 0px -2px' }} src={docs} alt="docusauruslogo"></img>
                                     </div>
                                 </>
                             )}
@@ -682,7 +687,12 @@ const Sidebar = ({
                                         onDragStart={event => onDragStart(event, 'default', 'Auth_oauth2')}
                                         draggable
                                     >
-                                        <img width="145px" src={keycloakIcon} alt="keycloaklogo"></img>
+                                        <img
+                                            width="140px"
+                                            src={keycloakIcon}
+                                            style={{ marginTop: '-20px', marginLeft: '12px' }}
+                                            alt="keycloaklogo"
+                                        ></img>
                                     </div>
                                 </>
                             )}
@@ -716,14 +726,19 @@ const Sidebar = ({
                                         onDragStart={event => onDragStart(event, 'default', 'Database_postgresql')}
                                         draggable
                                     >
-                                        <img width="145px" style={{ marginTop: '10px' }} src={db1} alt="postgreslogo"></img>
+                                        <img
+                                            width="120px"
+                                            style={{ marginTop: '10px', marginLeft: '12px' }}
+                                            src={db1}
+                                            alt="postgreslogo"
+                                        ></img>
                                     </div>
                                     <div
                                         className="selectorNode"
                                         onDragStart={event => onDragStart(event, 'default', 'Database_mongodb')}
                                         draggable
                                     >
-                                        <img width="145px" style={{ margin: '10px 0px 10px 15px' }} src={db2} alt="mongologo"></img>
+                                        <img width="120px" style={{ margin: '10px 0px 10px 22px' }} src={db2} alt="mongologo"></img>
                                     </div>
                                 </>
                             )}
@@ -759,7 +774,7 @@ const Sidebar = ({
                                         onDragStart={event => onDragStart(event, 'default', 'Discovery_eureka')}
                                         draggable
                                     >
-                                        <img width="80px" height="40px" src={eurkea} alt="eurekalogo"></img>
+                                        <img width="70px" height="40px" src={eurkea} alt="eurekalogo" style={{ marginLeft: '13px' }}></img>
                                     </div>
                                 </>
                             )}
@@ -797,7 +812,7 @@ const Sidebar = ({
                                         onDragStart={event => onDragStart(event, 'default', 'Load_eck')}
                                         draggable
                                     >
-                                        <img width="120px" src={eck} alt="ecklogo" />
+                                        <img width="100px" src={eck} alt="ecklogo" style={{ marginLeft: '15px' }} />
                                     </div>
                                 </>
                             )}
