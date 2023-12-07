@@ -123,7 +123,7 @@ const FeedbackModal = ({ isOpen, onClose }) => {
                 <ModalCloseButton />
                 <ModalBody pb={2} mt={0}>
                     <FormLabel fontSize="xl" textAlign="center">
-                        We value your Feedback,
+                        We value your Feedback
                     </FormLabel>
                     <FormLabel fontSize="xl" textAlign="center" mb={4}>
                         Help us to get better!
