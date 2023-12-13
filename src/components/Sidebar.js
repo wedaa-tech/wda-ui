@@ -413,7 +413,7 @@ const Sidebar = ({
             <Tabs
                 minWidth={'300px'}
                 onChange={index => setTabIndex(index)}
-                h="calc(100vh - 140px)"
+                h="calc(100vh - 10%)"
                 index={tabIndex}
                 colorScheme="black"
                 transition={'hidden 0.2s'}
