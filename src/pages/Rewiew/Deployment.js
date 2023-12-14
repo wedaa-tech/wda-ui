@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useReactFlow } from 'reactflow';
 import { Table, Thead, Tbody, Tr, Th, Td, Box } from '@chakra-ui/react';
 
-const Deployement = ({ deployementData }) => {
-    if (!deployementData?.deployement) {
-        return <Box p={4}>Deployement Data Not Found.</Box>;
+const Deployment = ({ deploymentData }) => {
+    if (!deploymentData?.deployment) {
+        return <Box p={4}>Deployment Data Not Found.</Box>;
     } else {
         return (
             <Table variant="simple">
@@ -15,10 +15,10 @@ const Deployement = ({ deployementData }) => {
                     </Tr>
                 </Thead>
                 <Tbody>
-                    {Object.keys(deployementData.deployement).map(key => (
+                    {Object.keys(deploymentData.deployment).map(key => (
                         <Tr key={key}>
                             <Td>{key}</Td>
-                            <Td>{deployementData.deployement[key]}</Td>
+                            <Td>{deploymentData.deployment[key]}</Td>
                         </Tr>
                     ))}
                 </Tbody>
@@ -27,4 +27,4 @@ const Deployement = ({ deployementData }) => {
     }
 };
 
-export default Deployement;
+export default Deployment;
