@@ -8,6 +8,28 @@ body {
     min-height: 100vh; /* ensure body takes up full viewport height */
 }
 
+/* ===== Scrollbar CSS ===== */
+/* Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #828282 #ffffff;
+}
+
+/* Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+    width: 12px;
+}
+
+*::-webkit-scrollbar-track {
+    background: #ffffff;
+}
+
+*::-webkit-scrollbar-thumb {
+    background-color: #828282;
+    border-radius: 10px;
+    border: 3px solid #ffffff;
+}
+
 .wrapper {
     flex: 1; /* make wrapper take up remaining vertical space */
 }
@@ -39,7 +61,6 @@ body,
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: sans-serif;
 }
 
 .dndflow {

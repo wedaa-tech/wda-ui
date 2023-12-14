@@ -814,11 +814,11 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     const [projectParentId, setProjectParentId] = useState(parentId || location.state?.parentId);
     const [projectProjectId, setProjectprojectId] = useState(id);
     const loadData = async () => {
-        if (initialized && parentId && projectProjectId) {
+        if (initialized && projectParentId && id) {
             try {
                 var response;
-                if (parentId === 'admin') {
-                    response = await fetch(process.env.REACT_APP_API_BASE_URL + '/api/refArchs/' + projectProjectId, {
+                if (projectParentId === 'admin') {
+                    response = await fetch(process.env.REACT_APP_API_BASE_URL + '/api/refArchs/' + id, {
                         method: 'get',
                         headers: {
                             'Content-Type': 'application/json',
@@ -837,7 +837,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 if (response.ok) {
                     const result = await response.json();
                     if (result?.metadata) {
-                        if (parentId === 'admin') setProjectParentId(parentId);
+                        if (projectParentId === 'admin') setProjectParentId(projectParentId);
                         else setProjectParentId(result.parentId);
                         setProjectName(result.request_json?.projectName);
                         return await result;
@@ -964,9 +964,9 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         document.title = 'WeDAA';
         setShowDiv(sharedMetadata ? false : true);
         let data = location?.state;
-        if (parentId) {
+        if (projectParentId) {
             if (!id) {
-                setProjectParentId(parentId);
+                setProjectParentId(projectParentId);
                 if (localStorage?.data != undefined && localStorage.data != null && localStorage.data?.metadata?.nodes != '') {
                     data = JSON.parse(localStorage.data);
                     setuserData(data);
@@ -1381,7 +1381,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         if (saved != 'VALIDATED') data.validationStatus = 'DRAFT';
         try {
             var response;
-            if (parentId === 'admin') {
+            if (projectParentId === 'admin') {
                 response = await fetch(process.env.REACT_APP_API_BASE_URL + '/api/refArchs', {
                     method: 'post',
                     headers: {
@@ -1454,7 +1454,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         } finally {
             if (initialized && keycloak.authenticated) {
                 clear();
-                if (parentId === 'admin') {
+                if (projectParentId === 'admin') {
                     history.replace('/project/admin/architecture/' + blueprintId + '/details');
                 } else {
                     history.replace('/project/' + projectParentId + '/architecture/' + blueprintId + '/details');
