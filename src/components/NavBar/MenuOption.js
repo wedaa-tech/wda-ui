@@ -1,8 +1,24 @@
-import { Flex, Menu, MenuButton, Link, MenuItem, MenuList, Button } from '@chakra-ui/react';
+import { Flex, Menu, MenuButton, MenuItem, MenuList, Button } from '@chakra-ui/react';
 import { ArrowDown2, ArrowUp2 } from 'iconsax-react'; // Replace with your component paths
 import React from 'react';
+import { Link as ChakraLink } from '@chakra-ui/react';
+import { Link as RouterLink } from 'react-router-dom';
 
-import { menuData } from './CONSTANTS';
+const ConditionalLink = ({ to, external, children, ...rest }) => {
+    if (external) {
+        return (
+            <ChakraLink href={to} isExternal {...rest}>
+                {children}
+            </ChakraLink>
+        );
+    } else {
+        return (
+            <RouterLink to={to} {...rest}>
+                {children}
+            </RouterLink>
+        );
+    }
+};
 
 const MenuOption = ({ option, isLoggedIn, isAdmin, name }) => {
     if (option.login && !isLoggedIn) {
@@ -15,7 +31,7 @@ const MenuOption = ({ option, isLoggedIn, isAdmin, name }) => {
 
     if (!option.expandable) {
         return (
-            <Link href={option.path} isExternal={option.external}>
+            <ConditionalLink to={option.path} external={option.external}>
                 <Button
                     as={Flex}
                     bg={'black'}
@@ -32,7 +48,7 @@ const MenuOption = ({ option, isLoggedIn, isAdmin, name }) => {
                         {name}
                     </Flex>
                 </Button>
-            </Link>
+            </ConditionalLink>
         );
     }
 
@@ -56,11 +72,11 @@ const MenuOption = ({ option, isLoggedIn, isAdmin, name }) => {
                     {option.expandable && (
                         <MenuList as={Flex} flexDirection={'column'} marginTop={6} padding={2} gap={4} color={'black'} bgColor={'#F7F6FA'}>
                             {Object.keys(option.expandable).map((element, index) => (
-                                <Link href={option.expandable[element].path} isExternal={option.expandable[element].external}>
+                                <ConditionalLink to={option.expandable[element].path} external={option.expandable[element].external}>
                                     <MenuItem key={index} bgColor={'#F7F6FA'} icon={option.expandable[element].icon}>
                                         {element}
                                     </MenuItem>
-                                </Link>
+                                </ConditionalLink>
                             ))}
                         </MenuList>
                     )}
