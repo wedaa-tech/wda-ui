@@ -128,7 +128,7 @@ const Wizard = () => {
                         style={{
                             color: '#0E1E2F',
                             fontFeatureSettings: "'clig' off, 'liga' off",
-                            fontSize: '4xl',
+                            fontSize: '2.25rem',
                             fontStyle: 'normal',
                             fontWeight: '600',
                             lineHeight: '130%',

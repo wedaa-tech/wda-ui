@@ -129,7 +129,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     const [projectName, setProjectName] = useState(null);
 
     useEffect(() => {
-        if (initialized) {
+        if (initialized && keycloak?.authenticated) {
             let defaultProjectId;
             fetch(process.env.REACT_APP_API_BASE_URL + '/api/projects', {
                 method: 'get',
@@ -1248,7 +1248,6 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         setUpdated(false);
         const NewNodes = { ...nodes };
         const NewEdges = { ...edges };
-
         const authEdges = [];
         const serviceRegistryEdges = [];
         const logManagementEdges = [];
@@ -1514,7 +1513,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 type: MarkerType.ArrowClosed,
             };
             UpdatedEdges[IsEdgeopen].className = 'success';
-        } else {
+        } else if (Data.type === 'asynchronous') {
             UpdatedEdges[IsEdgeopen].markerEnd = {
                 color: '#bcbaba',
                 type: MarkerType.ArrowClosed,
@@ -1925,7 +1924,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     edgesData={Object.values(edges)}
                     setViewOnly={setIsLoading}
                     generateZip={generateZip}
-                    deployementData={generatingData}
+                    deploymentData={generatingData}
                     generateMode
                     onSubmit={onsubmit}
                     saveData={saveData}

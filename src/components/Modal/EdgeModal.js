@@ -37,8 +37,10 @@ const EdgeModal = ({ isOpen, CurrentEdge, onClose, handleEdgeData, handleColorCl
         };
     }, [isOpen, onClose]);
 
-    const isEmpty = edgeData.type === '' || edgeData.framework === '';
-
+    const commonServiceType = isOpen.split('-')[1];
+    const isCommonService =
+        commonServiceType === 'authenticationType' || commonServiceType === 'logManagement' || commonServiceType === 'serviceDiscoveryType';
+    const isEmpty = isCommonService ? false : edgeData.type === '' || edgeData.framework === '';
     const handleData = (column, value) => {
         if (column === 'type') {
             setEdgeData(prev => ({

@@ -3,13 +3,13 @@ import { Box, Tabs, TabList, Tab, TabPanels, TabPanel, Button, Flex, useToast } 
 import Documentation from './Documentation';
 import FolderTree from './FolderTree';
 import Readme from './Readme';
-import Deployement from './Deployement';
+import Deployment from './Deployment';
 import { useReactFlow } from 'reactflow';
 import Infrastructure from './Infrastructure';
 import { useKeycloak } from '@react-keycloak/web';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 
-function CodeReview({ nodeId, generateMode = false, deployementData = null, onSubmit = null, onClick = null, published, parentId }) {
+function CodeReview({ nodeId, generateMode = false, deploymentData = null, onSubmit = null, onClick = null, published, parentId }) {
     const { getNode } = useReactFlow();
 
     const { initialized, keycloak } = useKeycloak();
@@ -23,8 +23,8 @@ function CodeReview({ nodeId, generateMode = false, deployementData = null, onSu
 
     useEffect(() => {
         if (
-            Object.keys(deployementData.services).length === 1 &&
-            Object.values(deployementData.services)[0]?.applicationFramework === 'docusaurus'
+            Object.keys(deploymentData.services).length === 1 &&
+            Object.values(deploymentData.services)[0]?.applicationFramework === 'docusaurus'
         ) {
             setDocusaurusCheck(true);
         }
@@ -37,7 +37,7 @@ function CodeReview({ nodeId, generateMode = false, deployementData = null, onSu
             }
         };
         loadData();
-    }, [node, getNode, nodeId, deployementData]);
+    }, [node, getNode, nodeId, deploymentData]);
 
     const toast = useToast({
         containerStyle: {
@@ -50,7 +50,7 @@ function CodeReview({ nodeId, generateMode = false, deployementData = null, onSu
 
     const publishArchitecture = () => {
         if (initialized) {
-            fetch(process.env.REACT_APP_API_BASE_URL + '/api/publish/' + deployementData.projectId, {
+            fetch(process.env.REACT_APP_API_BASE_URL + '/api/publish/' + deploymentData.projectId, {
                 method: 'put',
                 headers: {
                     'Content-Type': 'application/json',
@@ -63,7 +63,7 @@ function CodeReview({ nodeId, generateMode = false, deployementData = null, onSu
                 })
                 .catch(error => console.error('Error updating Architecture:', error));
         }
-        var name = deployementData.projectName;
+        var name = deploymentData.projectName;
         var msg = `Architecture ${name[0].toUpperCase() + name.slice(1)} is ${isArchPublished ? 'Revoked' : 'Published'}`;
         toast.close(toastIdRef.current);
         toast({
@@ -86,11 +86,11 @@ function CodeReview({ nodeId, generateMode = false, deployementData = null, onSu
                     <Tab>Configuration</Tab>
                     {/* <Tab hidden={generateMode}>Folder Structure</Tab> */}
                     <Tab hidden={generateMode}>README.md</Tab>
-                    {!docusaurusCheck && parentId !== 'admin' && <Tab>{generateMode ? 'Iaac' : 'Deployement'}</Tab>}
+                    {!docusaurusCheck && parentId !== 'admin' && <Tab>{generateMode ? 'IaaC' : 'Deployment'}</Tab>}
                 </TabList>
                 <TabPanels height={'100%'}>
                     <TabPanel height={'100%'}>
-                        <Documentation nodeData={deployementData} nodeId={nodeId} generateMode />
+                        <Documentation nodeData={deploymentData} nodeId={nodeId} generateMode />
                     </TabPanel>
                     {/* <TabPanel height={'inherit'}>
                         <FolderTree nodeType={nodeType} />
@@ -101,9 +101,9 @@ function CodeReview({ nodeId, generateMode = false, deployementData = null, onSu
                     {!docusaurusCheck && (
                         <TabPanel hidden={docusaurusCheck} padding={0} height={'100%'}>
                             {!generateMode ? (
-                                <Deployement deployementData={deployementData} />
+                                <Deployment deploymentData={deploymentData} />
                             ) : (
-                                <Infrastructure projectData={deployementData} onSubmit={onSubmit} generateZip={onClick} />
+                                <Infrastructure projectData={deploymentData} onSubmit={onSubmit} generateZip={onClick} />
                             )}
                         </TabPanel>
                     )}
