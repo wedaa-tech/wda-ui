@@ -14,12 +14,13 @@ import Review from './pages/Rewiew';
 import Wizard from './pages/Wizad';
 import WizardSelection from './pages/Wizad/WizardSelection';
 import FeedbackPage from './components/FeedbackTable';
+import NavBar from './components/NavBar';
 
 function App() {
     return (
         <ReactKeycloakProvider authClient={keycloak}>
             <Router className="flex h-screen">
-                <Navbar />
+                <NavBar />
                 <Switch>
                     <Route exact path="/canvasToCode">
                         <Designer update={false} />
