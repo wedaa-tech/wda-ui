@@ -62,7 +62,7 @@ export const ReviewFlow = ({
     setViewOnly = false,
     generateZip = voidfunc,
     generateMode = false,
-    deployementData = null,
+    deploymentData = null,
     onSubmit = null,
     published = false,
     saveData,
@@ -207,7 +207,7 @@ export const ReviewFlow = ({
                                 // marginTop={1}
                             />
                         </Tooltip>
-                        <Button hidden={true} colorScheme="blue" onClick={() => console.log(deployementData)}>
+                        <Button hidden={true} colorScheme="blue" onClick={() => console.log(deploymentData)}>
                             Print
                         </Button>
                     </Panel>
@@ -255,7 +255,7 @@ export const ReviewFlow = ({
                 <CodeReview
                     nodeId={nodeId}
                     generateMode={generateMode}
-                    deployementData={deployementData}
+                    deploymentData={deploymentData}
                     onSubmit={onSubmit}
                     published={published}
                     onClick={generateZip}
@@ -270,7 +270,7 @@ const Review = () => {
     const { initialized, keycloak } = useKeycloak();
     const [nodes, setNodes] = useState([]);
     const [edges, setEdges] = useState([]);
-    const [deployementData, setDeployementData] = useState(null);
+    const [deploymentData, setdeploymentData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [published, setPublished] = useState(false);
     const { parentId, id } = useParams();
@@ -291,7 +291,7 @@ const Review = () => {
                             setReviewData(result);
                             setNodes(Object.values(result.metadata?.nodes || []));
                             setEdges(Object.values(result.metadata?.edges || []));
-                            setDeployementData(structuredClone(result.request_json));
+                            setdeploymentData(structuredClone(result.request_json));
                             setPublished(result.published);
                         }
                     })
@@ -313,7 +313,7 @@ const Review = () => {
                             setReviewData(result);
                             setNodes(Object.values(result.metadata?.nodes || []));
                             setEdges(Object.values(result.metadata?.edges || []));
-                            setDeployementData(structuredClone(result.request_json));
+                            setdeploymentData(structuredClone(result.request_json));
                         }
                     })
                     .then(() => {
@@ -328,13 +328,7 @@ const Review = () => {
 
     return (
         <ReactFlowProvider>
-            <ReviewFlow
-                nodesData={nodes}
-                edgesData={edges}
-                deployementData={deployementData}
-                published={published}
-                reviewData={reviewData}
-            />
+            <ReviewFlow nodesData={nodes} edgesData={edges} deploymentData={deploymentData} published={published} reviewData={reviewData} />
         </ReactFlowProvider>
     );
 };

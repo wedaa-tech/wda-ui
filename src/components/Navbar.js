@@ -70,7 +70,7 @@ export default function Header({ children }) {
                     {initialized && keycloak.authenticated && (
                         <Link to="/prototypes">
                             <Text fontSize="md" color={location.pathname === '/prototypes' ? 'hsl(42, 83%, 53%)' : color} fontWeight="bold">
-                                MyPrototypes
+                                Prototypes
                             </Text>
                         </Link>
                     )}

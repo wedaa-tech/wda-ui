@@ -223,8 +223,8 @@ function ArchitecturesSection() {
                 />
             )} */}
             <Flex justifyContent={'space-between'} alignItems={'center'}>
-                <Heading className="not-selectable" as="h1" my="10">
-                    {parentId === 'admin' ? 'Reference Architectures' : 'Prototypes'}
+                <Heading className="not-selectable" as="h1" my="6">
+                    {/* {parentId === 'admin' ? 'Reference Architectures' : 'Prototypes'} */}
                 </Heading>
                 {/* {!(parentId === 'admin') && (
                     <Text justifyItems={'flex-end'} display={'grid'} fontWeight="bold">
@@ -288,7 +288,7 @@ function ArchitecturesSection() {
                 <Box maxWidth={96} minWidth={96}></Box>
             </SimpleGrid>
             <Heading className="not-selectable" as="h3" size="lg" my="10">
-                {parentId === 'admin' ? 'Your Reference Architectures' : 'My Prototypes'}
+                {parentId === 'admin' ? 'Reference Architectures' : 'Prototypes'}
             </Heading>
             <SimpleGrid className="simple-grid" minChildWidth="null" columns={{ base: 1, sm: 2, md: 3 }} spacing={10}>
                 {architectures.map((architecture, index) => (
