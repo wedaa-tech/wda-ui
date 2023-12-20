@@ -874,24 +874,26 @@ const Sidebar = ({
                         ></div>
                     </TabPanel>
                     <TabPanel>
-                        <VStack spacing={5}>
-                            {refArch.map(element => {
-                                const metadata = structuredClone(element.metadata);
-                                return (
-                                    <Box
-                                        width={'90%'}
-                                        onDragStart={event => onDragStart(event, 'marketNode', 'marketNode', metadata)}
-                                        draggable
-                                    >
-                                        <ZoomableImageModalWrapper
-                                            imageUrl={element.imageUrl}
-                                            description="Description of image 1."
-                                            name={element.name}
-                                        />
-                                    </Box>
-                                );
-                            })}
-                        </VStack>
+                        <Box height="470px" overflow="auto">
+                            <VStack spacing={5}>
+                                {refArch.map(element => {
+                                    const metadata = structuredClone(element.metadata);
+                                    return (
+                                        <Box
+                                            width={'90%'}
+                                            onDragStart={event => onDragStart(event, 'marketNode', 'marketNode', metadata)}
+                                            draggable
+                                        >
+                                            <ZoomableImageModalWrapper
+                                                imageUrl={element.imageUrl}
+                                                description="Description of image 1."
+                                                name={element.name}
+                                            />
+                                        </Box>
+                                    );
+                                })}
+                            </VStack>
+                        </Box>
                     </TabPanel>
                 </TabPanels>
             </Tabs>

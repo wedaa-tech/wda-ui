@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Grid, Button, GridItem, Flex, IconButton, useColorModeValue, Box, Tooltip } from '@chakra-ui/react';
+import { Grid, Button, GridItem, Flex, IconButton, useColorModeValue, Box, Tooltip, Spinner, VStack } from '@chakra-ui/react';
 import './index.css';
 import ReactFlow, {
     Background,
@@ -27,6 +27,8 @@ import { useKeycloak } from '@react-keycloak/web';
 import { useHistory, useParams } from 'react-router-dom/cjs/react-router-dom.min';
 import keycloak from '../../Keycloak';
 import { CloseIcon, HamburgerIcon, EditIcon } from '@chakra-ui/icons';
+import { FaCode } from 'react-icons/fa6';
+import { saveAs } from 'file-saver';
 
 const useExample = false;
 
@@ -67,6 +69,7 @@ export const ReviewFlow = ({
     published = false,
     saveData,
     reviewData = null,
+    setIsGenerating = null,
 }) => {
     const [nodes, setNodes, onNodesChange] = useNodesState(useExample ? example.nodes : nodesData);
     const [edges, setEdges, onEdgesChange] = useEdgesState(useExample ? example.edges : edgesData);
@@ -136,6 +139,44 @@ export const ReviewFlow = ({
         }
     };
 
+    const handlesubmit = async () => {
+        console.log(reviewData);
+        setIsGenerating(true);
+        if (reviewData?.request_json?.projectName) reviewData.projectName = reviewData?.request_json?.projectName;
+        if (reviewData?.id) reviewData.projectId = reviewData?.id;
+        if (reviewData?.project_id) reviewData.projectId = reviewData.project_id;
+        if (reviewData?.request_json?.communications) reviewData.communications = reviewData?.request_json?.communications;
+        if (reviewData?.request_json?.services) reviewData.services = reviewData?.request_json?.services;
+
+        var blueprintId;
+        try {
+            const response = await fetch(process.env.REACT_APP_API_BASE_URL + '/generate', {
+                method: 'post',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                },
+                body: JSON.stringify(reviewData),
+            });
+            blueprintId = response.headers.get('blueprintid');
+            const blob = await response.blob();
+            setIsGenerating(false);
+            saveAs(blob, `${reviewData.projectName}.zip`);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            if (initialized && keycloak.authenticated) {
+                if (parentId === 'admin') {
+                    history.replace('/prototypes');
+                } else {
+                    history.replace('/architectures');
+                }
+            } else {
+                history.push('/canvasToCode');
+            }
+        }
+    };
+
     const handleBackClick = async () => {
         try {
             reviewData.validationStatus = 'DRAFT';
@@ -191,26 +232,34 @@ export const ReviewFlow = ({
                     // showInteractive={false}
                     fitView
                 >
-                    <Panel position="top-left">
-                        {/* <Button colorScheme="blue" onClick={generateMode ? () => setViewMode : handleBackClick}>
-                            Back
-                        </Button> */}
+                    <Panel position="top-left" style={{ display: 'flex', flexDirection: 'column' }}>
                         <Tooltip label="Back to Canvas" placement="left" bg="blue.500" color="white" borderRadius="md" fontSize="sm">
                             <IconButton
                                 onClick={handleEditClick}
                                 colorScheme="blue"
                                 position="absolute"
                                 top="0px"
-                                // left="-64px"
                                 zIndex={999}
                                 icon={<EditIcon />}
-                                // marginTop={1}
                             />
                         </Tooltip>
+                        {!generateMode && (
+                            <Tooltip label="Generate code" placement="left" bg="blue.500" color="white" borderRadius="md" fontSize="sm">
+                                <IconButton
+                                    onClick={handlesubmit}
+                                    colorScheme="blue"
+                                    position="absolute"
+                                    top="60px"
+                                    zIndex={999}
+                                    icon={<FaCode />}
+                                />
+                            </Tooltip>
+                        )}
                         <Button hidden={true} colorScheme="blue" onClick={() => console.log(deploymentData)}>
                             Print
                         </Button>
                     </Panel>
+
                     <Controls position="bottom-right" showInteractive={false} />
                     <Background gap={10} color="#f2f2f2" variant={BackgroundVariant.Lines} />
                 </ReactFlow>
@@ -260,6 +309,7 @@ export const ReviewFlow = ({
                     published={published}
                     onClick={generateZip}
                     parentId={parentId}
+                    setIsGenerating={setIsGenerating}
                 />
             </GridItem>
         </Grid>
@@ -275,6 +325,7 @@ const Review = () => {
     const [published, setPublished] = useState(false);
     const { parentId, id } = useParams();
     const [reviewData, setReviewData] = useState(null);
+    const [isGenerating, setIsGenerating] = useState(false);
     useEffect(() => {
         if (initialized) {
             if (parentId === 'admin') {
@@ -328,7 +379,32 @@ const Review = () => {
 
     return (
         <ReactFlowProvider>
-            <ReviewFlow nodesData={nodes} edgesData={edges} deploymentData={deploymentData} published={published} reviewData={reviewData} />
+            <ReviewFlow
+                nodesData={nodes}
+                edgesData={edges}
+                deploymentData={deploymentData}
+                published={published}
+                reviewData={reviewData}
+                setIsGenerating={setIsGenerating}
+            />
+            {isGenerating && (
+                <Flex
+                    position="fixed"
+                    top="62"
+                    left="0"
+                    right="0"
+                    bottom="0"
+                    alignItems="center"
+                    justifyContent="center"
+                    backgroundColor="#f5f5f5"
+                    zIndex="9999"
+                    display="flex"
+                    flexDirection="column"
+                >
+                    <Spinner thickness="8px" speed="0.9s" emptyColor="gray.200" color="#ebaf24" height="250px" width="250px" />
+                    <Box>Generating the Code</Box>
+                </Flex>
+            )}
         </ReactFlowProvider>
     );
 };
