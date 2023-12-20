@@ -97,9 +97,9 @@ function CodeReview({ nodeId, generateMode = false, deployementData = null, onSu
                     </TabPanel> */}
                     <TabPanel height={'100%'}>
                         <Readme nodeType={nodeType} />
-                    </TabPanel>
+                    </TabPanel >
                     {!docusaurusCheck && (
-                        <TabPanel hidden={docusaurusCheck} padding={0} height={'100%'}>
+                        <TabPanel hidden={docusaurusCheck} height={'100%'}>
                             {!generateMode ? (
                                 <Deployement deployementData={deployementData} />
                             ) : (
@@ -119,7 +119,7 @@ function CodeReview({ nodeId, generateMode = false, deployementData = null, onSu
                 {docusaurusCheck ? 'Generate' : 'Next'}
             </Button>
             <Button
-                hidden={generateMode || parentId !== 'admin'}
+                hidden={parentId !== 'admin'}
                 mx={4}
                 my={2}
                 colorScheme={isArchPublished ? 'red' : 'green'}

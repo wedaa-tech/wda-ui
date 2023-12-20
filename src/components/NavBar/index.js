@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Flex, Text, HStack, Menu, MenuButton, MenuList, MenuItem, Image, Button } from '@chakra-ui/react';
+import { Box, Flex, Text, HStack, Menu, MenuButton, MenuList, MenuItem, Image, Button, VStack } from '@chakra-ui/react';
 import MenuOption from './MenuOption';
 import './styles.css';
 import { Message } from 'iconsax-react';
@@ -26,22 +26,22 @@ const NavBar = () => {
             bgColor="#000000"
             color="white"
             padding="16px 24px"
-            minWidth="1440px"
-            minHeight="72px"
+            // minWidth="1440px"
+            height="72px"
             display="flex"
             alignItems="center"
             justifyContent="space-between"
             top={0}
-            position={'sticky'}
+            position={'fixed'}
             width={'100%'}
-            zIndex={99}
+            zIndex={9999}
             shadow="md"
         >
-            <HStack spacing={12} alignItems="center">
+            <VStack spacing={12} alignItems="center">
                 <Box as={Link} to="/" w="100px" h="24px" overflow="hidden" borderRadius="md">
                     <Image src={logo} alt="Zoomed Image" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </Box>
-            </HStack>
+            </VStack>
             <Flex alignItems="center">
                 {Object.keys(menuData).map((name, index) => (
                     <MenuOption

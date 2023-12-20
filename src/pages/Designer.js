@@ -48,6 +48,7 @@ import { toPng } from 'html-to-image';
 import DownloadButton from '../components/DownloadButton';
 import ContextMenu from '../components/ContextMenu';
 import CustomNodeModal from '../components/Modal/CustomNodeModal';
+import Generating from '../components/Generating';
 
 let serviceId = 1;
 let gatewayId = 1;
@@ -183,8 +184,6 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 width: imageWidth,
                 height: imageHeight,
                 style: {
-                    width: imageWidth,
-                    height: imageHeight,
                     transform: `translate(${transform[0]}px, ${transform[1]}px) scale(${transform[2]})`,
                 },
             });
@@ -1917,7 +1916,8 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         });
     };
 
-    if (isLoading)
+    if (isLoading) {
+        if (isGenerating) return <Generating generatingData={generatingData} />;
         return (
             <ReactFlowProvider>
                 <ReviewFlow
@@ -1930,28 +1930,11 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     onSubmit={onsubmit}
                     saveData={saveData}
                 />
-                {isGenerating && (
-                    <Flex
-                        position="fixed"
-                        top="62"
-                        left="0"
-                        right="0"
-                        bottom="0"
-                        alignItems="center"
-                        justifyContent="center"
-                        backgroundColor="#f5f5f5"
-                        zIndex="9999"
-                        display="flex"
-                        flexDirection="column"
-                    >
-                        <Spinner thickness="8px" speed="0.9s" emptyColor="gray.200" color="#ebaf24" height="250px" width="250px" />
-                        <Box>Generating the Code</Box>
-                    </Flex>
-                )}
             </ReactFlowProvider>
         );
+    }
     return (
-        <div className="dndflow" style={{ overflow: 'hidden !important', bottom: 0, height: 'calc(100vh - 64px)' }}>
+        <div className="dndflow" style={{ overflow: 'hidden !important' }}>
             <ReactFlowProvider>
                 <div className="reactflow-wrapper" ref={reactFlowWrapper}>
                     <ReactFlow
@@ -1996,7 +1979,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         onNodeContextMenu={onNodeContextMenu}
                     >
                         {menu && <ContextMenu onClick={onPaneClick} {...menu} onEditClick={!viewOnly ? onclick : () => {}} />}
-                        <Flex>
+                        <Flex height={'inherit'}>
                             <Sidebar
                                 isUINodeEnabled={isUINodeEnabled}
                                 isGatewayNodeEnabled={isGatewayNodeEnabled}
