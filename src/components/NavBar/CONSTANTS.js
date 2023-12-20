@@ -5,7 +5,7 @@ export const menuData = {
         icon: <Home2 />,
         path: '/',
     },
-    MyPrototypes: {
+    Prototypes: {
         icon: <DocumentSketch />,
         login: true,
         path: '/prototypes',

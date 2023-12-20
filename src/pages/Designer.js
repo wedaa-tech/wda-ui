@@ -129,7 +129,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     const [projectName, setProjectName] = useState(null);
 
     useEffect(() => {
-        if (initialized && keycloak?.authenticated) {
+        if (initialized && keycloak?.authenticated && projectParentId !== 'admin') {
             let defaultProjectId;
             fetch(process.env.REACT_APP_API_BASE_URL + '/api/projects', {
                 method: 'get',
@@ -1454,9 +1454,9 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             if (initialized && keycloak.authenticated) {
                 clear();
                 if (projectParentId === 'admin') {
-                    history.replace('/project/admin/architecture/' + blueprintId + '/details');
+                    history.replace('/architectures');
                 } else {
-                    history.replace('/project/' + projectParentId + '/architecture/' + blueprintId + '/details');
+                    history.replace('/prototypes');
                 }
             } else {
                 clear();

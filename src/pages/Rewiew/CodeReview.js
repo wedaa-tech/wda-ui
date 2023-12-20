@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Box, Tabs, TabList, Tab, TabPanels, TabPanel, Button, Flex, useToast } from '@chakra-ui/react';
+import { Box, Tabs, TabList, Tab, TabPanels, TabPanel, Button, Flex, useToast, Spinner } from '@chakra-ui/react';
 import Documentation from './Documentation';
 import FolderTree from './FolderTree';
 import Readme from './Readme';
@@ -8,10 +8,19 @@ import { useReactFlow } from 'reactflow';
 import Infrastructure from './Infrastructure';
 import { useKeycloak } from '@react-keycloak/web';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
+import { saveAs } from 'file-saver';
 
-function CodeReview({ nodeId, generateMode = false, deploymentData = null, onSubmit = null, onClick = null, published, parentId }) {
+function CodeReview({
+    nodeId,
+    generateMode = false,
+    deploymentData = null,
+    onSubmit = null,
+    onClick = null,
+    published,
+    parentId,
+    setIsGenerating = null,
+}) {
     const { getNode } = useReactFlow();
-
     const { initialized, keycloak } = useKeycloak();
     const [nodeData, setNodeData] = useState(null);
     const [nodeType, setNodeType] = useState(null);
@@ -75,6 +84,41 @@ function CodeReview({ nodeId, generateMode = false, deploymentData = null, onSub
         });
     };
 
+    const handlesubmit = async (Data, submit) => {
+        if (onSubmit) onSubmit(Data, submit);
+        else {
+            const Data = deploymentData;
+            setIsGenerating(true);
+            var blueprintId;
+            try {
+                const response = await fetch(process.env.REACT_APP_API_BASE_URL + '/generate', {
+                    method: 'post',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                    },
+                    body: JSON.stringify(Data),
+                });
+                blueprintId = response.headers.get('blueprintid');
+                const blob = await response.blob();
+                setIsGenerating(false);
+                saveAs(blob, `${Data.projectName}.zip`);
+            } catch (error) {
+                console.error(error);
+            } finally {
+                if (initialized && keycloak.authenticated) {
+                    if (parentId === 'admin') {
+                        history.replace('/project/admin/architecture/' + Data.projectId + '/details');
+                    } else {
+                        history.replace('/project/' + Data.parentId + '/architecture/' + Data.projectId + '/details');
+                    }
+                } else {
+                    history.push('/canvasToCode');
+                }
+            }
+        }
+    };
+
     const handleTabsChange = index => {
         setTabIndex(index);
     };
@@ -85,8 +129,8 @@ function CodeReview({ nodeId, generateMode = false, deploymentData = null, onSub
                 <TabList position={'sticky'}>
                     <Tab>Configuration</Tab>
                     {/* <Tab hidden={generateMode}>Folder Structure</Tab> */}
-                    <Tab hidden={generateMode}>README.md</Tab>
-                    {!docusaurusCheck && parentId !== 'admin' && <Tab>{generateMode ? 'IaaC' : 'Deployment'}</Tab>}
+                    {!docusaurusCheck && <Tab> IaaC </Tab>}
+                    <Tab>Components</Tab>
                 </TabList>
                 <TabPanels height={'100%'}>
                     <TabPanel height={'100%'}>
@@ -95,31 +139,31 @@ function CodeReview({ nodeId, generateMode = false, deploymentData = null, onSub
                     {/* <TabPanel height={'inherit'}>
                         <FolderTree nodeType={nodeType} />
                     </TabPanel> */}
-                    <TabPanel height={'100%'}>
-                        <Readme nodeType={nodeType} />
-                    </TabPanel>
                     {!docusaurusCheck && (
                         <TabPanel hidden={docusaurusCheck} padding={0} height={'100%'}>
                             {!generateMode ? (
                                 <Deployment deploymentData={deploymentData} />
                             ) : (
-                                <Infrastructure projectData={deploymentData} onSubmit={onSubmit} generateZip={onClick} />
+                                <Infrastructure projectData={deploymentData} onSubmit={handlesubmit} generateZip={onClick} />
                             )}
                         </TabPanel>
                     )}
+                    <TabPanel height={'100%'}>
+                        <Readme nodeType={nodeType} />
+                    </TabPanel>
                 </TabPanels>
             </Tabs>
             <Button
-                hidden={!generateMode || tabIndex === 2}
+                hidden={!generateMode || tabIndex === 1 || tabIndex == 2}
                 mx={4}
                 my={2}
                 colorScheme="blue"
-                onClick={tabIndex === 2 || docusaurusCheck ? () => onClick() : () => setTabIndex(2)}
+                onClick={tabIndex === 2 || docusaurusCheck ? () => onClick() : () => setTabIndex(1)}
             >
                 {docusaurusCheck ? 'Generate' : 'Next'}
             </Button>
             <Button
-                hidden={generateMode || parentId !== 'admin'}
+                hidden={generateMode || parentId !== 'admin' || tabIndex == 2 || tabIndex == 1}
                 mx={4}
                 my={2}
                 colorScheme={isArchPublished ? 'red' : 'green'}
