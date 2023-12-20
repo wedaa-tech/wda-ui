@@ -217,7 +217,7 @@ export const ReviewFlow = ({
     };
 
     return (
-        <Grid height={'calc(100vh - 64px)'} maxH={'calc(100vh - 64px)'}>
+        <Grid height={'calc(100vh - 72px)'}>
             <GridItem width={sideBarOpen ? 'calc(100% - 700px);' : '100%'} transition="width 0.3s">
                 <ReactFlow
                     nodes={nodes}

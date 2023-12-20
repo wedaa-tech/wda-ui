@@ -17,7 +17,7 @@ body {
 
 /* Chrome, Edge, and Safari */
 *::-webkit-scrollbar {
-    width: 12px;
+    width: 0.1rem;
 }
 
 *::-webkit-scrollbar-track {
@@ -67,7 +67,12 @@ body,
     flex-direction: column;
     display: flex;
     flex-grow: 1;
-    height: 93.5%;
+    height: 100%;
+}
+
+.screen-body {
+    padding-top: 72px;
+    height: 100%;
 }
 
 .dndflow aside {
@@ -81,12 +86,12 @@ body,
     margin-bottom: 14px;
 }
 
-.dndflow aside .sideBlock::-webkit-scrollbar {
+.sideBar::-webkit-scrollbar {
     width: 0.1em;
     background: transparent;
 }
 
-.dndflow aside .sideBlock::-webkit-scrollbar-thumb {
+.sideBar::-webkit-scrollbar-thumb {
     background-color: transparent;
 }
 
@@ -313,7 +318,6 @@ body,
     flex-direction: column;
     display: flex;
     flex-grow: 1;
-    height: 93.5%;
 }
 
 .dndflow aside {

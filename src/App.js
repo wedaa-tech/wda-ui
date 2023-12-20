@@ -15,75 +15,66 @@ import Wizard from './pages/Wizad';
 import WizardSelection from './pages/Wizad/WizardSelection';
 import FeedbackPage from './components/FeedbackTable';
 import NavBar from './components/NavBar';
+import Generating from './components/Generating';
+import { Box } from '@chakra-ui/react';
 
 function App() {
     return (
         <ReactKeycloakProvider authClient={keycloak}>
             <Router className="flex h-screen">
                 <NavBar />
-                <Switch>
-                    <Route exact path="/canvasToCode">
-                        <Designer update={false} />
-                    </Route>
-                    <Route exact path="/wizard">
-                        <Wizard />
-                    </Route>
-                    <Route exact path="/wizardselection">
-                        <WizardSelection />
-                    </Route>
-                    <Route exact path="/">
-                        <Wizard />
-                    </Route>
-                    <Route exact path="/projects">
-                        <PrivateRoute>
+                <Box className='screen-body'>
+                    <Switch>
+                        <Route exact path="/canvasToCode">
+                            <Designer update={false} />
+                        </Route>
+                        <Route exact path="/wizard">
+                            <Wizard />
+                        </Route>
+                        <Route exact path="/wizardselection">
+                            <WizardSelection />
+                        </Route>
+                        <Route exact path="/">
+                            <Wizard />
+                        </Route>
+                        <Route exact path="/gen">
+                            <Generating />
+                        </Route>
+                        <PrivateRoute exact path="/projects">
                             <ArchitecturesSection />
                         </PrivateRoute>
-                    </Route>
-                    <Route exact path="/architectures">
-                        <PrivateRoute>
+                        <PrivateRoute path="/architectures" exact>
                             <ArchitecturesSection />
                         </PrivateRoute>
-                    </Route>
-                    <Route path="/prototypes" exact>
-                        <PrivateRoute>
+                        <PrivateRoute path="/prototypes" exact>
                             <ArchitecturesSection />
                         </PrivateRoute>
-                    </Route>
-                    <Route exact path="/project/:parentId/architecture/:id/edit">
-                        <PrivateRoute>
+                        <PrivateRoute exact path="/project/:parentId/architecture/:id/edit">
                             <Designer update={true} />
                         </PrivateRoute>
-                    </Route>
-                    <Route exact path="/project/:parentId/architecture/create/">
-                        <PrivateRoute>
+                        <PrivateRoute exact path="/project/:parentId/architecture/create/">
                             <Designer update={false} viewMode={false} />
                         </PrivateRoute>
-                    </Route>
-                    <Route exact path="/project/:parentId/architecture/:id">
-                        <PrivateRoute>
+                        <PrivateRoute exact path="/project/:parentId/architecture/:id">
                             <Designer update={true} viewMode />
                         </PrivateRoute>
-                    </Route>
-                    <Route exact path="/project/:parentId/architecture/:id/details/">
-                        <PrivateRoute>
+                        <PrivateRoute exact path="/project/:parentId/architecture/:id/details/">
                             <Review />
                         </PrivateRoute>
-                    </Route>
-                    <Route exact path="/docs">
-                        <DocHome />
-                    </Route>
-                    <Route exact path="/login">
-                        <Login />
-                    </Route>
-                    <Route exact path="/signup">
-                        <SignUp />
-                    </Route>
-                    <Route exact path="/feedbacks">
-                        <PrivateRoute>
+                        <Route exact path="/docs">
+                            <DocHome />
+                        </Route>
+                        <Route exact path="/login">
+                            <Login />
+                        </Route>
+                        <Route exact path="/signup">
+                            <SignUp />
+                        </Route>
+                        <PrivateRoute exact path="/feedbacks">
                             <FeedbackPage />
                         </PrivateRoute>
-                    </Route>
-                </Switch>
+                    </Switch>
+                </Box>
             </Router>
         </ReactKeycloakProvider>
     );
