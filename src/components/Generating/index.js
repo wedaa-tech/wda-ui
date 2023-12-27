@@ -50,7 +50,7 @@ export const Testimonial = ({ title, description, idx, image }) => {
             flexDir={'column'}
         >
             <Flex className="review-area" gap={4} flexDirection="row" alignItems={'center'}>
-                <Image src={`data:image/svg+xml;base64,${base64data}`}  height="70px" width="70px" />
+                <Image src={`data:image/svg+xml;base64,${base64data}`} height="70px" width="70px" />
                 <Text className="review-title" color="#000000" fontSize={26} fontWeight="700" letterSpacing="0" lineHeight="normal">
                     {title}
                 </Text>
@@ -90,12 +90,9 @@ export const Testimonial = ({ title, description, idx, image }) => {
 
 const Generating = ({ generatingData }) => {
     const [tipsList, setTipsList] = useState(defailtsTipsList);
-    // const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // setLoading(true);
-        fetch('https://app.wedaa.tech:3001/tips', {
-            // fetch(process.env.REACT_APP_API_BASE_URL + '/tips', {
+        fetch(process.env.REACT_APP_API_BASE_URL + '/tips', {
             method: 'get',
             headers: {
                 'Content-Type': 'application/json',
@@ -104,10 +101,8 @@ const Generating = ({ generatingData }) => {
             .then(response => response.json())
             .then(result => {
                 setTipsList(shuffleArray(result));
-                // setLoading(true);
             })
             .catch(error => console.error(error));
-        // setLoading(false);
     }, []);
 
     return (
