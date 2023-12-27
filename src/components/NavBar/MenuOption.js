@@ -70,10 +70,24 @@ const MenuOption = ({ option, isLoggedIn, isAdmin, name }) => {
                         </Flex>
                     </MenuButton>
                     {option.expandable && (
-                        <MenuList as={Flex} flexDirection={'column'} marginTop={6} padding={2} gap={4} color={'black'} bgColor={'#F7F6FA'}>
+                        <MenuList
+                            className="menu-list"
+                            as={Flex}
+                            flexDirection={'column'}
+                            marginTop={6}
+                            padding={2}
+                            gap={4}
+                            color={'black'}
+                            bgColor={'#F7F6FA'}
+                        >
                             {Object.keys(option.expandable).map((element, index) => (
                                 <ConditionalLink to={option.expandable[element].path} external={option.expandable[element].external}>
-                                    <MenuItem key={index} bgColor={'#F7F6FA'} icon={option.expandable[element].icon}>
+                                    <MenuItem
+                                        key={index}
+                                        bgColor={'#F7F6FA'}
+                                        _hover={{ bg: 'rgba(92, 157, 255, 0.1)', color: 'rgba(92, 157, 255, 1)' }}
+                                        icon={option.expandable[element].icon}
+                                    >
                                         {element}
                                     </MenuItem>
                                 </ConditionalLink>

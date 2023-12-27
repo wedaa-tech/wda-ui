@@ -140,7 +140,7 @@ function CodeReview({
                         <FolderTree nodeType={nodeType} />
                     </TabPanel> */}
                     {!docusaurusCheck && (
-                        <TabPanel hidden={docusaurusCheck} padding={0} height={'100%'}>
+                        <TabPanel hidden={docusaurusCheck} height={'100%'}>
                             {!generateMode ? (
                                 <Deployment deploymentData={deploymentData} />
                             ) : (
