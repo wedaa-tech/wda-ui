@@ -29,6 +29,7 @@ import keycloak from '../../Keycloak';
 import { CloseIcon, HamburgerIcon, EditIcon } from '@chakra-ui/icons';
 import { FaCode } from 'react-icons/fa6';
 import { saveAs } from 'file-saver';
+import Generating from '../../components/Generating';
 
 const useExample = false;
 
@@ -376,6 +377,7 @@ const Review = () => {
     }, [id, initialized, keycloak, parentId]);
 
     if (isLoading) return <></>;
+    if (isGenerating) return <Generating generatingData={deploymentData} />;
 
     return (
         <ReactFlowProvider>
@@ -387,24 +389,6 @@ const Review = () => {
                 reviewData={reviewData}
                 setIsGenerating={setIsGenerating}
             />
-            {isGenerating && (
-                <Flex
-                    position="fixed"
-                    top="62"
-                    left="0"
-                    right="0"
-                    bottom="0"
-                    alignItems="center"
-                    justifyContent="center"
-                    backgroundColor="#f5f5f5"
-                    zIndex="9999"
-                    display="flex"
-                    flexDirection="column"
-                >
-                    <Spinner thickness="8px" speed="0.9s" emptyColor="gray.200" color="#ebaf24" height="250px" width="250px" />
-                    <Box>Generating the Code</Box>
-                </Flex>
-            )}
         </ReactFlowProvider>
     );
 };
