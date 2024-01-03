@@ -149,7 +149,7 @@ function CodeReview({
                         </TabPanel>
                     )}
                     <TabPanel height={'100%'}>
-                        <Readme nodeType={nodeType} />
+                        <Readme nodeType={nodeType} nodeData={nodeData} />
                     </TabPanel>
                 </TabPanels>
             </Tabs>
