@@ -1330,11 +1330,21 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             let communicationIndex = 0;
             for (const edgeInfo in NewEdges) {
                 const Edge = NewEdges[edgeInfo];
-                if (!Edge.target.startsWith('Database')) {
+
+                const targetIsExcluded =
+                    Edge.target.startsWith('Database') ||
+                    Edge.target.startsWith('authenticationType') ||
+                    Edge.target.startsWith('logManagement') ||
+                    Edge.target.startsWith('serviceDiscoveryType');
+
+                if (!targetIsExcluded) {
+                    Edge.data = Edge.data || {};
                     Edge.data.client = nodes[Edge.source].data.applicationName;
                     Edge.data.server = nodes[Edge.target].data.applicationName;
-                    if (Edge.data && Object.keys(Edge.data).length !== 0 && !Edge.target.startsWith('Database'))
+
+                    if (Object.keys(Edge.data).length !== 0) {
                         Data['communications'][communicationIndex++] = Edge.data;
+                    }
                 }
             }
         }
