@@ -303,7 +303,7 @@ export function GOMICRO_README(nodeData) {
   `;
 }
 
-export function JAVA_README(nodeData) {
+export function SPRING_README(nodeData) {
     return `
   # ${nodeData.applicationName} prototype
 
