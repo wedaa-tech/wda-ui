@@ -12,7 +12,7 @@ import {
 
 const Readme = ({ nodeType, nodeData }) => {
     const [readmeData, setReadmeData] = useState('');
-    
+ 
     const readmeMappings = {
         'Service:spring': SPRING_README,
         'Gateway:java': GATEWAY_README,
@@ -20,15 +20,17 @@ const Readme = ({ nodeType, nodeData }) => {
         'UI:docusaurus': DOCUSAURUS_README,
         'UI:angular': ANGULAR_README,
         'Service:gomicro': GOMICRO_README,
-        'default': GLOBAL_README
+        'default': GLOBAL_README,
     };
-    
+
     useEffect(() => {
-        const key = `${nodeType}:${nodeData.applicationFramework}`;
-        const readmeFunction = readmeMappings[key] || readmeMappings['default'];
-        setReadmeData(readmeFunction(nodeData));
-    }, [nodeType, nodeData.applicationFramework]);
-    
+        if (nodeData) {
+            const key = `${nodeType.split('_')[0]}:${nodeData.applicationFramework}`;
+            const readmeFunction = readmeMappings[key] || readmeMappings['default'];
+            setReadmeData(readmeFunction(nodeData));
+        }
+    }, [nodeType, nodeData]);
+
     return <MarkdownPreview wrapperElement={{ 'data-color-mode': 'light' }} source={readmeData} />;
 };
 
