@@ -18,6 +18,8 @@ import {
     BreadcrumbLink,
     useDisclosure,
     IconButton,
+    Skeleton,
+    Button,
 } from '@chakra-ui/react';
 import ArchitectureCard from './ArchitectureCard';
 import mlpipeline from '../../assets/archModel/ml.png';
@@ -30,6 +32,7 @@ import { useHistory } from 'react-router-dom';
 import { useKeycloak } from '@react-keycloak/web';
 import ActionModal from '../../components/Modal/ActionModal';
 import { ArrowBackIcon } from '@chakra-ui/icons';
+import { dummyarchs } from './CONSTNATS';
 
 function ArchitecturesSection() {
     let location = useLocation();
@@ -39,6 +42,7 @@ function ArchitecturesSection() {
     const [parentId, setParentId] = useState(undefined);
     const { isOpen, onOpen, onClose } = useDisclosure();
     const { initialized, keycloak } = useKeycloak();
+    const [isLoaded, setIsLoaded] = useState(false);
     const cancelRef = React.useRef();
 
     // if (parentId === undefined) {
@@ -50,7 +54,7 @@ function ArchitecturesSection() {
     const [isNewArchitectureModalOpen, setNewArchitectureModalOpen] = useState(false);
     const [newArchitectureName, setNewArchitectureName] = useState('');
     const initialRef = useRef(null);
-    const [architectures, setArchitectures] = useState([]);
+    const [architectures, setArchitectures] = useState(dummyarchs);
     const [totalArchitectures, setTotalArchitectures] = useState(0);
     const [architectureId, setArchitectureId] = useState(null);
     const [architectureTitle, setArchitectureTitle] = useState(null);
@@ -97,6 +101,7 @@ function ArchitecturesSection() {
                             const archslist = structuredClone(result.data);
                             setArchitectures(archslist);
                             setTotalArchitectures(archslist.length);
+                            setIsLoaded(true);
                         }
                     })
                     .catch(error => console.error(error));
@@ -130,6 +135,7 @@ function ArchitecturesSection() {
                                         if (result?.data) {
                                             defaultProjectId = result.data.id;
                                             setParentId(defaultProjectId);
+                                            setIsLoaded(true);
                                         }
                                     })
                                     .catch(error => console.error(error));
@@ -148,6 +154,7 @@ function ArchitecturesSection() {
                                             const archslist = structuredClone(result.data);
                                             setArchitectures(archslist);
                                             setTotalArchitectures(archslist.length);
+                                            setIsLoaded(true);
                                         }
                                     })
                                     .catch(error => console.error(error));
@@ -237,54 +244,58 @@ function ArchitecturesSection() {
             </Flex>
 
             <SimpleGrid className="simple-grid" minChildWidth="null" columns={{ base: 1, sm: 1, md: 3 }} spacing={10}>
-                <Box
-                    maxWidth={96}
-                    minWidth={96}
-                    cursor="pointer"
-                    className="create-architecture"
-                    p="4"
-                    borderWidth="1px"
-                    borderRadius="lg"
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="space-between"
-                    px="10%"
-                    height={'100px'}
-                    onClick={handleCreateNewArchitecture}
-                >
-                    <Text className="not-selectable" fontWeight="bold">
-                        Create New {parentId === 'admin' ? 'Architectures' : 'Prototype'}
-                    </Text>
-                    <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
-                        <rect width="56" height="56" rx="28" fill="#EBAF24" fill-opacity="0.5" />
-                        <path
-                            fill-rule="evenodd"
-                            clip-rule="evenodd"
-                            d="M30.6667 14.6667C30.6667 13.1939 29.4728 12 28 12C26.5273 12 25.3334 13.1939 25.3334 14.6667V25.3332H14.6667C13.1939 25.3332 12 26.5271 12 27.9999C12 29.4726 13.1939 30.6665 14.6667 30.6665H25.3334V41.3333C25.3334 42.8061 26.5273 44 28 44C29.4728 44 30.6667 42.8061 30.6667 41.3333V30.6665H41.3333C42.8061 30.6665 44 29.4726 44 27.9999C44 26.5271 42.8061 25.3332 41.3333 25.3332H30.6667V14.6667Z"
-                            fill="white"
-                        />
-                    </svg>
-                </Box>
-                <Box
-                    maxWidth={96}
-                    minWidth={96}
-                    className="total-architecture"
-                    p="4"
-                    borderWidth="1px"
-                    borderRadius="lg"
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="space-between"
-                    px="10%"
-                    height={'100px'}
-                >
-                    <Text className="not-selectable" fontWeight="bold">
-                        Number of {parentId === 'admin' ? 'Architectures' : 'Prototypes'}
-                    </Text>
-                    <Text className="not-selectable" fontWeight="bold" fontFamily={'monospace'} fontSize={'30px'} color={'#ebaf24'}>
-                        {totalArchitectures}
-                    </Text>
-                </Box>
+                <Skeleton isLoaded={isLoaded} fadeDuration={1}>
+                    <Box
+                        maxWidth={96}
+                        minWidth={96}
+                        cursor="pointer"
+                        className="create-architecture"
+                        p="4"
+                        borderWidth="1px"
+                        borderRadius="lg"
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="space-between"
+                        px="10%"
+                        height={'100px'}
+                        onClick={handleCreateNewArchitecture}
+                    >
+                        <Text className="not-selectable" fontWeight="bold">
+                            Create New {parentId === 'admin' ? 'Architectures' : 'Prototype'}
+                        </Text>
+                        <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+                            <rect width="56" height="56" rx="28" fill="#EBAF24" fill-opacity="0.5" />
+                            <path
+                                fill-rule="evenodd"
+                                clip-rule="evenodd"
+                                d="M30.6667 14.6667C30.6667 13.1939 29.4728 12 28 12C26.5273 12 25.3334 13.1939 25.3334 14.6667V25.3332H14.6667C13.1939 25.3332 12 26.5271 12 27.9999C12 29.4726 13.1939 30.6665 14.6667 30.6665H25.3334V41.3333C25.3334 42.8061 26.5273 44 28 44C29.4728 44 30.6667 42.8061 30.6667 41.3333V30.6665H41.3333C42.8061 30.6665 44 29.4726 44 27.9999C44 26.5271 42.8061 25.3332 41.3333 25.3332H30.6667V14.6667Z"
+                                fill="white"
+                            />
+                        </svg>
+                    </Box>
+                </Skeleton>
+                <Skeleton isLoaded={isLoaded} fadeDuration={1}>
+                    <Box
+                        maxWidth={96}
+                        minWidth={96}
+                        className="total-architecture"
+                        p="4"
+                        borderWidth="1px"
+                        borderRadius="lg"
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="space-between"
+                        px="10%"
+                        height={'100px'}
+                    >
+                        <Text className="not-selectable" fontWeight="bold">
+                            Number of {parentId === 'admin' ? 'Architectures' : 'Prototypes'}
+                        </Text>
+                        <Text className="not-selectable" fontWeight="bold" fontFamily={'monospace'} fontSize={'30px'} color={'#ebaf24'}>
+                            {totalArchitectures}
+                        </Text>
+                    </Box>
+                </Skeleton>
                 <Box maxWidth={96} minWidth={96}></Box>
             </SimpleGrid>
             <Heading className="not-selectable" as="h3" size="lg" my="10">
@@ -307,6 +318,7 @@ function ArchitecturesSection() {
                             setArchitectureTitle(title);
                             onOpen(true);
                         }}
+                        isLoaded={isLoaded}
                     />
                 ))}
             </SimpleGrid>
