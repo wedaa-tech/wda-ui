@@ -130,6 +130,10 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     const [projectName, setProjectName] = useState(null);
 
     useEffect(() => {
+        if (!update) {
+            clear();
+        }
+        
         if (initialized && keycloak?.authenticated && projectParentId !== 'admin') {
             let defaultProjectId;
             fetch(process.env.REACT_APP_API_BASE_URL + '/api/projects', {
