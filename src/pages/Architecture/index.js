@@ -4,35 +4,17 @@ import {
     Text,
     Heading,
     SimpleGrid,
-    Modal,
-    ModalOverlay,
-    ModalContent,
-    ModalHeader,
-    ModalFooter,
-    ModalBody,
-    ModalCloseButton,
     Flex,
-    Tooltip,
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
     useDisclosure,
-    IconButton,
     Skeleton,
-    Button,
 } from '@chakra-ui/react';
 import ArchitectureCard from './ArchitectureCard';
-import mlpipeline from '../../assets/archModel/ml.png';
-import cipipeline from '../../assets/archModel/ci.jpeg';
-import cdpipeline from '../../assets/archModel/cd.png';
-import application from '../../assets/archModel/application.png';
 import './index.css';
-import { useLocation, useParams } from 'react-router-dom/cjs/react-router-dom.min';
+import { useLocation } from 'react-router-dom/cjs/react-router-dom.min';
 import { useHistory } from 'react-router-dom';
 import { useKeycloak } from '@react-keycloak/web';
 import ActionModal from '../../components/Modal/ActionModal';
-import { ArrowBackIcon } from '@chakra-ui/icons';
-import { dummyarchs } from './CONSTNATS';
+import { dummyarchs } from './Constants';
 
 function ArchitecturesSection() {
     let location = useLocation();
