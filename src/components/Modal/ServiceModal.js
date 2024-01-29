@@ -12,6 +12,7 @@ import {
     FormControl,
     Alert,
     AlertIcon,
+    Textarea
 } from '@chakra-ui/react';
 
 const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick, uniqueApplicationNames, uniquePortNumbers }) => {
@@ -243,6 +244,19 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                                 Port Number is out of the valid range.
                             </Alert>
                         )}
+                        <FormControl>
+                            <FormLabel>Description</FormLabel>
+                            <Textarea
+                                mb={4}
+                                variant="outline"
+                                id="label"
+                                placeholder="A small description"
+                                borderColor={'black'}
+                                maxLength="50"
+                                value={ApplicationData.description}
+                                onChange={e => handleData('description', e.target.value)}
+                            />
+                        </FormControl>
                     </div>
                     <FormLabel>Background Color</FormLabel>
                     <div

@@ -127,7 +127,6 @@ docker run -d -p ${nodeData.serverPort}:80 ${nodeData.applicationName}:latest
 }
 
 export function ANGULAR_README(nodeData) {
-    console.log('hii12345');
     return `# ${nodeData.applicationName} prototype
 
 This is an angular application prototype, generated using WeDAA. You can find documentation and help at [WeDAA Docs](https://www.wedaa.tech/docs/introduction/what-is-wedaa/)

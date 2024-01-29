@@ -12,6 +12,7 @@ import {
     FormControl,
     Alert,
     AlertIcon,
+    Textarea
 } from '@chakra-ui/react';
 
 const UiDataModal = ({
@@ -296,6 +297,19 @@ const UiDataModal = ({
                                 Port Number is out of the valid range.
                             </Alert>
                         )}
+                        <FormControl>
+                            <FormLabel>Description</FormLabel>
+                            <Textarea
+                                mb={4}
+                                variant="outline"
+                                id="label"
+                                placeholder="A small description"
+                                borderColor={'black'}
+                                maxLength="50"
+                                value={UiData.description}
+                                onChange={e => handleData('description', e.target.value)}
+                            />
+                        </FormControl>
                     </div>
                     <FormLabel>Background Color</FormLabel>
                     <div
