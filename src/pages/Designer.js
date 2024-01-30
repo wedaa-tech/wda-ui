@@ -396,6 +396,9 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         if (deletedNode?.data?.serverPort) {
                             deletedApplicationPorts.push(deletedNode.data.serverPort.trim());
                         }
+                        if (deletedNode?.data?.databasePort) {
+                            deletedApplicationPorts.push(deletedNode.data.databasePort.trim());
+                        }
                         break;
                     default:
                         break;
@@ -1217,7 +1220,13 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             if (CurrentNode?.serverPort) {
                 setUniquePortNumbers(prev => prev.filter(port => CurrentNode.serverPort !== port));
             }
+            if(Data?.databasePort){
+                setUniquePortNumbers(prev => prev.filter(port => Data.databasePort !== port));
+            }
             setUniquePortNumbers(prev => [...prev, Data.serverPort]);
+            if(Data?.databasePort){
+                setUniquePortNumbers(prev => [...prev, Data.databasePort]);
+            }
             UpdatedNodes[Isopen].data = { ...UpdatedNodes[Isopen].data, ...Data };
             UpdatedNodes[Isopen].selected = false;
             if (Isopen.startsWith('UI') && UpdatedNodes[Isopen].data?.applicationFramework === 'ui'){

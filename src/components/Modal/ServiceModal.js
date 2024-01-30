@@ -29,7 +29,7 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
 
     useEffect(() => {
         const handleDeleteKeyPress = event => {
-            if (isOpen && (event.key === 'Backspace' || event.key === 'Delete') && event.target.tagName !== 'INPUT') {
+            if (isOpen && (event.key === 'Backspace' || event.key === 'Delete') && event.target.tagName !== 'INPUT' && event.target.tagName !== 'TEXTAREA') {
                 onClose();
             }
         };
@@ -244,19 +244,21 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                                 Port Number is out of the valid range.
                             </Alert>
                         )}
+                        {ApplicationData?.prodDatabaseType &&(
                         <FormControl>
                             <FormLabel>Description</FormLabel>
                             <Textarea
                                 mb={4}
                                 variant="outline"
                                 id="label"
-                                placeholder="A small description"
+                                placeholder="A small description about your service"
                                 borderColor={'black'}
-                                maxLength="50"
+                                maxLength="45"
                                 value={ApplicationData.description}
                                 onChange={e => handleData('description', e.target.value)}
                             />
                         </FormControl>
+                         )}
                     </div>
                     <FormLabel>Background Color</FormLabel>
                     <div

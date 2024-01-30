@@ -120,7 +120,7 @@ const UiDataModal = ({
 
     useEffect(() => {
         const handleDeleteKeyPress = event => {
-            if (isOpen && (event.key === 'Backspace' || event.key === 'Delete') && event.target.tagName !== 'INPUT') {
+            if (isOpen && (event.key === 'Backspace' || event.key === 'Delete') && event.target.tagName !== 'INPUT' && event.target.tagName !== 'TEXTAREA') {
                 onClose();
             }
         };
@@ -297,6 +297,7 @@ const UiDataModal = ({
                                 Port Number is out of the valid range.
                             </Alert>
                         )}
+                        {UiData.applicationFramework !== 'docusaurus' &&(
                         <FormControl>
                             <FormLabel>Description</FormLabel>
                             <Textarea
@@ -305,11 +306,12 @@ const UiDataModal = ({
                                 id="label"
                                 placeholder="A small description"
                                 borderColor={'black'}
-                                maxLength="50"
+                                maxLength="45"
                                 value={UiData.description}
                                 onChange={e => handleData('description', e.target.value)}
                             />
                         </FormControl>
+                        )}
                     </div>
                     <FormLabel>Background Color</FormLabel>
                     <div
