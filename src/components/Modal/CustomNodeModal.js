@@ -1,8 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import {
-    Modal, ModalContent, ModalHeader, ModalCloseButton, ModalBody, Input, Button, FormLabel, FormControl, Alert,
+    Modal,
+    ModalContent,
+    ModalHeader,
+    ModalCloseButton,
+    ModalBody,
+    Input,
+    Button,
+    FormLabel,
+    FormControl,
+    Alert,
     AlertIcon,
 } from '@chakra-ui/react';
+import validatePortNumber from '../../utils/portValidation';
 
 const CustomNodeModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick, uniquePortNumbers }) => {
     const IntialState = {
@@ -11,19 +21,7 @@ const CustomNodeModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorCl
     };
     const [customData, setCustomData] = useState(IntialState);
     const [nodeType, setNodeType] = useState('Custom Node');
-    const [portNumberError, setPortNumberError] = useState(false);
-
-    const validatePortNumber = value => {
-        const databasePort = CurrentNode?.databasePort;
-        const isDuplicatePort = uniquePortNumbers.includes(value) && value !== databasePort;
-        if (isDuplicatePort && value.length > 0) {
-            setPortNumberError(true);
-            return false;
-        } else {
-            setPortNumberError(false);
-            return true;
-        }
-    };
+    const [portValidationError, setPortValidationError] = useState({});
 
     const handleKeyPress = event => {
         const charCode = event.which ? event.which : event.keyCode;
@@ -34,12 +32,6 @@ const CustomNodeModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorCl
             return false;
         }
     };
-
-    const reservedPorts = ['5601', '9200', '15021', '20001', '3000', '8080'];
-    const serverPortCheck = customData.databasePort && reservedPorts.includes(customData.databasePort);
-
-    const portNumberRangeCheck =
-        customData.databasePort && (Number(customData.databasePort) < 1024 || Number(customData.databasePort) > 65535);
 
     useEffect(() => {
         if (CurrentNode) {
@@ -71,14 +63,14 @@ const CustomNodeModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorCl
     }, [isOpen, onClose]);
 
     const handleData = (column, value) => {
-        if (column == "databasePort") {
-            validatePortNumber(value);
-            setCustomData(prev => ({
-                ...prev,
-                [column]: value,
-            }));
-        }
-        else {
+        if (column == 'databasePort') {
+            const validationErrors = validatePortNumber(value, uniquePortNumbers, CurrentNode?.databasePort);
+            setPortValidationError(validationErrors);
+                setCustomData(prev => ({
+                    ...prev,
+                    [column]: value,
+                }));
+        } else {
             setCustomData(prev => ({
                 ...prev,
                 [column]: value,
@@ -128,29 +120,37 @@ const CustomNodeModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorCl
                                         variant="outline"
                                         id="dbPort"
                                         placeholder="Port number"
-                                        borderColor={portNumberError || serverPortCheck || portNumberRangeCheck ? 'red' : 'black'}
-                                        maxLength="32"
+                                        borderColor={
+                                            portValidationError.serverPortError || portValidationError.portNumberError || portValidationError.portRangeError ? 'red' : 'black'
+                                        }
+                                        maxLength="5"
                                         value={customData.databasePort}
                                         onKeyPress={handleKeyPress}
                                         onChange={e => handleData('databasePort', e.target.value)}
                                     />
                                 </FormControl>
-                                {serverPortCheck && (
+                                {portValidationError.portRequiredError && (
                                     <Alert status="error" padding="4px" fontSize="12px" borderRadius="3px" mb={2}>
                                         <AlertIcon style={{ width: '14px', height: '14px' }} />
-                                        The input cannot contain reserved port number.
+                                        {portValidationError.portRequiredError}
                                     </Alert>
                                 )}
-                                {portNumberError && (
+                                {portValidationError.serverPortError && (
                                     <Alert status="error" padding="4px" fontSize="12px" borderRadius="3px" mb={2}>
                                         <AlertIcon style={{ width: '14px', height: '14px' }} />
-                                        Port Number already exists. Please choose a unique Port Number.
+                                        {portValidationError.serverPortError}
                                     </Alert>
                                 )}
-                                {portNumberRangeCheck && (
+                                {portValidationError.portNumberError && (
                                     <Alert status="error" padding="4px" fontSize="12px" borderRadius="3px" mb={2}>
                                         <AlertIcon style={{ width: '14px', height: '14px' }} />
-                                        Port Number is out of the valid range.
+                                        {portValidationError.portNumberError}
+                                    </Alert>
+                                )}
+                                {portValidationError.portRangeError && (
+                                    <Alert status="error" padding="4px" fontSize="12px" borderRadius="3px" mb={2}>
+                                        <AlertIcon style={{ width: '14px', height: '14px' }} />
+                                        {portValidationError.portRangeError}
                                     </Alert>
                                 )}
                             </>
@@ -218,17 +218,19 @@ const CustomNodeModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorCl
                             ></div>
                         </div>
                     </div>
-                    <Button onClick={() => onSubmit(customData)}
+                    <Button
+                        onClick={() => onSubmit(customData)}
                         isDisabled={
-                            (nodeType === 'mongoDB' || nodeType === 'PostgreSQL') &&
-                            (
-                                !customData.databasePort ||
-                                customData.databasePort === '' ||
-                                serverPortCheck ||
-                                portNumberError ||
-                                portNumberRangeCheck
-                            )
-                        } style={{ display: 'block', margin: '0 auto' }}>
+                            Object.keys(portValidationError).length ||
+                            ((nodeType === 'mongoDB' || nodeType === 'PostgreSQL') &&
+                                (!customData.databasePort ||
+                                    customData.databasePort === '' ||
+                                    portValidationError.serverPortError ||
+                                    portValidationError.portNumberError ||
+                                    portValidationError.portRangeError))
+                        }
+                        style={{ display: 'block', margin: '0 auto' }}
+                    >
                         Save
                     </Button>
                 </ModalBody>

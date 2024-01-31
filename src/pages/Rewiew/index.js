@@ -141,7 +141,6 @@ export const ReviewFlow = ({
     };
 
     const handlesubmit = async () => {
-        console.log(reviewData);
         setIsGenerating(true);
         if (reviewData?.request_json?.projectName) reviewData.projectName = reviewData?.request_json?.projectName;
         if (reviewData?.id) reviewData.projectId = reviewData?.id;

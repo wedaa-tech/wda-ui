@@ -12,8 +12,9 @@ import {
     FormControl,
     Alert,
     AlertIcon,
-    Textarea
+    Textarea,
 } from '@chakra-ui/react';
+import validatePortNumber from '../../utils/portValidation';
 
 const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick, uniqueApplicationNames, uniquePortNumbers }) => {
     const IntialState = {
@@ -29,7 +30,12 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
 
     useEffect(() => {
         const handleDeleteKeyPress = event => {
-            if (isOpen && (event.key === 'Backspace' || event.key === 'Delete') && event.target.tagName !== 'INPUT' && event.target.tagName !== 'TEXTAREA') {
+            if (
+                isOpen &&
+                (event.key === 'Backspace' || event.key === 'Delete') &&
+                event.target.tagName !== 'INPUT' &&
+                event.target.tagName !== 'TEXTAREA'
+            ) {
                 onClose();
             }
         };
@@ -42,7 +48,7 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
 
     const [duplicateApplicationNameError, setDuplicateApplicationNameError] = useState(false);
 
-    const [portNumberError, setPortNumberError] = useState(false);
+    const [portValidationError, setPortValidationError] = useState({});
 
     const [applicationFrameworkError, setApplicationFrameworkError] = useState(false);
 
@@ -54,19 +60,6 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
             return false;
         } else {
             setDuplicateApplicationNameError(false);
-            return true;
-        }
-    };
-
-    //check whether port number is unique and lies within the range
-    const validatePortNumber = value => {
-        const currentServerPort = CurrentNode?.serverPort;
-        const isDuplicatePort = uniquePortNumbers.includes(value) && value !== currentServerPort;
-        if (isDuplicatePort && value.length > 0) {
-            setPortNumberError(true);
-            return false;
-        } else {
-            setPortNumberError(false);
             return true;
         }
     };
@@ -89,7 +82,8 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                 [column]: value,
             }));
         } else if (column === 'serverPort') {
-            validatePortNumber(value);
+            const validationErrors = validatePortNumber(value, uniquePortNumbers, CurrentNode?.serverPort);
+            setPortValidationError(validationErrors);
             setApplicationData(prev => ({
                 ...prev,
                 [column]: value,
@@ -113,12 +107,6 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
 
     const isSubmitDisabled =
         ApplicationData.applicationName === '' || ApplicationData.packageName === '' || ApplicationData.serverPort === '';
-
-    const reservedPorts = ['5601', '9200', '15021', '20001', '3000', '8080'];
-    const serverPortCheck = ApplicationData.serverPort && reservedPorts.includes(ApplicationData.serverPort);
-
-    const portNumberRangeCheck =
-        ApplicationData.serverPort && (Number(ApplicationData.serverPort) < 1024 || Number(ApplicationData.serverPort) > 65535);
 
     const appNameCheck = ApplicationData.applicationName && !/^[a-zA-Z](?:[a-zA-Z]*)?$/g.test(ApplicationData.applicationName);
 
@@ -219,46 +207,52 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                                 variant="outline"
                                 id="serverport"
                                 placeholder="Port number"
-                                borderColor={portNumberError || serverPortCheck || portNumberRangeCheck ? 'red' : 'black'}
+                                borderColor={portValidationError.serverPortError || portValidationError.portNumberError || portValidationError.portRangeError ? 'red' : 'black'}
                                 value={ApplicationData.serverPort}
                                 maxLength="5"
                                 onKeyPress={handleKeyPress}
                                 onChange={e => handleData('serverPort', e.target.value)}
                             />
                         </FormControl>
-                        {serverPortCheck && (
+                        {portValidationError.portRequiredError && (
                             <Alert status="error" padding="4px" fontSize="12px" borderRadius="3px" mb={2}>
                                 <AlertIcon style={{ width: '14px', height: '14px' }} />
-                                The input cannot contain reserved port number.
+                                {portValidationError.portRequiredError}
                             </Alert>
                         )}
-                        {portNumberError && (
+                        {portValidationError.serverPortError && (
                             <Alert status="error" padding="4px" fontSize="12px" borderRadius="3px" mb={2}>
                                 <AlertIcon style={{ width: '14px', height: '14px' }} />
-                                Port Number already exists. Please choose a unique Port Number.
+                                {portValidationError.serverPortError}
                             </Alert>
                         )}
-                        {portNumberRangeCheck && (
+                        {portValidationError.portNumberError && (
                             <Alert status="error" padding="4px" fontSize="12px" borderRadius="3px" mb={2}>
                                 <AlertIcon style={{ width: '14px', height: '14px' }} />
-                                Port Number is out of the valid range.
+                                {portValidationError.portNumberError}
                             </Alert>
                         )}
-                        {ApplicationData?.prodDatabaseType &&(
-                        <FormControl>
-                            <FormLabel>Description</FormLabel>
-                            <Textarea
-                                mb={4}
-                                variant="outline"
-                                id="label"
-                                placeholder="A small description about your service"
-                                borderColor={'black'}
-                                maxLength="45"
-                                value={ApplicationData.description}
-                                onChange={e => handleData('description', e.target.value)}
-                            />
-                        </FormControl>
-                         )}
+                        {portValidationError.portRangeError && (
+                            <Alert status="error" padding="4px" fontSize="12px" borderRadius="3px" mb={2}>
+                                <AlertIcon style={{ width: '14px', height: '14px' }} />
+                                {portValidationError.portRangeError}
+                            </Alert>
+                        )}
+                        {ApplicationData?.prodDatabaseType && (
+                            <FormControl>
+                                <FormLabel>Description</FormLabel>
+                                <Textarea
+                                    mb={4}
+                                    variant="outline"
+                                    id="label"
+                                    placeholder="A small description about your service"
+                                    borderColor={'black'}
+                                    maxLength="45"
+                                    value={ApplicationData.description}
+                                    onChange={e => handleData('description', e.target.value)}
+                                />
+                            </FormControl>
+                        )}
                     </div>
                     <FormLabel>Background Color</FormLabel>
                     <div
@@ -327,9 +321,9 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                         isDisabled={
                             isSubmitDisabled ||
                             appNameCheck ||
-                            serverPortCheck ||
-                            portNumberError ||
-                            portNumberRangeCheck ||
+                            portValidationError.serverPortError ||
+                            portValidationError.portNumberError ||
+                            portValidationError.portRangeError ||
                             applicationFrameworkError
                         }
                     >
