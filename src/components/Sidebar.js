@@ -235,16 +235,26 @@ const Sidebar = ({
     }; */
     }
 
-    var isDatabaseConnected = () => {
-        var dbConnected = false;
+    const isDatabaseConnectedAndFilled = () => {
+        let dbConnected = false;
+        let dbFilled = false;
+    
         for (const key in nodes) {
             let databaseCheck = nodes[key];
-            if (databaseCheck?.id?.startsWith('Database') && !databaseCheck?.data?.isConnected) {
-                dbConnected = true;
+            if (databaseCheck?.id?.startsWith('Database')) {
+                if (!databaseCheck?.data?.isConnected) {
+                    dbConnected = true;
+                }
+                if (!databaseCheck?.data?.databasePort) {
+                    dbFilled = true;
+                }
+            }
+            if (dbConnected && dbFilled) {
                 break;
             }
         }
-        return dbConnected;
+    
+        return { isConnected: dbConnected, isFilled: dbFilled };
     };
 
     const toast = useToast({
@@ -255,6 +265,8 @@ const Sidebar = ({
     });
 
     const checkDisabled = () => {
+        const databaseStatus = isDatabaseConnectedAndFilled();
+
         if (!checkNodeExists) {
             return { isValid: false, message: 'Drag and drop atleast one Application to generate the code' };
         }
@@ -279,8 +291,12 @@ const Sidebar = ({
             return { isValid: false, message: 'Gateway is not Configured. Click on the highlighted Gateway node to Configure it.' };
         }
 
-        if (isDatabaseConnected()) {
+        if (databaseStatus.isConnected) {
             return { isValid: false, message: 'Create an edge connecting the node to Database to enable the integration.' };
+        }
+        
+        if (databaseStatus.isFilled) {
+            return { isValid: false, message: 'Database is not Configured. Click on the highlighted Database node to Configure it.' };
         }
 
         return { isValid: true, message: 'Validation successful. Proceed to generate the application code.' };

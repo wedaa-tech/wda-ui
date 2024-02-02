@@ -12,7 +12,9 @@ import {
     FormControl,
     Alert,
     AlertIcon,
+    Textarea
 } from '@chakra-ui/react';
+import validatePortNumber from '../../utils/portValidation';
 
 const UiDataModal = ({
     isOpen,
@@ -38,17 +40,12 @@ const UiDataModal = ({
     };
     const [UiData, setUiDataData] = useState(IntialState);
     const [duplicateApplicationNameError, setDuplicateApplicationNameError] = useState(false);
-    const [portNumberError, setPortNumberError] = useState(false);
+    const [portValidationError, setPortValidationError] = useState({});
     const [clientFrameworkError, setClientFrameworkError] = useState(false);
     const [applicationFrameworkError, setApplicationFrameworkError] = useState(false);
     const [themeError, setThemeError] = useState(false);
     const isEmptyUiSubmit =
         UiData.applicationName === '' || (UiData.applicationFramework === 'ui' && UiData.packageName === '') || UiData.serverPort === '';
-
-    const reservedPorts = ['5601', '9200', '15021', '20001', '3000', '8080'];
-    const serverPortCheck = UiData.serverPort && reservedPorts.includes(UiData.serverPort);
-
-    const portNumberRangeCheck = UiData.serverPort && (Number(UiData.serverPort) < 1024 || Number(UiData.serverPort) > 65535);
 
     const appNameCheck = UiData.applicationName && !/^[a-zA-Z](?:[a-zA-Z0-9_-]*[a-zA-Z0-9])?$/g.test(UiData.applicationName);
 
@@ -94,19 +91,6 @@ const UiDataModal = ({
         }
     };
 
-    //check whether port number is unique and lies within the range
-    const validatePortNumber = value => {
-        const currentServerPort = CurrentNode?.serverPort;
-        const isDuplicatePort = uniquePortNumbers.includes(value) && value !== currentServerPort;
-        if (isDuplicatePort && value.length > 0) {
-            setPortNumberError(true);
-            return false;
-        } else {
-            setPortNumberError(false);
-            return true;
-        }
-    };
-
     const handleKeyPress = event => {
         const charCode = event.which ? event.which : event.keyCode;
         if ((charCode >= 48 && charCode <= 57) || charCode === 8) {
@@ -119,7 +103,7 @@ const UiDataModal = ({
 
     useEffect(() => {
         const handleDeleteKeyPress = event => {
-            if (isOpen && (event.key === 'Backspace' || event.key === 'Delete') && event.target.tagName !== 'INPUT') {
+            if (isOpen && (event.key === 'Backspace' || event.key === 'Delete') && event.target.tagName !== 'INPUT' && event.target.tagName !== 'TEXTAREA') {
                 onClose();
             }
         };
@@ -137,7 +121,9 @@ const UiDataModal = ({
                 [column]: value,
             }));
         } else if (column === 'serverPort') {
-            validatePortNumber(value);
+            // validatePortNumber(value);
+            const validationErrors = validatePortNumber(value, uniquePortNumbers, CurrentNode?.serverPort);
+            setPortValidationError(validationErrors);
             setUiDataData(prev => ({
                 ...prev,
                 [column]: value,
@@ -271,30 +257,52 @@ const UiDataModal = ({
                                 variant="outline"
                                 id="serverPort"
                                 placeholder="Port number"
-                                borderColor={portNumberError || serverPortCheck || portNumberRangeCheck ? 'red' : 'black'}
+                                borderColor={portValidationError.serverPortError || portValidationError.portNumberError || portValidationError.portRangeError ? 'red' : 'black'}
                                 value={UiData.serverPort}
                                 maxLength="5"
                                 onKeyPress={handleKeyPress}
                                 onChange={e => handleData('serverPort', e.target.value)}
                             />
                         </FormControl>
-                        {serverPortCheck && (
+
+                        {portValidationError.portRequiredError && (
                             <Alert status="error" padding="4px" fontSize="12px" borderRadius="3px" mb={2}>
                                 <AlertIcon style={{ width: '14px', height: '14px' }} />
-                                The input cannot contain reserved port number.
+                                {portValidationError.portRequiredError}
                             </Alert>
                         )}
-                        {portNumberError && (
+                        {portValidationError.serverPortError && (
                             <Alert status="error" padding="4px" fontSize="12px" borderRadius="3px" mb={2}>
                                 <AlertIcon style={{ width: '14px', height: '14px' }} />
-                                Port Number already exists. Please choose a unique Port Number.
+                                {portValidationError.serverPortError}
                             </Alert>
                         )}
-                        {portNumberRangeCheck && (
+                        {portValidationError.portNumberError && (
                             <Alert status="error" padding="4px" fontSize="12px" borderRadius="3px" mb={2}>
                                 <AlertIcon style={{ width: '14px', height: '14px' }} />
-                                Port Number is out of the valid range.
+                                {portValidationError.portNumberError}
                             </Alert>
+                        )}
+                        {portValidationError.portRangeError && (
+                            <Alert status="error" padding="4px" fontSize="12px" borderRadius="3px" mb={2}>
+                                <AlertIcon style={{ width: '14px', height: '14px' }} />
+                                {portValidationError.portRangeError}
+                            </Alert>
+                        )}
+                        {UiData.applicationFramework !== 'docusaurus' &&(
+                        <FormControl>
+                            <FormLabel>Description</FormLabel>
+                            <Textarea
+                                mb={4}
+                                variant="outline"
+                                id="label"
+                                placeholder="A small description"
+                                borderColor={'black'}
+                                maxLength="45"
+                                value={UiData.description}
+                                onChange={e => handleData('description', e.target.value)}
+                            />
+                        </FormControl>
                         )}
                     </div>
                     <FormLabel>Background Color</FormLabel>
@@ -370,9 +378,9 @@ const UiDataModal = ({
                         isDisabled={
                             isEmptyUiSubmit ||
                             appNameCheck ||
-                            serverPortCheck ||
-                            portNumberError ||
-                            portNumberRangeCheck ||
+                            portValidationError.serverPortError ||
+                            portValidationError.portNumberError ||
+                            portValidationError.portRangeError ||
                             clientFrameworkError ||
                             applicationFrameworkError ||
                             themeError

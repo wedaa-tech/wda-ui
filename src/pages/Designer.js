@@ -396,6 +396,9 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         if (deletedNode?.data?.serverPort) {
                             deletedApplicationPorts.push(deletedNode.data.serverPort.trim());
                         }
+                        if (deletedNode?.data?.databasePort) {
+                            deletedApplicationPorts.push(deletedNode.data.databasePort.trim());
+                        }
                         break;
                     default:
                         break;
@@ -1217,11 +1220,21 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             if (CurrentNode?.serverPort) {
                 setUniquePortNumbers(prev => prev.filter(port => CurrentNode.serverPort !== port));
             }
+            if(Data?.databasePort){
+                setUniquePortNumbers(prev => prev.filter(port => Data.databasePort !== port));
+            }
             setUniquePortNumbers(prev => [...prev, Data.serverPort]);
+            if(Data?.databasePort){
+                setUniquePortNumbers(prev => [...prev, Data.databasePort]);
+            }
             UpdatedNodes[Isopen].data = { ...UpdatedNodes[Isopen].data, ...Data };
             UpdatedNodes[Isopen].selected = false;
-            if (Isopen.startsWith('UI') && UpdatedNodes[Isopen].data?.applicationFramework === 'ui')
+            if (Isopen.startsWith('UI') && UpdatedNodes[Isopen].data?.applicationFramework === 'ui'){
                 delete UpdatedNodes[Isopen].data?.theme;
+            }
+                if (Isopen.startsWith("Database") && Data?.isConnected && Data?.databasePort) {
+                    UpdatedNodes[Isopen].style.border = '1px solid black';
+                }
         }
         setNodes(UpdatedNodes);
         setopen(false);
@@ -1230,7 +1243,6 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     const MergeData = (sourceId, targetId, Nodes) => {
         const sourceType = sourceId.split('_')[0];
         const targetType = targetId.split('_')[0];
-
         if (sourceType !== targetType) {
             if ((sourceType === 'Service' && targetType === 'Database') || (sourceType === 'UI' && targetType === 'Database')) {
                 let AllNodes = { ...Nodes };
@@ -1239,6 +1251,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 AllNodes[sourceId].data = {
                     ...sourceNode.data,
                     prodDatabaseType: targetNode.data.prodDatabaseType,
+                    databasePort: targetNode.data.databasePort,
                 };
                 setNodes({ ...AllNodes });
             }
@@ -1274,7 +1287,6 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         if (logManagementData && Data?.deployment) Data.deployment.enableECK = 'true';
         if (Data.deployment && Service_Discovery_Data?.serviceDiscoveryType)
             Data.deployment = { ...Data.deployment, ...Service_Discovery_Data };
-
         for (const key in NewNodes) {
             const Node = NewNodes[key];
             delete Node.data?.color;
@@ -1566,6 +1578,8 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             var errorMessage = null;
             if (sourceNode.id.startsWith('UI') && targetNode.id.startsWith('Database')) {
                 errorMessage = 'UI Cannot be connected to a Database';
+            }else if (sourceNode.id.startsWith('Gateway') && targetNode.id.startsWith('Database')) {
+                errorMessage = 'Gateway Cannot be connected to a Database';
             } else if (sourceNode.id.startsWith('Gateway') && targetNode.id.startsWith('UI')) {
                 errorMessage = 'Communication from Gateway to UI is not possible';
             } else if (sourceNode.id.startsWith('Service') && targetNode.id.startsWith('Gateway')) {
@@ -1699,6 +1713,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 !(
                     targetNode.id.startsWith('UI') ||
                     (targetNode.id.startsWith('Database') && sourceNode.id.startsWith('UI')) ||
+                    (targetNode.id.startsWith('Database') && sourceNode.id.startsWith('Gateway')) ||
                     (targetNode.id.startsWith('Gateway') && sourceNode.id.startsWith('Service')) ||
                     sourceNode?.data.applicationFramework === 'docusaurus'
                 )
@@ -1712,7 +1727,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     }
                     if (!isServiceConnected) {
                         let updatedNodes = { ...Nodes };
-                        if (updatedNodes[targetNode?.id]?.style) {
+                        if (updatedNodes[targetNode?.id]?.style && targetNode?.data?.databasePort) {
                             updatedNodes[targetNode?.id].style.border = '1px solid black';
                         }
                         setNodes(updatedNodes);
@@ -1794,19 +1809,32 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
 
     const projectNameCheck = !/^[a-zA-Z](?:[a-zA-Z0-9_ -]*[a-zA-Z0-9])? *$/.test(projectName);
 
-    var isDatabaseConnected = () => {
-        var dbConnected = false;
+    const isDatabaseConnectedAndFilled = () => {
+        let dbConnected = false;
+        let dbFilled = false;
+    
         for (const key in nodes) {
             let databaseCheck = nodes[key];
-            if (databaseCheck?.id?.startsWith('Database') && !databaseCheck?.data?.isConnected) {
-                dbConnected = true;
+            if (databaseCheck?.id?.startsWith('Database')) {
+                if (!databaseCheck?.data?.isConnected) {
+                    dbConnected = true;
+                }
+                if (!databaseCheck?.data?.databasePort) {
+                    dbFilled = true;
+                }
+            }
+            if (dbConnected && dbFilled) {
                 break;
             }
         }
-        return dbConnected;
+    
+        return { isConnected: dbConnected, isFilled: dbFilled };
     };
+    
 
     const checkDisabled = () => {
+        const databaseStatus = isDatabaseConnectedAndFilled();
+       
         if (!checkNodeExists) {
             return { isValid: false, message: 'Drag and drop atleast one Application to generate the code' };
         }
@@ -1831,9 +1859,14 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             return { isValid: false, message: 'Gateway is not Configured. Click on the highlighted Gateway node to Configure it.' };
         }
 
-        if (isDatabaseConnected()) {
+        if (databaseStatus.isConnected) {
             return { isValid: false, message: 'Create an edge connecting the node to Database to enable the integration.' };
         }
+        
+        if (databaseStatus.isFilled) {
+            return { isValid: false, message: 'Database is not Configured. Click on the highlighted Database node to Configure it.' };
+        }
+        
 
         return { isValid: true, message: 'Validation successful. Proceed to generate the application.' };
     };
@@ -2200,6 +2233,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         onClose={setopen}
                         onSubmit={onChange}
                         handleColorClick={handleColorClick}
+                        uniquePortNumbers={uniquePortNumbers}
                     />
                 )}
 
