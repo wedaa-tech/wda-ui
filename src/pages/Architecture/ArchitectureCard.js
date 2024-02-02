@@ -1,5 +1,5 @@
 import { DeleteIcon } from '@chakra-ui/icons';
-import { Box, IconButton, Image, Text } from '@chakra-ui/react';
+import { Box, IconButton, Image, Skeleton, Text } from '@chakra-ui/react';
 import React from 'react';
 
 const GreenCheckIcon = () => (
@@ -16,82 +16,95 @@ const RedCloseIcon = () => (
     </svg>
 );
 
-const ArchitectureCard = ({ title, description, imageUrl, projectId, onClick, data, onDelete, published, parentId }) => {
+const ArchitectureCard = ({
+    title,
+    description,
+    imageUrl,
+    projectId,
+    onClick,
+    data,
+    onDelete,
+    published,
+    parentId,
+    isLoaded = false,
+}) => {
     return (
-        <Box
-            maxWidth={96}
-            minWidth={96}
-            maxW="sm"
-            className="project-card"
-            height={'300px'}
-            borderWidth="1px"
-            borderRadius="lg"
-            overflow="hidden"
-            cursor="pointer"
-            position="relative"
-            p="6"
-            zIndex="1"
-            backgroundColor={'white'}
-            onClick={() => onClick(projectId, data)}
-        >
-            <Image
-                style={{
-                    width: '100%',
-                    objectFit: 'contain',
-                    mixBlendMode: 'darken',
-                }}
-                height="65%"
-                src={imageUrl}
-                alt={title}
-            />
-            <IconButton
-                top="5%"
-                right="5%"
-                variant="outline"
-                colorScheme="blackAlpha"
-                aria-label="Delete Architecture"
-                position="absolute"
-                zIndex={99}
-                icon={<DeleteIcon />}
-                onClick={e => {
-                    onDelete(title, projectId);
-                    e.stopPropagation();
-                }}
-            />
-            {parentId === 'admin' && (
-                <Box position="absolute" top="24%" right="9%" zIndex={99}>
-                    {published ? <GreenCheckIcon /> : <RedCloseIcon />}
-                </Box>
-            )}
-            <Box p="6">
-                <Text
-                    className="not-selectable"
+        <Skeleton isLoaded={isLoaded} fadeDuration={1}>
+            <Box
+                maxWidth={96}
+                minWidth={96}
+                maxW="sm"
+                className="project-card"
+                height={'300px'}
+                borderWidth="1px"
+                borderRadius="lg"
+                overflow="hidden"
+                cursor="pointer"
+                position="relative"
+                p="6"
+                zIndex="1"
+                backgroundColor={'white'}
+                onClick={() => onClick(projectId, data)}
+            >
+                <Image
                     style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'flex-start',
+                        width: '100%',
+                        objectFit: 'contain',
+                        mixBlendMode: 'darken',
                     }}
-                    fontWeight="semibold"
-                    fontSize="lg"
-                    mb="2"
-                >
-                    {title}
-                </Text>
-                {data.validationStatus === 'DRAFT' && (
-                    <Text className="not-selectable" color="yellow.600">
-                        Draft
-                    </Text>
+                    height="65%"
+                    src={imageUrl}
+                    alt={title}
+                />
+                <IconButton
+                    top="5%"
+                    right="5%"
+                    variant="outline"
+                    colorScheme="blackAlpha"
+                    aria-label="Delete Architecture"
+                    position="absolute"
+                    zIndex={99}
+                    icon={<DeleteIcon />}
+                    onClick={e => {
+                        onDelete(title, projectId);
+                        e.stopPropagation();
+                    }}
+                />
+                {parentId === 'admin' && (
+                    <Box position="absolute" top="24%" right="9%" zIndex={99}>
+                        {published ? <GreenCheckIcon /> : <RedCloseIcon />}
+                    </Box>
                 )}
-                {data.validationStatus === 'VALIDATED' && (
-                    <Text className="not-selectable" color="green.600">
-                        Validated
+                <Box p="6">
+                    <Text
+                        className="not-selectable"
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'flex-start',
+                        }}
+                        fontWeight="semibold"
+                        fontSize="lg"
+                        mb="2"
+                    >
+                        {title}
                     </Text>
-                )}
-                <Text className="not-selectable" color="gray.600">
-                    {description}
-                </Text>
+                    {data.validationStatus === 'DRAFT' && (
+                        <Text className="not-selectable" color="yellow.600">
+                            Draft
+                        </Text>
+                    )}
+                    {data.validationStatus === 'VALIDATED' && (
+                        <Text className="not-selectable" color="green.600">
+                            Validated
+                        </Text>
+                    )}
+                    <Text className="not-selectable" color="gray.600">
+                        {description}
+                    </Text>
+                </Box>
             </Box>
-        </Box>
+        </Skeleton>
     );
 };
 
