@@ -133,7 +133,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         if (!update) {
             clear();
         }
-        
+
         if (initialized && keycloak?.authenticated && projectParentId !== 'admin') {
             let defaultProjectId;
             fetch(process.env.REACT_APP_API_BASE_URL + '/api/projects', {
@@ -1220,21 +1220,27 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             if (CurrentNode?.serverPort) {
                 setUniquePortNumbers(prev => prev.filter(port => CurrentNode.serverPort !== port));
             }
-            if(Data?.databasePort){
+            if (Data?.databasePort) {
                 setUniquePortNumbers(prev => prev.filter(port => Data.databasePort !== port));
             }
             setUniquePortNumbers(prev => [...prev, Data.serverPort]);
-            if(Data?.databasePort){
+            if (Data?.databasePort) {
                 setUniquePortNumbers(prev => [...prev, Data.databasePort]);
             }
             UpdatedNodes[Isopen].data = { ...UpdatedNodes[Isopen].data, ...Data };
             UpdatedNodes[Isopen].selected = false;
-            if (Isopen.startsWith('UI') && UpdatedNodes[Isopen].data?.applicationFramework === 'ui'){
+            if (Isopen.startsWith('UI') && UpdatedNodes[Isopen].data?.applicationFramework === 'ui') {
                 delete UpdatedNodes[Isopen].data?.theme;
             }
-                if (Isopen.startsWith("Database") && Data?.isConnected && Data?.databasePort) {
-                    UpdatedNodes[Isopen].style.border = '1px solid black';
+            if (Isopen.startsWith('Database') && Data?.isConnected && Data?.databasePort) {
+                for (let edge in edges) {
+                    if (edge.endsWith(Isopen)) {
+                        const nodeName = edge.split('-')[0];
+                        UpdatedNodes[nodeName].data.databasePort = Data.databasePort;
+                    }
                 }
+                UpdatedNodes[Isopen].style.border = '1px solid black';
+            }
         }
         setNodes(UpdatedNodes);
         setopen(false);
@@ -1578,7 +1584,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             var errorMessage = null;
             if (sourceNode.id.startsWith('UI') && targetNode.id.startsWith('Database')) {
                 errorMessage = 'UI Cannot be connected to a Database';
-            }else if (sourceNode.id.startsWith('Gateway') && targetNode.id.startsWith('Database')) {
+            } else if (sourceNode.id.startsWith('Gateway') && targetNode.id.startsWith('Database')) {
                 errorMessage = 'Gateway Cannot be connected to a Database';
             } else if (sourceNode.id.startsWith('Gateway') && targetNode.id.startsWith('UI')) {
                 errorMessage = 'Communication from Gateway to UI is not possible';
@@ -1812,7 +1818,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     const isDatabaseConnectedAndFilled = () => {
         let dbConnected = false;
         let dbFilled = false;
-    
+
         for (const key in nodes) {
             let databaseCheck = nodes[key];
             if (databaseCheck?.id?.startsWith('Database')) {
@@ -1827,14 +1833,13 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 break;
             }
         }
-    
+
         return { isConnected: dbConnected, isFilled: dbFilled };
     };
-    
 
     const checkDisabled = () => {
         const databaseStatus = isDatabaseConnectedAndFilled();
-       
+
         if (!checkNodeExists) {
             return { isValid: false, message: 'Drag and drop atleast one Application to generate the code' };
         }
@@ -1862,11 +1867,10 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         if (databaseStatus.isConnected) {
             return { isValid: false, message: 'Create an edge connecting the node to Database to enable the integration.' };
         }
-        
+
         if (databaseStatus.isFilled) {
             return { isValid: false, message: 'Database is not Configured. Click on the highlighted Database node to Configure it.' };
         }
-        
 
         return { isValid: true, message: 'Validation successful. Proceed to generate the application.' };
     };
