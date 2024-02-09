@@ -1286,41 +1286,28 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             }
         }
 
-        let Service_Discovery_Data = nodes['serviceDiscoveryType']?.data;
-        let authenticationData = { authenticationType: 'no' };
-        if (nodes['authenticationType']) authenticationData = nodes['authenticationType']?.data;
-        let logManagementData = nodes['logManagement']?.data;
+        let Service_Discovery_Data = nodes['serviceDiscoveryType']?.data?.serviceDiscoveryType;
+        let authenticationData = nodes['authenticationType']?.data?.authenticationType||'no';
+        let logManagementData = nodes['logManagement']?.data?.logManagementType;
         if (logManagementData && Data?.deployment) Data.deployment.enableECK = 'true';
-        if (Data.deployment && Service_Discovery_Data?.serviceDiscoveryType)
-            Data.deployment = { ...Data.deployment, ...Service_Discovery_Data };
+        if (Data.deployment && Service_Discovery_Data)
+            Data.deployment = { ...Data.deployment, serviceDiscoveryType:Service_Discovery_Data};
         for (const key in NewNodes) {
             const Node = NewNodes[key];
             delete Node.data?.color;
             if (Node.id.startsWith('Service') || Node.id.startsWith('UI') || Node.id.startsWith('Gateway')) {
-                if (serviceRegistryEdges.length === 0 || serviceRegistryEdges.includes(Node.id)) {
-                    Node.data = {
-                        ...Node.data,
-                        ...Service_Discovery_Data,
-                    };
-                } else if (Node.data?.serviceDiscoveryType) {
+                if (Service_Discovery_Data && (serviceRegistryEdges.length === 0 || serviceRegistryEdges.includes(Node.id))) {
+                    Node.data.serviceDiscoveryType = Service_Discovery_Data;
+                } else  if(Node.data?.serviceDiscoveryType){
                     delete Node.data.serviceDiscoveryType;
                 }
-                if (authEdges.length === 0 || authEdges.includes(Node.id)) {
-                    Node.data = {
-                        ...Node.data,
-                        ...authenticationData,
-                    };
+                if (authenticationData && (authEdges.length === 0 || authEdges.includes(Node.id))) {
+                    Node.data.authenticationType = authenticationData;
                 } else {
-                    Node.data = {
-                        ...Node.data,
-                        ['authenticationType']: 'no',
-                    };
+                    Node.data.authenticationType = 'no';
                 }
-                if (logManagementEdges.length === 0 || logManagementEdges.includes(Node.id)) {
-                    Node.data = {
-                        ...Node.data,
-                        ...logManagementData,
-                    };
+                if (logManagementData && (logManagementEdges.length === 0 || logManagementEdges.includes(Node.id))) {
+                    Node.data.logManagementType = logManagementData;
                 } else if (Node.data?.logManagementType) {
                     delete Node.data.logManagementType;
                 }
@@ -1332,6 +1319,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 } else {
                     Node.data.applicationFramework = Node.data.clientFramework;
                     Node.data.packageName = 'ui';
+                    delete Node?.data?.theme;
                 }
             }
         }
