@@ -14,6 +14,7 @@ import eck from '../assets/eck.png';
 import dummy from '../assets/dummy.png';
 // import mini from "../assets/mini.png";
 // import docker from "../assets/docker.png";
+import {  projectNameCheck,  checkDisabled } from '../utils/submitButtonValidation';
 import './../App.css';
 import {
     Input,
@@ -134,9 +135,6 @@ const Sidebar = ({
         setShowModal(false);
     };
 
-    const checkNodeExists = Object.values(nodes).some(
-        node => node.id.startsWith('Service') || node.id.startsWith('Gateway') || node.id.startsWith('UI'),
-    );
 
     const [refArch, setRefArch] = useState([]);
     const [isContentVisible, setContentVisible] = useState(false);
@@ -166,97 +164,6 @@ const Sidebar = ({
         setContentVisible(!viewOnly);
     }, [viewOnly]);
 
-    const projectNameCheck = !/^[a-zA-Z](?:[a-zA-Z0-9_ -]*[a-zA-Z0-9])? *$/.test(projectData.projectName);
-    const checkEdge = () => {
-        let updatedEdges = { ...edges };
-        let updatedNodes = { ...nodes };
-        if (Object.keys(updatedNodes).length !== 0) {
-            for (const key in updatedNodes) {
-                let databaseCheck = updatedNodes[key];
-                if (databaseCheck?.id?.startsWith('Database') && !databaseCheck?.data?.isConnected) {
-                    return true;
-                }
-            }
-        }
-        if (Object.keys(updatedEdges).length !== 0) {
-            for (const key in updatedEdges) {
-                let edgeCheck = updatedEdges[key];
-                if (edgeCheck?.target?.startsWith('Service') && !edgeCheck?.data?.framework) {
-                    return true;
-                }
-            }
-            return false;
-        }
-    };
-
-    // For checking whether the keycloak,Registry and Eck has atleast one connection
-    {
-        /* var isKeycloakConnected = () => {
-        if (authProviderCount) {
-            var authEdge = true;
-            for (const key in edges) {
-                const edge = edges[key];
-                if (edge.target === 'authenticationType') {
-                    authEdge = false;
-                    break;
-                }
-            }
-            return authEdge;
-        } else return false;
-    };
-
-    var isRegistryConnected = () => {
-        if (serviceDiscoveryCount) {
-            var serviceRegistryEdge = true;
-
-            for (const key in edges) {
-                const edge = edges[key];
-                if (edge.target === 'serviceDiscoveryType') {
-                    serviceRegistryEdge = false;
-                    break;
-                }
-            }
-            return serviceRegistryEdge;
-        } else return false;
-    };
-
-    var isEckConnected = () => {
-        if (logManagementCount) {
-            var logManagementEdge = true;
-            for (const key in edges) {
-                const edge = edges[key];
-                if (edge.target === 'logManagement') {
-                    logManagementEdge = false;
-                    break;
-                }
-            }
-            return logManagementEdge;
-        } else return false;
-    }; */
-    }
-
-    const isDatabaseConnectedAndFilled = () => {
-        let dbConnected = false;
-        let dbFilled = false;
-    
-        for (const key in nodes) {
-            let databaseCheck = nodes[key];
-            if (databaseCheck?.id?.startsWith('Database')) {
-                if (!databaseCheck?.data?.isConnected) {
-                    dbConnected = true;
-                }
-                if (!databaseCheck?.data?.databasePort) {
-                    dbFilled = true;
-                }
-            }
-            if (dbConnected && dbFilled) {
-                break;
-            }
-        }
-    
-        return { isConnected: dbConnected, isFilled: dbFilled };
-    };
-
     const toast = useToast({
         containerStyle: {
             width: '500px',
@@ -264,48 +171,10 @@ const Sidebar = ({
         },
     });
 
-    const checkDisabled = () => {
-        const databaseStatus = isDatabaseConnectedAndFilled();
-
-        if (!checkNodeExists) {
-            return { isValid: false, message: 'Drag and drop atleast one Application to generate the code' };
-        }
-
-        if (!projectData.projectName || projectNameCheck) {
-            return { isValid: false, message: 'Architecture name should be valid.' };
-        }
-
-        if (projectData.projectName === '') {
-            return { isValid: false, message: 'Architecture name is empty.' };
-        }
-
-        if (isEmptyUiSubmit) {
-            return { isValid: false, message: 'UI is not Configured. Click on the highlighted UI Node to Configure it.' };
-        }
-
-        if (isEmptyServiceSubmit) {
-            return { isValid: false, message: 'Service is not Configured. Click on the highlighted Service node to Configure it.' };
-        }
-
-        if (isEmptyGatewaySubmit) {
-            return { isValid: false, message: 'Gateway is not Configured. Click on the highlighted Gateway node to Configure it.' };
-        }
-
-        if (databaseStatus.isConnected) {
-            return { isValid: false, message: 'Create an edge connecting the node to Database to enable the integration.' };
-        }
-        
-        if (databaseStatus.isFilled) {
-            return { isValid: false, message: 'Database is not Configured. Click on the highlighted Database node to Configure it.' };
-        }
-
-        return { isValid: true, message: 'Validation successful. Proceed to generate the application code.' };
-    };
-
     const toastIdRef = useRef();
 
     const handleButtonClick = () => {
-        const { isValid, message } = checkDisabled();
+        const { isValid, message } = checkDisabled(projectData.projectName, isEmptyUiSubmit, isEmptyServiceSubmit, isEmptyGatewaySubmit, nodes, edges);
         const errorMessage = message || 'Validation failed';
         toast.close(toastIdRef.current);
         toastIdRef.current = toast({
@@ -315,8 +184,7 @@ const Sidebar = ({
             variant: 'left-accent',
             isClosable: true,
         });
-        if (checkEdge()) return;
-        if (!isValid) return;
+        if (!isValid) {return;}
         if (Object.keys(nodes).length === 1 && Object.values(nodes)[0]?.data?.applicationFramework === 'docusaurus') {
             setIsLoading(true);
         } else {
@@ -406,7 +274,7 @@ const Sidebar = ({
                     my={2}
                     variant="outline"
                     id="projectName"
-                    borderColor={!projectData.projectName || projectNameCheck ? 'red' : '#CFCFCF'}
+                    borderColor={!projectData.projectName || projectNameCheck(projectData.projectName) ? 'red' : '#CFCFCF'}
                     maxLength="32"
                     value={projectData.projectName}
                     onChange={e => handleProjectData('projectName', e.target.value)}
@@ -468,7 +336,7 @@ const Sidebar = ({
                                 display: isContentVisible ? 'block' : 'none',
                             }}
                         >
-                            {projectData.projectName && projectNameCheck && (
+                            {projectData.projectName && projectNameCheck(projectData.projectName) && (
                                 <span style={{ color: 'red', fontSize: '10px' }}>Enter a valid project name</span>
                             )}
 

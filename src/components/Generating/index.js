@@ -141,7 +141,7 @@ const Generating = ({ generatingData }) => {
                             attributeName="transform"
                             calcMode="spline"
                             dur="2"
-                            values="360;0"
+                            values="0;360"
                             keyTimes="0;1"
                             keySplines="0 0 1 1"
                             repeatCount="indefinite"
