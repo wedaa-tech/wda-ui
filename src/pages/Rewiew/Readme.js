@@ -29,6 +29,9 @@ const Readme = ({ nodeType, nodeData }) => {
             const readmeFunction = readmeMappings[key] || readmeMappings['default'];
             setReadmeData(readmeFunction(nodeData));
         }
+        else{
+            setReadmeData(readmeMappings['default'])
+        }
     }, [nodeType, nodeData]);
 
     return <MarkdownPreview wrapperElement={{ 'data-color-mode': 'light' }} source={readmeData} />;

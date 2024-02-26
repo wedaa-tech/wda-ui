@@ -15,7 +15,7 @@ import {
     Input,
 } from '@chakra-ui/react';
 
-const EdgeModal = ({ isOpen, CurrentEdge, onClose, handleEdgeData, handleColorClick }) => {
+const EdgeModal = ({ isOpen, CurrentEdge, onClose, handleEdgeData, handleColorClick, nodes }) => {
     const initialState = {
         type: '',
         framework: '',
@@ -23,7 +23,11 @@ const EdgeModal = ({ isOpen, CurrentEdge, onClose, handleEdgeData, handleColorCl
         ...CurrentEdge,
     };
     const [edgeData, setEdgeData] = useState(initialState);
-
+    const [edgeApplicationNames, setEdgeApplicationNames] = useState({ client: '', server: '' });
+    useEffect(() => {
+        const [source, destination] = isOpen.split('-');
+        setEdgeApplicationNames({ client: nodes[source].data.applicationName, server: nodes[destination].data.applicationName });
+    });
     useEffect(() => {
         const handleDeleteKeyPress = event => {
             if (isOpen && (event.key === 'Backspace' || event.key === 'Delete') && event.target.tagName !== 'INPUT') {
@@ -233,6 +237,30 @@ const EdgeModal = ({ isOpen, CurrentEdge, onClose, handleEdgeData, handleColorCl
                             onClick={() => handleColorClick('#000000')}
                         ></div>
                     </div>
+                    {edgeData.framework === 'rabbitmq' && (
+                        <div>
+                            <div>
+                                <span>Producer: </span>
+                                <span>{edgeApplicationNames.client}</span>
+                            </div>
+                            <div>
+                                <span>Consumer: </span>
+                                <span>{edgeApplicationNames.server}</span>
+                            </div>
+                        </div>
+                    )}
+                    {edgeData.framework === 'rest-api' && (
+                        <div>
+                            <div>
+                                <span>Client: </span>
+                                <span>{edgeApplicationNames.client}</span>
+                            </div>
+                            <div>
+                                <span>Server: </span>
+                                <span>{edgeApplicationNames.server}</span>
+                            </div>
+                        </div>
+                    )}
                 </ModalBody>
                 <ModalFooter>
                     <Button style={{ display: 'block', margin: '0 auto' }} isDisabled={isEmpty} onClick={() => handleSubmit(edgeData)}>
