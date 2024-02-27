@@ -1346,9 +1346,12 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     Edge.data = Edge.data || {};
                     Edge.data.client = nodes[Edge.source].data.applicationName;
                     Edge.data.server = nodes[Edge.target].data.applicationName;
-
                     if (Object.keys(Edge.data).length !== 0) {
-                        Data['communications'][communicationIndex++] = Edge.data;
+                        Data['communications'][communicationIndex++] = Edge.data;  
+                        if(Edge.data.type==="asynchronous"){
+                            Data['communications'][communicationIndex-1].server = nodes[Edge.source].data.applicationName;
+                            Data['communications'][communicationIndex-1].client = nodes[Edge.target].data.applicationName;
+                        }
                     }
                 }
             }
@@ -1532,6 +1535,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 color: '#bcbaba',
                 type: MarkerType.ArrowClosed,
             };
+            UpdatedEdges[IsEdgeopen].animated=true;
             UpdatedEdges[IsEdgeopen].className = 'grey';
         }
 
@@ -2190,6 +2194,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     <EdgeModal
                         isOpen={IsEdgeopen}
                         CurrentEdge={CurrentEdge}
+                        nodes={nodes}
                         onClose={setEdgeopen}
                         handleEdgeData={handleEdgeData}
                         isMessageBroker={isMessageBroker}

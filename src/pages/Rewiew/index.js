@@ -87,13 +87,28 @@ export const ReviewFlow = ({
     }, [nodes, edges, nodesData, edgesData, setNodes, setEdges]);
 
     const [nodeId, setNodeId] = useState(null);
+    const [edgeId, setEdgeId] = useState(null);
 
     const { setCenter } = useReactFlow();
+
+    const focusEdge = useCallback(
+        (_, selectedEdge) => {
+            const edgeData = selectedEdge.data;
+            var newEdgeId
+            if(selectedEdge.data.type=="synchronous"){
+                newEdgeId = `${edgeData.client}-${edgeData.server}`;
+              }else{
+                 newEdgeId = `${edgeData.server}-${edgeData.client}`;
+              }
+            setEdgeId(newEdgeId);
+            setNodeId(null);
+        }
+    );
 
     const focusNode = useCallback(
         (_, selectedNode) => {
             setNodeId(selectedNode.id);
-
+            setEdgeId(null);
             const x = selectedNode.position.x + selectedNode.width / 2;
             const y = selectedNode.position.y + selectedNode.height / 2;
             const zoom = 1.85;
@@ -226,6 +241,7 @@ export const ReviewFlow = ({
                     onNodesChange={onNodesChange}
                     onEdgesChange={onEdgesChange}
                     onNodeClick={focusNode}
+                    onEdgeClick={focusEdge}
                     nodesDraggable={false}
                     nodesConnectable={false}
                     nodeTypes={nodeTypes}
@@ -303,6 +319,7 @@ export const ReviewFlow = ({
                 </Box>
                 <CodeReview
                     nodeId={nodeId}
+                    edgeId={edgeId}
                     generateMode={generateMode}
                     deploymentData={deploymentData}
                     onSubmit={onSubmit}

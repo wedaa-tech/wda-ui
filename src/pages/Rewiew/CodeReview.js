@@ -12,6 +12,7 @@ import { saveAs } from 'file-saver';
 
 function CodeReview({
     nodeId,
+    edgeId,
     generateMode = false,
     deploymentData = null,
     onSubmit = null,
@@ -134,7 +135,7 @@ function CodeReview({
                 </TabList>
                 <TabPanels height={'100%'}>
                     <TabPanel height={'100%'}>
-                        <Documentation nodeData={deploymentData} nodeId={nodeId} generateMode />
+                        <Documentation nodeData={deploymentData} nodeId={nodeId} edgeId={edgeId} generateMode />
                     </TabPanel>
                     {/* <TabPanel height={'inherit'}>
                         <FolderTree nodeType={nodeType} />

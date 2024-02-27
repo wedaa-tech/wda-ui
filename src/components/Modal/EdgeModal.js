@@ -15,7 +15,7 @@ import {
     Input,
 } from '@chakra-ui/react';
 
-const EdgeModal = ({ isOpen, CurrentEdge, onClose, handleEdgeData, handleColorClick }) => {
+const EdgeModal = ({ isOpen, CurrentEdge, onClose, handleEdgeData, handleColorClick, nodes }) => {
     const initialState = {
         type: '',
         framework: '',
@@ -23,7 +23,23 @@ const EdgeModal = ({ isOpen, CurrentEdge, onClose, handleEdgeData, handleColorCl
         ...CurrentEdge,
     };
     const [edgeData, setEdgeData] = useState(initialState);
+    const [connectingNodes, setConnectingNodes] = useState({ client: '', server: '' });
+    const [communicationPattern,setCommunicationPattern]= useState({labelone:'Client',labeltwo:'Server'})
+   
+    useEffect(() => {
+        const labelone = edgeData.framework === 'rest-api' ? 'Client' : 'Producer';
+        const labeltwo = edgeData.framework === 'rest-api' ? 'Server' : 'Consumer';
+        
+        setCommunicationPattern({
+            labelone,
+            labeltwo
+        });
+    }, [edgeData.framework]);
 
+    useEffect(() => {
+        const [source, destination] = isOpen.split('-');
+        setConnectingNodes({ client: nodes[source].data.applicationName, server: nodes[destination].data.applicationName });
+    });
     useEffect(() => {
         const handleDeleteKeyPress = event => {
             if (isOpen && (event.key === 'Backspace' || event.key === 'Delete') && event.target.tagName !== 'INPUT') {
@@ -78,6 +94,18 @@ const EdgeModal = ({ isOpen, CurrentEdge, onClose, handleEdgeData, handleColorCl
                 <ModalHeader>Communication</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody>
+                    <div style={{ marginBottom: '1rem' }}>
+                        {(edgeData.framework === 'rabbitmq'||edgeData.framework === 'rest-api') && (
+                            <div style={{ marginBottom: '0.5rem' }}>
+                                <span style={{ marginRight: '0.5rem' }}>{communicationPattern.labelone} :</span>
+                                <span style={{fontWeight: 'bold'}}>{connectingNodes.client}</span>
+                                <br />
+                                <span style={{marginRight: '0.5rem' }}>{communicationPattern.labeltwo} :</span>
+                                <span style={{fontWeight: 'bold'}}>{connectingNodes.server}</span>
+                            </div>
+                        )}
+                    </div>
+
                     {checkIfBothAreServices(isOpen) && (
                         <div
                             style={{
