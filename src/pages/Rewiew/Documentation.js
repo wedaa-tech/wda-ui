@@ -106,7 +106,7 @@ const Documentation = ({ nodeData, nodeId,edgeId }) => {
                         <AccordionItem key={key}>
                             <AccordionButton>
                                 <Box as="span" flex="1" textAlign="left">
-                                    {nodeData.services[key].applicationName}
+                                    {`${nodeData.services[key].applicationName} (component)`}
                                 </Box>
                                 <AccordionIcon />
                             </AccordionButton>
@@ -129,7 +129,7 @@ const Documentation = ({ nodeData, nodeId,edgeId }) => {
                         <AccordionItem key={key}>
                             <AccordionButton>
                                 <Box as="span" flex="1" textAlign="left">
-                                    {communicationType=='synchronous' ? `${nodeData.communications[key].client}-${nodeData.communications[key].server}`:`${nodeData.communications[key].server}-${nodeData.communications[key].client}`}
+                                    {communicationType=='synchronous' ? `${nodeData.communications[key].client}-${nodeData.communications[key].server} (communication protocol)`:`${nodeData.communications[key].server}-${nodeData.communications[key].client} (communication protocol)`}
                                 </Box>
                                 <AccordionIcon />
                             </AccordionButton>

@@ -23,10 +23,22 @@ const EdgeModal = ({ isOpen, CurrentEdge, onClose, handleEdgeData, handleColorCl
         ...CurrentEdge,
     };
     const [edgeData, setEdgeData] = useState(initialState);
-    const [edgeApplicationNames, setEdgeApplicationNames] = useState({ client: '', server: '' });
+    const [connectingNodes, setConnectingNodes] = useState({ client: '', server: '' });
+    const [communicationPattern,setCommunicationPattern]= useState({labelone:'Client',labeltwo:'Server'})
+   
+    useEffect(() => {
+        const labelone = edgeData.framework === 'rest-api' ? 'Client' : 'Producer';
+        const labeltwo = edgeData.framework === 'rest-api' ? 'Server' : 'Consumer';
+        
+        setCommunicationPattern({
+            labelone,
+            labeltwo
+        });
+    }, [edgeData.framework]);
+
     useEffect(() => {
         const [source, destination] = isOpen.split('-');
-        setEdgeApplicationNames({ client: nodes[source].data.applicationName, server: nodes[destination].data.applicationName });
+        setConnectingNodes({ client: nodes[source].data.applicationName, server: nodes[destination].data.applicationName });
     });
     useEffect(() => {
         const handleDeleteKeyPress = event => {
@@ -82,6 +94,18 @@ const EdgeModal = ({ isOpen, CurrentEdge, onClose, handleEdgeData, handleColorCl
                 <ModalHeader>Communication</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody>
+                    <div style={{ marginBottom: '1rem' }}>
+                        {(edgeData.framework === 'rabbitmq'||edgeData.framework === 'rest-api') && (
+                            <div style={{ marginBottom: '0.5rem' }}>
+                                <span style={{ marginRight: '0.5rem' }}>{communicationPattern.labelone} :</span>
+                                <span style={{fontWeight: 'bold'}}>{connectingNodes.client}</span>
+                                <br />
+                                <span style={{marginRight: '0.5rem' }}>{communicationPattern.labeltwo} :</span>
+                                <span style={{fontWeight: 'bold'}}>{connectingNodes.server}</span>
+                            </div>
+                        )}
+                    </div>
+
                     {checkIfBothAreServices(isOpen) && (
                         <div
                             style={{
@@ -237,30 +261,6 @@ const EdgeModal = ({ isOpen, CurrentEdge, onClose, handleEdgeData, handleColorCl
                             onClick={() => handleColorClick('#000000')}
                         ></div>
                     </div>
-                    {edgeData.framework === 'rabbitmq' && (
-                        <div>
-                            <div>
-                                <span>Producer: </span>
-                                <span>{edgeApplicationNames.client}</span>
-                            </div>
-                            <div>
-                                <span>Consumer: </span>
-                                <span>{edgeApplicationNames.server}</span>
-                            </div>
-                        </div>
-                    )}
-                    {edgeData.framework === 'rest-api' && (
-                        <div>
-                            <div>
-                                <span>Client: </span>
-                                <span>{edgeApplicationNames.client}</span>
-                            </div>
-                            <div>
-                                <span>Server: </span>
-                                <span>{edgeApplicationNames.server}</span>
-                            </div>
-                        </div>
-                    )}
                 </ModalBody>
                 <ModalFooter>
                     <Button style={{ display: 'block', margin: '0 auto' }} isDisabled={isEmpty} onClick={() => handleSubmit(edgeData)}>
