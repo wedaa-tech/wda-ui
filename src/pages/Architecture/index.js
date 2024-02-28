@@ -7,6 +7,8 @@ import {
     Flex,
     useDisclosure,
     Skeleton,
+    useToast
+  
 } from '@chakra-ui/react';
 import ArchitectureCard from './ArchitectureCard';
 import './index.css';
@@ -163,6 +165,15 @@ function ArchitecturesSection() {
             });
     };
 
+    const toast = useToast({
+        containerStyle: {
+            width: '500px',
+            maxWidth: '100%',
+        },
+    });
+    const toastIdRef = useRef();
+
+
     const createArchitecture = async (data) => {
         var updatedData = data;
         updatedData.services = {};
@@ -203,7 +214,7 @@ function ArchitecturesSection() {
     
             if (response.ok) {
                 const res = await response.json();
-                if(data.request_json.parentId==="admin"){
+                if(data?.request_json?.parentId==="admin"){
                     data._id=res._id;
                     data.id=res.projectId;
                     data.projectId=res.projectId;
@@ -214,12 +225,20 @@ function ArchitecturesSection() {
                 data._id=res._id;
                 }
                 setArchitectures([data,...architectures]); 
-                setTotalArchitectures(architectures.length + 1); 
+                setTotalArchitectures(architectures.length + 1);         
+                toastIdRef.current = toast({
+                    title: `${parentId === 'admin' ? 'Reference Architecture' : 'Prototype'} ${data.projectName} created`,
+                    status: 'success',
+                    duration: 3000,
+                    variant: 'left-accent',
+                    isClosable: true,
+                });
+
             } else {
-                console.error('Failed to create architecture');
+                console.error('Failed to Clone architecture');
             }
         } catch (error) {
-            console.error('Error creating architecture:', error);
+            console.error('Error cloning architecture:', error);
         }
     };
     

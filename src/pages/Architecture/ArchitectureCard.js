@@ -1,6 +1,21 @@
 import { CopyIcon, DeleteIcon } from '@chakra-ui/icons';
 import { useState } from 'react';
-import { Box, IconButton, Image, Skeleton, Text, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Button, Input } from '@chakra-ui/react';
+import {
+    Box,
+    IconButton,
+    Image,
+    Skeleton,
+    Text,
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalHeader,
+    ModalCloseButton,
+    ModalBody,
+    ModalFooter,
+    Button,
+    Input,
+} from '@chakra-ui/react';
 import React from 'react';
 
 const GreenCheckIcon = () => (
@@ -44,24 +59,27 @@ const ArchitectureCard = ({
 
     const handleCloneConfirm = () => {
         setNewPrototypeName('');
-        var updatedData
-        if(data?.request_json?.parentId==="admin"){
+        var updatedData;
+        if (data?.request_json?.parentId === 'admin') {
             const { _id, id, name, projectName, request_json, ...rest } = data;
             const updatedRequestJson = {
                 ...request_json,
-                projectName: newPrototypeName
+                projectName: newPrototypeName,
             };
             delete updatedRequestJson.project_id;
-            updatedData = { ...rest, request_json: updatedRequestJson,projectName:newPrototypeName,parentId:updatedRequestJson.parentId };
-        }
-        else{
-        const { project_id, _id, projectName, ...rest } = data;
-        updatedData = { ...rest, projectName: newPrototypeName };
+            updatedData = {
+                ...rest,
+                request_json: updatedRequestJson,
+                projectName: newPrototypeName,
+                parentId: updatedRequestJson.parentId,
+            };
+        } else {
+            const { project_id, _id, projectName, ...rest } = data;
+            updatedData = { ...rest, projectName: newPrototypeName };
         }
         handleSubmit(updatedData);
         setIsModalOpen(false);
     };
-    
 
     return (
         <Skeleton isLoaded={isLoaded} fadeDuration={1}>
@@ -117,8 +135,7 @@ const ArchitectureCard = ({
                     onClick={e => {
                         handleCloneClick();
                         e.stopPropagation();
-                    }
-                    }
+                    }}
                 />
                 {parentId === 'admin' && (
                     <Box position="absolute" top="24%" right="9%" zIndex={99}>
@@ -157,16 +174,18 @@ const ArchitectureCard = ({
             <Modal isOpen={isModalOpen} onClose={handleCloseModal} size="md" isCentered>
                 <ModalOverlay />
                 <ModalContent>
-                    <ModalHeader>Clone {parentIdPrototype}</ModalHeader>
+                    <ModalHeader>Clone {parentId == 'admin' ? 'Reference Architecture' : 'Prototype'}</ModalHeader>
                     <ModalBody>
                         <Input
-                            placeholder="Enter new Prototype name"
+                            placeholder={`Enter new ${parentId === 'admin' ? 'Reference Architecture' : 'Prototype'} name`}
                             value={newPrototypeName}
-                            onChange={(e) => setNewPrototypeName(e.target.value)}
+                            onChange={e => setNewPrototypeName(e.target.value)}
                         />
                     </ModalBody>
                     <ModalFooter>
-                    <Button variant="ghost" mr={3} onClick={handleCloseModal}>Cancel</Button>
+                        <Button variant="ghost" mr={3} onClick={handleCloseModal}>
+                            Cancel
+                        </Button>
                         <Button colorScheme="blue" onClick={handleCloneConfirm}>
                             Clone
                         </Button>
