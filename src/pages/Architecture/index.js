@@ -7,6 +7,8 @@ import {
     Flex,
     useDisclosure,
     Skeleton,
+    useToast
+  
 } from '@chakra-ui/react';
 import ArchitectureCard from './ArchitectureCard';
 import './index.css';
@@ -163,6 +165,84 @@ function ArchitecturesSection() {
             });
     };
 
+    const toast = useToast({
+        containerStyle: {
+            width: '500px',
+            maxWidth: '100%',
+        },
+    });
+    const toastIdRef = useRef();
+
+
+    const createArchitecture = async (data) => {
+        var updatedData = data;
+        updatedData.services = {};
+        updatedData.communications = {};
+    
+        const nodes = data.metadata?.nodes;
+        const edges = data.metadata?.edges;
+    
+        let currentIndex = 0;
+    
+        if (nodes && Object.keys(nodes).length > 0) {
+            for (const [key, value] of Object.entries(nodes)) {
+                if (key.startsWith('UI') || key.startsWith('Service') || key.startsWith('Gateway')) {
+                    updatedData.services[currentIndex++] = value.data;
+                }
+            }
+        }
+    
+        currentIndex = 0;
+    
+        if (edges && Object.keys(edges).length > 0) {
+            for (const [_, value] of Object.entries(edges)) {
+                updatedData.communications[currentIndex++] = value.data;
+            }
+        }
+    
+        const endpoint = data?.request_json?.parentId === 'admin' ? '/api/refArchs' : '/api/blueprints';
+    
+        try {
+            const response = await fetch(process.env.REACT_APP_API_BASE_URL + endpoint, {
+                method: 'post',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                },
+                body: JSON.stringify(updatedData),
+            });
+    
+            if (response.ok) {
+                const res = await response.json();
+                if(data?.request_json?.parentId==="admin"){
+                    data._id=res._id;
+                    data.id=res.projectId;
+                    data.projectId=res.projectId;
+                    data.name=data.projectName;
+                }
+                else{
+                data.project_id = res.projectId;
+                data._id=res._id;
+                }
+                setArchitectures([data,...architectures]); 
+                setTotalArchitectures(architectures.length + 1);         
+                toastIdRef.current = toast({
+                    title: `${parentId === 'admin' ? 'Reference Architecture' : 'Prototype'} ${data.projectName} created`,
+                    status: 'success',
+                    duration: 3000,
+                    variant: 'left-accent',
+                    isClosable: true,
+                });
+
+            } else {
+                console.error('Failed to Clone architecture');
+            }
+        } catch (error) {
+            console.error('Error cloning architecture:', error);
+        }
+    };
+    
+    
     const deleteArchitecture = data => {
         if (initialized) {
             if (parentId === 'admin' && location.pathname === '/architectures') {
@@ -294,6 +374,7 @@ function ArchitecturesSection() {
                         description={architecture.description}
                         imageUrl={architecture.imageUrl}
                         published={architecture.published}
+                        handleSubmit={createArchitecture}
                         onClick={handleOpenArchitecture}
                         onDelete={(title, projectId) => {
                             setArchitectureId(projectId);
