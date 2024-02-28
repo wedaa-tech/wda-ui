@@ -1,5 +1,6 @@
-import { DeleteIcon } from '@chakra-ui/icons';
-import { Box, IconButton, Image, Skeleton, Text } from '@chakra-ui/react';
+import { CopyIcon, DeleteIcon } from '@chakra-ui/icons';
+import { useState } from 'react';
+import { Box, IconButton, Image, Skeleton, Text, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Button, Input } from '@chakra-ui/react';
 import React from 'react';
 
 const GreenCheckIcon = () => (
@@ -23,11 +24,45 @@ const ArchitectureCard = ({
     projectId,
     onClick,
     data,
+    handleSubmit,
     onDelete,
     published,
     parentId,
     isLoaded = false,
 }) => {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [newPrototypeName, setNewPrototypeName] = useState('');
+
+    const handleCloneClick = () => {
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setNewPrototypeName('');
+        setIsModalOpen(false);
+    };
+
+    const handleCloneConfirm = () => {
+        setNewPrototypeName('');
+        var updatedData
+        if(data?.request_json?.parentId==="admin"){
+            const { _id, id, name, projectName, request_json, ...rest } = data;
+            const updatedRequestJson = {
+                ...request_json,
+                projectName: newPrototypeName
+            };
+            delete updatedRequestJson.project_id;
+            updatedData = { ...rest, request_json: updatedRequestJson,projectName:newPrototypeName,parentId:updatedRequestJson.parentId };
+        }
+        else{
+        const { project_id, _id, projectName, ...rest } = data;
+        updatedData = { ...rest, projectName: newPrototypeName };
+        }
+        handleSubmit(updatedData);
+        setIsModalOpen(false);
+    };
+    
+
     return (
         <Skeleton isLoaded={isLoaded} fadeDuration={1}>
             <Box
@@ -70,6 +105,21 @@ const ArchitectureCard = ({
                         e.stopPropagation();
                     }}
                 />
+                <IconButton
+                    top="5%"
+                    right="19%"
+                    variant="outline"
+                    colorScheme="blackAlpha"
+                    aria-label="Clone Prototype"
+                    position="absolute"
+                    zIndex={99}
+                    icon={<CopyIcon />}
+                    onClick={e => {
+                        handleCloneClick();
+                        e.stopPropagation();
+                    }
+                    }
+                />
                 {parentId === 'admin' && (
                     <Box position="absolute" top="24%" right="9%" zIndex={99}>
                         {published ? <GreenCheckIcon /> : <RedCloseIcon />}
@@ -104,6 +154,25 @@ const ArchitectureCard = ({
                     </Text>
                 </Box>
             </Box>
+            <Modal isOpen={isModalOpen} onClose={handleCloseModal} size="md" isCentered>
+                <ModalOverlay />
+                <ModalContent>
+                    <ModalHeader>Clone {parentIdPrototype}</ModalHeader>
+                    <ModalBody>
+                        <Input
+                            placeholder="Enter new Prototype name"
+                            value={newPrototypeName}
+                            onChange={(e) => setNewPrototypeName(e.target.value)}
+                        />
+                    </ModalBody>
+                    <ModalFooter>
+                    <Button variant="ghost" mr={3} onClick={handleCloseModal}>Cancel</Button>
+                        <Button colorScheme="blue" onClick={handleCloneConfirm}>
+                            Clone
+                        </Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
         </Skeleton>
     );
 };
