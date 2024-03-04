@@ -21,6 +21,7 @@ import { ArrowRightIcon } from '@chakra-ui/icons';
 import Sidebar from './../components/Sidebar';
 import { saveAs } from 'file-saver';
 import ServiceModal from '../components/Modal/ServiceModal';
+import NewServiceModal from '../components/Modal/NewServiceModal';
 import UiDataModal from '../components/Modal/UIModal';
 import GatewayModal from '../components/Modal/GatewayModal';
 import GroupDataModal from '../components/Modal/GroupDataModel';
@@ -1282,18 +1283,18 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         }
 
         let Service_Discovery_Data = nodes['serviceDiscoveryType']?.data?.serviceDiscoveryType;
-        let authenticationData = nodes['authenticationType']?.data?.authenticationType||'no';
+        let authenticationData = nodes['authenticationType']?.data?.authenticationType || 'no';
         let logManagementData = nodes['logManagement']?.data?.logManagementType;
         if (logManagementData && Data?.deployment) Data.deployment.enableECK = 'true';
         if (Data.deployment && Service_Discovery_Data)
-            Data.deployment = { ...Data.deployment, serviceDiscoveryType:Service_Discovery_Data};
+            Data.deployment = { ...Data.deployment, serviceDiscoveryType: Service_Discovery_Data };
         for (const key in NewNodes) {
             const Node = NewNodes[key];
             delete Node.data?.color;
             if (Node.id.startsWith('Service') || Node.id.startsWith('UI') || Node.id.startsWith('Gateway')) {
                 if (Service_Discovery_Data && (serviceRegistryEdges.length === 0 || serviceRegistryEdges.includes(Node.id))) {
                     Node.data.serviceDiscoveryType = Service_Discovery_Data;
-                } else  if(Node.data?.serviceDiscoveryType){
+                } else if (Node.data?.serviceDiscoveryType) {
                     delete Node.data.serviceDiscoveryType;
                 }
                 if (authenticationData && (authEdges.length === 0 || authEdges.includes(Node.id))) {
@@ -1347,10 +1348,10 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     Edge.data.client = nodes[Edge.source].data.applicationName;
                     Edge.data.server = nodes[Edge.target].data.applicationName;
                     if (Object.keys(Edge.data).length !== 0) {
-                        Data['communications'][communicationIndex++] = Edge.data;  
-                        if(Edge.data.type==="asynchronous"){
-                            Data['communications'][communicationIndex-1].server = nodes[Edge.source].data.applicationName;
-                            Data['communications'][communicationIndex-1].client = nodes[Edge.target].data.applicationName;
+                        Data['communications'][communicationIndex++] = Edge.data;
+                        if (Edge.data.type === 'asynchronous') {
+                            Data['communications'][communicationIndex - 1].server = nodes[Edge.source].data.applicationName;
+                            Data['communications'][communicationIndex - 1].client = nodes[Edge.target].data.applicationName;
                         }
                     }
                 }
@@ -1535,7 +1536,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 color: '#bcbaba',
                 type: MarkerType.ArrowClosed,
             };
-            UpdatedEdges[IsEdgeopen].animated=true;
+            UpdatedEdges[IsEdgeopen].animated = true;
             UpdatedEdges[IsEdgeopen].className = 'grey';
         }
 
@@ -2084,7 +2085,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         applicationData={applicationData}
                     />
                 )}
-                {nodeType === 'Service' && Isopen && (
+                {/* {nodeType === 'Service' && Isopen && (
                     <ServiceModal
                         isOpen={Isopen}
                         CurrentNode={CurrentNode}
@@ -2094,7 +2095,20 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         uniqueApplicationNames={uniqueApplicationNames}
                         uniquePortNumbers={uniquePortNumbers}
                     />
+                )} */}
+
+                {nodeType === 'Service' && Isopen && (
+                    <NewServiceModal
+                        isOpen={Isopen}
+                        CurrentNode={CurrentNode}
+                        onClose={setopen}
+                        onSubmit={onChange}
+                        handleColorClick={handleColorClick}
+                        uniqueApplicationNames={uniqueApplicationNames}
+                        uniquePortNumbers={uniquePortNumbers}
+                    />
                 )}
+
                 {nodeType === 'Gateway' && Isopen && (
                     <GatewayModal
                         isOpen={Isopen}
