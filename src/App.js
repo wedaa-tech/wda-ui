@@ -17,6 +17,7 @@ import FeedbackPage from './components/FeedbackTable';
 import NavBar from './components/NavBar';
 import Generating from './components/Generating';
 import { Box } from '@chakra-ui/react';
+import AiBox from './pages/Ai/AiBox';
 
 function App() {
     return (
@@ -30,6 +31,9 @@ function App() {
                         </Route>
                         <Route exact path="/wizard">
                             <Wizard />
+                        </Route>
+                        <Route exact path="/aibox">
+                            <AiBox/>
                         </Route>
                         <Route exact path="/wizardselection">
                             <WizardSelection />
