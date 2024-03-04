@@ -1520,23 +1520,20 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             UpdatedEdges[IsEdgeopen].label = Data.label;
         } else if (Data.framework === 'rest-api') {
             UpdatedEdges[IsEdgeopen].label = 'Rest';
+            if(UpdatedEdges[IsEdgeopen]?.animated){
+                delete UpdatedEdges[IsEdgeopen].animated;
+            }
         } else {
             UpdatedEdges[IsEdgeopen].label = 'RabbitMQ';
         }
-
-        if (Data.type === 'synchronous') {
-            UpdatedEdges[IsEdgeopen].markerEnd = {
-                color: 'black',
-                type: MarkerType.ArrowClosed,
-            };
-            UpdatedEdges[IsEdgeopen].className = 'success';
-        } else if (Data.type === 'asynchronous') {
-            UpdatedEdges[IsEdgeopen].markerEnd = {
-                color: '#bcbaba',
-                type: MarkerType.ArrowClosed,
-            };
+        UpdatedEdges[IsEdgeopen].markerEnd = {
+            color: 'black',
+            type: MarkerType.ArrowClosed,
+        };
+        UpdatedEdges[IsEdgeopen].className = 'success';
+         if (Data.type === 'asynchronous') { 
+            delete UpdatedEdges[IsEdgeopen].markerEnd.type;
             UpdatedEdges[IsEdgeopen].animated=true;
-            UpdatedEdges[IsEdgeopen].className = 'grey';
         }
 
         UpdatedEdges[IsEdgeopen].data = {
