@@ -548,7 +548,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         setNodeClick(Id);
     };
     const clear = () => {
-        localStorage.clear();
+        localStorage.removeItem("data");
         setProjectName('clear#canvas');
         setuserData({});
         setNodes({});
