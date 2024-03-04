@@ -94,6 +94,7 @@ const EdgeModal = ({ isOpen, CurrentEdge, onClose, handleEdgeData, handleColorCl
                 <ModalHeader>Communication</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody>
+                    {(connectingNodes?.client && connectingNodes?.server) && 
                     <div style={{ marginBottom: '1rem' }}>
                         {(edgeData.framework === 'rabbitmq'||edgeData.framework === 'rest-api') && (
                             <div style={{ marginBottom: '0.5rem' }}>
@@ -104,7 +105,7 @@ const EdgeModal = ({ isOpen, CurrentEdge, onClose, handleEdgeData, handleColorCl
                                 <span style={{fontWeight: 'bold'}}>{connectingNodes.server}</span>
                             </div>
                         )}
-                    </div>
+                    </div>}
 
                     {checkIfBothAreServices(isOpen) && (
                         <div
