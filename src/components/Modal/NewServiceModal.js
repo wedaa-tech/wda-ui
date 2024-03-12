@@ -13,8 +13,12 @@ import {
     Alert,
     AlertIcon,
     Textarea,
+    IconButton,
 } from '@chakra-ui/react';
+import Editor from '@monaco-editor/react';
 import validatePortNumber from '../../utils/portValidation';
+import { FaSync } from 'react-icons/fa';
+import { useKeycloak } from '@react-keycloak/web';
 
 const NewServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick, uniqueApplicationNames, uniquePortNumbers }) => {
     const IntialState = {
@@ -24,10 +28,13 @@ const NewServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorCl
         packageName: '',
         serverPort: '',
         applicationType: 'microservice',
+        color: '#fff',
+        dbmlData: '',
         ...CurrentNode,
     };
+    const { initialized, keycloak } = useKeycloak();
     const [ApplicationData, setApplicationData] = useState(IntialState);
-
+    const [isLoading, setIsLoading] = useState(false);
     useEffect(() => {
         const handleDeleteKeyPress = event => {
             if (
@@ -64,6 +71,18 @@ const NewServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorCl
         }
     };
 
+    const handleRefresh = () => {
+        setIsLoading(true);
+        // Make your API call here
+        // Assuming fetchData is your API call function
+        // fetchData().then(() => {
+        //     setIsLoading(false);
+        // }).catch(error => {
+        //     console.error('Error fetching data:', error);
+        //     setIsLoading(false);
+        // });
+    };
+
     const handleKeyPress = event => {
         const charCode = event.which ? event.which : event.keyCode;
         if ((charCode >= 48 && charCode <= 57) || charCode === 8) {
@@ -74,7 +93,13 @@ const NewServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorCl
         }
     };
 
+    // const handleEditorChange= (value, event) => {
+    //     setApplicationData(prev => ({
+    //             ...prev,
+    //             [column]: value,
+    //         }));     }
     const handleData = (column, value) => {
+        console.log(column, value);
         if (column === 'applicationName') {
             validateName(value);
             setApplicationData(prev => ({
@@ -123,33 +148,38 @@ const NewServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorCl
     };
 
     return (
-        <Modal isOpen={isOpen} size ={"3xl"}onClose={() => onClose(false)}>
-            {/* <ModalOverlay /> */}
+        <Modal
+            isOpen={isOpen}
+            size={ApplicationData.applicationFramework === 'spring' && ApplicationData?.prodDatabaseType ? '6xl' : ''}
+            onClose={() => onClose(false)}
+        >
             <ModalContent
-                // style={{
-                //     position: 'absolute',
-                //     top: '100px',
-                //     right: '10px',
-                //     width: '300px',
-                // }}
                 style={{
                     position: 'absolute',
-                    top: '100px',
-                    left: '40%',
+                    top: '10%',
+                    left: ApplicationData.applicationFramework === 'spring' && ApplicationData?.prodDatabaseType ? '20%' : '83%',
                     transform: 'translate(-50%, -50%)',
-                    width: '700px',
+                    width: ApplicationData.applicationFramework === 'spring' && ApplicationData?.prodDatabaseType ? '90%' : '300px',
                 }}
             >
                 <ModalHeader style={{ textAlign: 'center' }}>Service</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody>
-                    <div style={{ display: 'flex', flexDirection: 'row' }}>
-                        <div style={{ flex: 0.5,marginRight: '20px' }}>
+                    <div
+                        style={{
+                            display:
+                                ApplicationData.applicationFramework === 'spring' && ApplicationData?.prodDatabaseType ? 'flex' : 'block',
+                            flexDirection: 'row',
+                            gap: ApplicationData.applicationFramework === 'spring' && ApplicationData?.prodDatabaseType ? '40px' : '0',
+                        }}
+                    >
+                        {' '}
+                        <div style={{ flex: 0.5 }}>
                             <div
                                 style={{
                                     display: 'flex',
                                     flexDirection: 'column',
-                                    alignItems: 'Left',
+                                    gap: '15px',
                                 }}
                             >
                                 <FormControl>
@@ -253,115 +283,209 @@ const NewServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorCl
                                         {portValidationError.portRangeError}
                                     </Alert>
                                 )}
-                                {ApplicationData?.prodDatabaseType && (
+                                <FormLabel>Background Color</FormLabel>
+                                <div
+                                    style={{
+                                        display: 'flex',
+                                        flexDirection: 'row',
+                                        marginTop: '-20px',
+                                        marginBottom: '20px',
+                                        gap: '15px',
+                                    }}
+                                >
+                                    <div
+                                        style={{
+                                            width: '30px',
+                                            height: '30px',
+                                            borderRadius: '50%',
+                                            backgroundColor: '#ffc9c9',
+                                            // border: ApplicationData.color === '#ffc9c9' ? '1px solid white' : 'none',
+                                            // boxShadow: ApplicationData.color === '#ffc9c9' ? '0px 0px 0px 2px #ffc9c9' : '',
+                                            cursor: 'pointer',
+                                            border: ApplicationData.color === '#ffc9c9' ? '2px solid #007bff' : '1px solid #cfcfcf',
+                                        }}
+                                        onClick={() => {
+                                            handleData('color', '#ffc9c9');
+                                            handleColorClick('#ffc9c9');
+                                        }}
+                                    ></div>
+
+                                    <div
+                                        style={{
+                                            width: '30px',
+                                            height: '30px',
+                                            borderRadius: '50%',
+                                            backgroundColor: '#b2f2bb',
+                                            border: ApplicationData.color === '#b2f2bb' ? '2px solid #007bff' : '1px solid #cfcfcf',
+                                            cursor: 'pointer',
+                                        }}
+                                        onClick={() => {
+                                            handleData('color', '#b2f2bb');
+                                            handleColorClick('#b2f2bb');
+                                        }}
+                                    ></div>
+                                    <div
+                                        style={{
+                                            width: '30px',
+                                            height: '30px',
+                                            borderRadius: '50%',
+                                            backgroundColor: '#a5d8ff',
+                                            border: ApplicationData.color === '#a5d8ff' ? '2px solid #007bff' : '1px solid #cfcfcf',
+                                            cursor: 'pointer',
+                                        }}
+                                        onClick={() => {
+                                            handleData('color', '#a5d8ff');
+                                            handleColorClick('#a5d8ff');
+                                        }}
+                                    ></div>
+                                    <div
+                                        style={{
+                                            width: '30px',
+                                            height: '30px',
+                                            borderRadius: '50%',
+                                            backgroundColor: '#ffec99',
+                                            border: ApplicationData.color === '#ffec99' ? '2px solid #007bff' : '1px solid #cfcfcf',
+                                            cursor: 'pointer',
+                                        }}
+                                        onClick={() => {
+                                            handleData('color', '#ffec99');
+                                            handleColorClick('#ffec99');
+                                        }}
+                                    ></div>
+                                    <div
+                                        style={{
+                                            width: '30px',
+                                            height: '30px',
+                                            // border: '1px solid #cfcfcf',
+                                            borderRadius: '50%',
+                                            border: ApplicationData.color === '#fff' ? '2px solid #007bff' : '1px solid #cfcfcf',
+                                            backgroundColor: '#fff',
+                                            cursor: 'pointer',
+                                        }}
+                                        onClick={() => {
+                                            handleData('color', '#fff');
+                                            handleColorClick('rgba(255, 255, 255, 0)');
+                                        }}
+                                    ></div>
+                                </div>
+                            </div>
+                        </div>
+                        {ApplicationData.applicationFramework === 'spring' && ApplicationData?.prodDatabaseType && (
+                            <div style={{ flex: 1 }}>
+                                <div
+                                    style={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        gap: '15px',
+                                    }}
+                                >
+                                    {/* Your form controls */}
                                     <FormControl>
                                         <FormLabel>Description</FormLabel>
                                         <Textarea
                                             mb={4}
                                             variant="outline"
-                                            id="label"
+                                            id="description"
                                             placeholder="A small description about your service"
                                             borderColor={'black'}
-                                            maxLength="45"
                                             value={ApplicationData.description}
+                                            disabled={!(initialized && keycloak.authenticated)}
+                                            backgroundColor={initialized && keycloak.authenticated ? 'white' : '#f2f2f2'}
                                             onChange={e => handleData('description', e.target.value)}
+                                            style={{ height: '100px', overflowY: 'scroll' }} // Adjusted height and added scrolling
                                         />
                                     </FormControl>
-                                )}
-                            </div>
-                            <FormLabel>Background Color</FormLabel>
-                            <div
-                                style={{
-                                    display: 'flex',
-                                    flexDirection: 'row',
-                                    marginBottom: '20px',
-                                    gap: '15px',
-                                }}
-                            >
-                                <div
-                                    style={{
-                                        width: '30px',
-                                        height: '30px',
-                                        borderRadius: '50%',
-                                        backgroundColor: '#ffc9c9',
-                                        cursor: 'pointer',
-                                    }}
-                                    onClick={() => handleColorClick('#ffc9c9')}
-                                ></div>
-                                <div
-                                    style={{
-                                        width: '30px',
-                                        height: '30px',
-                                        borderRadius: '50%',
-                                        backgroundColor: '#b2f2bb',
-                                        cursor: 'pointer',
-                                    }}
-                                    onClick={() => handleColorClick('#b2f2bb')}
-                                ></div>
-                                <div
-                                    style={{
-                                        width: '30px',
-                                        height: '30px',
-                                        borderRadius: '50%',
-                                        backgroundColor: '#a5d8ff',
-                                        cursor: 'pointer',
-                                    }}
-                                    onClick={() => handleColorClick('#a5d8ff')}
-                                ></div>
-                                <div
-                                    style={{
-                                        width: '30px',
-                                        height: '30px',
-                                        borderRadius: '50%',
-                                        backgroundColor: '#ffec99',
-                                        cursor: 'pointer',
-                                    }}
-                                    onClick={() => handleColorClick('#ffec99')}
-                                ></div>
-                                <div
-                                    style={{
-                                        width: '30px',
-                                        height: '30px',
-                                        border: '1px solid #cfcfcf',
-                                        borderRadius: '50%',
-                                        backgroundColor: '#fff',
-                                        cursor: 'pointer',
-                                    }}
-                                    onClick={() => handleColorClick('rgba(255, 255, 255, 0)')}
-                                ></div>
-                            </div>
-                        </div>
-                        <div style={{ flex: 1 }}>
-                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'Right',marginBottom: '20px', gap: '15px' }}>
-                                {/* Your form controls */}
-                                <FormControl>
-                                    <FormLabel>Description</FormLabel>
-                                    <Textarea
-                                        // mb={2}
-                                        variant="outline"
-                                        id="description"
-                                        placeholder="A small description about your service"
-                                        borderColor={'black'}
-                                        value={ApplicationData.description}
-                                        onChange={e => handleData('description', e.target.value)}
-                                        style={{ height: '130px' }}
-                                    />
-                                </FormControl>
-                                <FormControl>
-                                    <FormLabel>DBML Scripts</FormLabel>
-                                    <Textarea
-                                        mb={4}
+                                    <FormControl>
+                                        <FormLabel
+                                            style={{
+                                                display: 'flex',
+                                                justifyContent: 'space-between',
+                                                alignItems: 'center',
+                                                marginBottom: '0px',
+                                            }}
+                                        >
+                                            <span>DBML Scripts</span>
+                                            <IconButton
+                                                icon={<FaSync />}
+                                                isLoading={isLoading}
+                                                onClick={handleRefresh}
+                                                aria-label="Refresh"
+                                                variant="link"
+                                                colorScheme="blue"
+                                                style={{ position: 'relative', fontSize: '15px' }}
+                                                spin={isLoading}
+                                            />
+                                        </FormLabel>
+
+                                        {/* <Textarea
+                                        mb={2}
                                         variant="outline"
                                         id="umlData"
                                         placeholder="DBML scripts"
                                         borderColor={'black'}
                                         value={ApplicationData.umlData}
                                         onChange={e => handleData('umlData', e.target.value)}
-                                        style={{ height: '130px' }}
-                                    />
-                                </FormControl>
+                                        style={{
+                                            height: '370px',
+                                            overflowY: 'scroll',
+                                            fontFamily: 'monospace',
+                                            backgroundColor: '#f0f3f8',
+                                            border: '1px solid #ddd',
+                                            borderRadius: '5px',
+                                            padding: '10px',
+                                            fontSize: '16px',
+                                        }}
+                                    /> */}
+
+                                        <div
+                                            style={{
+                                                height: '250px',
+                                                border: '1px solid black',
+                                                borderRadius: '5px',
+                                                padding: '5px',
+                                                marginBottom: '10px',
+                                                backgroundColor: initialized && keycloak.authenticated ? 'white' : '#FAFAFA',
+                                                borderColor:(initialized && keycloak.authenticated) ?"black": "grey",
+                                                cursor: !(initialized && keycloak.authenticated) && 'not-allowed',
+                                                position: 'relative', // Necessary for absolute positioning of the text
+                                            }}
+                                        >
+                                            {!initialized ||
+                                                (!keycloak.authenticated && (
+                                                    <div
+                                                        style={{
+                                                            position: 'absolute',
+                                                            top: '10%',
+                                                            left: '18%',
+                                                            transform: 'translate(-50%, -50%)',
+                                                            color: '#E0E0E0',
+                                                        }}
+                                                    >
+                                                        Please login to use this feature
+                                                    </div>
+                                                ))}
+
+                                            {initialized && keycloak.authenticated && (
+                                                <Editor
+                                                    height="100%"
+                                                    options={{
+                                                        minimap: { enabled: false },
+                                                        lineNumbers: 'on',
+                                                        defaultLanguage: 'sql',
+                                                    }}
+                                                    defaultLanguage="sql"
+                                                    // placeholder="DBML scripts"
+                                                    defaultValue={ApplicationData.dbmlData}
+                                                    onChange={value => {
+                                                        handleData('dbmlData', value);
+                                                    }}
+                                                />
+                                            )}
+                                        </div>
+                                    </FormControl>
+                                </div>
                             </div>
-                        </div>
+                        )}
                     </div>
                     <Button
                         onClick={() => !duplicateApplicationNameError && isApplicationFrameworkFilled() && onSubmit(ApplicationData)}

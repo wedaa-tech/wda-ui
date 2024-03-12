@@ -1959,6 +1959,18 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                                 id={id}
                                 clear={clear}
                             />
+                            <div
+                                style={{
+                                    position: 'fixed',
+                                    top: 0,
+                                    left: 0,
+                                    width: '100%',
+                                    height: '100%',
+                                    backgroundColor: Isopen ? 'rgba(0, 0, 0, 0.6)' : 'transparent',
+                                    zIndex: 9999, 
+                                    display: Isopen ? 'block' : 'none',
+                                }}
+                            />
                             {showDiv && (
                                 <Box
                                     flex={'1'}
