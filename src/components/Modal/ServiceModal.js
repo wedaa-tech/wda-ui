@@ -238,7 +238,7 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                                 {portValidationError.portRangeError}
                             </Alert>
                         )}
-                        {ApplicationData?.prodDatabaseType && (
+                        {/* {ApplicationData?.prodDatabaseType && (
                             <FormControl>
                                 <FormLabel>Description</FormLabel>
                                 <Textarea
@@ -252,7 +252,7 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                                     onChange={e => handleData('description', e.target.value)}
                                 />
                             </FormControl>
-                        )}
+                        )} */}
                     </div>
                     <FormLabel>Background Color</FormLabel>
                     <div

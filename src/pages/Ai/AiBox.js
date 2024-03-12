@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
     Box,
     Step,
-    StepDescription,
     StepIcon,
     StepIndicator,
     StepNumber,
@@ -14,10 +13,13 @@ import {
 } from '@chakra-ui/react';
 import TitleDescriptionForm from './TitleDescriptionForm';
 import KeyValueForm from './Form';
+import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 
 function AiBox() {
+    const history = useHistory();
     const [formData, setFormData] = useState({ title: '', description: '' });
     const [serviceData, setServiceData] = useState([{ number: 1, name: 'Sample Service', description: 'Sample Description' }]);
+    const [combinedData, setCombinedData] = useState({ title: '', description: '', services: [] });
 
     const steps = [
         { title: 'Application' },
@@ -34,9 +36,31 @@ function AiBox() {
         setActiveStep(1);
     };
 
-    const handleNextKeyValue = (data) => {
+    const handleSubmit = (data) => {
         setServiceData(data);
-        setActiveStep(0);
+        const combinedData = {
+            title: formData.title,
+            description: formData.description,
+            services: data
+        };
+        setCombinedData(combinedData);
+        console.log("hii",combinedData,)
+        fetch(process.env.REACT_APP_API_BASE_URL + '/dynamic-template', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(combinedData),
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data,"lolol")
+                history.push({
+                    pathname: '/canvastocode',
+                    state: { metadata: data },
+                });
+            })
+            .catch(error => console.error('Error occured:', error));
     };
 
     const handleBack = () => {
@@ -82,7 +106,7 @@ function AiBox() {
                     <KeyValueForm
                         serviceData={serviceData}
                         setServiceData={setServiceData}
-                        onNext={handleNextKeyValue}
+                        onNext={handleSubmit}
                         onBack={handleBack}
                         title={formData.title}
                     />

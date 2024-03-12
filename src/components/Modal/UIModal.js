@@ -12,7 +12,7 @@ import {
     FormControl,
     Alert,
     AlertIcon,
-    Textarea
+    Textarea,
 } from '@chakra-ui/react';
 import validatePortNumber from '../../utils/portValidation';
 
@@ -35,6 +35,7 @@ const UiDataModal = ({
         serverPort: '',
         withExample: 'false',
         applicationType: 'gateway',
+        color:'#fff',
         theme: '',
         ...CurrentNode,
     };
@@ -103,7 +104,12 @@ const UiDataModal = ({
 
     useEffect(() => {
         const handleDeleteKeyPress = event => {
-            if (isOpen && (event.key === 'Backspace' || event.key === 'Delete') && event.target.tagName !== 'INPUT' && event.target.tagName !== 'TEXTAREA') {
+            if (
+                isOpen &&
+                (event.key === 'Backspace' || event.key === 'Delete') &&
+                event.target.tagName !== 'INPUT' &&
+                event.target.tagName !== 'TEXTAREA'
+            ) {
                 onClose();
             }
         };
@@ -257,7 +263,13 @@ const UiDataModal = ({
                                 variant="outline"
                                 id="serverPort"
                                 placeholder="Port number"
-                                borderColor={portValidationError.serverPortError || portValidationError.portNumberError || portValidationError.portRangeError ? 'red' : 'black'}
+                                borderColor={
+                                    portValidationError.serverPortError ||
+                                    portValidationError.portNumberError ||
+                                    portValidationError.portRangeError
+                                        ? 'red'
+                                        : 'black'
+                                }
                                 value={UiData.serverPort}
                                 maxLength="5"
                                 onKeyPress={handleKeyPress}
@@ -289,20 +301,20 @@ const UiDataModal = ({
                                 {portValidationError.portRangeError}
                             </Alert>
                         )}
-                        {UiData.applicationFramework !== 'docusaurus' &&(
-                        <FormControl>
-                            <FormLabel>Description</FormLabel>
-                            <Textarea
-                                mb={4}
-                                variant="outline"
-                                id="label"
-                                placeholder="A small description"
-                                borderColor={'black'}
-                                maxLength="45"
-                                value={UiData.description}
-                                onChange={e => handleData('description', e.target.value)}
-                            />
-                        </FormControl>
+                        {UiData.applicationFramework !== 'docusaurus' && (
+                            <FormControl>
+                                <FormLabel>Description</FormLabel>
+                                <Textarea
+                                    mb={4}
+                                    variant="outline"
+                                    id="label"
+                                    placeholder="A small description"
+                                    borderColor={'black'}
+                                    maxLength="45"
+                                    value={UiData.description}
+                                    onChange={e => handleData('description', e.target.value)}
+                                />
+                            </FormControl>
                         )}
                     </div>
                     <FormLabel>Background Color</FormLabel>
@@ -320,50 +332,70 @@ const UiDataModal = ({
                                 height: '30px',
                                 borderRadius: '50%',
                                 backgroundColor: '#ffc9c9',
+                                border: UiData.color === '#ffc9c9' ? '2px solid #007bff' : '1px solid #cfcfcf',
                                 cursor: 'pointer',
                             }}
-                            onClick={() => handleColorClick('#ffc9c9')}
+                            onClick={() => {
+                                handleData('color', '#ffc9c9');
+                                handleColorClick('#ffc9c9');
+                            }}
                         ></div>
                         <div
                             style={{
                                 width: '30px',
                                 height: '30px',
                                 borderRadius: '50%',
+                                border: UiData.color === '#b2f2bb' ? '2px solid #007bff' : '1px solid #cfcfcf',
                                 backgroundColor: '#b2f2bb',
                                 cursor: 'pointer',
                             }}
-                            onClick={() => handleColorClick('#b2f2bb')}
+                            onClick={() => {
+                                handleData('color', '#b2f2bb');
+                                handleColorClick('#b2f2bb');
+                            }}
                         ></div>
                         <div
                             style={{
                                 width: '30px',
                                 height: '30px',
                                 borderRadius: '50%',
+                                border: UiData.color === '#a5d8ff' ? '2px solid #007bff' : '1px solid #cfcfcf',
                                 backgroundColor: '#a5d8ff',
                                 cursor: 'pointer',
                             }}
-                            onClick={() => handleColorClick('#a5d8ff')}
+                            onClick={() => {
+                                handleData('color', '#a5d8ff');
+                                handleColorClick('#a5d8ff');
+                            }}
                         ></div>
                         <div
                             style={{
                                 width: '30px',
                                 height: '30px',
                                 borderRadius: '50%',
+                                border: UiData.color === '#ffec99' ? '2px solid #007bff' : '1px solid #cfcfcf',
                                 backgroundColor: '#ffec99',
                                 cursor: 'pointer',
                             }}
-                            onClick={() => handleColorClick('#ffec99')}
+                            onClick={() => {
+                                handleData('color', '#ffec99');
+                                handleColorClick('#ffec99');
+                            }}
                         ></div>
                         <div
                             style={{
                                 width: '30px',
                                 height: '30px',
+                                border: UiData.color === '#fff' ? '2px solid #007bff' : '1px solid #cfcfcf',
                                 border: '1px solid #cfcfcf',
                                 borderRadius: '50%',
                                 backgroundColor: '#fff',
                                 cursor: 'pointer',
                             }}
-                            onClick={() => handleColorClick('rgba(255, 255, 255, 0)')}
+                            onClick={() => {
+                                handleData('color', '#fff');
+                                handleColorClick('rgba(255, 255, 255, 0)');
+                            }}
                         ></div>
                     </div>
                     <Button

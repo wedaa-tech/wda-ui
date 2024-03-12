@@ -32,9 +32,6 @@ function App() {
                         <Route exact path="/wizard">
                             <Wizard />
                         </Route>
-                        <Route exact path="/aibox">
-                            <AiBox/>
-                        </Route>
                         <Route exact path="/wizardselection">
                             <WizardSelection />
                         </Route>
@@ -44,6 +41,9 @@ function App() {
                         <Route exact path="/gen">
                             <Generating />
                         </Route>
+                        <PrivateRoute exact path="/aibox">
+                            <AiBox/>
+                        </PrivateRoute>
                         <PrivateRoute exact path="/projects">
                             <ArchitecturesSection />
                         </PrivateRoute>

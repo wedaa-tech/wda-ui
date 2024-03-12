@@ -1,5 +1,5 @@
 import { Box1, DocumentSketch, CardEdit, Flash, Graph, Home2, Chart2, Setting3 } from 'iconsax-react';
-
+import { LuSparkle } from "react-icons/lu";
 export const menuData = {
     Home: {
         icon: <Home2 />,
@@ -18,6 +18,7 @@ export const menuData = {
     Canvas: {
         icon: <Graph />,
         expandable: {
+            'AI Wizard': {icon: <LuSparkle size={24}/>,path: '/aibox'},
             Quickstart: { icon: <Flash />, path: '/wizardselection' },
             Advanced: { icon: <Setting3 />, path: '/canvastocode' },
         },
