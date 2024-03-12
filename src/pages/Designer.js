@@ -875,7 +875,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     setServiceDiscoveryCount(1);
                 } else if (key.toLowerCase().includes('service')) {
                     const id = key.split('_');
-                    const numberId = parseInt(id[1], 10);
+                    const numberId = parseInt(id[1]);
                     max_serviceId = Math.max(numberId, max_serviceId);
                     if (!nodes[key]?.data?.serverPort) {
                         setIsEmptyServiceSubmit(true);
@@ -893,7 +893,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     }
                 } else if (key.toLowerCase().includes('gateway')) {
                     const id = key.split('_');
-                    const numberId = parseInt(id[1], 10);
+                    const numberId = parseInt(id[1]);
                     max_gatewayId = Math.max(numberId, max_gatewayId);
                     if (!nodes[key]?.data?.serverPort) {
                         setIsEmptyGatewaySubmit(true);
@@ -912,15 +912,15 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     setIsGatewayNodeEnabled(true);
                 } else if (key.toLowerCase().includes('database')) {
                     const id = key.split('_');
-                    const numberId = parseInt(id[1], 10);
+                    const numberId = parseInt(id[1]);
                     max_databaseId = Math.max(numberId, max_databaseId);
                 } else if (key.toLowerCase().includes('group')) {
                     const id = key.split('_');
-                    const numberId = parseInt(id[1], 10);
+                    const numberId = parseInt(id[1]);
                     max_groupId = Math.max(numberId, max_groupId);
                 } else if (key.toLowerCase().includes('dummy')) {
                     const id = key.split('_');
-                    const numberId = parseInt(id[1], 10);
+                    const numberId = parseInt(id[1]);
                     max_dummyId = Math.max(numberId, max_dummyId);
                 } else if (key.toLowerCase().includes('auth')) {
                     setAuthProviderCount(1);
@@ -933,7 +933,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     setLocalenvironmentCount(1);
                 } else if (key.toLowerCase().includes('ui')) {
                     const id = key.split('_');
-                    const numberId = parseInt(id[1], 10);
+                    const numberId = parseInt(id[1]);
                     max_uiId = Math.max(numberId, max_uiId);
                     uiCount++;
                     if (nodes[key].data?.applicationFramework) {
@@ -1513,7 +1513,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         setEdgeopen(edge.id);
         setCurrentEdge(updatedEdges[edge.id].data);
         Object.keys(updatedEdges).forEach(existingEdgeId => {
-            existingEdgeId = parseInt(existingEdgeId, 10);
+            existingEdgeId = parseInt(existingEdgeId);
 
             if (existingEdgeId !== edge.id) {
                 if (updatedEdges[existingEdgeId]?.selected) {
