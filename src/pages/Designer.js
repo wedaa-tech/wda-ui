@@ -601,12 +601,12 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 const marketMetaData = JSON.parse(event.dataTransfer.getData('metaData'));
                 setNodes(nds => ({ ...nds, ...marketMetaData.nodes }));
                 setEdges(eds => ({ ...eds, ...marketMetaData.edges }));
-                var newData = {
+                var RefArchData = {
                     metadata: {
                         nodes: marketMetaData.nodes 
                     }
                 };
-                initData(newData)
+                initData(RefArchData)
                 return;
             }
 
