@@ -601,6 +601,12 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 const marketMetaData = JSON.parse(event.dataTransfer.getData('metaData'));
                 setNodes(nds => ({ ...nds, ...marketMetaData.nodes }));
                 setEdges(eds => ({ ...eds, ...marketMetaData.edges }));
+                var newData = {
+                    metadata: {
+                        nodes: marketMetaData.nodes 
+                    }
+                };
+                initData(newData)
                 return;
             }
 
@@ -905,11 +911,17 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     }
                     setIsGatewayNodeEnabled(true);
                 } else if (key.toLowerCase().includes('database')) {
-                    databaseId++;
+                    const id = key.split('_');
+                    const numberId = parseInt(id[1], 10);
+                    max_databaseId = Math.max(numberId, max_databaseId);
                 } else if (key.toLowerCase().includes('group')) {
-                    groupId++;
+                    const id = key.split('_');
+                    const numberId = parseInt(id[1], 10);
+                    max_groupId = Math.max(numberId, max_groupId);
                 } else if (key.toLowerCase().includes('dummy')) {
-                    dummyId++;
+                    const id = key.split('_');
+                    const numberId = parseInt(id[1], 10);
+                    max_dummyId = Math.max(numberId, max_dummyId);
                 } else if (key.toLowerCase().includes('auth')) {
                     setAuthProviderCount(1);
                 } else if (key.toLowerCase().includes('messagebroker')) {
