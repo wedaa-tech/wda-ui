@@ -375,8 +375,9 @@ const Infrastructure = ({ onSubmit, projectData, generateZip }) => {
                             Minikube:
                         </Text>
                         <Text pl={2}>
-                            Set up a single-node Kubernetes cluster at the local machine. Helpful for learning Kubernetes concepts without
-                            needing a full-scale cluster.
+                            Generate application code and scripts to set up and execute the generated application on a single-node
+                            Kubernetes cluster running on your local machine. Minikube is a tool that facilitates the setup of a Kubernetes
+                            environment on a local PC or laptop.
                         </Text>
 
                         <Divider my={2} />
@@ -385,8 +386,8 @@ const Infrastructure = ({ onSubmit, projectData, generateZip }) => {
                             AWS:
                         </Text>
                         <Text pl={2}>
-                            Generate code along with Terraform scripts for AWS Elastic Kubernetes Service (EKS). EKS is a managed container
-                            orchestration service provided by Amazon Web Services (AWS).
+                            Generate application code and Terraform scripts to deploy and operate the generated application on AWS Elastic
+                            Kubernetes Service (EKS). EKS is a managed container orchestration service offered by Amazon Web Services (AWS).
                         </Text>
 
                         <Divider my={2} />
@@ -395,8 +396,8 @@ const Infrastructure = ({ onSubmit, projectData, generateZip }) => {
                             AZURE:
                         </Text>
                         <Text pl={2}>
-                            Generate code along with Terraform scripts for Microsoft Azure Kubernetes Service (AKS). AKS is a managed
-                            container orchestration service provided by Microsoft Azure.
+                            Generate application code and Terraform scripts to deploy and manage the generated application on Microsoft
+                            Azure Kubernetes Service (AKS). AKS is a managed container orchestration service offered by Microsoft Azure.
                         </Text>
 
                         <Divider my={2} />
@@ -404,7 +405,10 @@ const Infrastructure = ({ onSubmit, projectData, generateZip }) => {
                         <Text fontWeight="bold" mb={3}>
                             None:
                         </Text>
-                        <Text pl={2}> Generate project code without infrastructure deployment scripts.</Text>
+                        <Text pl={2}>
+                            Generate application code and Docker scripts for setting up and running the generated application on your local
+                            system. Infrastructure deployment scripts are excluded from this scope.
+                        </Text>
                     </Box>
                 ) : (
                     <Box px={2} overflowY={'auto'} h={'calc(100vh - 380px)'}>
