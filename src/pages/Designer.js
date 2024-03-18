@@ -132,10 +132,6 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     const [projectName, setProjectName] = useState(null);
 
     useEffect(() => {
-        if (!update) {
-            clear();
-        }
-
         if (initialized && keycloak?.authenticated && projectParentId !== 'admin') {
             let defaultProjectId;
             fetch(process.env.REACT_APP_API_BASE_URL + '/api/projects', {
@@ -1080,13 +1076,15 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     useEffect(() => {
         if (triggerExit.onOk) {
             handleGoToIntendedPage(triggerExit.path);
-            localStorage.clear();
             clear();
             setShowDiv(true);
             setProjectName('clear#canvas');
         }
         let unblock;
-        if (!(Object.keys(nodes).length === 0) && updated) {
+        var nodesfromstorage
+        if(localStorage?.data)
+        nodesfromstorage=JSON.parse(localStorage.data)?.metadata?.nodes
+        if ((!(Object.keys(nodes).length === 0) && updated)||(nodesfromstorage && !(Object.keys(nodesfromstorage).length === 0))) {
             unblock = history.block(location => {
                 setVisibleDialog(true);
                 setActionModalType('clearAndNav');
@@ -1102,7 +1100,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 unblock();
             }
         };
-    }, [handleGoToIntendedPage, history, triggerExit.onOk, triggerExit.path, updated]);
+    }, [handleGoToIntendedPage, history, triggerExit.onOk, triggerExit.path, updated,nodes]);
 
     const onChange = Data => {
         setUpdated(true);

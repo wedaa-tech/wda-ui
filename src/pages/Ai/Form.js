@@ -17,11 +17,6 @@ function KeyValueForm({ serviceData, setServiceData, onNext, onBack, title }) {
     const deleteService = index => {
         const updatedData = [...serviceData];
         updatedData.splice(index, 1);
-
-        updatedData.forEach((service, idx) => {
-            service.number = idx + 1;
-        });
-
         setServiceData(updatedData);
     };
 
@@ -39,7 +34,7 @@ function KeyValueForm({ serviceData, setServiceData, onNext, onBack, title }) {
 
     const handleModalSave = data => {
         if (modalMode === 'add') {
-            setServiceData([...serviceData, { number: serviceData.length + 1, ...data }]);
+            setServiceData([...serviceData, data]);
         } else if (modalMode === 'edit' && selectedService) {
             const updatedData = serviceData.map(service => {
                 if (service === selectedService) {
@@ -79,7 +74,7 @@ function KeyValueForm({ serviceData, setServiceData, onNext, onBack, title }) {
                     <Box maxH="350px" overflowY="auto" w="100%" mt={-4}>
                         {serviceData.map((service, index) => (
                             <HStack key={index} spacing={4} align="center">
-                                <Text>{service.number}</Text>
+                                <Text>{index + 1}</Text>
                                 <VStack align="start">
                                     <Text onClick={() => handleView(service)} textDecoration="underline" cursor="pointer">
                                         {service.name}
