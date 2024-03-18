@@ -7,8 +7,8 @@ function TitleDescriptionForm({ title: initialTitle, description: initialDescrip
     const [isFilled, setIsFilled] = useState(false);
 
     useEffect(() => {
-        checkFormValidity(title, description);
-    }, [title, description]);
+        checkFormValidity(title);
+    }, [title]);
 
     const handleTitleChange = (e) => {
         setTitle(e.target.value);
@@ -18,8 +18,8 @@ function TitleDescriptionForm({ title: initialTitle, description: initialDescrip
         setDescription(e.target.value);
     };
 
-    const checkFormValidity = (title, description) => {
-        if (title.trim() !== '' && description.trim() !== '') {
+    const checkFormValidity = (title) => {
+        if (title.trim() !== '') {
             setIsFilled(true);
         } else {
             setIsFilled(false);

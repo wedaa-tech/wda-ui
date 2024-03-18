@@ -34,8 +34,8 @@ function KeyValueModal({ isOpen, onClose, onSave, service, viewMode }) {
     }, [viewMode, service]);
 
     useEffect(() => {
-        setIsFilled(serviceName.trim() !== '' && serviceDescription.trim() !== '');
-    }, [serviceName, serviceDescription]);
+        setIsFilled(serviceName.trim() !== '');
+    }, [serviceName]);
 
     const handleSave = () => {
         onSave({ name: serviceName, description: serviceDescription });

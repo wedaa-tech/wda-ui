@@ -75,7 +75,7 @@ const Wizard = () => {
     ) : (
         <>
             <Flex className="page" id="container">
-                <Flex className="background">
+                <Flex className="background" flexDirection="column">
                     <Text fontSize={'4xl'} color={'white'} fontWeight={'bold'}>
                         Quickstart your application journey with <span style={{ color: 'hsl(42, 83%, 53%)' }}>WeDAA</span>
                     </Text>
@@ -84,19 +84,33 @@ const Wizard = () => {
                         <br />
                         Build your modern application prototype with WeDAA accelerator.
                     </Text>
-                    <Button
-                        div
-                        onClick={() => history.push('/canvasToCode')}
-                        marginTop={6}
-                        background={'hsl(42, 83%, 53%)'}
-                        colorScheme="yellow"
-                        textColor={'black'}
-                        border={'2px solid white'}
-                        height={'50px'}
-                        size="md"
-                    >
-                        Build Your Own
-                    </Button>
+                    <Flex marginTop={6}>
+                        <Button
+                            div
+                            onClick={() => history.push('/canvasToCode')}
+                            background={'hsl(42, 83%, 53%)'}
+                            colorScheme="yellow"
+                            textColor={'black'}
+                            border={'2px solid white'}
+                            height={'50px'}
+                            size="md"
+                            marginRight={10} 
+                        >
+                            Build Your Own
+                        </Button>
+                        <Button
+                            div
+                            onClick={() => history.push('/aibox')}
+                            background={'hsl(42, 83%, 53%)'}
+                            colorScheme="yellow"
+                            textColor={'black'}
+                            border={'2px solid white'}
+                            height={'50px'}
+                            size="md"
+                        >
+                             AI Assistant
+                        </Button>
+                    </Flex>
                 </Flex>
                 <Flex paddingTop={12} className="box" alignItems={'flex-start'} gap={6}>
                     <Box
