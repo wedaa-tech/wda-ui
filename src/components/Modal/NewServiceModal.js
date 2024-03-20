@@ -71,16 +71,37 @@ const NewServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorCl
         }
     };
 
-    const handleRefresh = () => {
+    const fetchDbmlData = async() => {
         setIsLoading(true);
-        // Make your API call here
-        // Assuming fetchData is your API call function
-        // fetchData().then(() => {
-        //     setIsLoading(false);
-        // }).catch(error => {
-        //     console.error('Error fetching data:', error);
-        //     setIsLoading(false);
-        // });
+
+        await fetch(process.env.REACT_APP_AI_CORE_URL + '/dbml', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization':initialized ? `Bearer ${keycloak?.token}` : undefined,
+
+            },
+            body: JSON.stringify({
+                name: ApplicationData.applicationName,
+                description: ApplicationData.description
+            })
+        })
+            .then(response => {
+                setIsLoading(false);
+                if (!response.ok) {
+                    throw new Error('Failed to add DBML script to service');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("data",data)
+                setApplicationData(prev => ({
+                    ...prev,
+                    dbmlData: data.dbml,
+                }));            })
+            .catch(error => {
+                console.error('Error adding DBML script to service:', error);
+            });
     };
 
     const handleKeyPress = event => {
@@ -475,7 +496,7 @@ const NewServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorCl
                                                     }}
                                                     defaultLanguage="sql"
                                                     // placeholder="DBML scripts"
-                                                    defaultValue={ApplicationData.dbmlData}
+                                                    value={ApplicationData.dbmlData}
                                                     onChange={value => {
                                                         handleData('dbmlData', value);
                                                     }}

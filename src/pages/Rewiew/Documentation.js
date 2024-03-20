@@ -1,7 +1,8 @@
-import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Box, Code } from '@chakra-ui/react';
+// import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Box, Code } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
+import AccordionComponent from './AccordianComponent';
 
-const Documentation = ({ nodeData, nodeId, edgeId }) => {
+const Documentation = ({ nodeData, nodeId, edgeId,dbmlMode }) => {
     const [seperatedServicesByLabel, setSeperatedServicesByLabel] = useState({});
     const [nodesMapping, setNodesMapping] = useState({});
     const [nodesList, setNodesList] = useState([]);
@@ -9,16 +10,20 @@ const Documentation = ({ nodeData, nodeId, edgeId }) => {
     function separateObjectsByLabel(data) {
         const separatedData = {};
         const nodeMap = {};
+        if(dbmlMode)
+        var serviceIndex=0
         Object.keys(data).forEach((key, idx) => {
-            const item = structuredClone(data[key]);
+            var item = structuredClone(data[key]);
             const label = item.label;
-            nodeMap[item.Id] = idx;
+            if(!dbmlMode || (item.Id.startsWith('Service') && item.applicationFramework=="spring" && item.prodDatabaseType=="postgresql")){
+            nodeMap[item.Id] =(dbmlMode)? serviceIndex++ :idx;
             delete item.Id;
             if (!separatedData[label]) {
                 separatedData[label] = [];
             }
-
+            item={"DbmlData":item?.dbmlData}
             separatedData[label].push(item);
+        }
         });
         if (nodeData.communications) {
             Object.keys(nodeData.communications).forEach((key, idx) => {
@@ -48,6 +53,14 @@ const Documentation = ({ nodeData, nodeId, edgeId }) => {
     }
 
     function extractServiceData(service) {
+
+        if(dbmlMode)
+        {
+            if(service.applicationFramework=="spring" && service.prodDatabaseType=="postgresql"){
+                return service.dbmlData
+            }
+            return
+        }
         const {
             applicationFramework,
             applicationName,
@@ -94,63 +107,30 @@ const Documentation = ({ nodeData, nodeId, edgeId }) => {
     if (nodeData == null) {
         return <div>Please select an Component.</div>;
     } else {
-        return (
-            <>
-                <Accordion onChange={idx => setNodesList(() => [...idx])} defaultIndex={[0]} index={nodesList} allowMultiple>
-                    {Object.keys(nodeData.services).map(key => {
-                        const serviceData = extractServiceData(nodeData.services[key]);
-                        return (
-                            <AccordionItem key={key}>
-                                <AccordionButton>
-                                    <Box as="span" flex="1" textAlign="left">
-                                        {`${nodeData.services[key].applicationName} (component)`}
-                                    </Box>
-                                    <AccordionIcon />
-                                </AccordionButton>
-                                <AccordionPanel pb={4}>
-                                    <Code
-                                        style={{
-                                            whiteSpace: 'pre',
-                                            width: '100%',
-                                        }}
-                                    >
-                                        {JSON.stringify(serviceData, null, 4)}
-                                    </Code>
-                                </AccordionPanel>
-                            </AccordionItem>
-                        );
-                    })}
+        const accordionData = [];
+        Object.keys(nodeData.services).forEach(key => {
+            const id= nodeData.services[key].Id
+            var applicationFramework=nodeData.services[key].applicationFramework
+            if(!dbmlMode || (id.startsWith('Service') && applicationFramework=='spring')){
+                const serviceData = extractServiceData(nodeData.services[key]);
+                var label = (dbmlMode) ?`${nodeData.services[key].applicationName}`:`${nodeData.services[key].applicationName} (component)`
+                accordionData.push({ label: label, value: serviceData });
+            }
+        });
 
-                    {nodeData?.communications &&
-                        Object.keys(nodeData.communications).map(key => {
-                            const communicationData = extractCommunicationData(nodeData.communications[key]);
-                            const communicationType = nodeData.communications[key].type;
-                            return (
-                                <AccordionItem key={key}>
-                                    <AccordionButton>
-                                        <Box as="span" flex="1" textAlign="left">
-                                            {communicationType == 'synchronous'
-                                                ? `${nodeData.communications[key].client}-${nodeData.communications[key].server} (communication protocol)`
-                                                : `${nodeData.communications[key].server}-${nodeData.communications[key].client} (communication protocol)`}
-                                        </Box>
-                                        <AccordionIcon />
-                                    </AccordionButton>
-                                    <AccordionPanel pb={4}>
-                                        <Code
-                                            style={{
-                                                whiteSpace: 'pre',
-                                                width: '100%',
-                                            }}
-                                        >
-                                            {JSON.stringify(communicationData, null, 4)}
-                                        </Code>
-                                    </AccordionPanel>
-                                </AccordionItem>
-                            );
-                        })}
-                </Accordion>
-            </>
-        );
+        if (!dbmlMode && nodeData?.communications) {
+            Object.keys(nodeData.communications).forEach(key => {
+                const communicationData = extractCommunicationData(nodeData.communications[key]);
+                const communicationType = nodeData.communications[key].type;
+                const label =
+                    communicationType === 'synchronous'
+                        ? `${nodeData.communications[key].client}-${nodeData.communications[key].server} (communication protocol)`
+                        : `${nodeData.communications[key].server}-${nodeData.communications[key].client} (communication protocol)`;
+
+                accordionData.push({ label: label, value: communicationData });
+            });
+        }
+        return <AccordionComponent data={accordionData} nodesList={nodesList} setNodesList={setNodesList} dbmlMode={dbmlMode} />;
     }
 };
 
