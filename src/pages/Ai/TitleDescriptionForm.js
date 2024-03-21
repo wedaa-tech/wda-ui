@@ -1,14 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { FormControl, FormLabel, Input, Textarea, Button, Divider, Text, VStack, Flex } from '@chakra-ui/react';
+import React, { useState, useEffect,useRef } from 'react';
+import { FormControl, FormLabel, Input, Textarea, Button, Divider, Text, VStack, Flex ,useToast} from '@chakra-ui/react';
 
 function TitleDescriptionForm({ title: initialTitle, description: initialDescription, onNext }) {
     const [title, setTitle] = useState(initialTitle || '');
     const [description, setDescription] = useState(initialDescription || '');
-    const [isFilled, setIsFilled] = useState(false);
-
-    useEffect(() => {
-        checkFormValidity(title);
-    }, [title]);
+    const containsNoSpecialCharacters = /^[a-zA-Z0-9 ]+$/;
+    const toast = useToast({
+        containerStyle: {
+            width: '500px',
+            maxWidth: '100%',
+        },
+    });
+    const toastIdRef = useRef();
 
     const handleTitleChange = (e) => {
         setTitle(e.target.value);
@@ -18,15 +21,32 @@ function TitleDescriptionForm({ title: initialTitle, description: initialDescrip
         setDescription(e.target.value);
     };
 
+    const raiseError = (errorMessage) =>{
+        toast.close(toastIdRef.current);
+        toastIdRef.current = toast({
+            title: errorMessage,
+            status: 'error',
+            duration: 3000,
+            variant: 'left-accent',
+            isClosable: true,
+        });
+    }
+
     const checkFormValidity = (title) => {
-        if (title.trim() !== '') {
-            setIsFilled(true);
-        } else {
-            setIsFilled(false);
+        if (title.trim() === '') {
+            raiseError("Title is Empty")
+            return false
+        } else if(!containsNoSpecialCharacters.test(title)) {
+            raiseError("Title sould not contain Special charecters")
+            return false
+        }
+        else{
+            return true        
         }
     };
 
     const handleNext = () => {
+        if(checkFormValidity(title))
         onNext({ title, description });
     };
 
@@ -51,7 +71,7 @@ function TitleDescriptionForm({ title: initialTitle, description: initialDescrip
                 />
             </FormControl>
             <Flex justify="flex-end" w="100%">
-                <Button colorScheme="blue" onClick={handleNext} mt={4} isDisabled={!isFilled}>
+                <Button colorScheme="blue" onClick={handleNext} mt={4} >
                     Next
                 </Button>
             </Flex>

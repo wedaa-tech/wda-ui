@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { VStack, Text, Divider, Box, HStack, IconButton, Spacer, Button, Flex } from '@chakra-ui/react';
 import { AddIcon, DeleteIcon, EditIcon } from '@chakra-ui/icons';
-import KeyValueModal from './KeyvalueModal';
+import ServiceFormModal from './ServiceFormModal';
 
-function KeyValueForm({ serviceData, setServiceData, onNext, onBack, title }) {
+function ServiceForm({ serviceData, setServiceData, onNext, onBack, title }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedService, setSelectedService] = useState(null);
     const [modalMode, setModalMode] = useState('add');
@@ -110,7 +110,7 @@ function KeyValueForm({ serviceData, setServiceData, onNext, onBack, title }) {
                     </Button>
                 </HStack>
             </Box>
-            <KeyValueModal
+            <ServiceFormModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 onSave={handleModalSave}
@@ -121,4 +121,4 @@ function KeyValueForm({ serviceData, setServiceData, onNext, onBack, title }) {
     );
 }
 
-export default KeyValueForm;
+export default ServiceForm;

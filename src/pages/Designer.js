@@ -21,7 +21,6 @@ import { ArrowRightIcon } from '@chakra-ui/icons';
 import Sidebar from './../components/Sidebar';
 import { saveAs } from 'file-saver';
 import ServiceModal from '../components/Modal/ServiceModal';
-import NewServiceModal from '../components/Modal/NewServiceModal';
 import UiDataModal from '../components/Modal/UIModal';
 import GatewayModal from '../components/Modal/GatewayModal';
 import GroupDataModal from '../components/Modal/GroupDataModel';
@@ -2104,20 +2103,8 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         applicationData={applicationData}
                     />
                 )}
-                {/* {nodeType === 'Service' && Isopen && (
-                    <ServiceModal
-                        isOpen={Isopen}
-                        CurrentNode={CurrentNode}
-                        onClose={setopen}
-                        onSubmit={onChange}
-                        handleColorClick={handleColorClick}
-                        uniqueApplicationNames={uniqueApplicationNames}
-                        uniquePortNumbers={uniquePortNumbers}
-                    />
-                )} */}
-
                 {nodeType === 'Service' && Isopen && (
-                    <NewServiceModal
+                    <ServiceModal
                         isOpen={Isopen}
                         CurrentNode={CurrentNode}
                         onClose={setopen}

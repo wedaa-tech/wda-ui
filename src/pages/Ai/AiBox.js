@@ -13,7 +13,7 @@ import {
     Spinner,
 } from '@chakra-ui/react';
 import TitleDescriptionForm from './TitleDescriptionForm';
-import KeyValueForm from './Form';
+import ServiceForm from './Form';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 import { useKeycloak } from '@react-keycloak/web';
 
@@ -22,7 +22,6 @@ function AiBox() {
     const history = useHistory();
     const [formData, setFormData] = useState({ title: '', description: '', id: '' });
     const [serviceData, setServiceData] = useState();
-    const [combinedData, setCombinedData] = useState({ title: '', description: '', services: [] });
     const [projectParentId, setProjectParentId] = useState('');
     const [loading, setLoading] = useState(false);
 
@@ -83,7 +82,6 @@ function AiBox() {
         if (formData?.id && formData.id !== '') {
             data.id = formData.id;
         }
-        console.log("hi")
         await fetch(process.env.REACT_APP_AI_CORE_URL + '/requirements', {
             method: 'POST',
             headers: {
@@ -94,7 +92,6 @@ function AiBox() {
         })
             .then(response => response.json())
             .then(result => {
-                console.log("result",result)
                 setFormData(prev => ({
                     ...prev,
                     title: data.title,
@@ -107,119 +104,18 @@ function AiBox() {
                 setActiveStep(1);
             })
             .catch(error => console.error(error));
-        // setServiceData([
-        //     {
-        //       "name": "User Management",
-        //       "description": "Handles user registration, authentication, and authorization for the health care system."
-        //     },
-        //     {
-        //       "name": "Appointmen",
-        //       "description": "Allows users to schedule appointments with healthcare providers and manages the appointment calendar."
-        //     },
-        //     {
-        //       "name": "Health Records",
-        //       "description": "Stores and manages patients' medical records, including diagnoses, treatments, and test results."
-        //     },
-        //     {
-        //       "name": "Billing and Payment",
-        //       "description": "Handles billing and payment processing for healthcare services provided to patients."
-        //     },
-        //     {
-        //       "name": "Pharmacy Management",
-        //       "description": "Manages medication inventory, prescription orders, and dispensing for patients."
-        //     },
-        //     {
-        //       "name": "Telemedicine",
-        //       "description": "Enables remote consultations and medical services through video calls and messaging."
-        //     },
-        //     {
-        //       "name": "Analytics",
-        //       "description": "Generates reports and provides insights on healthcare system performance, patient outcomes, and resource utilization."
-        //     },
-        //     {
-        //       "name": "Inventory Management",
-        //       "description": "Tracks and manages medical supplies, equipment, and consumables within the healthcare system."
-        //     }
-        //   ]);
     };
-
-    // const handleSubmit = async(data) => {
-    //     setServiceData(data);
-    //     const combinedData = {
-    //         title: formData.title,
-    //         description: formData.description,
-    //         services: data,
-    //     };
-    //     setCombinedData(combinedData);
-    //     console.log('hii', combinedData);
-    //     var projectId
-    //     var metaData
-    //     await fetch(process.env.REACT_APP_API_BASE_URL + '/api/dynamic-template', {
-    //         method: 'POST',
-    //         headers: {
-    //             'Content-Type': 'application/json',
-    //             Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
-    //         },
-    //         body: JSON.stringify(combinedData),
-    //     })
-    //         .then(response => response.json())
-    //         .then(data => {
-    //             console.log(data, 'lolol');
-    //             projectId = data.blueprintId
-    //             metaData = data
-    //             // history.push({
-    //             //     pathname: '/canvastocode',
-    //             //     state: { metadata: data },
-    //             // });
-    //         })
-    //         .catch(error => console.error('Error occured:', error));
-
-    //         const requirementUpdatedData ={
-    //            title:formData.title,
-    //            description:formData.description,
-    //            services:serviceData,
-    //            blueprintId:projectId
-    //         }
-
-    //         fetch(process.env.REACT_APP_API_BASE_URL + `/api/requirements/${formData._id}`, {
-    //             method: 'PUT',
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //                 Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
-    //             },
-    //             body: JSON.stringify(requirementUpdatedData),
-    //         })
-    //         console.log(metaData,"ppppppp")
-
-    //          history.push({
-    //                 pathname: '/canvastocode',
-    //                 state: { metadata: metaData.metadata },
-    //             });
-
-    // };
 
     const handleSubmit = async data => {
         try {
             setServiceData(data);
-
-            const combinedData = {
+            const requirementData = {
                 title: formData.title,
                 description: formData.description,
                 services: data,
             };
-            setCombinedData(combinedData);
-            console.log('Combined Data:', combinedData);
 
-            const { blueprintId, defaultProjectId } = await saveCombinedData(combinedData);
-            console.log(blueprintId,defaultProjectId)
-            // const requirementUpdatedData = {
-            //     title: formData.title,
-            //     description: formData.description,
-            //     services: serviceData,
-            //     blueprintId: projectId
-            // };
-
-            // updateRequirements(formData._id, requirementUpdatedData);
+            const { blueprintId, defaultProjectId } = await UpdateRequirementData(requirementData);
             history.push({
                 pathname: `/project/${defaultProjectId}/architecture/${blueprintId}/edit`,
                 state:{ai: true}
@@ -229,27 +125,7 @@ function AiBox() {
         }
     };
 
-    // const saveCombinedData = async combinedData => {
-    //     try {
-    //         const response = await fetch(process.env.REACT_APP_API_BASE_URL + '/api/dynamic-template', {
-    //             method: 'POST',
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //                 Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
-    //             },
-    //             body: JSON.stringify(combinedData),
-    //         });
-    //         if (!response.ok) {
-    //             console.error('response was not ok');
-    //         }
-    //         const data = await response.json();
-    //         return { projectId: data.project_id };
-    //     } catch (error) {
-    //         console.error('Error occurred while saving combined data:', error);
-    //     }
-    // };
-
-    const saveCombinedData = async (combinedData) => {
+    const UpdateRequirementData = async (requirementData) => {
         try {
             setLoading(true); 
             const response = await fetch(process.env.REACT_APP_API_BASE_URL + '/api/dynamic-template', {
@@ -258,7 +134,7 @@ function AiBox() {
                     'Content-Type': 'application/json',
                     Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
                 },
-                body: JSON.stringify(combinedData),
+                body: JSON.stringify(requirementData),
             });
             if (!response.ok) {
                 console.error('response was not ok');
@@ -272,23 +148,6 @@ function AiBox() {
             history.push('/aibox')
         }
     };
-    
-
-    // const updateRequirements = async (id, requirementUpdatedData) => {
-    //     try {
-    //         const response = await fetch(process.env.REACT_APP_API_BASE_URL + `/api/requirements/${id}`, {
-    //             method: 'PUT',
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //                 Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
-    //             },
-    //             body: JSON.stringify(requirementUpdatedData),
-    //         });
-    //         await response.json();
-    //     } catch (error) {
-    //         console.error('Error occurred while updating requirements:', error);
-    //     }
-    // };
 
     const handleBack = () => {
         setActiveStep(0);
@@ -327,8 +186,10 @@ function AiBox() {
                         flexDirection: 'column',
                     }}
                 >
-                    <Spinner size="xl" style={{marginBottom:'40px',color:'orange'}}/>
-                    <div style={{ marginBottom: '-100px' }}>Your architecture is being built. Please wait for a few minutes.</div>
+                    <Spinner size="xl" style={{marginBottom:'50px',color:'orange'}}/>
+                    <div style={{ marginBottom: '-150px',width:'350px' }}>
+                    {activeStep === 0 ? `Services are currently being built. Please wait for a few minutes.`:`Your architecture is being built. Please wait for a few minutes.`}
+                    </div>
                 </div>
             ) : (
                 <Box w="900px" h="600px" p={6} bg="white" rounded="xl" boxShadow="lg" borderColor="gray.300" borderWidth="1px">
@@ -336,7 +197,7 @@ function AiBox() {
                         <TitleDescriptionForm title={formData.title} description={formData.description} onNext={handleNextTitleDescription} />
                     )}
                     {activeStep === 1 && (
-                        <KeyValueForm
+                        <ServiceForm
                             serviceData={serviceData}
                             setServiceData={setServiceData}
                             onNext={handleSubmit}

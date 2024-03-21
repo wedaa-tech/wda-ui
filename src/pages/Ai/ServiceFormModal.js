@@ -14,7 +14,7 @@ import {
     Divider
 } from '@chakra-ui/react';
 
-function KeyValueModal({ isOpen, onClose, onSave, service, viewMode }) {
+function ServiceFormModal({ isOpen, onClose, onSave, service, viewMode }) {
     const [serviceName, setServiceName] = useState('');
     const [serviceDescription, setServiceDescription] = useState('');
     const [editMode, setEditMode] = useState(false);
@@ -106,4 +106,4 @@ function KeyValueModal({ isOpen, onClose, onSave, service, viewMode }) {
     );
 }
 
-export default KeyValueModal;
+export default ServiceFormModal;
