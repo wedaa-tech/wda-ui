@@ -405,6 +405,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         if (change.id === 'messageBroker') {
                             setIsMessageBroker(false);
                             Functions.onCheckEdge(edges);
+                            Functions.onCheckEdge(edges);
                             setMessageBrokerCount(0);
                         } else if (change.id.startsWith('UI')) {
                             setIsEmptyUiSubmit(false);
@@ -527,6 +528,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             return updatedEdges;
         });
     }, []);
+    
     
     const onDragOver = useCallback(event => {
         event.preventDefault();
@@ -1393,6 +1395,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         }
         if (submit) {
             Functions.generateZip(null, Data);
+            Functions.generateZip(null, Data);
         }
     };
 
@@ -1451,6 +1454,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             console.error(error);
         }
     };
+    
     
     const onEdgeClick = (e, edge) => {
         let updatedEdges = { ...edges };
