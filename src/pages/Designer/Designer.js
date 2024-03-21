@@ -12,10 +12,8 @@ import { AiOutlineSave } from 'react-icons/ai';
 import { FaEraser } from 'react-icons/fa6';
 import { GoCodeReview } from 'react-icons/go';
 import 'reactflow/dist/style.css';
-import { Box, Button, Flex, HStack, Icon, IconButton, Spinner, Text, VStack, useToast, Tooltip } from '@chakra-ui/react';
-import { ArrowRightIcon } from '@chakra-ui/icons';
+import { Button, Flex, Icon, IconButton, VStack, useToast, Tooltip } from '@chakra-ui/react';
 import Sidebar from '../../components/Sidebar';
-import { saveAs } from 'file-saver';
 import ServiceModal from '../../components/Modal/ServiceModal';
 import UiDataModal from '../../components/Modal/UIModal';
 import GatewayModal from '../../components/Modal/GatewayModal';
@@ -153,6 +151,10 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     );
     
     useEffect(() => {
+        if (!update) {
+            clear();
+        }
+
         if (initialized && keycloak?.authenticated && projectParentId !== 'admin') {
             let defaultProjectId;
             fetch(process.env.REACT_APP_API_BASE_URL + '/api/projects', {
@@ -981,6 +983,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     };
 
     const loadData = async () => {
+        console.log("loaddataaaaaa", projectParentId)
         if (initialized && projectParentId && id) {
             try {
                 var response;
@@ -1747,7 +1750,6 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         uniquePortNumbers={uniquePortNumbers}
                     />
                 )}
-
                 {nodeType === 'Gateway' && Isopen && (
                     <GatewayModal
                         isOpen={Isopen}
