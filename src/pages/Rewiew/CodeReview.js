@@ -27,6 +27,7 @@ function CodeReview({
     const [nodeType, setNodeType] = useState(null);
     const [tabIndex, setTabIndex] = useState(0);
     const [docusaurusCheck, setDocusaurusCheck] = useState(false);
+    const [serviceSpringCheck,setServiceSpringCheck]=useState(false);
     const [isArchPublished, setArchPublished] = useState(published);
     const [node, setNode] = useState(null);
     const history = useHistory();
@@ -35,9 +36,21 @@ function CodeReview({
         if (
             Object.keys(deploymentData.services).length === 1 &&
             Object.values(deploymentData.services)[0]?.applicationFramework === 'docusaurus'
-        ) {
+        ) 
+        {
             setDocusaurusCheck(true);
         }
+
+        for (const serviceId in deploymentData.services) {
+            if (deploymentData.services[serviceId].Id.startsWith("Service")) {
+                const service = deploymentData.services[serviceId];
+                if (service.applicationFramework === "spring" && service.prodDatabaseType === "postgresql" && service?.dbmlData!='') {
+                    setServiceSpringCheck(true);
+                    break;
+                }
+            }
+        }
+
         const loadData = () => {
             if (nodeId && getNode(nodeId)) {
                 const nd = getNode(nodeId);
@@ -132,6 +145,7 @@ function CodeReview({
                     {/* <Tab hidden={generateMode}>Folder Structure</Tab> */}
                     {!docusaurusCheck && <Tab> IaaC </Tab>}
                     <Tab>Components</Tab>
+                    {!docusaurusCheck && serviceSpringCheck && <Tab> Dbml Scripts </Tab>}
                 </TabList>
                 <TabPanels height={'100%'}>
                     <TabPanel height={'100%'}>
@@ -152,10 +166,13 @@ function CodeReview({
                     <TabPanel height={'100%'}>
                         <Readme nodeType={nodeType} nodeData={nodeData} />
                     </TabPanel>
+                    <TabPanel height={'100%'}>
+                    <Documentation nodeData={deploymentData} nodeId={nodeId} edgeId={edgeId} generateMode dbmlMode />
+                    </TabPanel>
                 </TabPanels>
             </Tabs>
             <Button
-                hidden={!generateMode || tabIndex === 1 || tabIndex == 2}
+                hidden={!generateMode || tabIndex === 1 || tabIndex == 2 ||tabIndex== 3 }
                 mx={4}
                 my={2}
                 colorScheme="blue"

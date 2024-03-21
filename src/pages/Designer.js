@@ -131,10 +131,6 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     const [projectName, setProjectName] = useState(null);
 
     useEffect(() => {
-        if (!update) {
-            clear();
-        }
-
         if (initialized && keycloak?.authenticated && projectParentId !== 'admin') {
             let defaultProjectId;
             fetch(process.env.REACT_APP_API_BASE_URL + '/api/projects', {
@@ -1091,13 +1087,15 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     useEffect(() => {
         if (triggerExit.onOk) {
             handleGoToIntendedPage(triggerExit.path);
-            localStorage.clear();
             clear();
             setShowDiv(true);
             setProjectName('clear#canvas');
         }
         let unblock;
-        if (!(Object.keys(nodes).length === 0) && updated) {
+        var nodesfromstorage
+        if(localStorage?.data)
+        nodesfromstorage=JSON.parse(localStorage.data)?.metadata?.nodes
+        if ((!(Object.keys(nodes).length === 0) && updated)||(nodesfromstorage && !(Object.keys(nodesfromstorage).length === 0))) {
             unblock = history.block(location => {
                 setVisibleDialog(true);
                 setActionModalType('clearAndNav');
@@ -1113,7 +1111,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 unblock();
             }
         };
-    }, [handleGoToIntendedPage, history, triggerExit.onOk, triggerExit.path, updated]);
+    }, [handleGoToIntendedPage, history, triggerExit.onOk, triggerExit.path, updated,nodes]);
 
     const onChange = Data => {
         setUpdated(true);
@@ -1294,18 +1292,18 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         }
 
         let Service_Discovery_Data = nodes['serviceDiscoveryType']?.data?.serviceDiscoveryType;
-        let authenticationData = nodes['authenticationType']?.data?.authenticationType||'no';
+        let authenticationData = nodes['authenticationType']?.data?.authenticationType || 'no';
         let logManagementData = nodes['logManagement']?.data?.logManagementType;
         if (logManagementData && Data?.deployment) Data.deployment.enableECK = 'true';
         if (Data.deployment && Service_Discovery_Data)
-            Data.deployment = { ...Data.deployment, serviceDiscoveryType:Service_Discovery_Data};
+            Data.deployment = { ...Data.deployment, serviceDiscoveryType: Service_Discovery_Data };
         for (const key in NewNodes) {
             const Node = NewNodes[key];
             delete Node.data?.color;
             if (Node.id.startsWith('Service') || Node.id.startsWith('UI') || Node.id.startsWith('Gateway')) {
                 if (Service_Discovery_Data && (serviceRegistryEdges.length === 0 || serviceRegistryEdges.includes(Node.id))) {
                     Node.data.serviceDiscoveryType = Service_Discovery_Data;
-                } else  if(Node.data?.serviceDiscoveryType){
+                } else if (Node.data?.serviceDiscoveryType) {
                     delete Node.data.serviceDiscoveryType;
                 }
                 if (authenticationData && (authEdges.length === 0 || authEdges.includes(Node.id))) {
@@ -1359,10 +1357,10 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     Edge.data.client = nodes[Edge.source].data.applicationName;
                     Edge.data.server = nodes[Edge.target].data.applicationName;
                     if (Object.keys(Edge.data).length !== 0) {
-                        Data['communications'][communicationIndex++] = Edge.data;  
-                        if(Edge.data.type==="asynchronous"){
-                            Data['communications'][communicationIndex-1].server = nodes[Edge.source].data.applicationName;
-                            Data['communications'][communicationIndex-1].client = nodes[Edge.target].data.applicationName;
+                        Data['communications'][communicationIndex++] = Edge.data;
+                        if (Edge.data.type === 'asynchronous') {
+                            Data['communications'][communicationIndex - 1].server = nodes[Edge.source].data.applicationName;
+                            Data['communications'][communicationIndex - 1].client = nodes[Edge.target].data.applicationName;
                         }
                     }
                 }
@@ -1967,6 +1965,18 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                                 id={id}
                                 clear={clear}
                             />
+                            <div
+                                style={{
+                                    position: 'fixed',
+                                    top: 0,
+                                    left: 0,
+                                    width: '100%',
+                                    height: '100%',
+                                    backgroundColor: Isopen ? 'rgba(0, 0, 0, 0.6)' : 'transparent',
+                                    zIndex: 9999, 
+                                    display: Isopen ? 'block' : 'none',
+                                }}
+                            />
                             {showDiv && (
                                 <Box
                                     flex={'1'}
@@ -2104,6 +2114,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         uniquePortNumbers={uniquePortNumbers}
                     />
                 )}
+
                 {nodeType === 'Gateway' && Isopen && (
                     <GatewayModal
                         isOpen={Isopen}
