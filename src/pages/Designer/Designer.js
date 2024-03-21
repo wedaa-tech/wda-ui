@@ -258,7 +258,6 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             }
             initData(data);
         }
-
         return () => {
             serviceId = 1;
             databaseId = 1;
@@ -337,6 +336,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         };
     }, [handleGoToIntendedPage, history, triggerExit.onOk, triggerExit.path, updated,nodes]);
 
+    const onPaneClick = useCallback(() => setMenu(false), [setMenu]);
     const onNodesChange = useCallback((setShowDiv, edges, changes = []) => {
         setMenu(false);
         setNodes(oldNodes => {
@@ -448,7 +448,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                             setServiceDiscoveryCount(0);
                             setIsServiceDiscovery(false);
                             for (let key in updatedEdges) {
-                                if (key.split('-')[1] == 'serviceDiscoveryType') {
+                                if (key.split('-')[1] === 'serviceDiscoveryType') {
                                     delete updatedEdges[key];
                                 }
                                 setEdges(updatedEdges);
@@ -547,10 +547,10 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 setEdges(eds => ({ ...eds, ...marketMetaData.edges }));
                 var RefArchData = {
                     metadata: {
-                        nodes: marketMetaData.nodes 
-                    }
+                        nodes: marketMetaData.nodes,
+                    },
                 };
-                initData(RefArchData)
+                initData(RefArchData);
                 return;
             }
 
@@ -699,13 +699,13 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 }));
                 setIsGatewayNodeEnabled(true);
             } else if (
-                (name.startsWith('UI_docusaurus') && docsCount == 0) ||
-                ((name.startsWith('UI_react') || name.startsWith('UI_angular')) && UICount == 0)
+                (name.startsWith('UI_docusaurus') && docsCount === 0) ||
+                ((name.startsWith('UI_react') || name.startsWith('UI_angular')) && UICount === 0)
             ) {
                 const uiType = name.split('_').splice(1)[0];
                 var clientFramework;
                 var packageName;
-                if (uiType == 'docusaurus') {
+                if (uiType === 'docusaurus') {
                     clientFramework = 'no';
                     packageName = 'docs';
                     setDocsCount(1);
@@ -1105,7 +1105,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     } else if (nodes[key].data?.applicationFramework === 'react' || nodes[key].data?.applicationFramework === 'angular') {
                         setUiCount(1);
                     }
-                    if (uiCount == 2) setIsUINodeEnabled(true);
+                    if (uiCount === 2) setIsUINodeEnabled(true);
                     if (!nodes[key]?.data?.serverPort) {
                         setIsEmptyUiSubmit(true);
                         setUiInputCheck(prev => ({
@@ -1122,12 +1122,12 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     }
                 }
             }
-            if (max_serviceId != -1) serviceId = max_serviceId + 1;
-            if (max_databaseId != -1) databaseId = max_databaseId + 1;
-            if (max_gatewayId != -1) gatewayId = max_gatewayId + 1;
-            if (max_uiId != -1) uiId = max_uiId + 1;
-            if (max_groupId != -1) groupId = max_groupId + 1;
-            if (max_dummyId != -1) dummyId = max_dummyId + 1;
+            if (max_serviceId !== -1) serviceId = max_serviceId + 1;
+            if (max_databaseId !== -1) databaseId = max_databaseId + 1;
+            if (max_gatewayId !== -1) gatewayId = max_gatewayId + 1;
+            if (max_uiId !== -1) uiId = max_uiId + 1;
+            if (max_groupId !== -1) groupId = max_groupId + 1;
+            if (max_dummyId !== -1) dummyId = max_dummyId + 1;
         }
     };
     
@@ -1395,7 +1395,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         const Data = data || generatingData;
         const generatedImage = await Functions.CreateImage(Object.values(nodes));
         if (generatedImage) Data.imageUrl = generatedImage;
-        if (saved != 'VALIDATED') data.validationStatus = 'DRAFT';
+        if (saved !== 'VALIDATED') data.validationStatus = 'DRAFT';
         try {
             var response;
             if (projectParentId === 'admin') {
@@ -1420,7 +1420,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             if (response.ok) {
                 const responseData = await response.json();
                 if (!projectProjectId) setProjectprojectId(responseData.projectId);
-                if (saved == 'save') {
+                if (saved === 'save') {
                     toast.close(toastIdRef.current);
                     toastIdRef.current = toast({
                         title: `Prototype ${projectName}  is saved as draft.`,
@@ -1431,7 +1431,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     });
                 }
             } else {
-                if (saved == 'save') {
+                if (saved === 'save') {
                     toast.close(toastIdRef.current);
                     toastIdRef.current = toast({
                         title: `Unable to save prototype.Please try again`,
@@ -1508,7 +1508,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             UpdatedEdges[IsEdgeopen].label = Data.label;
         } else if (Data.framework === 'rest-api') {
             UpdatedEdges[IsEdgeopen].label = 'Rest';
-            if(UpdatedEdges[IsEdgeopen]?.animated){
+            if (UpdatedEdges[IsEdgeopen]?.animated) {
                 delete UpdatedEdges[IsEdgeopen].animated;
             }
         } else {
@@ -1519,9 +1519,9 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             type: MarkerType.ArrowClosed,
         };
         UpdatedEdges[IsEdgeopen].className = 'success';
-         if (Data.type === 'asynchronous') { 
+        if (Data.type === 'asynchronous') {
             delete UpdatedEdges[IsEdgeopen].markerEnd.type;
-            UpdatedEdges[IsEdgeopen].animated=true;
+            UpdatedEdges[IsEdgeopen].animated = true;
         }
 
         UpdatedEdges[IsEdgeopen].data = {
@@ -1657,19 +1657,10 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         onInit={setReactFlowInstance}
                         onNodeDoubleClick={(e,node) => Functions.onclick(e, node, setNodeType, setCurrentNode, setopen, setNodeClick, nodes)}
                         onDrop={e =>
-                            onDrop(
-                                e,
-                                ServiceDiscoveryCount,
-                                MessageBrokerCount,
-                                LogManagemntCount,
-                                AuthProviderCount,
-                                UICount,
-                                docsCount,
-                            )
+                            onDrop(e, ServiceDiscoveryCount, MessageBrokerCount, LogManagemntCount, AuthProviderCount, UICount, docsCount)
                         }
                         onDragOver={onDragOver}
                         onDragLeave={() => setShowDiv(Object.keys(nodes).length === 0)}
-                        // onNodeClick={onSingleClick}
                         deleteKeyCode={['Backspace', 'Delete']}
                         fitView
                         // onEdgeUpdate={(oldEdge, newConnection) => onEdgeUpdate(nodes, oldEdge, newConnection)}
