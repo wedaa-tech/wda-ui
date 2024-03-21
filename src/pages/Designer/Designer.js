@@ -18,38 +18,38 @@ import { GoCodeReview } from 'react-icons/go';
 import 'reactflow/dist/style.css';
 import { Box, Button, Flex, HStack, Icon, IconButton, Spinner, Text, VStack, useToast, Tooltip } from '@chakra-ui/react';
 import { ArrowRightIcon } from '@chakra-ui/icons';
-import Sidebar from './../components/Sidebar';
+import Sidebar from '../../components/Sidebar';
 import { saveAs } from 'file-saver';
-import ServiceModal from '../components/Modal/ServiceModal';
-import UiDataModal from '../components/Modal/UIModal';
-import GatewayModal from '../components/Modal/GatewayModal';
-import GroupDataModal from '../components/Modal/GroupDataModel';
-import CustomImageNode from './Customnodes/CustomImageNode';
-import CustomServiceNode from './Customnodes/CustomServiceNode';
-import CustomIngressNode from './Customnodes/CustomIngressNode';
-import CustomAuthNode from './Customnodes/CustomAuthNode';
-import CustomMessageBrokerNode from './Customnodes/CustomMessageBrokerNode';
-import CustomCloudNode from './Customnodes/CustomCloudNode';
-import CustomLoadNode from './Customnodes/CustomLoadNode';
-import CustomLocalenvironmentNode from './Customnodes/CustomLocalenvironmentNode';
-import AlertModal from '../components/Modal/AlertModal';
-import resizeableNode from './Customnodes/ResizeableNode';
-import groupNode from './Customnodes/GroupNode';
+import ServiceModal from '../../components/Modal/ServiceModal';
+import UiDataModal from '../../components/Modal/UIModal';
+import GatewayModal from '../../components/Modal/GatewayModal';
+import GroupDataModal from '../../components/Modal/GroupDataModel';
+import CustomImageNode from '../Customnodes/CustomImageNode';
+import CustomServiceNode from '../Customnodes/CustomServiceNode';
+import CustomIngressNode from '../Customnodes/CustomIngressNode';
+import CustomAuthNode from '../Customnodes/CustomAuthNode';
+import CustomMessageBrokerNode from '../Customnodes/CustomMessageBrokerNode';
+import CustomCloudNode from '../Customnodes/CustomCloudNode';
+import CustomLoadNode from '../Customnodes/CustomLoadNode';
+import CustomLocalenvironmentNode from '../Customnodes/CustomLocalenvironmentNode';
+import AlertModal from '../../components/Modal/AlertModal';
+import resizeableNode from '../Customnodes/ResizeableNode';
+import groupNode from '../Customnodes/GroupNode';
 import { useLocation } from 'react-router-dom';
 import { useHistory } from 'react-router-dom';
-import './../App.css';
-import EdgeModal from '../components/Modal/EdgeModal';
+import '../../App.css';
+import EdgeModal from '../../components/Modal/EdgeModal';
 import { useKeycloak } from '@react-keycloak/web';
 import { FiUploadCloud } from 'react-icons/fi';
-import ActionModal from '../components/Modal/ActionModal';
+import ActionModal from '../../components/Modal/ActionModal';
 import { useParams } from 'react-router-dom/cjs/react-router-dom.min';
-import Review, { ReviewFlow } from './Rewiew';
+import { ReviewFlow } from '../Review/Review';
 import { toPng } from 'html-to-image';
-import DownloadButton from '../components/DownloadButton';
-import ContextMenu from '../components/ContextMenu';
-import CustomNodeModal from '../components/Modal/CustomNodeModal';
-import Generating from '../components/Generating';
-import { checkDisabled } from '../utils/submitButtonValidation';
+import DownloadButton from '../../components/DownloadButton';
+import ContextMenu from '../../components/ContextMenu';
+import CustomNodeModal from '../../components/Modal/CustomNodeModal';
+import Generating from '../../components/Generating';
+import { checkDisabled } from '../../utils/submitButtonValidation';
 
 let serviceId = 1;
 let gatewayId = 1;
@@ -101,7 +101,6 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     const [UICount, setUiCount] = useState(0);
     const [docsCount, setDocsCount] = useState(0);
     const [CloudProviderCount, setCloudProviderCount] = useState(0);
-    const [LocalenvironmentCount, setLocalenvironmentCount] = useState(0);
     const [LogManagemntCount, setLogManagementCount] = useState(0);
     const [AuthProviderCount, setAuthProviderCount] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
@@ -376,8 +375,6 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                             setCloudProviderCount(0);
                         } else if (change.id === 'authenticationType') {
                             setAuthProviderCount(0);
-                        } else if (change.id === 'Localenvironment') {
-                            setLocalenvironmentCount(0);
                         } else if (change.id === 'logManagement') {
                             setLogManagementCount(0);
                         }
@@ -573,7 +570,6 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         setIsGatewayNodeEnabled(false);
         setMessageBrokerCount(0);
         setLogManagementCount(0);
-        setLocalenvironmentCount(0);
         setUiCount(0);
         setDocsCount(0);
         setApplicationData({
@@ -588,7 +584,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     };
 
     const onDrop = useCallback(
-        (event, servicecount, messagecount, loadcount, authcount, Localenvcount, UICount, docsCount) => {
+        (event, servicecount, messagecount, loadcount, authcount, UICount, docsCount) => {
             setUpdated(true);
             event.preventDefault();
             const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
@@ -734,19 +730,6 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 setLogManagementCount(1);
             } else if (name.startsWith('Load') && loadcount >= 1) {
                 setLogManagementCount(2);
-            } else if (name.startsWith('Localenvironment') && Localenvcount === 0) {
-                const Localenvironment = name.split('_').splice(1)[0];
-                const newNode = {
-                    id: 'Localenvironment',
-                    type: 'selectorNode7',
-                    position,
-                    data: { Localenvironment: Localenvironment },
-                    style: { border: '1px solid', padding: '4px 4px' },
-                };
-                setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
-                setLocalenvironmentCount(1);
-            } else if (name.startsWith('Localenvironment') && Localenvcount >= 1) {
-                setLocalenvironmentCount(2);
             } else if (name.startsWith('Gateway')) {
                 const newNode = {
                     id: getId('Gateway'),
@@ -929,8 +912,6 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     setMessageBrokerCount(1);
                 } else if (key.toLowerCase().includes('logmanagement')) {
                     setLogManagementCount(1);
-                } else if (key.toLowerCase().includes('localenvironment')) {
-                    setLocalenvironmentCount(1);
                 } else if (key.toLowerCase().includes('ui')) {
                     const id = key.split('_');
                     const numberId = parseInt(id[1]);
@@ -1914,7 +1895,6 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                                 MessageBrokerCount,
                                 LogManagemntCount,
                                 AuthProviderCount,
-                                LocalenvironmentCount,
                                 UICount,
                                 docsCount,
                             )
@@ -2217,7 +2197,6 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
 
                 {CloudProviderCount === 2 && <AlertModal isOpen={true} onClose={() => setCloudProviderCount(1)} />}
                 {LogManagemntCount === 2 && <AlertModal isOpen={true} onClose={() => setLogManagementCount(1)} />}
-                {LocalenvironmentCount === 2 && <AlertModal isOpen={true} onClose={() => setLocalenvironmentCount(1)} />}
                 {AuthProviderCount === 2 && <AlertModal isOpen={true} onClose={() => setAuthProviderCount(1)} />}
                 {UICount === 2 && <AlertModal isOpen={true} onClose={() => setUiCount(1)} />}
                 {docsCount === 2 && <AlertModal isOpen={true} onClose={() => setDocsCount(1)} />}

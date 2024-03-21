@@ -1,20 +1,16 @@
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-import Navbar from './components/Navbar';
 import DocHome from './pages/Docs/DocHome';
-import Login from './pages/Login';
-import SignUp from './pages/SignUp';
 import Designer from './pages/Designer';
 import React from 'react';
 import { ReactKeycloakProvider } from '@react-keycloak/web';
 import keycloak from './Keycloak';
 import PrivateRoute from './helpers/PrivateRoute';
-import ProjectsSection from './pages/ProjectsSection';
-import ArchitecturesSection from './pages/Architecture';
-import Review from './pages/Rewiew';
-import Wizard from './pages/Wizard';
+import ArchitecturesSection from './pages/Architecture/ArchitecturesSection';
+import Review from './pages/Review/Review';
+import Wizard from './pages/Wizard/Wizard';
 import WizardSelection from './pages/Wizard/WizardSelection';
 import FeedbackPage from './components/FeedbackTable';
-import NavBar from './components/NavBar';
+import NavBar from './components/NavBar/NavBar';
 import Generating from './components/Generating';
 import { Box } from '@chakra-ui/react';
 
@@ -63,12 +59,6 @@ function App() {
                         </PrivateRoute>
                         <Route exact path="/docs">
                             <DocHome />
-                        </Route>
-                        <Route exact path="/login">
-                            <Login />
-                        </Route>
-                        <Route exact path="/signup">
-                            <SignUp />
                         </Route>
                         <PrivateRoute exact path="/feedbacks">
                             <FeedbackPage />

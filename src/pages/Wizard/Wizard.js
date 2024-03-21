@@ -1,6 +1,6 @@
 import { Box, Button, Flex, IconButton, Link, SimpleGrid, Text } from '@chakra-ui/react';
 import React, { useEffect, useRef, useState } from 'react';
-import './style.css';
+import './Wizard.css';
 import ReferenceArchCard from './WizardComponents/ReferenceArchCard';
 import ArchSelectorComponent from './WizardComponents/ArchSelectorComponent';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';

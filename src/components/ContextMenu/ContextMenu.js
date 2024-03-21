@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { useReactFlow } from 'reactflow';
-import './style.css';
+import './ContextMenu.css';
 
 export default function ContextMenu({ id, node, top, left, right, bottom, onEditClick, ...props }) {
     const { setNodes, setEdges } = useReactFlow();

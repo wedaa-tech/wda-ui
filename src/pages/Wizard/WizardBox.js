@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Text, VStack, useRadio, useRadioGroup, SimpleGrid, Image } from '@chakra-ui/react';
 import { imageMappings, componentsMapping } from './CONSTANTS';
-import './index.css';
+import './WizardBox.css';
 
 function RadioCard(props) {
     const { getInputProps, getRadioProps } = useRadio(props);
