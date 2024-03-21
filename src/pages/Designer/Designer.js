@@ -161,6 +161,10 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
  
     
     useEffect(() => {
+        if (!update) {
+            clear();
+        }
+
         if (initialized && keycloak?.authenticated && projectParentId !== 'admin') {
             let defaultProjectId;
             fetch(process.env.REACT_APP_API_BASE_URL + '/api/projects', {
@@ -991,6 +995,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     };
 
     const loadData = async () => {
+        console.log("loaddataaaaaa", projectParentId)
         if (initialized && projectParentId && id) {
             try {
                 var response;
@@ -1817,7 +1822,6 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         uniquePortNumbers={uniquePortNumbers}
                     />
                 )}
-
                 {nodeType === 'Gateway' && Isopen && (
                     <GatewayModal
                         isOpen={Isopen}
