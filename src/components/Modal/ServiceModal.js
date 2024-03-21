@@ -21,6 +21,10 @@ import { FaSync } from 'react-icons/fa';
 import { useKeycloak } from '@react-keycloak/web';
 
 const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick, uniqueApplicationNames, uniquePortNumbers }) => {
+    const validFrameworksAndDBs = [
+        { framework: 'spring', dbType: 'postgresql' },
+    ];
+
     const editorInstruction = '/* Auto generated can also be edited.\nClick on the Refresh icon to generate Dbml Scripts. */\n\n';
     const dbmlData = CurrentNode?.dbmlData ? editorInstruction + CurrentNode?.dbmlData : editorInstruction;
     const IntialState = {
@@ -194,19 +198,23 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
         return false;
     };
 
+    const isValidFrameworkAndDB = validFrameworksAndDBs.some(
+        combination => combination.framework === CurrentNode?.applicationFramework && combination.dbType === CurrentNode?.prodDatabaseType
+    );
+
     return (
         <Modal
             isOpen={isOpen}
-            size={ApplicationData.applicationFramework === 'spring' && ApplicationData?.prodDatabaseType ? '6xl' : ''}
+            size={isValidFrameworkAndDB ? '6xl' : ''}
             onClose={() => onClose(false)}
         >
             <ModalContent
                 style={{
                     position: 'absolute',
                     top: '10%',
-                    left: ApplicationData.applicationFramework === 'spring' && ApplicationData?.prodDatabaseType ? '20%' : '83%',
+                    left: isValidFrameworkAndDB ? '20%' : '83%',
                     transform: 'translate(-50%, -50%)',
-                    width: ApplicationData.applicationFramework === 'spring' && ApplicationData?.prodDatabaseType ? '90%' : '300px',
+                    width: isValidFrameworkAndDB ? '90%' : '300px',
                 }}
             >
                 <ModalHeader style={{ textAlign: 'center' }}>Service</ModalHeader>
@@ -215,12 +223,11 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                     <div
                         style={{
                             display:
-                                ApplicationData.applicationFramework === 'spring' && ApplicationData?.prodDatabaseType ? 'flex' : 'block',
+                                isValidFrameworkAndDB? 'flex' : 'block',
                             flexDirection: 'row',
-                            gap: ApplicationData.applicationFramework === 'spring' && ApplicationData?.prodDatabaseType ? '40px' : '0',
+                            gap: isValidFrameworkAndDB ? '40px' : '0',
                         }}
                     >
-                        {' '}
                         <div style={{ flex: 0.5 }}>
                             <div
                                 style={{
@@ -414,7 +421,7 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                                 </div>
                             </div>
                         </div>
-                        {ApplicationData.applicationFramework === 'spring' && ApplicationData?.prodDatabaseType && (
+                        {isValidFrameworkAndDB && (
                             <div style={{ flex: 1 }}>
                                 <div
                                     style={{
