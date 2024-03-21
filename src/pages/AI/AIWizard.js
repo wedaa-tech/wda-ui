@@ -144,7 +144,7 @@ function AiBox() {
         } catch (error) {
             console.error('Error occurred while saving combined data:', error);
             setLoading(false);
-            history.push('/aibox')
+            history.push('/aiwizard')
         }
     };
 

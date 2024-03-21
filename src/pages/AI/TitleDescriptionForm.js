@@ -34,7 +34,7 @@ function TitleDescriptionForm({ title: initialTitle, description: initialDescrip
 
     const checkFormValidity = (title) => {
         if (title.trim() === '') {
-            raiseError("Title is Empty")
+            raiseError("Title should not be Empty")
             return false
         } else if(!containsNoSpecialCharacters.test(title)) {
             raiseError("Title sould not contain Special charecters")

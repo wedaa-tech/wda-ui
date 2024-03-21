@@ -25,7 +25,7 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
         { framework: 'spring', dbType: 'postgresql' },
     ];
 
-    const editorInstruction = '/* Auto generated can also be edited.\nClick on the Refresh icon to generate Dbml Scripts. */\n\n';
+    const editorInstruction = '/* Below DBML is auto-generated based on component name and description.\nThis can be edited directly or regenerated for updated description.*/\n\n';
     const dbmlData = CurrentNode?.dbmlData ? editorInstruction + CurrentNode?.dbmlData : editorInstruction;
     const IntialState = {
         label: '',

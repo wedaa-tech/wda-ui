@@ -100,7 +100,7 @@ const Wizard = () => {
                         </Button>
                         <Button
                             div
-                            onClick={() => history.push('/aibox')}
+                            onClick={() => history.push('/aiwizard')}
                             background={'hsl(42, 83%, 53%)'}
                             colorScheme="yellow"
                             textColor={'black'}
@@ -108,7 +108,7 @@ const Wizard = () => {
                             height={'50px'}
                             size="md"
                         >
-                             AI Assistant
+                             AI Wizard
                         </Button>
                     </Flex>
                 </Flex>

@@ -18,7 +18,7 @@ export const menuData = {
     Canvas: {
         icon: <Graph />,
         expandable: {
-            'AI Wizard': {icon: <LuSparkle size={24}/>,path: '/aibox'},
+            'AI Wizard': {icon: <LuSparkle size={24}/>,path: '/aiwizard'},
             Quickstart: { icon: <Flash />, path: '/wizardselection' },
             Advanced: { icon: <Setting3 />, path: '/canvastocode' },
         },
