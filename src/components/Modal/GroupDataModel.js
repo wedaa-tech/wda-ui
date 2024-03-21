@@ -5,7 +5,7 @@ const GroupDataModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorCli
     const IntialState = {
         label: 'Group',
         type: 'Group',
-        color: '#000000',
+        color: '#fff',
         ...CurrentNode,
     };
     const [groupData, setGroupData] = useState(IntialState);
@@ -74,66 +74,90 @@ const GroupDataModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorCli
                         </FormControl>
                     </div>
                     <FormLabel>Background Color</FormLabel>
-                    <div
-                        style={{
-                            display: 'flex',
-                            flexDirection: 'row',
-                            marginBottom: '20px',
-                            gap: '15px',
-                        }}
-                    >
-                        <div
-                            style={{
-                                width: '30px',
-                                height: '30px',
-                                borderRadius: '50%',
-                                backgroundColor: '#ffc9c9',
-                                cursor: 'pointer',
-                            }}
-                            onClick={() => handleColorClick('#ffc9c9')}
-                        ></div>
-                        <div
-                            style={{
-                                width: '30px',
-                                height: '30px',
-                                borderRadius: '50%',
-                                backgroundColor: '#b2f2bb',
-                                cursor: 'pointer',
-                            }}
-                            onClick={() => handleColorClick('#b2f2bb')}
-                        ></div>
-                        <div
-                            style={{
-                                width: '30px',
-                                height: '30px',
-                                borderRadius: '50%',
-                                backgroundColor: '#a5d8ff',
-                                cursor: 'pointer',
-                            }}
-                            onClick={() => handleColorClick('#a5d8ff')}
-                        ></div>
-                        <div
-                            style={{
-                                width: '30px',
-                                height: '30px',
-                                borderRadius: '50%',
-                                backgroundColor: '#ffec99',
-                                cursor: 'pointer',
-                            }}
-                            onClick={() => handleColorClick('#ffec99')}
-                        ></div>
-                        <div
-                            style={{
-                                width: '30px',
-                                height: '30px',
-                                border: '1px solid #cfcfcf',
-                                borderRadius: '50%',
-                                backgroundColor: '#fff',
-                                cursor: 'pointer',
-                            }}
-                            onClick={() => handleColorClick('#fff')}
-                        ></div>
-                    </div>
+                                <div
+                                    style={{
+                                        display: 'flex',
+                                        flexDirection: 'row',
+                                        marginBottom: '20px',
+                                        gap: '15px',
+                                    }}
+                                >
+                                    <div
+                                        style={{
+                                            width: '30px',
+                                            height: '30px',
+                                            borderRadius: '50%',
+                                            backgroundColor: '#ffc9c9',
+                                            // border: ApplicationData.color === '#ffc9c9' ? '1px solid white' : 'none',
+                                            // boxShadow: ApplicationData.color === '#ffc9c9' ? '0px 0px 0px 2px #ffc9c9' : '',
+                                            cursor: 'pointer',
+                                            border: groupData.color === '#ffc9c9' ? '2px solid #007bff' : '1px solid #cfcfcf',
+
+                                        }}
+                                        onClick={() => {
+                                            handleData('color', '#ffc9c9');
+                                            handleColorClick('#ffc9c9');
+                                        }}
+                                    ></div>
+
+                                    <div
+                                        style={{
+                                            width: '30px',
+                                            height: '30px',
+                                            borderRadius: '50%',
+                                            backgroundColor: '#b2f2bb',
+                                            border: groupData.color === '#b2f2bb' ? '2px solid #007bff' : '1px solid #cfcfcf', 
+                                            cursor: 'pointer',
+                                        }}
+                                        onClick={() => {
+                                            handleData('color', '#b2f2bb');    
+                                            handleColorClick('#b2f2bb');
+                                        }}
+                                    ></div>
+                                    <div
+                                        style={{
+                                            width: '30px',
+                                            height: '30px',
+                                            borderRadius: '50%',
+                                            backgroundColor: '#a5d8ff',
+                                            border: groupData.color === '#a5d8ff' ? '2px solid #007bff' : '1px solid #cfcfcf',
+                                            cursor: 'pointer',
+                                        }}
+                                        onClick={() => {
+                                            handleData('color', '#a5d8ff');
+                                            handleColorClick('#a5d8ff');
+                                        }}
+                                    ></div>
+                                    <div
+                                        style={{
+                                            width: '30px',
+                                            height: '30px',
+                                            borderRadius: '50%',
+                                            backgroundColor: '#ffec99',
+                                            border: groupData.color === '#ffec99' ? '2px solid #007bff' : '1px solid #cfcfcf',
+                                            cursor: 'pointer',
+                                        }}
+                                        onClick={() => {
+                                            handleData('color', '#ffec99');
+                                            handleColorClick('#ffec99');
+                                        }}
+                                    ></div>
+                                    <div
+                                        style={{
+                                            width: '30px',
+                                            height: '30px',
+                                            // border: '1px solid #cfcfcf',
+                                            borderRadius: '50%',
+                                            border: groupData.color === '#fff' ? '2px solid #007bff' : '1px solid #cfcfcf',
+                                            backgroundColor: '#fff',
+                                            cursor: 'pointer',
+                                        }}
+                                        onClick={() => {
+                                            handleData('color', '#fff');
+                                            handleColorClick('rgba(255, 255, 255, 0)');
+                                        }}
+                                    ></div>
+                                </div>
                     <Button onClick={() => onSubmit(groupData)} style={{ display: 'block', margin: '0 auto' }} isDisabled={groupNameCheck}>
                         Save
                     </Button>

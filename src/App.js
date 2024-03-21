@@ -13,6 +13,7 @@ import FeedbackPage from './components/FeedbackTable';
 import NavBar from './components/NavBar/NavBar';
 import Generating from './components/Generating';
 import { Box } from '@chakra-ui/react';
+import AIWizard from './pages/AI/AIWizard';
 
 function App() {
     return (
@@ -36,6 +37,9 @@ function App() {
                         <Route exact path="/gen">
                             <Generating />
                         </Route>
+                        <PrivateRoute exact path="/aiwizard">
+                            <AIWizard/>
+                        </PrivateRoute>
                         <PrivateRoute exact path="/projects">
                             <ArchitecturesSection />
                         </PrivateRoute>

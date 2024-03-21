@@ -107,7 +107,6 @@ const ArchitectureCard = ({
                     }}
                     height="65%"
                     src={imageUrl}
-                    alt={title}
                 />
                 <IconButton
                     top="5%"
@@ -166,9 +165,9 @@ const ArchitectureCard = ({
                             Validated
                         </Text>
                     )}
-                    <Text className="not-selectable" color="gray.600">
+                    {/* <Text className="not-selectable" color="gray.600">
                         {description}
-                    </Text>
+                    </Text> */}
                 </Box>
             </Box>
             <Modal isOpen={isModalOpen} onClose={handleCloseModal} size="md" isCentered>
