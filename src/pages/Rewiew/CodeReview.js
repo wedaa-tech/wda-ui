@@ -172,7 +172,7 @@ function CodeReview({
                 </TabPanels>
             </Tabs>
             <Button
-                hidden={!generateMode || tabIndex === 1 || tabIndex == 2}
+                hidden={!generateMode || tabIndex === 1 || tabIndex == 2 ||tabIndex== 3 }
                 mx={4}
                 my={2}
                 colorScheme="blue"
