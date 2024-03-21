@@ -1823,6 +1823,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         uniquePortNumbers={uniquePortNumbers}
                     />
                 )}
+
                 {nodeType === 'Gateway' && Isopen && (
                     <GatewayModal
                         isOpen={Isopen}
