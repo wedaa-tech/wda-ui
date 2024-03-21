@@ -538,7 +538,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         setShowDiv(false);
     }, []);
     const onDrop = useCallback(
-        (event, servicecount, messagecount, loadcount, authcount, Localenvcount, UICount, docsCount) => {
+        (event, servicecount, messagecount, loadcount, authcount, UICount, docsCount) => {
             setUpdated(true);
             event.preventDefault();
             const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
