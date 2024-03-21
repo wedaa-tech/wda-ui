@@ -230,6 +230,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             }
             const fetchData = async () => {
                 const fetchedData = await loadData();
+                console.log("ssssss",fetchedData)
                 if (fetchedData?.metadata?.nodes) {
                     setShowDiv(false);
                     setNodes(fetchedData?.metadata.nodes);
@@ -1395,7 +1396,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             setIsLoading(true);
         }
         if (submit) {
-            generateZip(null, Data);
+            Functions.generateZip(null, Data);
         }
     };
 
@@ -1638,7 +1639,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     nodesData={Object.values(nodes)}
                     edgesData={Object.values(edges)}
                     setViewOnly={setIsLoading}
-                    generateZip={generateZip}
+                    generateZip={Functions.generateZip}
                     deploymentData={generatingData}
                     generateMode
                     onSubmit={onsubmit}
