@@ -99,7 +99,6 @@ function AiBox() {
                     id: result.id,
                 }));
                 setServiceData(result.services);
-                console.log("data recieved",serviceData,formData)
                 setLoading(false); 
                 setActiveStep(1);
             })

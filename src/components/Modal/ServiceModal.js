@@ -123,7 +123,6 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
     };
 
     const handleData = (column, value) => {
-        console.log(column, value);
         if (column === 'applicationName') {
             validateName(value);
             setApplicationData(prev => ({
