@@ -1,4 +1,12 @@
 import { useCallback } from 'react';
+import {
+    getRectOfNodes,
+    getTransformForBounds,
+} from 'reactflow';
+import { toPng } from 'html-to-image';
+import { saveAs } from 'file-saver';
+const imageWidth = 1024;
+const imageHeight = 768;
 const MarkerType = { ArrowClosed: 'arrowclosed' };
 
 const onclick = (e, node, setNodeType, setCurrentNode, setopen, setNodeClick, nodes) => {
@@ -67,11 +75,157 @@ const MergeData = (sourceId, targetId, Nodes, setNodes) => {
         }
     }
 };
+const onCheckEdge = edges => {
+    let NewEdges = { ...edges };
+    for (const key in NewEdges) {
+        const Edge = NewEdges[key];
+        if (Edge.id.startsWith('UI')) {
+            if (Edge.data.type === 'synchronous' && Edge.data.framework === 'rest-api') {
+                delete Edge.data.type;
+                delete Edge.data.framework;
+            }
+        }
+    }
+};
+const useOnEdgeUpdateEnd = () => {
+    return useCallback((Nodes, edge,edgeUpdateSuccessful,setEdges, setNodes) => {
+        console.log(edgeUpdateSuccessful,"kkkkkkkkkkkkkkkkkkkkkkkkkkkk")
+    if (!edgeUpdateSuccessful.current) {
+        setEdges(edges => {
+            let AllEdges = { ...edges };
+            if (edge.target.startsWith('Database')) {
+                // If the edge is removed between Service and Database
+                let UpdatedNodes = { ...Nodes };
+                delete UpdatedNodes[edge.source].data.prodDatabaseType;
+                UpdatedNodes[edge.target].data.isConnected = false;
+                if (UpdatedNodes[edge.target]) {
+                    UpdatedNodes[edge.target].style.border = '1px solid red';
+                }
+                setNodes(UpdatedNodes);
+            }
+            if (edge.target.startsWith('log') || edge.target.startsWith('serviceDiscovery') || edge.target.startsWith('auth')) {
+                var edgeValid = true;
+                for (const key in edges) {
+                    const edgeExists = edges[key];
+                    if (edgeExists.target === edge.target && edge.source !== edgeExists.source) {
+                        edgeValid = false;
+                        break;
+                    }
+                }
+                if (edgeValid) {
+                    setNodes(nodes => {
+                        var updatedNodes = { ...nodes };
+                        updatedNodes[edge.target].style.border = '1px solid red';
+                        return updatedNodes;
+                    });
+                }
+            }
+            // else if (edge.target.startsWith('authenticationType')) {
+            //     let UpdatedNodes = { ...Nodes };
+            // } else if (edge.target.startsWith('serviceDiscoveryType')) {
+            //     let UpdatedNodes = { ...Nodes };
+            // } else if (edge.target.startsWith('logManagement')) {
+            //     let UpdatedNodes = { ...Nodes };
+            // }
+            delete AllEdges[edge.id];
+            return AllEdges;
+        });
+    }
 
+    edgeUpdateSuccessful.current = true;
+}, [])};
+const useOnEdgeUpdateStart = (edgeUpdateSuccessful) => {
+    return useCallback(() => {
+    edgeUpdateSuccessful.current = false;
+}, [])};
+const useOnNodeContextMenu =(setMenu) => {
+    return useCallback(
+    (event, node) => {
+        event.preventDefault();
+        setMenu({
+            id: node.id,
+            node: node,
+            top: event.clientY - 50,
+            left: event.clientX + 10,
+        });
+    },
+    [setMenu],
+)};
+const CreateImage = async (nodes) => {
+    const nodesBounds = getRectOfNodes(nodes);
+    const transform = getTransformForBounds(nodesBounds, imageWidth, imageHeight, 0, 2, 0.7);
+    try {
+        const response = await toPng(document.querySelector('.react-flow__viewport'), {
+            backgroundColor: '#ffffff',
+            width: imageWidth,
+            height: imageHeight,
+            style: {
+                transform: `translate(${transform[0]}px, ${transform[1]}px) scale(${transform[2]})`,
+            },
+        });
+        return response;
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
+};
+const generateZip = async (
+    initialized,
+    keycloak,
+    history,
+    generatingData,
+    nodes,
+    Functions,
+    setIsGenerating,
+    setIsLoading,
+    projectParentId,
+    clear
+) => {
+    const Data = generatingData;
+    const generatedImage = await Functions.CreateImage(Object.values(nodes));
+    setIsGenerating(true);
+    var blueprintId;
+    if (generatedImage) Data.imageUrl = generatedImage;
+    try {
+        const response = await fetch(process.env.REACT_APP_API_BASE_URL + '/generate', {
+            method: 'post',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+            },
+            body: JSON.stringify(Data),
+        });
+        blueprintId = response.headers.get('blueprintid');
+        const blob = await response.blob();
+        setIsGenerating(false);
+        saveAs(blob, `${Data.projectName}.zip`);
+    } catch (error) {
+        console.error(error);
+    } finally {
+        if (initialized && keycloak.authenticated) {
+            clear();
+            if (projectParentId === 'admin') {
+                history.replace('/architectures');
+            } else {
+                history.replace('/prototypes');
+            }
+        } else {
+            clear();
+            setIsLoading(false);
+            history.push('/canvasToCode');
+        }
+    }
+};
 const Functions = {
     onclick: onclick,
     addEdge: addEdge,
     MergeData: MergeData,
+    onCheckEdge: onCheckEdge,
+    onEdgeUpdateEnd: useOnEdgeUpdateEnd,
+    onEdgeUpdateStart: useOnEdgeUpdateStart,
+    onNodeContextMenu: useOnNodeContextMenu,
+    CreateImage: CreateImage,
+    generateZip: generateZip
 };
 
 export default Functions;

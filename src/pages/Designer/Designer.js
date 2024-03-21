@@ -7,8 +7,6 @@ import ReactFlow, {
     Background,
     BackgroundVariant,
     Panel,
-    getRectOfNodes,
-    getTransformForBounds,
 } from 'reactflow';
 import { AiOutlineSave } from 'react-icons/ai';
 import { FaEraser } from 'react-icons/fa6';
@@ -16,7 +14,6 @@ import { GoCodeReview } from 'react-icons/go';
 import 'reactflow/dist/style.css';
 import { Button, Flex, Icon, IconButton, VStack, useToast, Tooltip } from '@chakra-ui/react';
 import Sidebar from '../../components/Sidebar';
-import { saveAs } from 'file-saver';
 import ServiceModal from '../../components/Modal/ServiceModal';
 import UiDataModal from '../../components/Modal/UIModal';
 import GatewayModal from '../../components/Modal/GatewayModal';
@@ -40,7 +37,6 @@ import { useKeycloak } from '@react-keycloak/web';
 import ActionModal from '../../components/Modal/ActionModal';
 import { useParams } from 'react-router-dom/cjs/react-router-dom.min';
 import { ReviewFlow } from '../Review/Review';
-import { toPng } from 'html-to-image';
 import DownloadButton from '../../components/DownloadButton';
 import ContextMenu from '../../components/ContextMenu';
 import CustomNodeModal from '../../components/Modal/CustomNodeModal';
@@ -82,9 +78,6 @@ const nodeTypes = {
     ResizableNode: resizeableNode,
     GroupNode: groupNode,
 };
-
-const imageWidth = 1024;
-const imageHeight = 768;
 
 const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     const [viewOnly, setViewOnly] = useState(viewMode);
@@ -231,6 +224,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             }
             const fetchData = async () => {
                 const fetchedData = await loadData();
+                console.log("ssssss",fetchedData)
                 if (fetchedData?.metadata?.nodes) {
                     setShowDiv(false);
                     setNodes(fetchedData?.metadata.nodes);
@@ -411,7 +405,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         var deletedNodeData = updatedNodes[change.id];
                         if (change.id === 'messageBroker') {
                             setIsMessageBroker(false);
-                            onCheckEdge(edges);
+                            Functions.onCheckEdge(edges);
                             setMessageBrokerCount(0);
                         } else if (change.id.startsWith('UI')) {
                             setIsEmptyUiSubmit(false);
@@ -534,54 +528,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             return updatedEdges;
         });
     }, []);
-    const onEdgeUpdateStart = useCallback(() => {
-        edgeUpdateSuccessful.current = false;
-    }, []);
-    const onEdgeUpdateEnd = useCallback((Nodes, edge) => {
-        if (!edgeUpdateSuccessful.current) {
-            setEdges(edges => {
-                let AllEdges = { ...edges };
-                if (edge.target.startsWith('Database')) {
-                    // If the edge is removed between Service and Database
-                    let UpdatedNodes = { ...Nodes };
-                    delete UpdatedNodes[edge.source].data.prodDatabaseType;
-                    UpdatedNodes[edge.target].data.isConnected = false;
-                    if (UpdatedNodes[edge.target]) {
-                        UpdatedNodes[edge.target].style.border = '1px solid red';
-                    }
-                    setNodes(UpdatedNodes);
-                }
-                if (edge.target.startsWith('log') || edge.target.startsWith('serviceDiscovery') || edge.target.startsWith('auth')) {
-                    var edgeValid = true;
-                    for (const key in edges) {
-                        const edgeExists = edges[key];
-                        if (edgeExists.target === edge.target && edge.source !== edgeExists.source) {
-                            edgeValid = false;
-                            break;
-                        }
-                    }
-                    if (edgeValid) {
-                        setNodes(nodes => {
-                            var updatedNodes = { ...nodes };
-                            updatedNodes[edge.target].style.border = '1px solid red';
-                            return updatedNodes;
-                        });
-                    }
-                }
-                // else if (edge.target.startsWith('authenticationType')) {
-                //     let UpdatedNodes = { ...Nodes };
-                // } else if (edge.target.startsWith('serviceDiscoveryType')) {
-                //     let UpdatedNodes = { ...Nodes };
-                // } else if (edge.target.startsWith('logManagement')) {
-                //     let UpdatedNodes = { ...Nodes };
-                // }
-                delete AllEdges[edge.id];
-                return AllEdges;
-            });
-        }
-
-        edgeUpdateSuccessful.current = true;
-    }, []);
+    
     const onDragOver = useCallback(event => {
         event.preventDefault();
         event.dataTransfer.dropEffect = 'move';
@@ -802,18 +749,6 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             }
         },
         [reactFlowInstance],
-    );
-    const onNodeContextMenu = useCallback(
-        (event, node) => {
-            event.preventDefault();
-            setMenu({
-                id: node.id,
-                node: node,
-                top: event.clientY - 50,
-                left: event.clientX + 10,
-            });
-        },
-        [setMenu],
     );
     const onConnect = useCallback(
         (params, Nodes) => {
@@ -1046,28 +981,6 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             onOk: false,
             path: '',
         });
-    };
-
-    const CreateImage = async nodes => {
-        const nodesBounds = getRectOfNodes(nodes);
-        const transform = getTransformForBounds(nodesBounds, imageWidth, imageHeight, 0, 2, 0.7);
-
-        try {
-            const response = await toPng(document.querySelector('.react-flow__viewport'), {
-                backgroundColor: '#ffffff',
-                width: imageWidth,
-                height: imageHeight,
-                style: {
-                    transform: `translate(${transform[0]}px, ${transform[1]}px) scale(${transform[2]})`,
-                },
-            });
-
-            setImage(response);
-            return response;
-        } catch (error) {
-            console.error(error);
-            return null;
-        }
     };
 
     const loadData = async () => {
@@ -1479,13 +1392,13 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             setIsLoading(true);
         }
         if (submit) {
-            generateZip(null, Data);
+            Functions.generateZip(null, Data);
         }
     };
 
     const SaveData = async (data, saved) => {
         const Data = data || generatingData;
-        const generatedImage = await CreateImage(Object.values(nodes));
+        const generatedImage = await Functions.CreateImage(Object.values(nodes));
         if (generatedImage) Data.imageUrl = generatedImage;
         if (saved !== 'VALIDATED') data.validationStatus = 'DRAFT';
         try {
@@ -1538,57 +1451,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             console.error(error);
         }
     };
-
-    const generateZip = async (e, data = null) => {
-        const Data = data || generatingData;
-        const generatedImage = await CreateImage(Object.values(nodes));
-        setIsGenerating(true);
-        var blueprintId;
-        if (generatedImage) Data.imageUrl = generatedImage;
-        try {
-            const response = await fetch(process.env.REACT_APP_API_BASE_URL + '/generate', {
-                method: 'post',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
-                },
-                body: JSON.stringify(Data),
-            });
-            blueprintId = response.headers.get('blueprintid');
-            const blob = await response.blob();
-            setIsGenerating(false);
-            saveAs(blob, `${Data.projectName}.zip`);
-        } catch (error) {
-            console.error(error);
-        } finally {
-            if (initialized && keycloak.authenticated) {
-                clear();
-                if (projectParentId === 'admin') {
-                    history.replace('/architectures');
-                } else {
-                    history.replace('/prototypes');
-                }
-            } else {
-                clear();
-                setIsLoading(false);
-                history.push('/canvasToCode');
-            }
-        }
-    };
-
-    const onCheckEdge = edges => {
-        let NewEdges = { ...edges };
-        for (const key in NewEdges) {
-            const Edge = NewEdges[key];
-            if (Edge.id.startsWith('UI')) {
-                if (Edge.data.type === 'synchronous' && Edge.data.framework === 'rest-api') {
-                    delete Edge.data.type;
-                    delete Edge.data.framework;
-                }
-            }
-        }
-    };
-
+    
     const onEdgeClick = (e, edge) => {
         let updatedEdges = { ...edges };
         setEdgeopen(edge.id);
@@ -1742,7 +1605,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     nodesData={Object.values(nodes)}
                     edgesData={Object.values(edges)}
                     setViewOnly={setIsLoading}
-                    generateZip={generateZip}
+                    generateZip={Functions.generateZip}
                     deploymentData={generatingData}
                     generateMode
                     onSubmit={onsubmit}
@@ -1775,15 +1638,15 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         onDragLeave={() => setShowDiv(Object.keys(nodes).length === 0)}
                         deleteKeyCode={['Backspace', 'Delete']}
                         fitView
-                        onEdgeUpdateStart={onEdgeUpdateStart}
-                        onEdgeUpdateEnd={(_, edge) => onEdgeUpdateEnd(nodes, edge)}
+                        onEdgeUpdateStart={()=>Functions.onEdgeUpdateStart(edgeUpdateSuccessful)}
+                        onEdgeUpdateEnd={(_, edge) => Functions.onEdgeUpdateEnd(nodes, edge, edgeUpdateSuccessful,setEdges, setNodes)}
                         onEdgeClick={!viewOnly ? onEdgeClick : ''}
                         defaultViewport={defaultViewport}
                         nodesDraggable={!viewOnly}
                         elementsSelectable={!viewOnly}
                         nodesConnectable={!viewOnly}
                         onPaneClick={onPaneClick}
-                        onNodeContextMenu={onNodeContextMenu}
+                        onNodeContextMenu={()=>Functions.onNodeContextMenu(setMenu)}
                     >
                         {menu && <ContextMenu onClick={onPaneClick} {...menu} onEditClick={!viewOnly ? onclick : () => {}} />}
                         <Flex height={'inherit'}>
