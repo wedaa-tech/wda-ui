@@ -3,6 +3,9 @@ import { getRectOfNodes, getTransformForBounds } from 'reactflow';
 import { toPng } from 'html-to-image';
 import { saveAs } from 'file-saver';
 
+import { getRectOfNodes, getTransformForBounds } from 'reactflow';
+import { toPng } from 'html-to-image';
+import { saveAs } from 'file-saver';
 const imageWidth = 1024;
 const imageHeight = 768;
 const MarkerType = { ArrowClosed: 'arrowclosed' };
@@ -169,7 +172,6 @@ const CreateImage = async nodes => {
         return null;
     }
 };
-
 const Functions = {
     onclick: onclick,
     addEdge: addEdge,

@@ -418,6 +418,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         if (change.id === 'messageBroker') {
                             setIsMessageBroker(false);
                             Functions.onCheckEdge(edges);
+                            Functions.onCheckEdge(edges);
                             setMessageBrokerCount(0);
                         } else if (change.id.startsWith('UI')) {
                             setIsEmptyUiSubmit(false);
@@ -1401,6 +1402,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             setIsLoading(true);
         }
         if (submit) {
+            Functions.generateZip(null, Data);
             Functions.generateZip(null, Data);
         }
     };
