@@ -1,10 +1,8 @@
 import { useCallback } from 'react';
-import {
-    getRectOfNodes,
-    getTransformForBounds,
-} from 'reactflow';
+import { getRectOfNodes, getTransformForBounds } from 'reactflow';
 import { toPng } from 'html-to-image';
 import { saveAs } from 'file-saver';
+
 const imageWidth = 1024;
 const imageHeight = 768;
 const MarkerType = { ArrowClosed: 'arrowclosed' };
@@ -88,70 +86,72 @@ const onCheckEdge = edges => {
     }
 };
 const useOnEdgeUpdateEnd = () => {
-    return useCallback((Nodes, edge,edgeUpdateSuccessful,setEdges, setNodes) => {
-        console.log(edgeUpdateSuccessful,"kkkkkkkkkkkkkkkkkkkkkkkkkkkk")
-    if (!edgeUpdateSuccessful.current) {
-        setEdges(edges => {
-            let AllEdges = { ...edges };
-            if (edge.target.startsWith('Database')) {
-                // If the edge is removed between Service and Database
-                let UpdatedNodes = { ...Nodes };
-                delete UpdatedNodes[edge.source].data.prodDatabaseType;
-                UpdatedNodes[edge.target].data.isConnected = false;
-                if (UpdatedNodes[edge.target]) {
-                    UpdatedNodes[edge.target].style.border = '1px solid red';
+    return useCallback((Nodes, edge, edgeUpdateSuccessful, setEdges, setNodes) => {
+        if (!edgeUpdateSuccessful.current) {
+            setEdges(edges => {
+                let AllEdges = { ...edges };
+                if (edge.target.startsWith('Database')) {
+                    // If the edge is removed between Service and Database
+                    let UpdatedNodes = { ...Nodes };
+                    delete UpdatedNodes[edge.source].data.prodDatabaseType;
+                    UpdatedNodes[edge.target].data.isConnected = false;
+                    if (UpdatedNodes[edge.target]) {
+                        UpdatedNodes[edge.target].style.border = '1px solid red';
+                    }
+                    setNodes(UpdatedNodes);
                 }
-                setNodes(UpdatedNodes);
-            }
-            if (edge.target.startsWith('log') || edge.target.startsWith('serviceDiscovery') || edge.target.startsWith('auth')) {
-                var edgeValid = true;
-                for (const key in edges) {
-                    const edgeExists = edges[key];
-                    if (edgeExists.target === edge.target && edge.source !== edgeExists.source) {
-                        edgeValid = false;
-                        break;
+                if (edge.target.startsWith('log') || edge.target.startsWith('serviceDiscovery') || edge.target.startsWith('auth')) {
+                    var edgeValid = true;
+                    for (const key in edges) {
+                        const edgeExists = edges[key];
+                        if (edgeExists.target === edge.target && edge.source !== edgeExists.source) {
+                            edgeValid = false;
+                            break;
+                        }
+                    }
+                    if (edgeValid) {
+                        setNodes(nodes => {
+                            var updatedNodes = { ...nodes };
+                            updatedNodes[edge.target].style.border = '1px solid red';
+                            return updatedNodes;
+                        });
                     }
                 }
-                if (edgeValid) {
-                    setNodes(nodes => {
-                        var updatedNodes = { ...nodes };
-                        updatedNodes[edge.target].style.border = '1px solid red';
-                        return updatedNodes;
-                    });
-                }
-            }
-            // else if (edge.target.startsWith('authenticationType')) {
-            //     let UpdatedNodes = { ...Nodes };
-            // } else if (edge.target.startsWith('serviceDiscoveryType')) {
-            //     let UpdatedNodes = { ...Nodes };
-            // } else if (edge.target.startsWith('logManagement')) {
-            //     let UpdatedNodes = { ...Nodes };
-            // }
-            delete AllEdges[edge.id];
-            return AllEdges;
-        });
-    }
+                // else if (edge.target.startsWith('authenticationType')) {
+                //     let UpdatedNodes = { ...Nodes };
+                // } else if (edge.target.startsWith('serviceDiscoveryType')) {
+                //     let UpdatedNodes = { ...Nodes };
+                // } else if (edge.target.startsWith('logManagement')) {
+                //     let UpdatedNodes = { ...Nodes };
+                // }
+                delete AllEdges[edge.id];
+                return AllEdges;
+            });
+        }
 
-    edgeUpdateSuccessful.current = true;
-}, [])};
-const useOnEdgeUpdateStart = (edgeUpdateSuccessful) => {
+        edgeUpdateSuccessful.current = true;
+    }, []);
+};
+const useOnEdgeUpdateStart = edgeUpdateSuccessful => {
     return useCallback(() => {
-    edgeUpdateSuccessful.current = false;
-}, [])};
-const useOnNodeContextMenu =(setMenu) => {
+        edgeUpdateSuccessful.current = false;
+    }, []);
+};
+const useOnNodeContextMenu = setMenu => {
     return useCallback(
-    (event, node) => {
-        event.preventDefault();
-        setMenu({
-            id: node.id,
-            node: node,
-            top: event.clientY - 50,
-            left: event.clientX + 10,
-        });
-    },
-    [setMenu],
-)};
-const CreateImage = async (nodes) => {
+        (event, node) => {
+            event.preventDefault();
+            setMenu({
+                id: node.id,
+                node: node,
+                top: event.clientY - 50,
+                left: event.clientX + 10,
+            });
+        },
+        [setMenu],
+    );
+};
+const CreateImage = async nodes => {
     const nodesBounds = getRectOfNodes(nodes);
     const transform = getTransformForBounds(nodesBounds, imageWidth, imageHeight, 0, 2, 0.7);
     try {
@@ -179,7 +179,7 @@ const generateZip = async (
     setIsGenerating,
     setIsLoading,
     projectParentId,
-    clear
+    clear,
 ) => {
     const Data = generatingData;
     const generatedImage = await Functions.CreateImage(Object.values(nodes));
@@ -216,6 +216,7 @@ const generateZip = async (
         }
     }
 };
+
 const Functions = {
     onclick: onclick,
     addEdge: addEdge,

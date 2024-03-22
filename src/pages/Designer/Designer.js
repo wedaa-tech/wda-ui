@@ -224,7 +224,6 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             }
             const fetchData = async () => {
                 const fetchedData = await loadData();
-                console.log("ssssss",fetchedData)
                 if (fetchedData?.metadata?.nodes) {
                     setShowDiv(false);
                     setNodes(fetchedData?.metadata.nodes);
