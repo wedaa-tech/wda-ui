@@ -3,10 +3,6 @@ import { getRectOfNodes, getTransformForBounds } from 'reactflow';
 import { toPng } from 'html-to-image';
 import { saveAs } from 'file-saver';
 
-import { getRectOfNodes, getTransformForBounds } from 'reactflow';
-import { toPng } from 'html-to-image';
-import { saveAs } from 'file-saver';
-
 const imageWidth = 1024;
 const imageHeight = 768;
 const MarkerType = { ArrowClosed: 'arrowclosed' };
@@ -132,7 +128,6 @@ const useOnEdgeUpdateEnd = () => {
                 return AllEdges;
             });
         }
-
         edgeUpdateSuccessful.current = true;
     }, []);
 };
@@ -167,57 +162,11 @@ const CreateImage = async nodes => {
                 transform: `translate(${transform[0]}px, ${transform[1]}px) scale(${transform[2]})`,
             },
         });
+
         return response;
     } catch (error) {
         console.error(error);
         return null;
-    }
-};
-const generateZip = async (
-    initialized,
-    keycloak,
-    history,
-    generatingData,
-    nodes,
-    Functions,
-    setIsGenerating,
-    setIsLoading,
-    projectParentId,
-    clear,
-) => {
-    const Data = generatingData;
-    const generatedImage = await Functions.CreateImage(Object.values(nodes));
-    setIsGenerating(true);
-    var blueprintId;
-    if (generatedImage) Data.imageUrl = generatedImage;
-    try {
-        const response = await fetch(process.env.REACT_APP_API_BASE_URL + '/generate', {
-            method: 'post',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
-            },
-            body: JSON.stringify(Data),
-        });
-        blueprintId = response.headers.get('blueprintid');
-        const blob = await response.blob();
-        setIsGenerating(false);
-        saveAs(blob, `${Data.projectName}.zip`);
-    } catch (error) {
-        console.error(error);
-    } finally {
-        if (initialized && keycloak.authenticated) {
-            clear();
-            if (projectParentId === 'admin') {
-                history.replace('/architectures');
-            } else {
-                history.replace('/prototypes');
-            }
-        } else {
-            clear();
-            setIsLoading(false);
-            history.push('/canvasToCode');
-        }
     }
 };
 
@@ -230,7 +179,6 @@ const Functions = {
     onEdgeUpdateStart: useOnEdgeUpdateStart,
     onNodeContextMenu: useOnNodeContextMenu,
     CreateImage: CreateImage,
-    generateZip: generateZip,
 };
 
 export default Functions;
