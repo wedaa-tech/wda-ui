@@ -1,11 +1,7 @@
 import { useCallback } from 'react';
 import { getRectOfNodes, getTransformForBounds } from 'reactflow';
 import { toPng } from 'html-to-image';
-import { saveAs } from 'file-saver';
 
-import { getRectOfNodes, getTransformForBounds } from 'reactflow';
-import { toPng } from 'html-to-image';
-import { saveAs } from 'file-saver';
 const imageWidth = 1024;
 const imageHeight = 768;
 const MarkerType = { ArrowClosed: 'arrowclosed' };
