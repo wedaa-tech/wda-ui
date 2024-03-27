@@ -10,7 +10,6 @@ import ReactFlow, {
 } from 'reactflow';
 import { AiOutlineSave } from 'react-icons/ai';
 import { saveAs } from 'file-saver';
-import { saveAs } from 'file-saver';
 import { FaEraser } from 'react-icons/fa6';
 import { GoCodeReview } from 'react-icons/go';
 import 'reactflow/dist/style.css';
@@ -142,6 +141,13 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     const edgeUpdateSuccessful = useRef(true);
     const toastIdRef = useRef();
     const ref = useRef(null);
+    
+    const toast = useToast({
+        containerStyle: {
+            width: '500px',
+            maxWidth: '100%',
+        },
+    });
 
     const handleGoToIntendedPage = useCallback(
         location => {
