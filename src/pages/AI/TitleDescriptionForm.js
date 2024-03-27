@@ -1,10 +1,18 @@
-import React, { useState, useEffect,useRef } from 'react';
-import { FormControl, FormLabel, Input, Textarea, Button, Divider, Text, VStack, Flex ,useToast} from '@chakra-ui/react';
+import React, { useState, useEffect, useRef } from 'react';
+import { FormControl, FormLabel, Input, Textarea, Button, Divider, Text, VStack, Flex, useToast, IconButton } from '@chakra-ui/react';
+import Editor from '@monaco-editor/react';
+import { FaSync } from 'react-icons/fa';
+import { useKeycloak } from '@react-keycloak/web';
 
-function TitleDescriptionForm({ title: initialTitle, description: initialDescription, onNext }) {
+function TitleDescriptionForm({ title: initialTitle, description: initialDescription, refresh, onNext }) {
     const [title, setTitle] = useState(initialTitle || '');
     const [description, setDescription] = useState(initialDescription || '');
     const containsNoSpecialCharacters = /^[a-zA-Z0-9 ]+$/;
+    const { initialized, keycloak } = useKeycloak();
+    const [isLoading, setIsLoading] = useState(false);
+    const [isEditorAvailable, setIsEditorAvailable] = useState(false);
+    const [refreshEnabled, setRefreshEnabled] = useState(false);
+
     const toast = useToast({
         containerStyle: {
             width: '500px',
@@ -13,15 +21,22 @@ function TitleDescriptionForm({ title: initialTitle, description: initialDescrip
     });
     const toastIdRef = useRef();
 
-    const handleTitleChange = (e) => {
+    useEffect(() => {
+        if (refresh) {
+            setIsEditorAvailable(true);
+        }
+    }, [refresh]);
+
+    const handleTitleChange = e => {
         setTitle(e.target.value);
+        setRefreshEnabled(true)
     };
 
-    const handleDescriptionChange = (e) => {
-        setDescription(e.target.value);
+    const handleDescriptionChange = val => {
+        setDescription(val);
     };
 
-    const raiseError = (errorMessage) =>{
+    const raiseError = errorMessage => {
         toast.close(toastIdRef.current);
         toastIdRef.current = toast({
             title: errorMessage,
@@ -30,24 +45,67 @@ function TitleDescriptionForm({ title: initialTitle, description: initialDescrip
             variant: 'left-accent',
             isClosable: true,
         });
-    }
+    };
 
-    const checkFormValidity = (title) => {
+    const fetchDescriptionData = async () => {
+        if (initialized && keycloak.authenticated && checkTitleValidity() && refreshEnabled) {
+            setIsLoading(true);
+
+            await fetch(process.env.REACT_APP_AI_CORE_URL + '/description', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                },
+                body: JSON.stringify({
+                    title: title,
+                }),
+            })
+                .then(response => {
+                    setIsLoading(false);
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch description of application');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    setDescription(data);
+                })
+                .catch(error => {
+                    console.error('Error adding descrition to service:', error);
+                });
+                setIsEditorAvailable(true);
+                setRefreshEnabled(false);
+            }
+    };
+
+
+
+    const checkTitleValidity = () => {
         if (title.trim() === '') {
-            raiseError("Title should not be Empty")
-            return false
-        } else if(!containsNoSpecialCharacters.test(title)) {
-            raiseError("Title sould not contain Special charecters")
-            return false
-        }
-        else{
-            return true        
+            raiseError('Title should not be Empty');
+            return false;
+        } else if (!containsNoSpecialCharacters.test(title)) {
+            raiseError('Title sould not contain Special charecters');
+            return false;
+        } else {
+            return true;
         }
     };
 
+    const checkDescriptionValidity = () => {
+        if (description.trim() === '') {
+            raiseError('Description should not be Empty');
+            return false;
+        }
+        return true;
+    }
+    const checkFormValidity = () =>{
+        return checkTitleValidity() && checkDescriptionValidity()
+    }
+
     const handleNext = () => {
-        if(checkFormValidity(title))
-        onNext({ title, description });
+        if (checkFormValidity(title)) onNext({ title, description });
     };
 
     return (
@@ -57,21 +115,81 @@ function TitleDescriptionForm({ title: initialTitle, description: initialDescrip
             </Text>
             <Divider />
             <FormControl>
-                <FormLabel>Title</FormLabel>
-                <Input placeholder="Enter Title" value={title} onChange={handleTitleChange} />
+                <FormLabel marginLeft={"6"} >Title</FormLabel>
+                <Input marginLeft={"7"} maxWidth={"800"} placeholder="Enter Application Name" value={title} onChange={handleTitleChange} />
             </FormControl>
             <FormControl>
-                <FormLabel>Description</FormLabel>
-                <Textarea
-                    placeholder="Give a Detailed Description about the Application"
-                    value={description}
-                    onChange={handleDescriptionChange}
-                    w="100%"
-                    h="300px"
-                />
+                <FormLabel
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        marginBottom: '0px',
+                    }}
+                    marginLeft={"6"}
+                >
+                    <span>Description</span>
+                    <IconButton
+                        icon={<FaSync />}
+                        isLoading={isLoading}
+                        onClick={fetchDescriptionData}
+                        aria-label="Refresh"
+                        variant="link"
+                        colorScheme="blue"
+                        style={{ position: 'relative', fontSize: '15px' }}
+                        spin={isLoading}
+                    />
+                </FormLabel>
+
+                <div
+                    style={{
+                        height: '270px',
+                        maxWidth:'800px',
+                        border: '1px solid #D3D3D3',
+                        borderRadius: '5px',
+                        padding: '5px',
+                        marginBottom: '10px',
+                        backgroundColor: isEditorAvailable ? 'white' : '#FAFAFA',
+                        borderColor: '#D3D3D3',
+                        cursor: !isEditorAvailable && 'not-allowed',
+                        position: 'relative',
+                        marginLeft:'29px'
+                    }}
+                >
+                    {!isEditorAvailable && (
+                        <div
+                            style={{
+                                position: 'absolute',
+                                top: '10%',
+                                left: '28%',
+                                transform: 'translate(-50%, -50%)',
+                                color: '#E0E0E0',
+                            }}
+                        >
+                            Click the icon to generate the Application Description.
+                        </div>
+                    )}
+
+                    {isEditorAvailable && (
+                        <Editor
+                            height="100%"
+                            options={{
+                                minimap: { enabled: false },
+                                lineNumbers: 'off',
+                                wordWrap: 'on',
+                                renderLineHighlight: 'none' 
+                            }}
+                            value={description}
+                            onChange={value => {
+                                handleDescriptionChange(value);
+                            }}
+                            style={{ overflowX: 'hidden' }}
+                        />
+                    )}
+                </div>
             </FormControl>
             <Flex justify="flex-end" w="100%">
-                <Button colorScheme="blue" onClick={handleNext} mt={4} >
+                <Button colorScheme="blue" onClick={handleNext} mt={4}>
                     Next
                 </Button>
             </Flex>

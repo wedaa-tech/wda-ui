@@ -193,7 +193,7 @@ function AiBox() {
             ) : (
                 <Box w="900px" h="600px" p={6} bg="white" rounded="xl" boxShadow="lg" borderColor="gray.300" borderWidth="1px">
                     {activeStep === 0 && (
-                        <TitleDescriptionForm title={formData.title} description={formData.description} onNext={handleNextTitleDescription} />
+                        <TitleDescriptionForm title={formData.title} description={formData.description} refresh={formData?.id!=''} onNext={handleNextTitleDescription} />
                     )}
                     {activeStep === 1 && (
                         <ServiceForm
