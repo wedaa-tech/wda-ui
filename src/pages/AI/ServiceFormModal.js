@@ -1,17 +1,17 @@
 import { useState, useEffect } from 'react';
-import { 
-    Modal, 
-    ModalOverlay, 
-    ModalContent, 
-    ModalHeader, 
-    ModalBody, 
-    ModalCloseButton, 
-    Button, 
-    Input, 
+import {
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalHeader,
+    ModalBody,
+    ModalCloseButton,
+    Button,
+    Input,
     Textarea,
     ModalFooter,
     Box,
-    Divider
+    Divider,
 } from '@chakra-ui/react';
 
 function ServiceFormModal({ isOpen, onClose, onSave, service, viewMode }) {
@@ -44,57 +44,48 @@ function ServiceFormModal({ isOpen, onClose, onSave, service, viewMode }) {
     };
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} size={"3xl"}>
+        <Modal isOpen={isOpen} onClose={onClose} size={'3xl'}>
             <ModalOverlay />
-            <ModalContent style={{ position: 'absolute', top: '18%', left: '28%', transform: 'translate(-50%, -50%)',height:'50%'}}>
-                <ModalHeader>{(viewMode==="view") ? serviceName : (service ? `Edit ${serviceName}` : 'Add Service')}</ModalHeader>
+            <ModalContent style={{ position: 'absolute', top: '18%', left: '28%', transform: 'translate(-50%, -50%)', height: '450px'}}>
+                <ModalHeader>{viewMode === 'view' ? serviceName : service ? `Edit ${serviceName}` : 'Add Service'}</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody>
                     <Box mb={4}>
                         {editMode ? (
                             <>
-                                <Input 
-                                    placeholder="Service Name" 
-                                    value={serviceName} 
-                                    onChange={(e) => setServiceName(e.target.value)} 
-                                />
-                                <Textarea 
-                                    placeholder="Service Description" 
-                                    value={serviceDescription} 
-                                    onChange={(e) => setServiceDescription(e.target.value)} 
-                                    mt={2} 
-                                    style={{ height: '245px' }} 
+                                <Input placeholder="Service Name" value={serviceName} onChange={e => setServiceName(e.target.value)} />
+                                <Textarea
+                                    placeholder="Service Description"
+                                    value={serviceDescription}
+                                    onChange={e => setServiceDescription(e.target.value)}
+                                    mt={2}
+                                    style={{ height: '245px',maxHeight:'250px' }}
                                 />
                             </>
                         ) : (
                             <>
-                                <Textarea 
-                                    placeholder="Service Description" 
-                                    value={serviceDescription} 
-                                    isReadOnly 
-                                    mt={2} 
-                                    style={{ height: '345px' }} 
+                                <Textarea
+                                    placeholder="Service Description"
+                                    value={serviceDescription}
+                                    isReadOnly
+                                    mt={2}
+                                    style={{ height: '350px' }}
                                 />
                             </>
                         )}
                     </Box>
-                    <Divider />
                 </ModalBody>
                 {editMode && (
                     <ModalFooter>
-                        <Button 
-                            colorScheme="blue" 
-                            mr={3} 
-                            onClick={handleSave} 
-                            isDisabled={!isFilled} 
-                        >
+                        <Button colorScheme="blue" mr={3} mt={-3} onClick={handleSave} isDisabled={!isFilled}>
                             Save
                         </Button>
-                        <Button 
-                            onClick={() => { 
-                                onClose(); 
+                        <Button
+                            mt={-3}
+                            onClick={() => {
+                                onClose();
                                 setServiceName('');
-                                setServiceDescription(''); 
+                                setServiceDescription('');
                             }}
                         >
                             Cancel

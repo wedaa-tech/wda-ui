@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { VStack, Text, Divider, Box, HStack, IconButton, Spacer, Button, Flex } from '@chakra-ui/react';
+import { VStack, Text, Divider, Box, HStack, IconButton, Spacer, Button, Flex,useStyleConfig } from '@chakra-ui/react';
 import { AddIcon, DeleteIcon, EditIcon } from '@chakra-ui/icons';
 import ServiceFormModal from './ServiceFormModal';
 
@@ -55,47 +55,50 @@ function ServiceForm({ serviceData, setServiceData, onNext, onBack, title }) {
         onBack();
     };
 
+    const textStyles = useStyleConfig("Text", { size: "lg", color: "gray.600" });
+
+
     return (
         <Flex direction="column" h="100%">
             <Box flex="1">
-                <VStack spacing={6} align="stretch">
+                <VStack spacing={3} align="stretch">
                     <HStack justify="space-between" w="100%">
-                        <Text fontSize="2xl" fontWeight="bold">
+                        <Text fontSize="2xl" fontWeight="bold" marginLeft={"10"}>
                             Service Information
                         </Text>
-                        <Button size="sm" colorScheme="blue" variant="outline" leftIcon={<AddIcon />} onClick={addService}>
+                        <Button size="sm" marginRight={"50px"} colorScheme="blue" variant="outline" leftIcon={<AddIcon />} onClick={addService}>
                             Add Service
                         </Button>
                     </HStack>
                     <Divider />
-                    <Text fontSize="md" color="gray.600">
-                            Below, you'll find the services associated with the application {title}. You can view and edit them as needed.
-                        </Text>
-                    <Box maxH="350px" overflowY="auto" w="100%" mt={-4}>
+                    <Text sx={textStyles} marginLeft={"10"} marginRight={"14"}>
+                    Proposed components for {title} Application.
+                    </Text>
+                    <Box maxH="350px" overflowY="auto" w="100%" mt={-2} sx={{ "&::-webkit-scrollbar": { width: "8px" }, "&::-webkit-scrollbar-thumb": { bg: "blue.300", borderRadius: "8px" } }}>
                         {serviceData.map((service, index) => (
-                            <HStack key={index} spacing={4} align="center">
-                                <Text>{index + 1}</Text>
-                                <VStack align="start">
-                                    <Text onClick={() => handleView(service)} textDecoration="underline" cursor="pointer">
-                                        {service.name}
-                                    </Text>
-                                </VStack>
-                                <Spacer />
-                                <HStack>
-                                    <IconButton
-                                        aria-label="Edit"
-                                        icon={<EditIcon color={'blue'} />}
-                                        colorScheme="white"
-                                        onClick={() => handleEdit(service)}
-                                    />
+                            <Box key={index} marginTop={"2"} marginLeft={"10"} borderWidth="1px" borderRadius="md" borderColor="gray.200" _hover={{ transform: 'scale(1.02)', transition: 'transform 0.3s ease' }} marginBottom={"2"} width={"3xl"}>
+                                <HStack spacing={4} align="center" onClick={() => handleEdit(service)} cursor={'pointer'} width={"3xl"}>
+                                    <Text marginLeft={"4"}>{index + 1}</Text>
+                                    <VStack align="start">
+                                        <Text>{service.name}</Text>
+                                    </VStack>
+                                    <Spacer />
                                     <IconButton
                                         aria-label="Delete"
-                                        icon={<DeleteIcon color={'red'} />}
-                                        colorScheme="white"
-                                        onClick={() => deleteService(index)}
+                                        icon={<DeleteIcon color={'grey'} />}
+                                        colorScheme="white"a
+                                        animation={'ease'}
+                                        onClick={e => {
+                                            e.stopPropagation();
+                                            deleteService(index);
+                                        }}
+                                        _hover={{
+                                            transform: 'scale(1.2)',
+                                            transition: 'transform 0.3s ease',
+                                        }}
                                     />
                                 </HStack>
-                            </HStack>
+                            </Box>
                         ))}
                     </Box>
                 </VStack>
@@ -118,6 +121,9 @@ function ServiceForm({ serviceData, setServiceData, onNext, onBack, title }) {
                 viewMode={modalMode}
             />
         </Flex>
+    
+    
+    
     );
 }
 
