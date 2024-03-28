@@ -909,7 +909,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     if (!isServiceConnected && !targetNode.data.isConnected && !sourceNode.id.startsWith('UI')) {
                         targetNode.data.isConnected = true;
                         setEdges(eds => Functions.addEdge(params, eds, Nodes));
-                        Functions.MergeData(params.source, params.target, Nodes);
+                        Functions.MergeData(params.source, params.target, Nodes, setNodes);
                     }
                     if (!isServiceConnected) {
                         let updatedNodes = { ...Nodes };
