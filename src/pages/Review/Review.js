@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Grid, Button, GridItem, Flex, IconButton, useColorModeValue, Box, Tooltip, Spinner, VStack } from '@chakra-ui/react';
-import './index.css';
+import './Review.css';
 import ReactFlow, {
     Background,
     ReactFlowProvider,

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Flex, Text, HStack, Menu, MenuButton, MenuList, MenuItem, Image, Button, VStack } from '@chakra-ui/react';
 import MenuOption from './MenuOption';
-import './styles.css';
 import { Message } from 'iconsax-react';
 import { menuData } from './CONSTANTS';
 import { useKeycloak } from '@react-keycloak/web';
@@ -9,6 +8,7 @@ import logo from '../../assets/wedaa_logo.png';
 import { Link } from 'react-router-dom/cjs/react-router-dom.min';
 import ProfilePicture from './ProfilePicture';
 import FeedbackModal from '../Modal/FeedbackModal';
+import './NavBar.css';
 
 const NavBar = () => {
     const { keycloak } = useKeycloak();
@@ -39,7 +39,7 @@ const NavBar = () => {
         >
             <VStack spacing={12} alignItems="center">
                 <Box as={Link} to="/" w="100px" h="24px" overflow="hidden" borderRadius="md">
-                    <Image src={logo} alt="Zoomed Image" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <Image src={logo} alt="Zoomed Image" className='logo' />
                 </Box>
             </VStack>
             <Flex alignItems="center">

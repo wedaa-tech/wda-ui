@@ -13,7 +13,7 @@ import {
     useSteps,
     useToast,
 } from '@chakra-ui/react';
-import './index.css';
+import './WizardBox.css';
 import WizardBox from './WizardBox';
 import { ArrowBackIcon, ArrowForwardIcon, CheckIcon, CloseIcon, ExternalLinkIcon } from '@chakra-ui/icons';
 import ReviewBox from './ReviewBox';
