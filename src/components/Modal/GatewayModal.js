@@ -102,7 +102,7 @@ const GatewayModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
             <ModalContent
                 style={{
                     position: 'absolute',
-                    top: '20px',
+                    top: '100px',
                     right: '10px',
                     width: '300px',
                 }}

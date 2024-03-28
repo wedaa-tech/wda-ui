@@ -209,10 +209,10 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
             onClose={() => onClose(false)}
         >
             <ModalContent
-                style={{
+                 style={{
                     position: 'absolute',
-                    top: '10%',
-                    left: isValidFrameworkAndDB ? '20%' : '83%',
+                    top: '100px',
+                    right: isValidFrameworkAndDB ? '10%' : '10px',
                     transform: 'translate(-50%, -50%)',
                     width: isValidFrameworkAndDB ? '90%' : '300px',
                 }}
