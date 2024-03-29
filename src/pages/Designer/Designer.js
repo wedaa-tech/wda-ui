@@ -44,8 +44,7 @@ import Generating from '../../components/Generating';
 import { checkDisabled } from '../../utils/submitButtonValidation';
 import CanvasContent from '../CanvasContent/CanvasContent';
 import Functions from './utils'
-import UIServiceGatewayModal from '../../components/Modal/UIServiceGatwayModal';
-import UIGatewayService from '../../components/Modal/UIServiceGatwayModal';
+import ApplicationModal from '../../components/Modal/ApplicationModal';
 
 let serviceId = 1;
 let gatewayId = 1;
@@ -1794,7 +1793,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 {/* {nodeType === 'UI' && Isopen && ( */}
                     {/* // <UiDataModal */}
                 {nodeType === 'UI' && Isopen && (
-                    <UIServiceGatewayModal
+                    <ApplicationModal
                         nodeType={nodeType}
                         isOpen={Isopen}
                         CurrentNode={CurrentNode}
@@ -1806,7 +1805,8 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     />
                 )}
                 {nodeType === 'Service' && Isopen && (
-                    <ServiceModal
+                    <ApplicationModal
+                        nodeType={nodeType}
                         isOpen={Isopen}
                         CurrentNode={CurrentNode}
                         onClose={setopen}
@@ -1818,7 +1818,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 )}
                 {nodeType === 'Gateway' && Isopen && (
                     // <GatewayModal
-                    <UIServiceGatewayModal
+                    <ApplicationModal
                     nodeType={nodeType}
                         isOpen={Isopen}
                         CurrentNode={CurrentNode}
@@ -1831,7 +1831,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 )}
                 {nodeType === 'group' && Isopen && (
                     // <GroupDataModal
-                    <UIGatewayService
+                    <ApplicationModal
                         nodeType={'Group'}
                         isOpen={Isopen}
                         CurrentNode={CurrentNode}
@@ -1842,7 +1842,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 )}
                 {nodeType === 'dummy' && Isopen && (
                     // <GroupDataModal
-                    <UIGatewayService
+                    <ApplicationModal
                         nodeType={'Dummy'}
                         isOpen={Isopen}
                         CurrentNode={CurrentNode}
