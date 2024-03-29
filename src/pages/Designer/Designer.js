@@ -26,7 +26,6 @@ import CustomAuthNode from './../Customnodes/CustomAuthNode';
 import CustomMessageBrokerNode from './../Customnodes/CustomMessageBrokerNode';
 import CustomCloudNode from './../Customnodes/CustomCloudNode';
 import CustomLoadNode from './../Customnodes/CustomLoadNode';
-import CustomLocalenvironmentNode from './../Customnodes/CustomLocalenvironmentNode';
 import AlertModal from '../../components/Modal/AlertModal';
 import resizeableNode from './../Customnodes/ResizeableNode';
 import groupNode from './../Customnodes/GroupNode';
@@ -45,6 +44,8 @@ import Generating from '../../components/Generating';
 import { checkDisabled } from '../../utils/submitButtonValidation';
 import CanvasContent from '../CanvasContent/CanvasContent';
 import Functions from './utils'
+import UIServiceGatewayModal from '../../components/Modal/UIServiceGatwayModal';
+import UIGatewayService from '../../components/Modal/UIServiceGatwayModal';
 
 let serviceId = 1;
 let gatewayId = 1;
@@ -75,7 +76,6 @@ const nodeTypes = {
     selectorNode4: CustomMessageBrokerNode,
     selectorNode5: CustomCloudNode,
     selectorNode6: CustomLoadNode,
-    selectorNode7: CustomLocalenvironmentNode,
     ResizableNode: resizeableNode,
     GroupNode: groupNode,
 };
@@ -1866,8 +1866,11 @@ const generateZip = async (e, data = null) => {
                     actionType={actionModalType}
                 />
 
+                {/* {nodeType === 'UI' && Isopen && ( */}
+                    {/* // <UiDataModal */}
                 {nodeType === 'UI' && Isopen && (
-                    <UiDataModal
+                    <UIServiceGatewayModal
+                        nodeType={nodeType}
                         isOpen={Isopen}
                         CurrentNode={CurrentNode}
                         onClose={setopen}
@@ -1875,7 +1878,6 @@ const generateZip = async (e, data = null) => {
                         handleColorClick={handleColorClick}
                         uniqueApplicationNames={uniqueApplicationNames}
                         uniquePortNumbers={uniquePortNumbers}
-                        applicationData={applicationData}
                     />
                 )}
                 {nodeType === 'Service' && Isopen && (
@@ -1890,7 +1892,9 @@ const generateZip = async (e, data = null) => {
                     />
                 )}
                 {nodeType === 'Gateway' && Isopen && (
-                    <GatewayModal
+                    // <GatewayModal
+                    <UIServiceGatewayModal
+                    nodeType={nodeType}
                         isOpen={Isopen}
                         CurrentNode={CurrentNode}
                         onClose={setopen}
@@ -1901,7 +1905,9 @@ const generateZip = async (e, data = null) => {
                     />
                 )}
                 {nodeType === 'group' && Isopen && (
-                    <GroupDataModal
+                    // <GroupDataModal
+                    <UIGatewayService
+                        nodeType={'Group'}
                         isOpen={Isopen}
                         CurrentNode={CurrentNode}
                         onClose={setopen}
@@ -1910,13 +1916,14 @@ const generateZip = async (e, data = null) => {
                     />
                 )}
                 {nodeType === 'dummy' && Isopen && (
-                    <GroupDataModal
+                    // <GroupDataModal
+                    <UIGatewayService
+                        nodeType={'Dummy'}
                         isOpen={Isopen}
                         CurrentNode={CurrentNode}
                         onClose={setopen}
                         onSubmit={onChange}
                         handleColorClick={handleColorClick}
-                        nodeType={'Dummy'}
                     />
                 )}
                 {nodeType === 'Database' && Isopen && (
