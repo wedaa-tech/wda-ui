@@ -26,7 +26,6 @@ import CustomAuthNode from './../Customnodes/CustomAuthNode';
 import CustomMessageBrokerNode from './../Customnodes/CustomMessageBrokerNode';
 import CustomCloudNode from './../Customnodes/CustomCloudNode';
 import CustomLoadNode from './../Customnodes/CustomLoadNode';
-import CustomLocalenvironmentNode from './../Customnodes/CustomLocalenvironmentNode';
 import AlertModal from '../../components/Modal/AlertModal';
 import resizeableNode from './../Customnodes/ResizeableNode';
 import groupNode from './../Customnodes/GroupNode';
@@ -45,6 +44,8 @@ import Generating from '../../components/Generating';
 import { checkDisabled } from '../../utils/submitButtonValidation';
 import CanvasContent from '../CanvasContent/CanvasContent';
 import Functions from './utils'
+import UIServiceGatewayModal from '../../components/Modal/UIServiceGatwayModal';
+import UIGatewayService from '../../components/Modal/UIServiceGatwayModal';
 
 let serviceId = 1;
 let gatewayId = 1;
@@ -75,7 +76,6 @@ const nodeTypes = {
     selectorNode4: CustomMessageBrokerNode,
     selectorNode5: CustomCloudNode,
     selectorNode6: CustomLoadNode,
-    selectorNode7: CustomLocalenvironmentNode,
     ResizableNode: resizeableNode,
     GroupNode: groupNode,
 };
@@ -538,7 +538,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         setShowDiv(false);
     }, []);
     const onDrop = useCallback(
-        (event, servicecount, messagecount, loadcount, authcount, Localenvcount, UICount, docsCount) => {
+        (event, servicecount, messagecount, loadcount, authcount, UICount, docsCount) => {
             setUpdated(true);
             event.preventDefault();
             const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
@@ -1791,8 +1791,11 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     actionType={actionModalType}
                 />
 
+                {/* {nodeType === 'UI' && Isopen && ( */}
+                    {/* // <UiDataModal */}
                 {nodeType === 'UI' && Isopen && (
-                    <UiDataModal
+                    <UIServiceGatewayModal
+                        nodeType={nodeType}
                         isOpen={Isopen}
                         CurrentNode={CurrentNode}
                         onClose={setopen}
@@ -1800,7 +1803,6 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         handleColorClick={handleColorClick}
                         uniqueApplicationNames={uniqueApplicationNames}
                         uniquePortNumbers={uniquePortNumbers}
-                        applicationData={applicationData}
                     />
                 )}
                 {nodeType === 'Service' && Isopen && (
@@ -1815,7 +1817,9 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     />
                 )}
                 {nodeType === 'Gateway' && Isopen && (
-                    <GatewayModal
+                    // <GatewayModal
+                    <UIServiceGatewayModal
+                    nodeType={nodeType}
                         isOpen={Isopen}
                         CurrentNode={CurrentNode}
                         onClose={setopen}
@@ -1826,7 +1830,9 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     />
                 )}
                 {nodeType === 'group' && Isopen && (
-                    <GroupDataModal
+                    // <GroupDataModal
+                    <UIGatewayService
+                        nodeType={'Group'}
                         isOpen={Isopen}
                         CurrentNode={CurrentNode}
                         onClose={setopen}
@@ -1835,13 +1841,14 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     />
                 )}
                 {nodeType === 'dummy' && Isopen && (
-                    <GroupDataModal
+                    // <GroupDataModal
+                    <UIGatewayService
+                        nodeType={'Dummy'}
                         isOpen={Isopen}
                         CurrentNode={CurrentNode}
                         onClose={setopen}
                         onSubmit={onChange}
                         handleColorClick={handleColorClick}
-                        nodeType={'Dummy'}
                     />
                 )}
                 {nodeType === 'Database' && Isopen && (
