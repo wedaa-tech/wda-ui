@@ -1468,6 +1468,18 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 },
                 body: JSON.stringify(Data),
             });
+            
+        const intervalId = setInterval(() => {
+            console.log('fetched response waiting ...');
+        }, 10000);
+
+        await new Promise(resolve => setTimeout(() => {
+            clearInterval(intervalId); 
+            resolve(); 
+        }, 5 * 60 * 1000)); 
+
+        console.log('5 minutes timeout completed.');
+
             blueprintId = response.headers.get('blueprintid');
             const blob = await response.blob();
             setIsGenerating(false);
@@ -1480,7 +1492,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 if (projectParentId === 'admin') {
                     history.replace('/architectures');
                 } else {
-                    history.replace('/prototypes');
+                    history.replace('/prototypes');                    
                 }
             } else {
                 clear();
