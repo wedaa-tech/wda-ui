@@ -15,6 +15,7 @@ import {
     Textarea,
 } from '@chakra-ui/react';
 import validatePortNumber from '../../utils/portValidation';
+import './ModalStyle.css';
 
 const UiDataModal = ({
     isOpen,
@@ -35,7 +36,7 @@ const UiDataModal = ({
         serverPort: '',
         withExample: 'false',
         applicationType: 'gateway',
-        color:'#fff',
+        color: '#fff',
         theme: '',
         ...CurrentNode,
     };
@@ -327,13 +328,10 @@ const UiDataModal = ({
                         }}
                     >
                         <div
+                            className="color"
                             style={{
-                                width: '30px',
-                                height: '30px',
-                                borderRadius: '50%',
                                 backgroundColor: '#ffc9c9',
                                 border: UiData.color === '#ffc9c9' ? '2px solid #007bff' : '1px solid #cfcfcf',
-                                cursor: 'pointer',
                             }}
                             onClick={() => {
                                 handleData('color', '#ffc9c9');
@@ -341,13 +339,10 @@ const UiDataModal = ({
                             }}
                         ></div>
                         <div
+                            className="color"
                             style={{
-                                width: '30px',
-                                height: '30px',
-                                borderRadius: '50%',
                                 border: UiData.color === '#b2f2bb' ? '2px solid #007bff' : '1px solid #cfcfcf',
                                 backgroundColor: '#b2f2bb',
-                                cursor: 'pointer',
                             }}
                             onClick={() => {
                                 handleData('color', '#b2f2bb');
@@ -355,13 +350,10 @@ const UiDataModal = ({
                             }}
                         ></div>
                         <div
+                            className="color"
                             style={{
-                                width: '30px',
-                                height: '30px',
-                                borderRadius: '50%',
                                 border: UiData.color === '#a5d8ff' ? '2px solid #007bff' : '1px solid #cfcfcf',
                                 backgroundColor: '#a5d8ff',
-                                cursor: 'pointer',
                             }}
                             onClick={() => {
                                 handleData('color', '#a5d8ff');
@@ -369,13 +361,10 @@ const UiDataModal = ({
                             }}
                         ></div>
                         <div
+                            className="color"
                             style={{
-                                width: '30px',
-                                height: '30px',
-                                borderRadius: '50%',
                                 border: UiData.color === '#ffec99' ? '2px solid #007bff' : '1px solid #cfcfcf',
                                 backgroundColor: '#ffec99',
-                                cursor: 'pointer',
                             }}
                             onClick={() => {
                                 handleData('color', '#ffec99');
@@ -383,14 +372,10 @@ const UiDataModal = ({
                             }}
                         ></div>
                         <div
+                            className="color"
                             style={{
-                                width: '30px',
-                                height: '30px',
                                 border: UiData.color === '#fff' ? '2px solid #007bff' : '1px solid #cfcfcf',
-                                border: '1px solid #cfcfcf',
-                                borderRadius: '50%',
                                 backgroundColor: '#fff',
-                                cursor: 'pointer',
                             }}
                             onClick={() => {
                                 handleData('color', '#fff');

@@ -83,45 +83,32 @@ const GroupDataModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorCli
                                     }}
                                 >
                                     <div
+                                        className="color"
                                         style={{
-                                            width: '30px',
-                                            height: '30px',
-                                            borderRadius: '50%',
                                             backgroundColor: '#ffc9c9',
-                                            // border: ApplicationData.color === '#ffc9c9' ? '1px solid white' : 'none',
-                                            // boxShadow: ApplicationData.color === '#ffc9c9' ? '0px 0px 0px 2px #ffc9c9' : '',
-                                            cursor: 'pointer',
                                             border: groupData.color === '#ffc9c9' ? '2px solid #007bff' : '1px solid #cfcfcf',
-
                                         }}
                                         onClick={() => {
                                             handleData('color', '#ffc9c9');
                                             handleColorClick('#ffc9c9');
                                         }}
                                     ></div>
-
                                     <div
+                                        className="color"
                                         style={{
-                                            width: '30px',
-                                            height: '30px',
-                                            borderRadius: '50%',
+                                            border: groupData.color === '#b2f2bb' ? '2px solid #007bff' : '1px solid #cfcfcf',
                                             backgroundColor: '#b2f2bb',
-                                            border: groupData.color === '#b2f2bb' ? '2px solid #007bff' : '1px solid #cfcfcf', 
-                                            cursor: 'pointer',
                                         }}
                                         onClick={() => {
-                                            handleData('color', '#b2f2bb');    
+                                            handleData('color', '#b2f2bb');
                                             handleColorClick('#b2f2bb');
                                         }}
                                     ></div>
                                     <div
+                                        className="color"
                                         style={{
-                                            width: '30px',
-                                            height: '30px',
-                                            borderRadius: '50%',
-                                            backgroundColor: '#a5d8ff',
                                             border: groupData.color === '#a5d8ff' ? '2px solid #007bff' : '1px solid #cfcfcf',
-                                            cursor: 'pointer',
+                                            backgroundColor: '#a5d8ff',
                                         }}
                                         onClick={() => {
                                             handleData('color', '#a5d8ff');
@@ -129,13 +116,10 @@ const GroupDataModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorCli
                                         }}
                                     ></div>
                                     <div
+                                        className="color"
                                         style={{
-                                            width: '30px',
-                                            height: '30px',
-                                            borderRadius: '50%',
-                                            backgroundColor: '#ffec99',
                                             border: groupData.color === '#ffec99' ? '2px solid #007bff' : '1px solid #cfcfcf',
-                                            cursor: 'pointer',
+                                            backgroundColor: '#ffec99',
                                         }}
                                         onClick={() => {
                                             handleData('color', '#ffec99');
@@ -143,14 +127,10 @@ const GroupDataModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorCli
                                         }}
                                     ></div>
                                     <div
+                                        className="color"
                                         style={{
-                                            width: '30px',
-                                            height: '30px',
-                                            // border: '1px solid #cfcfcf',
-                                            borderRadius: '50%',
                                             border: groupData.color === '#fff' ? '2px solid #007bff' : '1px solid #cfcfcf',
                                             backgroundColor: '#fff',
-                                            cursor: 'pointer',
                                         }}
                                         onClick={() => {
                                             handleData('color', '#fff');

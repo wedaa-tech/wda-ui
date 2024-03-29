@@ -163,7 +163,7 @@ function TitleDescriptionForm({ title: initialTitle, description: initialDescrip
                                 top: '10%',
                                 left: '28%',
                                 transform: 'translate(-50%, -50%)',
-                                color: '#E0E0E0',
+                                color: '#a0a0a0',
                             }}
                         >
                             Click the icon to generate the Application Description.

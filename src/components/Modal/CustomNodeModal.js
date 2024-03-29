@@ -17,7 +17,7 @@ import validatePortNumber from '../../utils/portValidation';
 const CustomNodeModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick, uniquePortNumbers }) => {
     const IntialState = {
         label: '',
-        color:'#fff',
+        color: '#fff',
         ...CurrentNode,
     };
     const [customData, setCustomData] = useState(IntialState);
@@ -67,10 +67,10 @@ const CustomNodeModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorCl
         if (column == 'databasePort') {
             const validationErrors = validatePortNumber(value, uniquePortNumbers, CurrentNode?.databasePort);
             setPortValidationError(validationErrors);
-                setCustomData(prev => ({
-                    ...prev,
-                    [column]: value,
-                }));
+            setCustomData(prev => ({
+                ...prev,
+                [column]: value,
+            }));
         } else {
             setCustomData(prev => ({
                 ...prev,
@@ -122,7 +122,11 @@ const CustomNodeModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorCl
                                         id="dbPort"
                                         placeholder="Port number"
                                         borderColor={
-                                            portValidationError.serverPortError || portValidationError.portNumberError || portValidationError.portRangeError ? 'red' : 'black'
+                                            portValidationError.serverPortError ||
+                                            portValidationError.portNumberError ||
+                                            portValidationError.portRangeError
+                                                ? 'red'
+                                                : 'black'
                                         }
                                         maxLength="5"
                                         value={customData.databasePort}
@@ -157,86 +161,71 @@ const CustomNodeModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorCl
                             </>
                         )}
 
-<FormLabel>Background Color</FormLabel>
-                    <div
-                        style={{
-                            display: 'flex',
-                            flexDirection: 'row',
-                            marginBottom: '20px',
-                            gap: '15px',
-                        }}
-                    >
+                        <FormLabel>Background Color</FormLabel>
                         <div
                             style={{
-                                width: '30px',
-                                height: '30px',
-                                borderRadius: '50%',
-                                backgroundColor: '#ffc9c9',
-                                border: customData.color === '#ffc9c9' ? '2px solid #007bff' : '1px solid #cfcfcf',
-                                cursor: 'pointer',
+                                display: 'flex',
+                                flexDirection: 'row',
+                                marginBottom: '20px',
+                                gap: '15px',
                             }}
-                            onClick={() => {
-                                handleData('color', '#ffc9c9');
-                                handleColorClick('#ffc9c9');
-                            }}
-                        ></div>
-                        <div
-                            style={{
-                                width: '30px',
-                                height: '30px',
-                                borderRadius: '50%',
-                                border: customData.color === '#b2f2bb' ? '2px solid #007bff' : '1px solid #cfcfcf',
-                                backgroundColor: '#b2f2bb',
-                                cursor: 'pointer',
-                            }}
-                            onClick={() => {
-                                handleData('color', '#b2f2bb');
-                                handleColorClick('#b2f2bb');
-                            }}
-                        ></div>
-                        <div
-                            style={{
-                                width: '30px',
-                                height: '30px',
-                                borderRadius: '50%',
-                                border: customData.color === '#a5d8ff' ? '2px solid #007bff' : '1px solid #cfcfcf',
-                                backgroundColor: '#a5d8ff',
-                                cursor: 'pointer',
-                            }}
-                            onClick={() => {
-                                handleData('color', '#a5d8ff');
-                                handleColorClick('#a5d8ff');
-                            }}
-                        ></div>
-                        <div
-                            style={{
-                                width: '30px',
-                                height: '30px',
-                                borderRadius: '50%',
-                                border: customData.color === '#ffec99' ? '2px solid #007bff' : '1px solid #cfcfcf',
-                                backgroundColor: '#ffec99',
-                                cursor: 'pointer',
-                            }}
-                            onClick={() => {
-                                handleData('color', '#ffec99');
-                                handleColorClick('#ffec99');
-                            }}
-                        ></div>
-                        <div
-                            style={{
-                                width: '30px',
-                                height: '30px',
-                                border: customData.color === '#fff' ? '2px solid #007bff' : '1px solid #cfcfcf',
-                                borderRadius: '50%',
-                                backgroundColor: '#fff',
-                                cursor: 'pointer',
-                            }}
-                            onClick={() => {
-                                handleData('color', '#fff');
-                                handleColorClick('rgba(255, 255, 255, 0)');
-                            }}
-                        ></div>
-                    </div>
+                        >
+                            <div
+                                className="color"
+                                style={{
+                                    backgroundColor: '#ffc9c9',
+                                    border: customData.color === '#ffc9c9' ? '2px solid #007bff' : '1px solid #cfcfcf',
+                                }}
+                                onClick={() => {
+                                    handleData('color', '#ffc9c9');
+                                    handleColorClick('#ffc9c9');
+                                }}
+                            ></div>
+                            <div
+                                className="color"
+                                style={{
+                                    border: customData.color === '#b2f2bb' ? '2px solid #007bff' : '1px solid #cfcfcf',
+                                    backgroundColor: '#b2f2bb',
+                                }}
+                                onClick={() => {
+                                    handleData('color', '#b2f2bb');
+                                    handleColorClick('#b2f2bb');
+                                }}
+                            ></div>
+                            <div
+                                className="color"
+                                style={{
+                                    border: customData.color === '#a5d8ff' ? '2px solid #007bff' : '1px solid #cfcfcf',
+                                    backgroundColor: '#a5d8ff',
+                                }}
+                                onClick={() => {
+                                    handleData('color', '#a5d8ff');
+                                    handleColorClick('#a5d8ff');
+                                }}
+                            ></div>
+                            <div
+                                className="color"
+                                style={{
+                                    border: customData.color === '#ffec99' ? '2px solid #007bff' : '1px solid #cfcfcf',
+                                    backgroundColor: '#ffec99',
+                                }}
+                                onClick={() => {
+                                    handleData('color', '#ffec99');
+                                    handleColorClick('#ffec99');
+                                }}
+                            ></div>
+                            <div
+                                className="color"
+                                style={{
+                                    border: customData.color === '#fff' ? '2px solid #007bff' : '1px solid #cfcfcf',
+                                    backgroundColor: '#fff',
+                                }}
+                                onClick={() => {
+                                    handleData('color', '#fff');
+                                    handleColorClick('rgba(255, 255, 255, 0)');
+                                }}
+                            ></div>
+                        </div>
                     </div>
                     <Button
                         onClick={() => onSubmit(customData)}

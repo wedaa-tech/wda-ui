@@ -19,13 +19,13 @@ import Editor from '@monaco-editor/react';
 import validatePortNumber from '../../utils/portValidation';
 import { FaSync } from 'react-icons/fa';
 import { useKeycloak } from '@react-keycloak/web';
+import './ModalStyle.css';
 
 const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick, uniqueApplicationNames, uniquePortNumbers }) => {
-    const validFrameworksAndDBs = [
-        { framework: 'spring', dbType: 'postgresql' },
-    ];
+    const validFrameworksAndDBs = [{ framework: 'spring', dbType: 'postgresql' }];
 
-    const editorInstruction = '/* Below DBML is auto-generated based on component name and description.\nThis can be edited directly or regenerated for updated description.*/\n\n';
+    const editorInstruction =
+        '/* Below DBML is auto-generated based on component name and description.\nThis can be edited directly or regenerated for updated description.*/\n\n';
     const dbmlData = CurrentNode?.dbmlData ? editorInstruction + CurrentNode?.dbmlData : editorInstruction;
     const IntialState = {
         label: '',
@@ -106,7 +106,7 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                 .then(data => {
                     setApplicationData(prev => ({
                         ...prev,
-                        dbmlData: editorInstruction+data.dbml,
+                        dbmlData: editorInstruction + data.dbml,
                     }));
                 })
                 .catch(error => {
@@ -132,7 +132,7 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
             setApplicationData(prev => ({
                 ...prev,
                 [column]: value,
-            }));            
+            }));
             setRefreshEnabled(true);
         } else if (column === 'serverPort') {
             const validationErrors = validatePortNumber(value, uniquePortNumbers, CurrentNode?.serverPort);
@@ -150,7 +150,7 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                     [column]: value,
                 }));
             }
-        } else if (column === 'description' ) {
+        } else if (column === 'description') {
             setApplicationData(prev => ({
                 ...prev,
                 [column]: value,
@@ -199,17 +199,13 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
     };
 
     const isValidFrameworkAndDB = validFrameworksAndDBs.some(
-        combination => combination.framework === CurrentNode?.applicationFramework && combination.dbType === CurrentNode?.prodDatabaseType
+        combination => combination.framework === CurrentNode?.applicationFramework && combination.dbType === CurrentNode?.prodDatabaseType,
     );
 
     return (
-        <Modal
-            isOpen={isOpen}
-            size={isValidFrameworkAndDB ? '6xl' : ''}
-            onClose={() => onClose(false)}
-        >
+        <Modal isOpen={isOpen} size={isValidFrameworkAndDB ? '6xl' : ''} onClose={() => onClose(false)}>
             <ModalContent
-                 style={{
+                style={{
                     position: 'absolute',
                     top: '100px',
                     right: isValidFrameworkAndDB ? '10%' : '10px',
@@ -222,8 +218,7 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                 <ModalBody>
                     <div
                         style={{
-                            display:
-                                isValidFrameworkAndDB? 'flex' : 'block',
+                            display: isValidFrameworkAndDB ? 'flex' : 'block',
                             flexDirection: 'row',
                             gap: isValidFrameworkAndDB ? '40px' : '0',
                         }}
@@ -342,18 +337,14 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                                     style={{
                                         display: 'flex',
                                         flexDirection: 'row',
-                                        marginTop: '-20px',
                                         marginBottom: '20px',
                                         gap: '15px',
                                     }}
                                 >
                                     <div
+                                        className="color"
                                         style={{
-                                            width: '30px',
-                                            height: '30px',
-                                            borderRadius: '50%',
                                             backgroundColor: '#ffc9c9',
-                                            cursor: 'pointer',
                                             border: ApplicationData.color === '#ffc9c9' ? '2px solid #007bff' : '1px solid #cfcfcf',
                                         }}
                                         onClick={() => {
@@ -361,15 +352,11 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                                             handleColorClick('#ffc9c9');
                                         }}
                                     ></div>
-
                                     <div
+                                        className="color"
                                         style={{
-                                            width: '30px',
-                                            height: '30px',
-                                            borderRadius: '50%',
-                                            backgroundColor: '#b2f2bb',
                                             border: ApplicationData.color === '#b2f2bb' ? '2px solid #007bff' : '1px solid #cfcfcf',
-                                            cursor: 'pointer',
+                                            backgroundColor: '#b2f2bb',
                                         }}
                                         onClick={() => {
                                             handleData('color', '#b2f2bb');
@@ -377,13 +364,10 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                                         }}
                                     ></div>
                                     <div
+                                        className="color"
                                         style={{
-                                            width: '30px',
-                                            height: '30px',
-                                            borderRadius: '50%',
-                                            backgroundColor: '#a5d8ff',
                                             border: ApplicationData.color === '#a5d8ff' ? '2px solid #007bff' : '1px solid #cfcfcf',
-                                            cursor: 'pointer',
+                                            backgroundColor: '#a5d8ff',
                                         }}
                                         onClick={() => {
                                             handleData('color', '#a5d8ff');
@@ -391,13 +375,10 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                                         }}
                                     ></div>
                                     <div
+                                        className="color"
                                         style={{
-                                            width: '30px',
-                                            height: '30px',
-                                            borderRadius: '50%',
-                                            backgroundColor: '#ffec99',
                                             border: ApplicationData.color === '#ffec99' ? '2px solid #007bff' : '1px solid #cfcfcf',
-                                            cursor: 'pointer',
+                                            backgroundColor: '#ffec99',
                                         }}
                                         onClick={() => {
                                             handleData('color', '#ffec99');
@@ -405,13 +386,10 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                                         }}
                                     ></div>
                                     <div
+                                        className="color"
                                         style={{
-                                            width: '30px',
-                                            height: '30px',
-                                            borderRadius: '50%',
                                             border: ApplicationData.color === '#fff' ? '2px solid #007bff' : '1px solid #cfcfcf',
                                             backgroundColor: '#fff',
-                                            cursor: 'pointer',
                                         }}
                                         onClick={() => {
                                             handleData('color', '#fff');
