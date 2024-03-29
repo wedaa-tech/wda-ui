@@ -23,7 +23,7 @@ const GatewayModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
         packageName: '',
         serverPort: '',
         applicationType: 'gateway',
-        color:'#fff',
+        color: '#fff',
         ...CurrentNode,
     };
     const [ApplicationData, setApplicationData] = useState(IntialState);
@@ -181,7 +181,13 @@ const GatewayModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                                 variant="outline"
                                 id="serverport"
                                 placeholder="Port number"
-                                borderColor={portValidationError.serverPortError || portValidationError.portNumberError || portValidationError.portRangeError ? 'red' : 'black'}
+                                borderColor={
+                                    portValidationError.serverPortError ||
+                                    portValidationError.portNumberError ||
+                                    portValidationError.portRangeError
+                                        ? 'red'
+                                        : 'black'
+                                }
                                 value={ApplicationData.serverPort}
                                 maxLength="5"
                                 onKeyPress={handleKeyPress}
@@ -214,95 +220,79 @@ const GatewayModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                         )}
                     </div>
                     <FormLabel>Background Color</FormLabel>
-                                <div
-                                    style={{
-                                        display: 'flex',
-                                        flexDirection: 'row',
-                                        marginBottom: '20px',
-                                        gap: '15px',
-                                    }}
-                                >
-                                    <div
-                                        style={{
-                                            width: '30px',
-                                            height: '30px',
-                                            borderRadius: '50%',
-                                            backgroundColor: '#ffc9c9',
-                                            // border: ApplicationData.color === '#ffc9c9' ? '1px solid white' : 'none',
-                                            // boxShadow: ApplicationData.color === '#ffc9c9' ? '0px 0px 0px 2px #ffc9c9' : '',
-                                            cursor: 'pointer',
-                                            border: ApplicationData.color === '#ffc9c9' ? '2px solid #007bff' : '1px solid #cfcfcf',
-
-                                        }}
-                                        onClick={() => {
-                                            handleData('color', '#ffc9c9');
-                                            handleColorClick('#ffc9c9');
-                                        }}
-                                    ></div>
-
-                                    <div
-                                        style={{
-                                            width: '30px',
-                                            height: '30px',
-                                            borderRadius: '50%',
-                                            backgroundColor: '#b2f2bb',
-                                            border: ApplicationData.color === '#b2f2bb' ? '2px solid #007bff' : '1px solid #cfcfcf', 
-                                            cursor: 'pointer',
-                                        }}
-                                        onClick={() => {
-                                            handleData('color', '#b2f2bb');    
-                                            handleColorClick('#b2f2bb');
-                                        }}
-                                    ></div>
-                                    <div
-                                        style={{
-                                            width: '30px',
-                                            height: '30px',
-                                            borderRadius: '50%',
-                                            backgroundColor: '#a5d8ff',
-                                            border: ApplicationData.color === '#a5d8ff' ? '2px solid #007bff' : '1px solid #cfcfcf',
-                                            cursor: 'pointer',
-                                        }}
-                                        onClick={() => {
-                                            handleData('color', '#a5d8ff');
-                                            handleColorClick('#a5d8ff');
-                                        }}
-                                    ></div>
-                                    <div
-                                        style={{
-                                            width: '30px',
-                                            height: '30px',
-                                            borderRadius: '50%',
-                                            backgroundColor: '#ffec99',
-                                            border: ApplicationData.color === '#ffec99' ? '2px solid #007bff' : '1px solid #cfcfcf',
-                                            cursor: 'pointer',
-                                        }}
-                                        onClick={() => {
-                                            handleData('color', '#ffec99');
-                                            handleColorClick('#ffec99');
-                                        }}
-                                    ></div>
-                                    <div
-                                        style={{
-                                            width: '30px',
-                                            height: '30px',
-                                            // border: '1px solid #cfcfcf',
-                                            borderRadius: '50%',
-                                            border: ApplicationData.color === '#fff' ? '2px solid #007bff' : '1px solid #cfcfcf',
-                                            backgroundColor: '#fff',
-                                            cursor: 'pointer',
-                                        }}
-                                        onClick={() => {
-                                            handleData('color', '#fff');
-                                            handleColorClick('rgba(255, 255, 255, 0)');
-                                        }}
-                                    ></div>
-                                </div>
+                    <div
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            marginBottom: '20px',
+                            gap: '15px',
+                        }}
+                    >
+                        <div
+                            className="color"
+                            style={{
+                                backgroundColor: '#ffc9c9',
+                                border: ApplicationData.color === '#ffc9c9' ? '2px solid #007bff' : '1px solid #cfcfcf',
+                            }}
+                            onClick={() => {
+                                handleData('color', '#ffc9c9');
+                                handleColorClick('#ffc9c9');
+                            }}
+                        ></div>
+                        <div
+                            className="color"
+                            style={{
+                                border: ApplicationData.color === '#b2f2bb' ? '2px solid #007bff' : '1px solid #cfcfcf',
+                                backgroundColor: '#b2f2bb',
+                            }}
+                            onClick={() => {
+                                handleData('color', '#b2f2bb');
+                                handleColorClick('#b2f2bb');
+                            }}
+                        ></div>
+                        <div
+                            className="color"
+                            style={{
+                                border: ApplicationData.color === '#a5d8ff' ? '2px solid #007bff' : '1px solid #cfcfcf',
+                                backgroundColor: '#a5d8ff',
+                            }}
+                            onClick={() => {
+                                handleData('color', '#a5d8ff');
+                                handleColorClick('#a5d8ff');
+                            }}
+                        ></div>
+                        <div
+                            className="color"
+                            style={{
+                                border: ApplicationData.color === '#ffec99' ? '2px solid #007bff' : '1px solid #cfcfcf',
+                                backgroundColor: '#ffec99',
+                            }}
+                            onClick={() => {
+                                handleData('color', '#ffec99');
+                                handleColorClick('#ffec99');
+                            }}
+                        ></div>
+                        <div
+                            className="color"
+                            style={{
+                                border: ApplicationData.color === '#fff' ? '2px solid #007bff' : '1px solid #cfcfcf',
+                                backgroundColor: '#fff',
+                            }}
+                            onClick={() => {
+                                handleData('color', '#fff');
+                                handleColorClick('rgba(255, 255, 255, 0)');
+                            }}
+                        ></div>
+                    </div>
                     <Button
                         onClick={() => !duplicateApplicationNameError && onSubmit(ApplicationData)}
                         style={{ display: 'block', margin: '0 auto' }}
                         isDisabled={
-                            isSubmitDisabled || appNameCheck || portValidationError.serverPortError || portValidationError.portNumberError || portValidationError.portRangeError
+                            isSubmitDisabled ||
+                            appNameCheck ||
+                            portValidationError.serverPortError ||
+                            portValidationError.portNumberError ||
+                            portValidationError.portRangeError
                         }
                     >
                         Save

@@ -20,20 +20,20 @@ const EdgeModal = ({ isOpen, CurrentEdge, onClose, handleEdgeData, handleColorCl
         type: '',
         framework: '',
         label: '',
-        color:'#000000',
+        color: '#000000',
         ...CurrentEdge,
     };
     const [edgeData, setEdgeData] = useState(initialState);
     const [connectingNodes, setConnectingNodes] = useState({ client: '', server: '' });
-    const [communicationPattern,setCommunicationPattern]= useState({labelone:'Client',labeltwo:'Server'})
-   
+    const [communicationPattern, setCommunicationPattern] = useState({ labelone: 'Client', labeltwo: 'Server' });
+
     useEffect(() => {
         const labelone = edgeData.framework === 'rest-api' ? 'Client' : 'Producer';
         const labeltwo = edgeData.framework === 'rest-api' ? 'Server' : 'Consumer';
-        
+
         setCommunicationPattern({
             labelone,
-            labeltwo
+            labeltwo,
         });
     }, [edgeData.framework]);
 
@@ -96,18 +96,19 @@ const EdgeModal = ({ isOpen, CurrentEdge, onClose, handleEdgeData, handleColorCl
                 <ModalHeader>Communication</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody>
-                    {(connectingNodes?.client && connectingNodes?.server) && 
-                    <div style={{ marginBottom: '1rem' }}>
-                        {(edgeData.framework === 'rabbitmq'||edgeData.framework === 'rest-api') && (
-                            <div style={{ marginBottom: '0.5rem' }}>
-                                <span style={{ marginRight: '0.5rem' }}>{communicationPattern.labelone} :</span>
-                                <span style={{fontWeight: 'bold'}}>{connectingNodes.client}</span>
-                                <br />
-                                <span style={{marginRight: '0.5rem' }}>{communicationPattern.labeltwo} :</span>
-                                <span style={{fontWeight: 'bold'}}>{connectingNodes.server}</span>
-                            </div>
-                        )}
-                    </div>}
+                    {connectingNodes?.client && connectingNodes?.server && (
+                        <div style={{ marginBottom: '1rem' }}>
+                            {(edgeData.framework === 'rabbitmq' || edgeData.framework === 'rest-api') && (
+                                <div style={{ marginBottom: '0.5rem' }}>
+                                    <span style={{ marginRight: '0.5rem' }}>{communicationPattern.labelone} :</span>
+                                    <span style={{ fontWeight: 'bold' }}>{connectingNodes.client}</span>
+                                    <br />
+                                    <span style={{ marginRight: '0.5rem' }}>{communicationPattern.labeltwo} :</span>
+                                    <span style={{ fontWeight: 'bold' }}>{connectingNodes.server}</span>
+                                </div>
+                            )}
+                        </div>
+                    )}
 
                     {checkIfBothAreServices(isOpen) && (
                         <div
@@ -204,7 +205,7 @@ const EdgeModal = ({ isOpen, CurrentEdge, onClose, handleEdgeData, handleColorCl
                             />
                         </FormControl>
                     )}
-                     <FormLabel>Background Color</FormLabel>
+                    <FormLabel>Background Color</FormLabel>
                     <div
                         style={{
                             display: 'flex',
@@ -214,13 +215,10 @@ const EdgeModal = ({ isOpen, CurrentEdge, onClose, handleEdgeData, handleColorCl
                         }}
                     >
                         <div
+                            className="color"
                             style={{
-                                width: '30px',
-                                height: '30px',
-                                borderRadius: '50%',
                                 backgroundColor: '#ffc9c9',
                                 border: edgeData.color === '#ffc9c9' ? '2px solid #007bff' : '1px solid #cfcfcf',
-                                cursor: 'pointer',
                             }}
                             onClick={() => {
                                 handleData('color', '#ffc9c9');
@@ -228,13 +226,10 @@ const EdgeModal = ({ isOpen, CurrentEdge, onClose, handleEdgeData, handleColorCl
                             }}
                         ></div>
                         <div
+                            className="color"
                             style={{
-                                width: '30px',
-                                height: '30px',
-                                borderRadius: '50%',
                                 border: edgeData.color === '#b2f2bb' ? '2px solid #007bff' : '1px solid #cfcfcf',
                                 backgroundColor: '#b2f2bb',
-                                cursor: 'pointer',
                             }}
                             onClick={() => {
                                 handleData('color', '#b2f2bb');
@@ -242,13 +237,10 @@ const EdgeModal = ({ isOpen, CurrentEdge, onClose, handleEdgeData, handleColorCl
                             }}
                         ></div>
                         <div
+                            className="color"
                             style={{
-                                width: '30px',
-                                height: '30px',
-                                borderRadius: '50%',
                                 border: edgeData.color === '#a5d8ff' ? '2px solid #007bff' : '1px solid #cfcfcf',
                                 backgroundColor: '#a5d8ff',
-                                cursor: 'pointer',
                             }}
                             onClick={() => {
                                 handleData('color', '#a5d8ff');
@@ -256,13 +248,10 @@ const EdgeModal = ({ isOpen, CurrentEdge, onClose, handleEdgeData, handleColorCl
                             }}
                         ></div>
                         <div
+                            className="color"
                             style={{
-                                width: '30px',
-                                height: '30px',
-                                borderRadius: '50%',
                                 border: edgeData.color === '#ffec99' ? '2px solid #007bff' : '1px solid #cfcfcf',
                                 backgroundColor: '#ffec99',
-                                cursor: 'pointer',
                             }}
                             onClick={() => {
                                 handleData('color', '#ffec99');
@@ -270,13 +259,10 @@ const EdgeModal = ({ isOpen, CurrentEdge, onClose, handleEdgeData, handleColorCl
                             }}
                         ></div>
                         <div
+                            className="color"
                             style={{
-                                width: '30px',
-                                height: '30px',
-                                border: edgeData.color === '#000000' ? '2px solid #007bff' : '1px solid #cfcfcf',
-                                borderRadius: '50%',
-                                backgroundColor: '#000000',
-                                cursor: 'pointer',
+                                border: edgeData.color === '#fff' ? '2px solid #007bff' : '1px solid #cfcfcf',
+                                backgroundColor: '#fff',
                             }}
                             onClick={() => {
                                 handleData('color', '#000000');
