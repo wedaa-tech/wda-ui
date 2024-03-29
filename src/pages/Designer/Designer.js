@@ -907,6 +907,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 if (targetNode.id.startsWith('Database')) {
                     let isServiceConnected = Nodes[params.source]?.data['prodDatabaseType'];
                     if (!isServiceConnected && !targetNode.data.isConnected && !sourceNode.id.startsWith('UI')) {
+                        console.log("hiii")
                         targetNode.data.isConnected = true;
                         setEdges(eds => Functions.addEdge(params, eds, Nodes));
                         Functions.MergeData(params.source, params.target, Nodes, setNodes);
@@ -1476,8 +1477,10 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             console.error(error);
         } finally {
             if (initialized && keycloak.authenticated) {
+                console.log("aaaaaaaaa",projectParentId)
                 clear();
                 if (projectParentId === 'admin') {
+                    console.log(history)
                     history.replace('/architectures');
                 } else {
                     history.replace('/prototypes');                    
@@ -1485,7 +1488,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             } else {
                 clear();
                 setIsLoading(false);
-                history.push('/canvasToCode');
+                history.replace('/canvasToCode');
             }
         }
     };

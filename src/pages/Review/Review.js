@@ -182,9 +182,9 @@ export const ReviewFlow = ({
         } finally {
             if (initialized && keycloak.authenticated) {
                 if (parentId === 'admin') {
-                    history.replace('/prototypes');
-                } else {
                     history.replace('/architectures');
+                } else {
+                    history.replace('/prototypes');
                 }
             } else {
                 history.push('/canvasToCode');

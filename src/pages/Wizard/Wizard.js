@@ -76,15 +76,83 @@ const Wizard = () => {
         <>
             <Flex className="page" id="container">
                 <Flex className="background" flexDirection="column">
-                    <Text fontSize={'4xl'} color={'white'} fontWeight={'bold'}>
+                    <Text fontSize={'3xl'} color={'white'} fontWeight={'bold'} marginBottom={'2'}>
                         Quickstart your application journey with <span style={{ color: 'hsl(42, 83%, 53%)' }}>WeDAA</span>
                     </Text>
-                    <Text fontSize={'lg'} color={'white'}>
-                        Generate complete code on a modern tech stack that’s ready to deploy and run.
-                        <br />
-                        Build your modern application prototype with WeDAA accelerator.
+                    <Text fontSize={'lg'} color={'white'} fontWeight={'bold'} marginBottom={'2'}>
+                        Accelerates your path to modernizing and building enterprise applications.
                     </Text>
-                    <Flex marginTop={6}>
+                    <Text fontSize={'lg'} color={'white'} fontWeight={'bold'} marginBottom={'2'}>
+                        WeDAA AI platform helps you to:
+                    </Text>
+                    {/* <Text fontSize={'s'} color={'white'} textAlign={"left"}>
+                        <br />
+                        <div style={{height:'200px',width:'200px',backgroundColor:':'}}></div> */}
+                    {/* <span style={{fontWeight:550,paddingLeft:'250px'}}>Design:</span> Cloud native enterprise applications with comprehensive architecture.  */}
+                    {/* <br />
+                        <span style={{fontWeight:550,paddingLeft:'250px'}}>Generate:</span> Fully functional application along with code. 
+                        <br />
+                        <span style={{fontWeight:550,paddingLeft:'250px'}}>Deploy & Run:</span> Scripts to run application in local or deploy to cloud infrastructure.
+                        <br />
+                        <span style={{fontWeight:550,paddingLeft:'250px'}}>Manage:</span> Continuous Integration and Delivery of generated application.
+                    </Text> */}
+
+                    <Flex marginTop={9} marginBottom={12} justifyContent={'center'}>
+                        <div className="line line-three">
+                            <svg viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M 160 200 Q 200 40 300 80 Q 400 120 360 120 L 360 120 L 360 200" />
+                            </svg>
+                        </div>
+
+                        <div className="line line-two">
+                            <svg viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M 120 80 L 140 80 Q 210 20 300 80 Q 390 140 360 200" />
+                            </svg>
+                        </div>
+
+                        <div className="circle-container" id="first-circle">
+                            <div className="circle ">
+                                <span>Design</span>
+                            </div>
+                            <div className="line line-one">
+                                <svg viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M 120 80 Q 160 400 500 80" />
+                                </svg>
+                            </div>
+                            <div className="content" style={{marginTop:"35px"}}>Cloud native enterprise applications with comprehensive architecture.</div>
+                        </div>
+                        <div className="circle-container" id="second-circle">
+                            <div className="content">Fully functional application along with code.</div>
+                            <div className="circle home-bottom">
+                                <span>Generate</span>
+                            </div>
+                        </div>
+                        <div className="line line-four">
+                            <svg viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M 880 80 L 880 80 Q 780 40 700 80 Q 620 120 640 120" />
+                            </svg>
+                        </div>
+                        <div className="circle-container" id="third-circle">
+                            <div className="circle ">
+                                <span>Deploy & Run</span>
+                            </div>
+                            <div className="content" style={{marginTop:"35px"}}>Scripts to run application in local or deploy to cloud infrastructure.</div>
+                        </div>
+                        <div className="line line-five">
+                            <svg viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M 840 200 Q 800 40 700 80 Q 600 120 640 120 L 640 120 L 640 200" />
+                            </svg>
+                        </div>
+
+                        <div className="circle-container" id="fourth-circle">
+                            <div className="content">Continuous Integration and Delivery of generated application.</div>
+                            <div className="circle home-bottom">
+                                <span>Manage</span>
+                            </div>
+                        </div>
+                    </Flex>
+
+                    <Flex marginTop={6} justifyContent={'center'}>
                         <Button
                             div
                             onClick={() => history.push('/canvasToCode')}
@@ -94,7 +162,8 @@ const Wizard = () => {
                             border={'2px solid white'}
                             height={'50px'}
                             size="md"
-                            marginRight={10} 
+                            marginRight={10}
+                            zIndex={2}
                         >
                             Build Your Own
                         </Button>
@@ -107,8 +176,9 @@ const Wizard = () => {
                             border={'2px solid white'}
                             height={'50px'}
                             size="md"
+                            zIndex={2}
                         >
-                             AI Wizard
+                            AI Wizard
                         </Button>
                     </Flex>
                 </Flex>

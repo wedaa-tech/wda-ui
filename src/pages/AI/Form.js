@@ -70,10 +70,10 @@ function ServiceForm({ serviceData, setServiceData, onNext, onBack, title }) {
                             Add Service
                         </Button>
                     </HStack>
-                    <Divider />
                     <Text sx={textStyles} marginLeft={"10"} marginRight={"14"}>
                     Proposed components for {title} Application.
                     </Text>
+                    <br/>
                     <Box maxH="350px" overflowY="auto" w="100%" mt={-2} sx={{ "&::-webkit-scrollbar": { width: "8px" }, "&::-webkit-scrollbar-thumb": { bg: "blue.300", borderRadius: "8px" } }}>
                         {serviceData.map((service, index) => (
                             <Box key={index} marginTop={"2"} marginLeft={"10"} borderWidth="1px" borderRadius="md" borderColor="gray.200" _hover={{ transform: 'scale(1.02)', transition: 'transform 0.3s ease' }} marginBottom={"2"} width={"3xl"}>
