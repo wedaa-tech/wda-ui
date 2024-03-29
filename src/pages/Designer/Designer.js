@@ -538,7 +538,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         setShowDiv(false);
     }, []);
     const onDrop = useCallback(
-        (event, servicecount, messagecount, loadcount, authcount, Localenvcount, UICount, docsCount) => {
+        (event, servicecount, messagecount, loadcount, authcount, UICount, docsCount) => {
             setUpdated(true);
             event.preventDefault();
             const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
@@ -1467,19 +1467,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
                 },
                 body: JSON.stringify(Data),
-            });
-            
-        const intervalId = setInterval(() => {
-            console.log('fetched response waiting ...');
-        }, 10000);
-
-        await new Promise(resolve => setTimeout(() => {
-            clearInterval(intervalId); 
-            resolve(); 
-        }, 5 * 60 * 1000)); 
-
-        console.log('5 minutes timeout completed.');
-
+            });         
             blueprintId = response.headers.get('blueprintid');
             const blob = await response.blob();
             setIsGenerating(false);
