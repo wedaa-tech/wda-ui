@@ -145,7 +145,8 @@ function CodeReview({
                     {/* <Tab hidden={generateMode}>Folder Structure</Tab> */}
                     {!docusaurusCheck && <Tab> IaaC </Tab>}
                     <Tab>Components</Tab>
-                    {!docusaurusCheck && serviceSpringCheck && <Tab> Dbml Scripts </Tab>}
+                    {/* dbml */}
+                    {/* {!docusaurusCheck && serviceSpringCheck && <Tab> Dbml Scripts </Tab>} */}
                 </TabList>
                 <TabPanels height={'100%'}>
                     <TabPanel height={'100%'}>
@@ -166,9 +167,10 @@ function CodeReview({
                     <TabPanel height={'100%'}>
                         <Readme nodeType={nodeType} nodeData={nodeData} />
                     </TabPanel>
-                    <TabPanel height={'100%'}>
+                    {/* dbml */}
+                    {/* <TabPanel height={'100%'}>
                     <Documentation nodeData={deploymentData} nodeId={nodeId} edgeId={edgeId} generateMode dbmlMode />
-                    </TabPanel>
+                    </TabPanel> */}
                 </TabPanels>
             </Tabs>
             <Button
