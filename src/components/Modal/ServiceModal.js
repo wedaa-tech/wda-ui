@@ -22,7 +22,7 @@ import { useKeycloak } from '@react-keycloak/web';
 
 const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick, uniqueApplicationNames, uniquePortNumbers }) => {
     const validFrameworksAndDBs = [
-        { framework: 'spring', dbType: 'postgresql' },
+        // { framework: 'spring', dbType: 'postgresql' },
     ];
 
     const editorInstruction = '/* Below DBML is auto-generated based on component name and description.\nThis can be edited directly or regenerated for updated description.*/\n\n';
@@ -35,9 +35,9 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
         serverPort: '',
         applicationType: 'microservice',
         color: '#fff',
-        description: '',
+        // description: '',
         ...CurrentNode,
-        dbmlData,
+        // dbmlData,
     };
     const [refreshEnabled, setRefreshEnabled] = useState(false);
     const { initialized, keycloak } = useKeycloak();
