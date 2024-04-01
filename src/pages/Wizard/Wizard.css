@@ -68,10 +68,8 @@
     border-radius: 10px;
     border: 1px solid var(--Standard-Outline, #ebeef1);
     background: var(--White, #fff);
-
     /* Medium Shadow */
     box-shadow: 0px 1px 8px 0px rgba(14, 30, 47, 0.03);
-
     /* Layout */
     display: flex;
     padding: 30px 0px;
@@ -110,8 +108,6 @@
     gap: 12px;
     flex: 1 0 0;
     border-radius: 10px;
-    /* border: 2px solid black; */
-    /* border: 1px solid var(--Standard-Outline, #ebeef1); */
     box-shadow:
         rgba(0, 0, 0, 0.1) 0px 10px 15px -3px,
         rgba(0, 0, 0.5, 0.05) 0px 4px 6px -2px;
@@ -129,13 +125,10 @@
     transition: transform 0.3s ease-in-out;
 }
 
-
 .circle {
     width: 150px;
-    height: 158px;
-     background: rgb(65, 64, 64);
+    height: 150px;
     border-radius: 50%;
-    /* border:1px dashed white; */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -152,10 +145,8 @@
     margin-top: 80px;
 }
 
-
-
 .circle span {
-    color: white;
+    color: rgb(0, 0, 0);
     font-weight: bold;
     font-size: 20px;
     position: absolute;
@@ -165,16 +156,11 @@
     z-index: 2;
 }
 
-
 .content {
     color: white;
     position: absolute;
     cursor: pointer;
-    /* left: 20px; */
-    /* right: 20px; */
     font-size: 15px;
-    /* margin-top: 30px; */
-    /* margin-bottom: 30px; */
     text-align: center;
     width : 210px;
     opacity: 0;
@@ -185,19 +171,16 @@
 
 .circle-container:hover .circle{
         transform: scale(1.02); 
-        transition: transform 0.1s ease;
+        transition: transform 0.1s ;
 }
 .circle-container:hover .circle span{
-    color: #ebaf24;
+    font-weight: bolder;
+    font-size: 24px;
 }
 
 .circle-container:hover .content {
     opacity: 1;
 }
-
-
-
-
 
 .line {
     position: absolute;
