@@ -81,7 +81,7 @@ const ApplicationModal = ({
     const [isLoading, setIsLoading] = useState(false);
     const [UiData, setUiDataData] = useState(UiInitialState);
     const [GatewayData, setGatewayData] = useState(GatewayInitialState);
-    const [ApplicationData, setApplicationData] = useState(ServiceInitialState);
+    const [ServiceData, setServiceData] = useState(ServiceInitialState);
     const [groupData, setGroupData] = useState(GroupInitialState);
     const [duplicateApplicationNameError, setDuplicateApplicationNameError] = useState(false);
     const [portValidationError, setPortValidationError] = useState({});
@@ -96,7 +96,7 @@ const ApplicationModal = ({
         appNameCheck = UiData.applicationName && !/^[a-zA-Z](?:[a-zA-Z0-9_-]*[a-zA-Z0-9])?$/g.test(UiData.applicationName);
     } else if (nodeType === 'Service') {
         appNameCheck =
-            ApplicationData.applicationName && !/^[a-zA-Z](?:[a-zA-Z0-9_-]*[a-zA-Z0-9])?$/g.test(ApplicationData.applicationName);
+            ServiceData.applicationName && !/^[a-zA-Z](?:[a-zA-Z0-9_-]*[a-zA-Z0-9])?$/g.test(ServiceData.applicationName);
     } else if (nodeType === 'Gateway') {
         appNameCheck = GatewayData.applicationName && !/^[a-zA-Z](?:[a-zA-Z0-9_-]*[a-zA-Z0-9])?$/g.test(GatewayData.applicationName);
     }
@@ -105,14 +105,14 @@ const ApplicationModal = ({
         nodeType === 'Gateway' && GatewayData.packageName && !/^[a-zA-Z](?:[a-zA-Z0-9_.-]*[a-zA-Z0-9])?$/g.test(GatewayData.packageName)
             ? true
             : nodeType === 'Service' &&
-              ApplicationData.packageName &&
-              !/^[a-zA-Z](?:[a-zA-Z0-9_.-]*[a-zA-Z0-9])?$/g.test(ApplicationData.packageName)
+              ServiceData.packageName &&
+              !/^[a-zA-Z](?:[a-zA-Z0-9_.-]*[a-zA-Z0-9])?$/g.test(ServiceData.packageName)
             ? true
             : false;
 
     const isSubmitDisabled = GatewayData.applicationName === '' || GatewayData.packageName === '' || GatewayData.serverPort === '';
     const isSubmitDisable =
-        ApplicationData.applicationName === '' || ApplicationData.packageName === '' || ApplicationData.serverPort === '';
+        ServiceData.applicationName === '' || ServiceData.packageName === '' || ServiceData.serverPort === '';
     const groupNameCheck = !groupData.label;
     const [descriptionError, setDescriptionError] = useState(false);
 
@@ -147,7 +147,7 @@ const ApplicationModal = ({
         if (nodeType === 'UI' && UiData.applicationFramework === '') {
             setApplicationFrameworkError(true);
             return false;
-        } else if (nodeType === 'Service' && ApplicationData.applicationFramework === '') {
+        } else if (nodeType === 'Service' && ServiceData.applicationFramework === '') {
             setApplicationFrameworkError(true);
             return false;
         } else {
@@ -179,7 +179,7 @@ const ApplicationModal = ({
     };
     const descriptionValidation = () => {
         const regex = /^(\s*\S+\s+){4,}\s*\S*$/;
-        const description = ApplicationData.description;
+        const description = ServiceData.description;
         if (!description || description.trim() === '' || regex.test(description.trim())) {
             setDescriptionError(false);
             return true;
@@ -202,8 +202,8 @@ const ApplicationModal = ({
                     Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
                 },
                 body: JSON.stringify({
-                    name: ApplicationData.applicationName,
-                    description: ApplicationData?.description,
+                    name: ServiceData.applicationName,
+                    description: ServiceData?.description,
                 }),
             })
                 .then(response => {
@@ -214,7 +214,7 @@ const ApplicationModal = ({
                     return response.json();
                 })
                 .then(data => {
-                    setApplicationData(prev => ({
+                    setServiceData(prev => ({
                         ...prev,
                         dbmlData: editorInstruction + data.dbml,
                     }));
@@ -236,9 +236,9 @@ const ApplicationModal = ({
         }
     };
     const handleSubmit = () => {
-        let dbmlScript = ApplicationData.dbmlData;
-        if (dbmlScript.startsWith(editorInstruction)) ApplicationData.dbmlData = dbmlScript.replace(editorInstruction, '');
-        onSubmit(ApplicationData);
+        let dbmlScript = ServiceData.dbmlData;
+        if (dbmlScript.startsWith(editorInstruction)) ServiceData.dbmlData = dbmlScript.replace(editorInstruction, '');
+        onSubmit(ServiceData);
     };
 
     const handleData = (column, value) => {
@@ -329,7 +329,7 @@ const ApplicationModal = ({
         } else if (nodeType === 'Service') {
             if (column === 'applicationName') {
                 validateName(value);
-                setApplicationData(prev => ({
+                setServiceData(prev => ({
                     ...prev,
                     [column]: value,
                 }));
@@ -337,7 +337,7 @@ const ApplicationModal = ({
             } else if (column === 'serverPort') {
                 const validationErrors = validatePortNumber(value, uniquePortNumbers, CurrentNode?.serverPort);
                 setPortValidationError(validationErrors);
-                setApplicationData(prev => ({
+                setServiceData(prev => ({
                     ...prev,
                     [column]: value,
                     serverPort: value,
@@ -345,19 +345,19 @@ const ApplicationModal = ({
             } else if (column === 'applicationFramework') {
                 if (value.length > 0) {
                     setApplicationFrameworkError(false);
-                    setApplicationData(prev => ({
+                    setServiceData(prev => ({
                         ...prev,
                         [column]: value,
                     }));
                 }
             } else if (column === 'description') {
-                setApplicationData(prev => ({
+                setServiceData(prev => ({
                     ...prev,
                     [column]: value,
                 }));
                 setRefreshEnabled(true);
             } else {
-                setApplicationData(prev => ({
+                setServiceData(prev => ({
                     ...prev,
                     [column]: value,
                 }));
@@ -414,7 +414,7 @@ const ApplicationModal = ({
                                                         ? UiData.label
                                                         : nodeType === 'Gateway'
                                                         ? GatewayData.label
-                                                        : ApplicationData.label
+                                                        : ServiceData.label
                                                 }
                                                 onChange={e => handleData('label', e.target.value)}
                                             />
@@ -429,7 +429,7 @@ const ApplicationModal = ({
                                                 borderColor={
                                                     (duplicateApplicationNameError && !UiData.applicationName) ||
                                                     (duplicateApplicationNameError && !GatewayData.applicationName) ||
-                                                    (duplicateApplicationNameError && !ApplicationData.applicationName)
+                                                    (duplicateApplicationNameError && !ServiceData.applicationName)
                                                         ? 'red'
                                                         : 'black'
                                                 }
@@ -439,7 +439,7 @@ const ApplicationModal = ({
                                                         ? UiData.applicationName
                                                         : nodeType === 'Gateway'
                                                         ? GatewayData.applicationName
-                                                        : ApplicationData.applicationName
+                                                        : ServiceData.applicationName
                                                 }
                                                 onChange={e => handleData('applicationName', e.target.value)}
                                             />
@@ -493,7 +493,7 @@ const ApplicationModal = ({
                                             placeholder="com.example"
                                             borderColor={packageNameCheck ? 'red' : 'black'}
                                             maxLength="32"
-                                            value={nodeType === 'Gateway' ? GatewayData.packageName : ApplicationData.packageName}
+                                            value={nodeType === 'Gateway' ? GatewayData.packageName : ServiceData.packageName}
                                             onChange={e => handleData('packageName', e.target.value)}
                                         />
                                     </FormControl>
@@ -525,7 +525,7 @@ const ApplicationModal = ({
                                                     ? UiData.serverPort
                                                     : nodeType === 'Gateway'
                                                     ? GatewayData.serverPort
-                                                    : ApplicationData.serverPort
+                                                    : ServiceData.serverPort
                                             }
                                             maxLength="5"
                                             onKeyPress={handleKeyPress}
@@ -673,7 +673,7 @@ const ApplicationModal = ({
                                             id="description"
                                             placeholder="A small description about your service"
                                             borderColor={'black'}
-                                            value={ApplicationData.description}
+                                            value={ServiceData.description}
                                             disabled={!(initialized && keycloak.authenticated)}
                                             backgroundColor={initialized && keycloak.authenticated ? 'white' : '#f2f2f2'}
                                             onChange={e => handleData('description', e.target.value)}
@@ -745,7 +745,7 @@ const ApplicationModal = ({
                                                         defaultLanguage: 'sql',
                                                     }}
                                                     defaultLanguage="sql"
-                                                    value={ApplicationData.dbmlData}
+                                                    value={ServiceData.dbmlData}
                                                     onChange={value => {
                                                         handleData('dbmlData', value);
                                                     }}
