@@ -60,7 +60,9 @@ const ApplicationModal = ({
         color: '#fff',
         ...CurrentNode,
     };
-    const validFrameworksAndDBs = [{ framework: 'spring', dbType: 'postgresql' }];
+    const validFrameworksAndDBs = [
+        // { framework: 'spring', dbType: 'postgresql' },
+    ];
     const editorInstruction =
         '/* Below DBML is auto-generated based on component name and description.\nThis can be edited directly or regenerated for updated description.*/\n\n';
     const dbmlData = CurrentNode?.dbmlData ? editorInstruction + CurrentNode?.dbmlData : editorInstruction;
@@ -72,9 +74,9 @@ const ApplicationModal = ({
         serverPort: '',
         applicationType: 'microservice',
         color: '#fff',
-        description: '',
+        // description: '',
         ...CurrentNode,
-        dbmlData,
+        // dbmlData,
     };
     const [refreshEnabled, setRefreshEnabled] = useState(false);
     const { initialized, keycloak } = useKeycloak();

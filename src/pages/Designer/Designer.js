@@ -1457,7 +1457,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
                 },
                 body: JSON.stringify(Data),
-            });
+            });         
             blueprintId = response.headers.get('blueprintid');
             const blob = await response.blob();
             setIsGenerating(false);
@@ -1470,7 +1470,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 if (projectParentId === 'admin') {
                     history.replace('/architectures');
                 } else {
-                    history.replace('/prototypes');
+                    history.replace('/prototypes');                    
                 }
             } else {
                 clear();
