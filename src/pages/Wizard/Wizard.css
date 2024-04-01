@@ -31,6 +31,7 @@
     width: 1200px;
     flex-wrap: wrap;
     align-content: baseline;
+    z-index: 2;
 }
 
 .frame {
@@ -132,9 +133,9 @@
 .circle {
     width: 150px;
     height: 158px;
-    background: rgb(65, 64, 64);
+     background: rgb(65, 64, 64);
     border-radius: 50%;
-    border:1px dashed white;
+    /* border:1px dashed white; */
     display: flex;
     align-items: center;
     justify-content: center;

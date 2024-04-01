@@ -111,7 +111,7 @@ const Wizard = () => {
                         </div>
 
                         <div className="circle-container" id="first-circle">
-                            <div className="circle ">
+                            <div className="circle" style={{ background: "linear-gradient(90deg, #00008B, #8A2BE2"}}>
                                 <span>Design</span>
                             </div>
                             <div className="line line-one">
@@ -123,7 +123,7 @@ const Wizard = () => {
                         </div>
                         <div className="circle-container" id="second-circle">
                             <div className="content">Fully functional application along with code.</div>
-                            <div className="circle home-bottom">
+                            <div className="circle home-bottom" style={{background: 'linear-gradient(90deg, #006400, #32CD32)'}}>
                                 <span>Generate</span>
                             </div>
                         </div>
@@ -133,7 +133,7 @@ const Wizard = () => {
                             </svg>
                         </div>
                         <div className="circle-container" id="third-circle">
-                            <div className="circle ">
+                            <div className="circle " style={{background: 'linear-gradient(90deg, #8B0000, #DC143C)'}}>
                                 <span>Deploy & Run</span>
                             </div>
                             <div className="content" style={{marginTop:"35px"}}>Scripts to run application in local or deploy to cloud infrastructure.</div>
@@ -146,7 +146,7 @@ const Wizard = () => {
 
                         <div className="circle-container" id="fourth-circle">
                             <div className="content">Continuous Integration and Delivery of generated application.</div>
-                            <div className="circle home-bottom">
+                            <div className="circle home-bottom" style={{background: 'linear-gradient(90deg, #FF4500, #FFD700)'}}>
                                 <span>Manage</span>
                             </div>
                         </div>
