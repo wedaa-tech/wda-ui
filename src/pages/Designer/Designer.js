@@ -1,13 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import ReactFlow, {
-    ReactFlowProvider,
-    Controls,
-    MarkerType,
-    ConnectionLineType,
-    Background,
-    BackgroundVariant,
-    Panel,
-} from 'reactflow';
+import ReactFlow, { ReactFlowProvider, Controls, MarkerType, ConnectionLineType, Background, BackgroundVariant, Panel } from 'reactflow';
 import { AiOutlineSave } from 'react-icons/ai';
 import { saveAs } from 'file-saver';
 import { FaEraser } from 'react-icons/fa6';
@@ -15,10 +7,10 @@ import { GoCodeReview } from 'react-icons/go';
 import 'reactflow/dist/style.css';
 import { Button, Flex, Icon, IconButton, Text, VStack, useToast, Tooltip } from '@chakra-ui/react';
 import Sidebar from './../../components/Sidebar';
-import ServiceModal from '../../components/Modal/ServiceModal';
-import UiDataModal from '../../components/Modal/UIModal';
-import GatewayModal from '../../components/Modal/GatewayModal';
-import GroupDataModal from '../../components/Modal/GroupDataModel';
+// import ServiceModal from '../../components/Modal/ServiceModal';
+// import UiDataModal from '../../components/Modal/UIModal';
+// import GatewayModal from '../../components/Modal/GatewayModal';
+// import GroupDataModal from '../../components/Modal/GroupDataModel';
 import CustomImageNode from './../Customnodes/CustomImageNode';
 import CustomServiceNode from './../Customnodes/CustomServiceNode';
 import CustomIngressNode from './../Customnodes/CustomIngressNode';
@@ -43,7 +35,7 @@ import CustomNodeModal from '../../components/Modal/CustomNodeModal';
 import Generating from '../../components/Generating';
 import { checkDisabled } from '../../utils/submitButtonValidation';
 import CanvasContent from '../CanvasContent/CanvasContent';
-import Functions from './utils'
+import Functions from './utils';
 import ApplicationModal from '../../components/Modal/ApplicationModal';
 
 let serviceId = 1;
@@ -141,7 +133,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     const edgeUpdateSuccessful = useRef(true);
     const toastIdRef = useRef();
     const ref = useRef(null);
-    
+
     const toast = useToast({
         containerStyle: {
             width: '500px',
@@ -155,7 +147,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         },
         [history],
     );
-    
+
     useEffect(() => {
         if (initialized && keycloak?.authenticated && projectParentId !== 'admin') {
             let defaultProjectId;
@@ -322,10 +314,9 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             setProjectName('clear#canvas');
         }
         let unblock;
-        var nodesfromstorage
-        if(localStorage?.data)
-        nodesfromstorage=JSON.parse(localStorage.data)?.metadata?.nodes
-        if ((!(Object.keys(nodes).length === 0) && updated)||(nodesfromstorage && !(Object.keys(nodesfromstorage).length === 0))) {
+        var nodesfromstorage;
+        if (localStorage?.data) nodesfromstorage = JSON.parse(localStorage.data)?.metadata?.nodes;
+        if ((!(Object.keys(nodes).length === 0) && updated) || (nodesfromstorage && !(Object.keys(nodesfromstorage).length === 0))) {
             unblock = history.block(location => {
                 setVisibleDialog(true);
                 setActionModalType('clearAndNav');
@@ -957,7 +948,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     );
 
     const clear = () => {
-        localStorage.removeItem("data");
+        localStorage.removeItem('data');
         setProjectName('clear#canvas');
         setuserData({});
         setNodes({});
@@ -1145,7 +1136,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             if (max_dummyId !== -1) dummyId = max_dummyId + 1;
         }
     };
-    
+
     const onChange = Data => {
         setUpdated(true);
         if (Data.applicationFramework === 'ui' || Data.applicationFramework === 'docusaurus') {
@@ -1703,7 +1694,7 @@ const generateZip = async (e, data = null) => {
             isClosable: true,
         });
     };
-    
+
     if (isLoading) {
         if (isGenerating) return <Generating generatingData={generatingData} />;
         return (
@@ -1737,7 +1728,9 @@ const generateZip = async (e, data = null) => {
                         onEdgesChange={changes => onEdgesChange(nodes, changes)}
                         onConnect={params => onConnect(params, nodes)}
                         onInit={setReactFlowInstance}
-                        onNodeDoubleClick={(e,node) => Functions.onclick(e, node, setNodeType, setCurrentNode, setopen, setNodeClick, nodes)}
+                        onNodeDoubleClick={(e, node) =>
+                            Functions.onclick(e, node, setNodeType, setCurrentNode, setopen, setNodeClick, nodes)
+                        }
                         onDrop={e =>
                             onDrop(e, ServiceDiscoveryCount, MessageBrokerCount, LogManagemntCount, AuthProviderCount, UICount, docsCount)
                         }
@@ -1746,7 +1739,7 @@ const generateZip = async (e, data = null) => {
                         deleteKeyCode={['Backspace', 'Delete']}
                         fitView
                         // onEdgeUpdate={(oldEdge, newConnection) => onEdgeUpdate(nodes, oldEdge, newConnection)}
-                        onEdgeUpdateStart={()=>Functions.onEdgeUpdateStart(edgeUpdateSuccessful)}
+                        onEdgeUpdateStart={() => Functions.onEdgeUpdateStart(edgeUpdateSuccessful)}
                         onEdgeUpdateEnd={(_, edge) => Functions.onEdgeUpdateEnd(nodes, edge)}
                         onEdgeClick={!viewOnly ? onEdgeClick : ''}
                         defaultViewport={defaultViewport}
@@ -1754,7 +1747,7 @@ const generateZip = async (e, data = null) => {
                         elementsSelectable={!viewOnly}
                         nodesConnectable={!viewOnly}
                         onPaneClick={onPaneClick}
-                        onNodeContextMenu={()=>Functions.onNodeContextMenu(setMenu)}
+                        onNodeContextMenu={() => Functions.onNodeContextMenu(setMenu)}
                     >
                         {menu && <ContextMenu onClick={onPaneClick} {...menu} onEditClick={!viewOnly ? onclick : () => {}} />}
                         <Flex height={'inherit'}>
@@ -1797,11 +1790,11 @@ const generateZip = async (e, data = null) => {
                                     width: '100%',
                                     height: '100%',
                                     backgroundColor: Isopen ? 'rgba(0, 0, 0, 0.6)' : 'transparent',
-                                    zIndex: 9999, 
+                                    zIndex: 9999,
                                     display: Isopen ? 'block' : 'none',
                                 }}
                             />
-                            {showDiv && <CanvasContent/>}
+                            {showDiv && <CanvasContent />}
                         </Flex>
                         <Controls showInteractive={!viewOnly} />
                         <Panel position="top-right">
@@ -1866,7 +1859,7 @@ const generateZip = async (e, data = null) => {
                 />
 
                 {/* {nodeType === 'UI' && Isopen && ( */}
-                    {/* // <UiDataModal */}
+                {/* // <UiDataModal */}
                 {nodeType === 'UI' && Isopen && (
                     <ApplicationModal
                         nodeType={nodeType}
@@ -1892,9 +1885,8 @@ const generateZip = async (e, data = null) => {
                     />
                 )}
                 {nodeType === 'Gateway' && Isopen && (
-                    // <GatewayModal
                     <ApplicationModal
-                    nodeType={nodeType}
+                        nodeType={nodeType}
                         isOpen={Isopen}
                         CurrentNode={CurrentNode}
                         onClose={setopen}
@@ -1905,7 +1897,6 @@ const generateZip = async (e, data = null) => {
                     />
                 )}
                 {nodeType === 'group' && Isopen && (
-                    // <GroupDataModal
                     <ApplicationModal
                         nodeType={'Group'}
                         isOpen={Isopen}
@@ -1916,7 +1907,6 @@ const generateZip = async (e, data = null) => {
                     />
                 )}
                 {nodeType === 'dummy' && Isopen && (
-                    // <GroupDataModal
                     <ApplicationModal
                         nodeType={'Dummy'}
                         isOpen={Isopen}
