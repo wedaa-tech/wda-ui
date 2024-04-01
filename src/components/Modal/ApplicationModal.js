@@ -95,8 +95,7 @@ const ApplicationModal = ({
     if (nodeType === 'UI') {
         appNameCheck = UiData.applicationName && !/^[a-zA-Z](?:[a-zA-Z0-9_-]*[a-zA-Z0-9])?$/g.test(UiData.applicationName);
     } else if (nodeType === 'Service') {
-        appNameCheck =
-            ServiceData.applicationName && !/^[a-zA-Z](?:[a-zA-Z0-9_-]*[a-zA-Z0-9])?$/g.test(ServiceData.applicationName);
+        appNameCheck = ServiceData.applicationName && !/^[a-zA-Z](?:[a-zA-Z0-9_-]*[a-zA-Z0-9])?$/g.test(ServiceData.applicationName);
     } else if (nodeType === 'Gateway') {
         appNameCheck = GatewayData.applicationName && !/^[a-zA-Z](?:[a-zA-Z0-9_-]*[a-zA-Z0-9])?$/g.test(GatewayData.applicationName);
     }
@@ -111,8 +110,7 @@ const ApplicationModal = ({
             : false;
 
     const isSubmitDisabled = GatewayData.applicationName === '' || GatewayData.packageName === '' || GatewayData.serverPort === '';
-    const isSubmitDisable =
-        ServiceData.applicationName === '' || ServiceData.packageName === '' || ServiceData.serverPort === '';
+    const isSubmitDisable = ServiceData.applicationName === '' || ServiceData.packageName === '' || ServiceData.serverPort === '';
     const groupNameCheck = !groupData.label;
     const [descriptionError, setDescriptionError] = useState(false);
 
@@ -142,7 +140,6 @@ const ApplicationModal = ({
             return true;
         }
     };
-
     const isApplicationFrameworkFilled = () => {
         if (nodeType === 'UI' && UiData.applicationFramework === '') {
             setApplicationFrameworkError(true);
@@ -165,7 +162,6 @@ const ApplicationModal = ({
             return true;
         }
     };
-
     const validateName = value => {
         const currentApplicationName = CurrentNode?.applicationName;
         const isDuplicateName = uniqueApplicationNames.includes(value) && value !== currentApplicationName;
@@ -187,7 +183,6 @@ const ApplicationModal = ({
         setDescriptionError(true);
         return false;
     };
-
     const isValidFrameworkAndDB = validFrameworksAndDBs.some(
         combination => combination.framework === CurrentNode?.applicationFramework && combination.dbType === CurrentNode?.prodDatabaseType,
     );
@@ -225,7 +220,6 @@ const ApplicationModal = ({
             setRefreshEnabled(false);
         }
     };
-
     const handleKeyPress = event => {
         const charCode = event.which ? event.which : event.keyCode;
         if ((charCode >= 48 && charCode <= 57) || charCode === 8) {
