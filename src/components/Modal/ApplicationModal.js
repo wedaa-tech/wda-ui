@@ -229,10 +229,10 @@ const ApplicationModal = ({
         }
     };
     const handleSubmit = () => {
-        if (ApplicationData?.dbmlData) {
-            let dbmlScript = ApplicationData.dbmlData;
+        if (ServiceData?.dbmlData) {
+            let dbmlScript = ServiceData.dbmlData;
             if (dbmlScript.startsWith(editorInstruction)) {
-                ApplicationData.dbmlData = dbmlScript.replace(editorInstruction, '');
+                ServiceData.dbmlData = dbmlScript.replace(editorInstruction, '');
             }
         }
         onSubmit(ServiceData);
@@ -805,18 +805,17 @@ const ApplicationModal = ({
                             </Button>
                         </>
                     )}
-                    {nodeType === 'Group' ||
-                        (nodeType === 'Dummy' && (
-                            <>
-                                <Button
-                                    onClick={() => onSubmit(groupData)}
-                                    style={{ display: 'block', margin: '0 auto' }}
-                                    isDisabled={groupNameCheck}
-                                >
-                                    Save
-                                </Button>
-                            </>
-                        ))}
+                    {(nodeType === 'Group' || nodeType === 'Dummy') && (
+                        <>
+                            <Button
+                                onClick={() => onSubmit(groupData)}
+                                style={{ display: 'block', margin: '0 auto' }}
+                                isDisabled={groupNameCheck}
+                            >
+                                Save
+                            </Button>
+                        </>
+                    )}
                     {nodeType === 'Service' && (
                         <>
                             <Button
