@@ -82,7 +82,7 @@ const ApplicationModal = ({
     const [UiData, setUiDataData] = useState(UiInitialState);
     const [GatewayData, setGatewayData] = useState(GatewayInitialState);
     const [ServiceData, setServiceData] = useState(ServiceInitialState);
-    const [groupData, setGroupData] = useState(GroupInitialState);
+    const [GroupData, setGroupData] = useState(GroupInitialState);
     const [duplicateApplicationNameError, setDuplicateApplicationNameError] = useState(false);
     const [portValidationError, setPortValidationError] = useState({});
     const [clientFrameworkError, setClientFrameworkError] = useState(false);
@@ -111,7 +111,7 @@ const ApplicationModal = ({
 
     const isSubmitDisabled = GatewayData.applicationName === '' || GatewayData.packageName === '' || GatewayData.serverPort === '';
     const isSubmitDisable = ServiceData.applicationName === '' || ServiceData.packageName === '' || ServiceData.serverPort === '';
-    const groupNameCheck = !groupData.label;
+    const groupNameCheck = !GroupData.label;
     const [descriptionError, setDescriptionError] = useState(false);
 
     useEffect(() => {
@@ -579,7 +579,7 @@ const ApplicationModal = ({
                                             placeholder="Display Name"
                                             borderColor={'black'}
                                             maxLength="32"
-                                            value={groupData.label}
+                                            value={GroupData.label}
                                             onChange={e => handleData('label', e.target.value)}
                                         />
                                     </FormControl>
@@ -597,7 +597,16 @@ const ApplicationModal = ({
                                         className="color"
                                         style={{
                                             backgroundColor: '#ffc9c9',
-                                            border: UiData.color === '#ffc9c9' ? '2px solid #007bff' : '1px solid #cfcfcf',
+                                            border:
+                                                nodeType === 'UI' && UiData.color === '#ffc9c9'
+                                                    ? '2px solid #007bff'
+                                                    : nodeType === 'Gateway' && GatewayData.color === '#ffc9c9'
+                                                    ? '2px solid #007bff'
+                                                    : nodeType === 'Service' && ServiceData.color === '#ffc9c9'
+                                                    ? '2px solid #007bff'
+                                                    : nodeType === 'Group' && GroupData.color === '#ffc9c9'
+                                                    ? '2px solid #007bff'
+                                                    : '1px solid #cfcfcf',
                                         }}
                                         onClick={() => {
                                             handleData('color', '#ffc9c9');
@@ -607,8 +616,17 @@ const ApplicationModal = ({
                                     <div
                                         className="color"
                                         style={{
-                                            border: UiData.color === '#b2f2bb' ? '2px solid #007bff' : '1px solid #cfcfcf',
                                             backgroundColor: '#b2f2bb',
+                                            border:
+                                                nodeType === 'UI' && UiData.color === '#b2f2bb'
+                                                    ? '2px solid #007bff'
+                                                    : nodeType === 'Gateway' && GatewayData.color === '#b2f2bb'
+                                                    ? '2px solid #007bff'
+                                                    : nodeType === 'Service' && ServiceData.color === '#b2f2bb'
+                                                    ? '2px solid #007bff'
+                                                    : nodeType === 'Group' && GroupData.color === '#b2f2bb'
+                                                    ? '2px solid #007bff'
+                                                    : '1px solid #cfcfcf',
                                         }}
                                         onClick={() => {
                                             handleData('color', '#b2f2bb');
@@ -618,8 +636,17 @@ const ApplicationModal = ({
                                     <div
                                         className="color"
                                         style={{
-                                            border: UiData.color === '#a5d8ff' ? '2px solid #007bff' : '1px solid #cfcfcf',
                                             backgroundColor: '#a5d8ff',
+                                            border:
+                                                nodeType === 'UI' && UiData.color === '#a5d8ff'
+                                                    ? '2px solid #007bff'
+                                                    : nodeType === 'Gateway' && GatewayData.color === '#a5d8ff'
+                                                    ? '2px solid #007bff'
+                                                    : nodeType === 'Service' && ServiceData.color === '#a5d8ff'
+                                                    ? '2px solid #007bff'
+                                                    : nodeType === 'Group' && GroupData.color === '#a5d8ff'
+                                                    ? '2px solid #007bff'
+                                                    : '1px solid #cfcfcf',
                                         }}
                                         onClick={() => {
                                             handleData('color', '#a5d8ff');
@@ -629,8 +656,17 @@ const ApplicationModal = ({
                                     <div
                                         className="color"
                                         style={{
-                                            border: UiData.color === '#ffec99' ? '2px solid #007bff' : '1px solid #cfcfcf',
                                             backgroundColor: '#ffec99',
+                                            border:
+                                                nodeType === 'UI' && UiData.color === '#ffec99'
+                                                    ? '2px solid #007bff'
+                                                    : nodeType === 'Gateway' && GatewayData.color === '#ffec99'
+                                                    ? '2px solid #007bff'
+                                                    : nodeType === 'Service' && ServiceData.color === '#ffec99'
+                                                    ? '2px solid #007bff'
+                                                    : nodeType === 'Group' && GroupData.color === '#ffec99'
+                                                    ? '2px solid #007bff'
+                                                    : '1px solid #cfcfcf',
                                         }}
                                         onClick={() => {
                                             handleData('color', '#ffec99');
@@ -640,8 +676,17 @@ const ApplicationModal = ({
                                     <div
                                         className="color"
                                         style={{
-                                            border: UiData.color === '#fff' ? '2px solid #007bff' : '1px solid #cfcfcf',
                                             backgroundColor: '#fff',
+                                            border:
+                                                nodeType === 'UI' && UiData.color === '#fff'
+                                                    ? '2px solid #007bff'
+                                                    : nodeType === 'Gateway' && GatewayData.color === '#fff'
+                                                    ? '2px solid #007bff'
+                                                    : nodeType === 'Service' && ServiceData.color === '#fff'
+                                                    ? '2px solid #007bff'
+                                                    : nodeType === 'Group' && GroupData.color === '#fff'
+                                                    ? '2px solid #007bff'
+                                                    : '1px solid #cfcfcf',
                                         }}
                                         onClick={() => {
                                             handleData('color', '#fff');
@@ -808,7 +853,7 @@ const ApplicationModal = ({
                     {(nodeType === 'Group' || nodeType === 'Dummy') && (
                         <>
                             <Button
-                                onClick={() => onSubmit(groupData)}
+                                onClick={() => onSubmit(GroupData)}
                                 style={{ display: 'block', margin: '0 auto' }}
                                 isDisabled={groupNameCheck}
                             >
