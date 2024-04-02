@@ -362,6 +362,13 @@ const ApplicationModal = ({
             }
         }
     };
+    const typeOfNode = {
+        UI: UiData,
+        Service: ServiceData,
+        Gateway: GatewayData,
+        Group: GroupData,
+        Dummy: GroupData,
+    };
 
     return (
         <Modal isOpen={isOpen} size={isValidFrameworkAndDB ? '6xl' : ''} onClose={() => onClose(false)}>
@@ -600,16 +607,7 @@ const ApplicationModal = ({
                                         className="color"
                                         style={{
                                             backgroundColor: '#ffc9c9',
-                                            border:
-                                                nodeType === 'UI' && UiData.color === '#ffc9c9'
-                                                    ? '2px solid #007bff'
-                                                    : nodeType === 'Gateway' && GatewayData.color === '#ffc9c9'
-                                                    ? '2px solid #007bff'
-                                                    : nodeType === 'Service' && ServiceData.color === '#ffc9c9'
-                                                    ? '2px solid #007bff'
-                                                    : nodeType === 'Group' && GroupData.color === '#ffc9c9'
-                                                    ? '2px solid #007bff'
-                                                    : '1px solid #cfcfcf',
+                                            border: typeOfNode[nodeType].color === '#ffc9c9' ? '2px solid #007bff' : '1px solid #cfcfcf',
                                         }}
                                         onClick={() => {
                                             handleData('color', '#ffc9c9');
@@ -620,16 +618,7 @@ const ApplicationModal = ({
                                         className="color"
                                         style={{
                                             backgroundColor: '#b2f2bb',
-                                            border:
-                                                nodeType === 'UI' && UiData.color === '#b2f2bb'
-                                                    ? '2px solid #007bff'
-                                                    : nodeType === 'Gateway' && GatewayData.color === '#b2f2bb'
-                                                    ? '2px solid #007bff'
-                                                    : nodeType === 'Service' && ServiceData.color === '#b2f2bb'
-                                                    ? '2px solid #007bff'
-                                                    : nodeType === 'Group' && GroupData.color === '#b2f2bb'
-                                                    ? '2px solid #007bff'
-                                                    : '1px solid #cfcfcf',
+                                            border: typeOfNode[nodeType].color === '#b2f2bb' ? '2px solid #007bff' : '1px solid #cfcfcf',
                                         }}
                                         onClick={() => {
                                             handleData('color', '#b2f2bb');
@@ -640,16 +629,7 @@ const ApplicationModal = ({
                                         className="color"
                                         style={{
                                             backgroundColor: '#a5d8ff',
-                                            border:
-                                                nodeType === 'UI' && UiData.color === '#a5d8ff'
-                                                    ? '2px solid #007bff'
-                                                    : nodeType === 'Gateway' && GatewayData.color === '#a5d8ff'
-                                                    ? '2px solid #007bff'
-                                                    : nodeType === 'Service' && ServiceData.color === '#a5d8ff'
-                                                    ? '2px solid #007bff'
-                                                    : nodeType === 'Group' && GroupData.color === '#a5d8ff'
-                                                    ? '2px solid #007bff'
-                                                    : '1px solid #cfcfcf',
+                                            border: typeOfNode[nodeType].color === '#a5d8ff' ? '2px solid #007bff' : '1px solid #cfcfcf',
                                         }}
                                         onClick={() => {
                                             handleData('color', '#a5d8ff');
@@ -660,16 +640,7 @@ const ApplicationModal = ({
                                         className="color"
                                         style={{
                                             backgroundColor: '#ffec99',
-                                            border:
-                                                nodeType === 'UI' && UiData.color === '#ffec99'
-                                                    ? '2px solid #007bff'
-                                                    : nodeType === 'Gateway' && GatewayData.color === '#ffec99'
-                                                    ? '2px solid #007bff'
-                                                    : nodeType === 'Service' && ServiceData.color === '#ffec99'
-                                                    ? '2px solid #007bff'
-                                                    : nodeType === 'Group' && GroupData.color === '#ffec99'
-                                                    ? '2px solid #007bff'
-                                                    : '1px solid #cfcfcf',
+                                            border: typeOfNode[nodeType].color === '#ffec99' ? '2px solid #007bff' : '1px solid #cfcfcf',
                                         }}
                                         onClick={() => {
                                             handleData('color', '#ffec99');
@@ -680,16 +651,7 @@ const ApplicationModal = ({
                                         className="color"
                                         style={{
                                             backgroundColor: '#fff',
-                                            border:
-                                                nodeType === 'UI' && UiData.color === '#fff'
-                                                    ? '2px solid #007bff'
-                                                    : nodeType === 'Gateway' && GatewayData.color === '#fff'
-                                                    ? '2px solid #007bff'
-                                                    : nodeType === 'Service' && ServiceData.color === '#fff'
-                                                    ? '2px solid #007bff'
-                                                    : nodeType === 'Group' && GroupData.color === '#fff'
-                                                    ? '2px solid #007bff'
-                                                    : '1px solid #cfcfcf',
+                                            border: typeOfNode[nodeType].color === '#fff' ? '2px solid #007bff' : '1px solid #cfcfcf',
                                         }}
                                         onClick={() => {
                                             handleData('color', '#fff');
