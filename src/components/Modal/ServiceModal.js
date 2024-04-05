@@ -165,8 +165,12 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
     };
 
     const handleSubmit = () => {
-        let dbmlScript = ApplicationData.dbmlData;
-        if (dbmlScript.startsWith(editorInstruction)) ApplicationData.dbmlData = dbmlScript.replace(editorInstruction, '');
+        if(ApplicationData?.dbmlData){
+         let dbmlScript = ApplicationData.dbmlData;
+         if (dbmlScript.startsWith(editorInstruction)) {
+            ApplicationData.dbmlData = dbmlScript.replace(editorInstruction, '');
+         }
+        }
         onSubmit(ApplicationData);
     };
 
