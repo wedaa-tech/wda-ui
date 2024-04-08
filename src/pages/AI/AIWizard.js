@@ -186,8 +186,8 @@ function AiBox() {
                     }}
                 >
                     <Spinner size="xl" style={{marginBottom:'50px',color:'orange'}}/>
-                    <div style={{ marginBottom: '-150px',width:'350px' }}>
-                    {activeStep === 0 ? `Services are currently being built. Please wait for a few minutes.`:`Your architecture is being built. Please wait for a few minutes.`}
+                    <div style={{ marginBottom: '-95px',marginLeft:'70px',width:'300px' }}>
+                    {activeStep === 0 ? `Compiling the details provided as components....`:`Your architecture is being built. Please wait for a few minutes.`}
                     </div>
                 </div>
             ) : (
