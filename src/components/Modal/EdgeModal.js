@@ -280,7 +280,7 @@ const EdgeModal = ({ isOpen, CurrentEdge, onClose, handleEdgeData, handleColorCl
                             }}
                             onClick={() => {
                                 handleData('color', '#000000');
-                                handleColorClick('rgba(255, 255, 255, 0)');
+                                handleColorClick('#000000');
                             }}
                         ></div>
                     </div>
