@@ -136,6 +136,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     const [uniqueApplicationNames, setUniqueApplicationNames] = useState([]);
     const [uniquePortNumbers, setUniquePortNumbers] = useState([]);
     const [selectedColor, setSelectedColor] = useState('');
+    const [initialData,setInitialData]= useState(null)
 
     const reactFlowWrapper = useRef(null);
     const edgeUpdateSuccessful = useRef(true);
@@ -226,7 +227,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             }
             const fetchData = async () => {
                 const fetchedData = await loadData();
-                console.log("ssssss",fetchedData)
+                setInitialData(fetchedData)
                 if (fetchedData?.metadata?.nodes) {
                     setShowDiv(false);
                     setNodes(fetchedData?.metadata.nodes);
@@ -1275,8 +1276,48 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         setopen(false);
     };
 
+    const dataCheck = (Data) => {
+        const projectName1=Data.projectName;
+        const projectName2=(initialData.projectName) ?initialData.projectName : initialData.request_json.projectName;
+
+        if (projectName1 !== projectName2) {
+            return true;
+        }
+        const edges1 = Object.values(Data.metadata.edges);
+        const edges2 = Object.values(initialData.metadata.edges);
+
+        if (edges1.length !== edges2.length) {
+            return true;
+        }
+    
+        for (let i = 0; i < edges1.length; i++) {
+            const edge1 = edges1[i];
+            const edge2 = edges2[i];
+            if (edge1.data.client !== edge2.data.client ||
+                edge1.data.server !== edge2.data.server ||
+                edge1.data.framework !== edge2.data.framework) {
+                return true;
+            }
+        }
+
+        const nodes1 = Object.values(Data.metadata.nodes);
+        const nodes2 = Object.values(initialData.metadata.nodes);
+        if (nodes1.length !== nodes2.length) {
+            return true;
+        }
+    
+        for (let i = 0; i < nodes1.length; i++) {
+            const node1 = nodes1[i].data;
+            const node2 = nodes2[i].data;
+            if (JSON.stringify(node1) !== JSON.stringify(node2)) {
+                return true;
+            }
+        }
+    
+        return false;
+    }
+
     const onsubmit = (Data, submit = false) => {
-        setUpdated(false);
         const NewNodes = { ...nodes };
         const NewEdges = { ...edges };
         const authEdges = [];
@@ -1384,6 +1425,19 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         setNodes(NewNodes);
         setGeneratingData(structuredClone(Data));
         Data.validationStatus = 'VALIDATED';
+
+        if(!initialData){
+            Data.version=1;
+        }
+        else {
+            if (dataCheck(Data)) {
+                Data.version = initialData.version + 1;
+            }
+            else{
+                Data.version = initialData.version
+            }
+        }
+        setUpdated(false);
         if (Data?.save) {
             var saved = Data.save;
             delete Data?.save;
@@ -1402,6 +1456,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         const generatedImage = await Functions.CreateImage(Object.values(nodes));
         if (generatedImage) Data.imageUrl = generatedImage;
         if (saved !== 'VALIDATED') data.validationStatus = 'DRAFT';
+        setInitialData(Data)
         try {
             var response;
             if (projectParentId === 'admin') {
@@ -1453,42 +1508,87 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         }
     };
 
-    const generateZip = async (e, data = null) => {
-        const Data = data || generatingData;
-        const generatedImage = await Functions.CreateImage(Object.values(nodes));
-        setIsGenerating(true);
-        var blueprintId;
-        if (generatedImage) Data.imageUrl = generatedImage;
-        try {
-            const response = await fetch(process.env.REACT_APP_API_BASE_URL + '/generate', {
-                method: 'post',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
-                },
-                body: JSON.stringify(Data),
-            });         
-            blueprintId = response.headers.get('blueprintid');
-            const blob = await response.blob();
-            setIsGenerating(false);
-            saveAs(blob, `${Data.projectName}.zip`);
-        } catch (error) {
-            console.error(error);
-        } finally {
-            if (initialized && keycloak.authenticated) {
-                clear();
-                if (projectParentId === 'admin') {
-                    history.replace('/architectures');
-                } else {
-                    history.replace('/prototypes');                    
-                }
+    // const generateZip = async (e, data = null) => {
+    //     const Data = data || generatingData;
+    //     const generatedImage = await Functions.CreateImage(Object.values(nodes));
+    //     setIsGenerating(true);
+    //     var blueprintId;
+    //     if (generatedImage) Data.imageUrl = generatedImage;
+    //     try {
+    //         const response = await fetch(process.env.REACT_APP_API_BASE_URL + '/api/generate', {
+    //             method: 'post',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //                 Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+    //             },
+    //             body: JSON.stringify(Data),
+    //         });         
+    //         blueprintId = response.headers.get('blueprintid');
+    //         const data=await response.json()
+
+    //         // const blob = await response.blob();
+    //         setIsGenerating(false);
+    //         // saveAs(blob, `${Data.projectName}.zip`);
+    //     } catch (error) {
+    //         console.error(error);
+    //     } finally {
+    //         if (initialized && keycloak.authenticated) {
+    //             clear();
+    //             if (projectParentId === 'admin') {
+    //                 history.replace('/architectures');
+    //             } else {
+    //                 history.replace('/prototypes');                    
+    //             }
+    //         } else {
+    //             clear();
+    //             setIsLoading(false);
+    //             history.push('/canvasToCode');
+    //         }
+    //     }
+    // };
+
+
+    let completedBlueprints = [];
+    let blueprintIds = [];
+
+const generateZip = async (e, data = null) => {
+    const Data = data || generatingData;
+    const generatedImage = await Functions.CreateImage(Object.values(nodes));
+    setIsGenerating(true);
+    if (generatedImage) Data.imageUrl = generatedImage;
+    try {
+        const response = await fetch(process.env.REACT_APP_API_BASE_URL + '/api/generate', {
+            method: 'post',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+            },
+            body: JSON.stringify(Data),
+        });
+
+        const responseData = await response.json();
+        const initialBlueprintId = responseData.blueprintId;        
+        blueprintIds.push(initialBlueprintId);
+        
+        await new Promise(resolve => setTimeout(resolve, 10000));
+        setIsGenerating(false);
+    } catch (error) {
+        console.error(error);
+    } finally {
+        if (initialized && keycloak.authenticated) {
+            clear();
+            if (projectParentId === 'admin') {
+                history.replace('/architectures');
             } else {
-                clear();
-                setIsLoading(false);
-                history.push('/canvasToCode');
+                history.replace('/prototypes');
             }
+        } else {
+            clear();
+            setIsLoading(false);
+            history.push('/canvasToCode');
         }
-    };
+    }
+};
 
     const onEdgeClick = (e, edge) => {
         let updatedEdges = { ...edges };

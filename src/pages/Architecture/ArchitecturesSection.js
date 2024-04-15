@@ -1,15 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import {
-    Box,
-    Text,
-    Heading,
-    SimpleGrid,
-    Flex,
-    useDisclosure,
-    Skeleton,
-    useToast
-  
-} from '@chakra-ui/react';
+import { Box, Text, Heading, SimpleGrid, Flex, useDisclosure, Skeleton, useToast } from '@chakra-ui/react';
 import ArchitectureCard from './ArchitectureCard';
 import './ArchitecturesSection.css';
 import { useLocation } from 'react-router-dom/cjs/react-router-dom.min';
@@ -42,6 +32,8 @@ function ArchitecturesSection() {
     const [totalArchitectures, setTotalArchitectures] = useState(0);
     const [architectureId, setArchitectureId] = useState(null);
     const [architectureTitle, setArchitectureTitle] = useState(null);
+    var blueprintIds = [];
+    var completedBlueprints = [];
 
     const handleOpenNewArchitectureModal = () => {
         setNewArchitectureModalOpen(true);
@@ -85,6 +77,12 @@ function ArchitecturesSection() {
                             const archslist = structuredClone(result.data);
                             setArchitectures(archslist);
                             setTotalArchitectures(archslist.length);
+                            blueprintIds = archslist
+                                .map(entry =>
+                                    entry.project_id && entry.latestCodeGenerationStatus === 'IN-PROGRESS' ? entry.project_id : null,
+                                )
+                                .filter(id => id !== null);
+                            pollCodeGenerationStatus(blueprintIds,archslist);
                             setIsLoaded(true);
                         }
                     })
@@ -138,6 +136,14 @@ function ArchitecturesSection() {
                                             const archslist = structuredClone(result.data);
                                             setArchitectures(archslist);
                                             setTotalArchitectures(archslist.length);
+                                            blueprintIds = archslist
+                                                .map(entry =>
+                                                    entry.project_id && entry.latestCodeGenerationStatus === 'IN-PROGRESS'
+                                                        ? entry.project_id
+                                                        : null,
+                                                )
+                                                .filter(id => id !== null);
+                                            pollCodeGenerationStatus(blueprintIds,archslist);
                                             setIsLoaded(true);
                                         }
                                     })
@@ -151,6 +157,60 @@ function ArchitecturesSection() {
             }
         }
     }, [initialized, keycloak?.realmAccess?.roles, keycloak?.token, location.pathname]);
+
+    const pollCodeGenerationStatus = async (blueprintIds,archslist) => {
+        const statusUrl = process.env.REACT_APP_API_BASE_URL + '/api/code-generation-status';
+        while (blueprintIds.length !== 0) {
+            try {
+                const response = await fetch(statusUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                    },
+                    body: JSON.stringify({ blueprintIds }),
+                });
+
+                const statuses = await response.json();
+
+                blueprintIds = blueprintIds.filter(blueprintId => {
+                    const status = statuses.find(status => status.blueprintId === blueprintId);
+                    if (status) {
+                        if (status.status === 'COMPLETED') {
+                            toast.close(toastIdRef.current);
+                            const projectName = status.blueprintId.split('-')[0];
+                            toastIdRef.current = toast({
+                                title: `${projectName} is available to download`,
+                                status: 'success',
+                                duration: 3000,
+                                variant: 'left-accent',
+                                isClosable: true,
+                            });
+                            completedBlueprints.push(blueprintId);
+                            const updatedArchitectures = archslist.map(architecture => {
+                                if (architecture.project_id === blueprintId) {
+                                  return { ...architecture, latestCodeGenerationStatus: "COMPLETED" };
+                                } else {
+                                  return architecture;
+                                }
+                              });
+                              setArchitectures(updatedArchitectures);
+                            return false;
+                        } else if (status.status === 'IN-PROGRESS') {
+                            return true;
+                        }
+                    }
+                    return false;
+                });
+
+                if (blueprintIds.length !== 0) {
+                    await new Promise(resolve => setTimeout(resolve, 5000));
+                }
+            } catch (error) {
+                console.error('Error while polling code generation status:', error);
+            }
+        }
+    };
 
     const handleOpenArchitecture = (project_id, data) => {
         if (data.validationStatus === 'VALIDATED')
@@ -174,16 +234,16 @@ function ArchitecturesSection() {
     const toastIdRef = useRef();
 
 
-    const createArchitecture = async (data) => {
+    const createArchitecture = async data => {
         var updatedData = data;
         updatedData.services = {};
         updatedData.communications = {};
-    
+
         const nodes = data.metadata?.nodes;
         const edges = data.metadata?.edges;
-    
+
         let currentIndex = 0;
-    
+
         if (nodes && Object.keys(nodes).length > 0) {
             for (const [key, value] of Object.entries(nodes)) {
                 if (key.startsWith('UI') || key.startsWith('Service') || key.startsWith('Gateway')) {
@@ -191,17 +251,17 @@ function ArchitecturesSection() {
                 }
             }
         }
-    
+
         currentIndex = 0;
-    
+
         if (edges && Object.keys(edges).length > 0) {
             for (const [_, value] of Object.entries(edges)) {
                 updatedData.communications[currentIndex++] = value.data;
             }
         }
-    
+
         const endpoint = data?.request_json?.parentId === 'admin' ? '/api/refArchs' : '/api/blueprints';
-    
+
         try {
             const response = await fetch(process.env.REACT_APP_API_BASE_URL + endpoint, {
                 method: 'post',
@@ -211,21 +271,20 @@ function ArchitecturesSection() {
                 },
                 body: JSON.stringify(updatedData),
             });
-    
+
             if (response.ok) {
                 const res = await response.json();
-                if(data?.request_json?.parentId==="admin"){
-                    data._id=res._id;
-                    data.id=res.projectId;
-                    data.projectId=res.projectId;
-                    data.name=data.projectName;
+                if (data?.request_json?.parentId === 'admin') {
+                    data._id = res._id;
+                    data.id = res.projectId;
+                    data.projectId = res.projectId;
+                    data.name = data.projectName;
+                } else {
+                    data.project_id = res.projectId;
+                    data._id = res._id;
                 }
-                else{
-                data.project_id = res.projectId;
-                data._id=res._id;
-                }
-                setArchitectures([data,...architectures]); 
-                setTotalArchitectures(architectures.length + 1);         
+                setArchitectures([data, ...architectures]);
+                setTotalArchitectures(architectures.length + 1);
                 toastIdRef.current = toast({
                     title: `${parentId === 'admin' ? 'Reference Architecture' : 'Prototype'} ${data.projectName} created`,
                     status: 'success',
@@ -233,7 +292,6 @@ function ArchitecturesSection() {
                     variant: 'left-accent',
                     isClosable: true,
                 });
-
             } else {
                 console.error('Failed to Clone architecture');
             }
@@ -241,8 +299,7 @@ function ArchitecturesSection() {
             console.error('Error cloning architecture:', error);
         }
     };
-    
-    
+
     const deleteArchitecture = data => {
         if (initialized) {
             if (parentId === 'admin' && location.pathname === '/architectures') {

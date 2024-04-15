@@ -30,7 +30,6 @@ const Wizard = () => {
     useEffect(() => {
         const trackScrolling = () => {
             const wrappedElement = document.getElementById('container');
-            console.log(isBottom(wrappedElement), wrappedElement);
             if (isBottom(wrappedElement)) {
                 setScrollHide(true);
             } else {
