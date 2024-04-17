@@ -234,7 +234,9 @@ const ApplicationModal = ({
     const handleSubmit = () => {
         if (ServiceData?.dbmlData) {
             let dbmlScript = ServiceData.dbmlData;
-            if (dbmlScript.startsWith(editorInstruction)) ServiceData.dbmlData = dbmlScript.replace(editorInstruction, '');
+            if (dbmlScript.startsWith(editorInstruction)) {
+                ServiceData.dbmlData = dbmlScript.replace(editorInstruction, '');
+            }
         }
         onSubmit(ServiceData);
     };

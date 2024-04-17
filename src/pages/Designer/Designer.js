@@ -1726,7 +1726,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                                     Print
                                 </Button>
                                 <DownloadButton applicationName={projectName} />
-                                <Tooltip label="Clear" placement="left" bg="blue.500" color="white" borderRadius="md" fontSize="sm">
+                                <Tooltip label="Clear Canvas" placement="left" bg="blue.500" color="white" borderRadius="md" fontSize="sm">
                                     <IconButton
                                         hidden={viewOnly}
                                         icon={<Icon as={FaEraser} />}
@@ -1739,7 +1739,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                                         }}
                                     />
                                 </Tooltip>
-                                <Tooltip label="Save" placement="left" bg="blue.500" color="white" borderRadius="md" fontSize="sm">
+                                <Tooltip label="Save Architecture" placement="left" bg="blue.500" color="white" borderRadius="md" fontSize="sm">
                                     <IconButton
                                         hidden={viewOnly}
                                         icon={<Icon as={AiOutlineSave} />}
@@ -1750,7 +1750,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                                         }}
                                     />
                                 </Tooltip>
-                                <Tooltip label="Validate" placement="left" bg="blue.500" color="white" borderRadius="md" fontSize="sm">
+                                <Tooltip label="Validate Architecture" placement="left" bg="blue.500" color="white" borderRadius="md" fontSize="sm">
                                     <IconButton hidden={viewOnly} icon={<Icon as={GoCodeReview} />} size="md" onClick={handleSubmit} />
                                 </Tooltip>
                             </VStack>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FormControl, FormLabel, Input, Textarea, Button, Divider, Text, VStack, Flex, useToast, IconButton } from '@chakra-ui/react';
+import { FormControl, FormLabel, Input, Textarea, Button, Divider, Text, VStack, Flex, useToast, IconButton,Tooltip } from '@chakra-ui/react';
 import Editor from '@monaco-editor/react';
 import { FaSync } from 'react-icons/fa';
 import { useKeycloak } from '@react-keycloak/web';
@@ -95,7 +95,7 @@ function TitleDescriptionForm({ title: initialTitle, description: initialDescrip
 
     const checkDescriptionValidity = () => {
         if (description.trim() === '') {
-            raiseError('Description should not be Empty');
+            raiseError('Please click the Generate button to populate the description field');
             return false;
         }
         return true;
@@ -129,6 +129,7 @@ function TitleDescriptionForm({ title: initialTitle, description: initialDescrip
                     marginLeft={"6"}
                 >
                     <span>Description</span>
+                    <Tooltip label="Generate" placement="right"  bg="blue.500" color="white" fontSize="sm" offset={[0, -4]} borderRadius="md" >
                     <IconButton
                         icon={<FaSync />}
                         isLoading={isLoading}
@@ -139,6 +140,7 @@ function TitleDescriptionForm({ title: initialTitle, description: initialDescrip
                         style={{ position: 'relative', fontSize: '15px' }}
                         spin={isLoading}
                     />
+                    </Tooltip>
                 </FormLabel>
 
                 <div
@@ -161,12 +163,12 @@ function TitleDescriptionForm({ title: initialTitle, description: initialDescrip
                             style={{
                                 position: 'absolute',
                                 top: '10%',
-                                left: '28%',
+                                left: '32%',
                                 transform: 'translate(-50%, -50%)',
-                                color: '#a0a0a0',
+                                color: '#A0A0A0',
                             }}
                         >
-                            Click the icon to generate the Application Description.
+                            Click the Generate button to populate the description field
                         </div>
                     )}
 

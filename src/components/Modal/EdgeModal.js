@@ -56,10 +56,7 @@ const EdgeModal = ({ isOpen, CurrentEdge, onClose, handleEdgeData, handleColorCl
 
     const commonServiceType = isOpen.split('-')[1];
     const isCommonService =
-        commonServiceType === 'authenticationType' ||
-        commonServiceType === 'logManagement' ||
-        commonServiceType === 'serviceDiscoveryType' ||
-        commonServiceType.startsWith('Database');
+        commonServiceType === 'authenticationType' || commonServiceType === 'logManagement' || commonServiceType === 'serviceDiscoveryType'|| commonServiceType.startsWith("Database")||commonServiceType.startsWith("dummy")||commonServiceType.startsWith("group");
 
     const isEmpty = isCommonService ? false : edgeData.type === '' || edgeData.framework === '';
     const handleData = (column, value) => {
@@ -268,8 +265,8 @@ const EdgeModal = ({ isOpen, CurrentEdge, onClose, handleEdgeData, handleColorCl
                                 backgroundColor: '#fff',
                             }}
                             onClick={() => {
-                                handleData('color', '#fff');
-                                handleColorClick('rgba(255, 255, 255, 0)');
+                                handleData('color', '#000000');
+                                handleColorClick('#000000');
                             }}
                         ></div>
                     </div>

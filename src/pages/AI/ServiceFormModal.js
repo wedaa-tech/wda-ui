@@ -47,7 +47,7 @@ function ServiceFormModal({ isOpen, onClose, onSave, service, viewMode }) {
         <Modal isOpen={isOpen} onClose={onClose} size={'3xl'}>
             <ModalOverlay />
             <ModalContent style={{ position: 'absolute', top: '18%', left: '28%', transform: 'translate(-50%, -50%)', height: '450px'}}>
-                <ModalHeader>{viewMode === 'view' ? serviceName : service ? `Edit ${serviceName}` : 'Add Service'}</ModalHeader>
+                <ModalHeader>{viewMode === 'view' ? serviceName : service ? `Edit Service` : 'Add Service'}</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody>
                     <Box mb={4}>
