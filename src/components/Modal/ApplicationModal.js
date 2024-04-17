@@ -369,6 +369,7 @@ const ApplicationModal = ({
         Group: GroupData,
         Dummy: GroupData,
     };
+    const colors = ['#ffc9c9', '#b2f2bb', '#a5d8ff', '#ffec99', '#fff'];
 
     return (
         <Modal isOpen={isOpen} size={isValidFrameworkAndDB ? '6xl' : ''} onClose={() => onClose(false)}>
@@ -603,61 +604,20 @@ const ApplicationModal = ({
                                         gap: '15px',
                                     }}
                                 >
-                                    <div
-                                        className="color"
-                                        style={{
-                                            backgroundColor: '#ffc9c9',
-                                            border: typeOfNode[nodeType].color === '#ffc9c9' ? '2px solid #007bff' : '1px solid #cfcfcf',
-                                        }}
-                                        onClick={() => {
-                                            handleData('color', '#ffc9c9');
-                                            handleColorClick('#ffc9c9');
-                                        }}
-                                    ></div>
-                                    <div
-                                        className="color"
-                                        style={{
-                                            backgroundColor: '#b2f2bb',
-                                            border: typeOfNode[nodeType].color === '#b2f2bb' ? '2px solid #007bff' : '1px solid #cfcfcf',
-                                        }}
-                                        onClick={() => {
-                                            handleData('color', '#b2f2bb');
-                                            handleColorClick('#b2f2bb');
-                                        }}
-                                    ></div>
-                                    <div
-                                        className="color"
-                                        style={{
-                                            backgroundColor: '#a5d8ff',
-                                            border: typeOfNode[nodeType].color === '#a5d8ff' ? '2px solid #007bff' : '1px solid #cfcfcf',
-                                        }}
-                                        onClick={() => {
-                                            handleData('color', '#a5d8ff');
-                                            handleColorClick('#a5d8ff');
-                                        }}
-                                    ></div>
-                                    <div
-                                        className="color"
-                                        style={{
-                                            backgroundColor: '#ffec99',
-                                            border: typeOfNode[nodeType].color === '#ffec99' ? '2px solid #007bff' : '1px solid #cfcfcf',
-                                        }}
-                                        onClick={() => {
-                                            handleData('color', '#ffec99');
-                                            handleColorClick('#ffec99');
-                                        }}
-                                    ></div>
-                                    <div
-                                        className="color"
-                                        style={{
-                                            backgroundColor: '#fff',
-                                            border: typeOfNode[nodeType].color === '#fff' ? '2px solid #007bff' : '1px solid #cfcfcf',
-                                        }}
-                                        onClick={() => {
-                                            handleData('color', '#fff');
-                                            handleColorClick('rgba(255, 255, 255, 0)');
-                                        }}
-                                    ></div>
+                                    {colors.map((color, index) => (
+                                        <div
+                                            key={index}
+                                            className="color"
+                                            style={{
+                                                backgroundColor: color,
+                                                border: typeOfNode[nodeType].color === color ? '2px solid #007bff' : '1px solid #cfcfcf',
+                                            }}
+                                            onClick={() => {
+                                                handleData('color', color);
+                                                handleColorClick(color);
+                                            }}
+                                        ></div>
+                                    ))}
                                 </div>
                             </div>
                         </div>
