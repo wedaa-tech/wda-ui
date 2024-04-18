@@ -4,14 +4,13 @@ import Editor from '@monaco-editor/react';
 import { FaSync } from 'react-icons/fa';
 import { useKeycloak } from '@react-keycloak/web';
 
-function TitleDescriptionForm({ title: initialTitle, description: initialDescription, refresh, onNext }) {
+function TitleDescriptionForm({ title: initialTitle, description: initialDescription, onNext }) {
     const [title, setTitle] = useState(initialTitle || '');
     const [description, setDescription] = useState(initialDescription || '');
     const containsNoSpecialCharacters = /^[a-zA-Z0-9 ]+$/;
     const { initialized, keycloak } = useKeycloak();
     const [isLoading, setIsLoading] = useState(false);
     const [isEditorAvailable, setIsEditorAvailable] = useState(false);
-    const [refreshEnabled, setRefreshEnabled] = useState(false);
 
     const toast = useToast({
         containerStyle: {
@@ -21,15 +20,8 @@ function TitleDescriptionForm({ title: initialTitle, description: initialDescrip
     });
     const toastIdRef = useRef();
 
-    useEffect(() => {
-        if (refresh) {
-            setIsEditorAvailable(true);
-        }
-    }, [refresh]);
-
     const handleTitleChange = e => {
         setTitle(e.target.value);
-        setRefreshEnabled(true)
     };
 
     const handleDescriptionChange = val => {
@@ -48,7 +40,7 @@ function TitleDescriptionForm({ title: initialTitle, description: initialDescrip
     };
 
     const fetchDescriptionData = async () => {
-        if (initialized && keycloak.authenticated && checkTitleValidity() && refreshEnabled) {
+        if (initialized && keycloak.authenticated && checkTitleValidity()) {
             setIsLoading(true);
 
             await fetch(process.env.REACT_APP_AI_CORE_URL + '/description', {
@@ -75,7 +67,6 @@ function TitleDescriptionForm({ title: initialTitle, description: initialDescrip
                     console.error('Error adding descrition to service:', error);
                 });
                 setIsEditorAvailable(true);
-                setRefreshEnabled(false);
             }
     };
 
