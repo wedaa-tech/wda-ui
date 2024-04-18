@@ -13,7 +13,8 @@ import {
     Alert,
     AlertIcon,
     Textarea,
-    IconButton,
+    IconButton,    
+    Tooltip,
 } from '@chakra-ui/react';
 import Editor from '@monaco-editor/react';
 import validatePortNumber from '../../utils/portValidation';
@@ -22,7 +23,7 @@ import { useKeycloak } from '@react-keycloak/web';
 
 const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick, uniqueApplicationNames, uniquePortNumbers }) => {
     const validFrameworksAndDBs = [
-        // { framework: 'spring', dbType: 'postgresql' },
+        { framework: 'spring', dbType: 'postgresql' },
     ];
 
     const editorInstruction = '/* Below DBML is auto-generated based on component name and description.\nThis can be edited directly or regenerated for updated description.*/\n\n';
@@ -35,11 +36,10 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
         serverPort: '',
         applicationType: 'microservice',
         color: '#fff',
-        // description: '',
+        description: '',
         ...CurrentNode,
-        // dbmlData,
+        dbmlData,
     };
-    const [refreshEnabled, setRefreshEnabled] = useState(false);
     const { initialized, keycloak } = useKeycloak();
     const [ApplicationData, setApplicationData] = useState(IntialState);
     const [isLoading, setIsLoading] = useState(false);
@@ -82,7 +82,7 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
     };
 
     const fetchDbmlData = async () => {
-        if (initialized && keycloak.authenticated && descriptionValidation() && refreshEnabled) {
+        if (initialized && keycloak.authenticated && descriptionValidation() ) {
             setIsLoading(true);
 
             await fetch(process.env.REACT_APP_AI_CORE_URL + '/dbml', {
@@ -112,7 +112,6 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                 .catch(error => {
                     console.error('Error adding DBML script to service:', error);
                 });
-            setRefreshEnabled(false);
         }
     };
 
@@ -133,7 +132,6 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                 ...prev,
                 [column]: value,
             }));            
-            setRefreshEnabled(true);
         } else if (column === 'serverPort') {
             const validationErrors = validatePortNumber(value, uniquePortNumbers, CurrentNode?.serverPort);
             setPortValidationError(validationErrors);
@@ -155,7 +153,6 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                 ...prev,
                 [column]: value,
             }));
-            setRefreshEnabled(true);
         } else {
             setApplicationData(prev => ({
                 ...prev,
@@ -465,6 +462,7 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                                             }}
                                         >
                                             <span>DBML Scripts</span>
+                                            <Tooltip label="Generate DBML Scripts" placement="left" bg="blue.500" color="white" borderRadius="md" fontSize="sm">
                                             <IconButton
                                                 icon={<FaSync />}
                                                 isLoading={isLoading}
@@ -475,6 +473,7 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                                                 style={{ position: 'relative', fontSize: '15px' }}
                                                 spin={isLoading}
                                             />
+                                            </Tooltip>
                                         </FormLabel>
 
                                         <div
