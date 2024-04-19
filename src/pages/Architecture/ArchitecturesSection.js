@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Box, Text, Heading, SimpleGrid, Flex, useDisclosure, Skeleton, useToast } from '@chakra-ui/react';
+import { Box, Text, Heading, SimpleGrid, Flex, useDisclosure, Skeleton, useToast, Tooltip } from '@chakra-ui/react';
 import ArchitectureCard from './ArchitectureCard';
 import './ArchitecturesSection.css';
 import { useLocation } from 'react-router-dom/cjs/react-router-dom.min';
@@ -178,7 +178,7 @@ function ArchitecturesSection() {
                     if (status) {
                         if (status.status === 'COMPLETED') {
                             toast.close(toastIdRef.current);
-                            const projectName = status.blueprintId.split('-')[0];
+                            const projectName = archslist.find(project => project.project_id === blueprintId)?.projectName || blueprintId;
                             toastIdRef.current = toast({
                                 title: `${projectName} is available to download`,
                                 status: 'success',

@@ -31,7 +31,7 @@ import AlertModal from '../../components/Modal/AlertModal';
 import resizeableNode from './../Customnodes/ResizeableNode';
 import groupNode from './../Customnodes/GroupNode';
 import { useLocation } from 'react-router-dom';
-import { useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 import './../../App.css';
 import EdgeModal from '../../components/Modal/EdgeModal';
 import { useKeycloak } from '@react-keycloak/web';
@@ -81,6 +81,7 @@ const nodeTypes = {
 };
 
 const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
+    const history = useHistory();
     const [viewOnly, setViewOnly] = useState(viewMode);
     const { keycloak, initialized } = useKeycloak();
     const [nodes, setNodes] = useState(sharedMetadata?.nodes || {});
@@ -112,7 +113,6 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     const [updated, setUpdated] = useState(false);
     const [isVisibleDialog, setVisibleDialog] = useState(false);
     const [actionModalType, setActionModalType] = useState('clear');
-    const history = useHistory();
     const [triggerExit, setTriggerExit] = useState({
         onOk: false,
         path: '',
@@ -315,6 +315,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         }
     }, [nodes, edges]);
     useEffect(() => {
+        if(!isLoading  && history.location.pathname!=='/canvasToCode' && history.location.pathname!='/project/admin/architecture/create' && history.location.pathname!=`/project/${projectParentId}/architecture/create`){
         if (triggerExit.onOk) {
             handleGoToIntendedPage(triggerExit.path);
             clear();
@@ -341,6 +342,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 unblock();
             }
         };
+    }
     }, [handleGoToIntendedPage, history, triggerExit.onOk, triggerExit.path, updated,nodes]);
 
     const onPaneClick = useCallback(() => setMenu(false), [setMenu]);
@@ -577,6 +579,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         width: '120px',
                         height: '40px',
                         borderRadius: '15px',
+                        fontSize:'8px'
                     },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
@@ -598,6 +601,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         width: '120px',
                         height: '40px',
                         borderRadius: '15px',
+                        fontSize:'10px'
                     },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
@@ -608,7 +612,8 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     type: 'selectorNode1',
                     position,
                     data: { serviceDiscoveryType: serviceDiscoveryType },
-                    style: { border: '1px solid ', padding: '4px 4px', width: '120px', height: '40px', borderRadius: '15px' },
+                    style: { border: '1px solid ', padding: '4px 4px', width: '120px', height: '40px', borderRadius: '15px',fontSize:'10px'
+                },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
                 setIsServiceDiscovery(true);
@@ -622,7 +627,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     type: 'selectorNode3',
                     position,
                     data: { authenticationType: authenticationType },
-                    style: { border: '1px solid ', padding: '4px 4px', width: '120px', height: '40px', borderRadius: '15px' },
+                    style: { border: '1px solid ', padding: '4px 4px', width: '120px', height: '40px', borderRadius: '15px',fontSize:'10px' },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
                 setAuthProviderCount(1);
@@ -635,7 +640,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     type: 'selectorNode4',
                     position,
                     data: { messageBroker: messageBroker },
-                    style: { border: '1px solid', padding: '4px 4px' },
+                    style: { border: '1px solid', padding: '4px 4px',fontSize:'10px' },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
                 setIsMessageBroker(true);
@@ -652,6 +657,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         width: '120px',
                         height: '40px',
                         zIndex: -1,
+                        fontSize:'10px'
                     },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
@@ -667,6 +673,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         width: '120px',
                         height: '40px',
                         zIndex: -1,
+                        fontSize:'10px'
                     },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
@@ -679,7 +686,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     type: 'selectorNode6',
                     position,
                     data: { logManagementType: logManagementType },
-                    style: { border: '1px solid ', padding: '4px 4px', width: '120px', height: '40px', borderRadius: '15px' },
+                    style: { border: '1px solid ', padding: '4px 4px', width: '120px', height: '40px', borderRadius: '15px',fontSize:'10px' },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
                 setLogManagementCount(1);
@@ -696,6 +703,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         width: '120px',
                         height: '40px',
                         borderRadius: '15px',
+                        fontSize:'10px'
                     },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
@@ -736,6 +744,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         width: '120px',
                         height: '40px',
                         borderRadius: '15px',
+                        fontSize:'10px'
                     },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
@@ -1277,45 +1286,50 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     };
 
     const dataCheck = (Data) => {
-        const projectName1=Data.projectName;
-        const projectName2=(initialData.projectName) ?initialData.projectName : initialData.request_json.projectName;
-
+        const projectName1 = Data.projectName;
+        const projectName2 = initialData.projectName ? initialData.projectName : initialData.request_json?.projectName;
+    
         if (projectName1 !== projectName2) {
             return true;
         }
-        const edges1 = Object.values(Data.metadata.edges);
-        const edges2 = Object.values(initialData.metadata.edges);
-
+    
+        const edges1 = Object.values(Data.metadata?.edges || {});
+        const edges2 = Object.values(initialData.metadata?.edges || {});
+    
         if (edges1.length !== edges2.length) {
             return true;
         }
-    
         for (let i = 0; i < edges1.length; i++) {
             const edge1 = edges1[i];
             const edge2 = edges2[i];
-            if (edge1.data.client !== edge2.data.client ||
+            if (
+                !edge1 ||
+                !edge2 ||
+                edge1.data.client !== edge2.data.client ||
                 edge1.data.server !== edge2.data.server ||
-                edge1.data.framework !== edge2.data.framework) {
+                edge1.data.framework !== edge2.data.framework
+            ) {
                 return true;
             }
         }
-
-        const nodes1 = Object.values(Data.metadata.nodes);
-        const nodes2 = Object.values(initialData.metadata.nodes);
+    
+        const nodes1 = Object.values(Data.metadata?.nodes || {});
+        const nodes2 = Object.values(initialData.metadata?.nodes || {});
         if (nodes1.length !== nodes2.length) {
             return true;
         }
     
         for (let i = 0; i < nodes1.length; i++) {
-            const node1 = nodes1[i].data;
-            const node2 = nodes2[i].data;
+            const node1 = nodes1[i]?.data;
+            const node2 = nodes2[i]?.data;
             if (JSON.stringify(node1) !== JSON.stringify(node2)) {
                 return true;
             }
         }
     
         return false;
-    }
+    };
+    
 
     const onsubmit = (Data, submit = false) => {
         const NewNodes = { ...nodes };
@@ -1481,6 +1495,9 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             if (response.ok) {
                 const responseData = await response.json();
                 if (!projectProjectId) setProjectprojectId(responseData.projectId);
+                if(saved=='VALIDATED' && projectParentId=='admin'){
+                    history.replace(`/project/admin/architecture/${responseData.projectId}/details`)
+                }
                 if (saved === 'save') {
                     toast.close(toastIdRef.current);
                     toastIdRef.current = toast({
@@ -1811,6 +1828,7 @@ const generateZip = async (e, data = null) => {
                                 viewOnly={viewOnly}
                                 id={id}
                                 clear={clear}
+                                parentId={projectParentId}
                             />
                             <div
                                 style={{
@@ -1861,9 +1879,6 @@ const generateZip = async (e, data = null) => {
                                             handleSave();
                                         }}
                                     />
-                                </Tooltip>
-                                <Tooltip label="Validate Architecture" placement="left" bg="blue.500" color="white" borderRadius="md" fontSize="sm">
-                                    <IconButton hidden={viewOnly} icon={<Icon as={GoCodeReview} />} size="md" onClick={handleSubmit} />
                                 </Tooltip>
                             </VStack>
                         </Panel>

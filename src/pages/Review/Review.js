@@ -291,7 +291,7 @@ export const ReviewFlow = ({
                                 icon={<EditIcon />}
                             />
                         </Tooltip>
-                        {!generateMode && (
+                        {/* {!generateMode && (
                             <Tooltip label="Generate code" placement="left" bg="blue.500" color="white" borderRadius="md" fontSize="sm">
                                 <IconButton
                                     onClick={handlesubmit}
@@ -302,8 +302,8 @@ export const ReviewFlow = ({
                                     icon={<FaCode />}
                                 />
                             </Tooltip>
-                        )}
-                        {!generateMode && reviewData && (
+                        )} */}
+                        {/* {!generateMode && reviewData && (
                             <Tooltip label={reviewData.latestCodeGenerationStatus=="COMPLETED" ? 'Download Code': reviewData.latestCodeGenerationStatus=='IN-PROGRESS'?'Code Generation in progress':'Code not available Please click Generate'} placement="left" bg="blue.500" color="white" borderRadius="md" fontSize="sm">
                                 <IconButton
                                     onClick={handleDownload}
@@ -315,7 +315,7 @@ export const ReviewFlow = ({
                                     icon={<DownloadIcon />}
                                 />
                             </Tooltip>
-                        )}
+                        )} */}
                         <Button hidden={true} colorScheme="blue" onClick={() => console.log(deploymentData)}>
                             Print
                         </Button>
