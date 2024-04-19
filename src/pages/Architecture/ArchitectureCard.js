@@ -1,5 +1,6 @@
-import { CopyIcon, DeleteIcon } from '@chakra-ui/icons';
-import { useState } from 'react';
+import { CopyIcon, DeleteIcon, DownloadIcon } from '@chakra-ui/icons';
+import { useState,useRef } from 'react';
+import { saveAs } from 'file-saver';
 import {
     Box,
     IconButton,
@@ -11,11 +12,15 @@ import {
     ModalContent,
     ModalHeader,
     ModalCloseButton,
+    useToast,
     ModalBody,
     ModalFooter,
     Button,
     Input,
+    Spinner,
+    Tooltip
 } from '@chakra-ui/react';
+import { useKeycloak } from '@react-keycloak/web';
 import React from 'react';
 import "../ProjectsSection/ProjectsSection.css";
 
@@ -48,6 +53,14 @@ const ArchitectureCard = ({
 }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [newPrototypeName, setNewPrototypeName] = useState('');
+    const { initialized, keycloak } = useKeycloak();
+    const toast = useToast({
+        containerStyle: {
+            width: '500px',
+            maxWidth: '100%',
+        },
+    });
+    const toastIdRef = useRef();
 
     const handleCloneClick = () => {
         setIsModalOpen(true);
@@ -82,13 +95,41 @@ const ArchitectureCard = ({
         setIsModalOpen(false);
     };
 
+    const handleDownload = async () => {
+        if(data.latestCodeGenerationStatus=="COMPLETED"){
+        try {
+            const response = await fetch(process.env.REACT_APP_API_BASE_URL + `/api/download/${data?.project_id}`, {
+                method: 'get',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                },
+            })
+            const blob = await response.blob();
+            saveAs(blob, `${data.projectName}.zip`);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+    else{
+        toast.close(toastIdRef.current);
+        toastIdRef.current = toast({
+            title: `Code Unavailable: Please Generate`,
+            status:'error',
+            duration: 3000,
+            variant: 'left-accent',
+            isClosable: true,
+        });
+    }
+    }
+
     return (
         <Skeleton isLoaded={isLoaded} fadeDuration={1}>
             <Box
                 maxWidth={96}
                 minWidth={96}
                 maxW="sm"
-                className="project-card"
+                className={`project-card ${data.latestCodeGenerationStatus !='IN-PROGRESS' ? 'hover-card':''}`}
                 height={'300px'}
                 borderWidth="1px"
                 borderRadius="lg"
@@ -97,8 +138,8 @@ const ArchitectureCard = ({
                 position="relative"
                 p="6"
                 zIndex="1"
-                backgroundColor={'white'}
-                onClick={() => onClick(projectId, data)}
+                backgroundColor={data.latestCodeGenerationStatus=='IN-PROGRESS'?'#f8f8f8':'#fff'}
+                onClick={() => {data.latestCodeGenerationStatus!='IN-PROGRESS' && onClick(projectId, data)}}
             >
                 <Image
                     style={{
@@ -109,12 +150,40 @@ const ArchitectureCard = ({
                     height="65%"
                     src={imageUrl}
                 />
+                {data.latestCodeGenerationStatus!=='IN-PROGRESS' && (<>
+                {parentId!= 'admin' &&
+                <Tooltip label="Download Prototype" placement="top" color="white" borderRadius="md" fontSize="sm">
+                <IconButton
+                    top="5%"
+                    size={"md"}
+                    right="33%"
+                    variant="outline"
+                    colorScheme="blackAlpha"
+                    className='prototype-icons'
+                    aria-label="Download Prototype"
+                    position="absolute"
+                    zIndex={99}
+                    icon={<DownloadIcon />}
+                    onClick={e => {
+                        // onDelete(title, projectId);
+                        handleDownload()
+                        e.stopPropagation();
+                    }}
+                />
+                </Tooltip>
+                }
+                <Tooltip label="Delete Prototype" placement="top" color="white" borderRadius="md" fontSize="sm">
                 <IconButton
                     top="5%"
                     right="5%"
+                    size='md'
+                    minheight='10px'
+                    minwidth='10px'
+                    fontSize='14px'
                     variant="outline"
                     colorScheme="blackAlpha"
                     aria-label="Delete Architecture"
+                    className='prototype-icons'
                     position="absolute"
                     zIndex={99}
                     icon={<DeleteIcon />}
@@ -123,12 +192,16 @@ const ArchitectureCard = ({
                         e.stopPropagation();
                     }}
                 />
+                </Tooltip>
+                <Tooltip label="Clone Prototype" placement="top" color="white" borderRadius="md" fontSize="sm">
                 <IconButton
                     top="5%"
+                    size={"md"}
                     right="19%"
                     variant="outline"
                     colorScheme="blackAlpha"
                     aria-label="Clone Prototype"
+                    className='prototype-icons'
                     position="absolute"
                     zIndex={99}
                     icon={<CopyIcon />}
@@ -137,11 +210,14 @@ const ArchitectureCard = ({
                         e.stopPropagation();
                     }}
                 />
+                </Tooltip>
+                </>)}
                 {parentId === 'admin' && (
                     <Box position="absolute" top="24%" right="9%" zIndex={99}>
                         {published ? <GreenCheckIcon /> : <RedCloseIcon />}
                     </Box>
                 )}
+        
                 <Box p="6">
                     <Text
                         className="not-selectable"
@@ -156,12 +232,19 @@ const ArchitectureCard = ({
                     >
                         {title}
                     </Text>
-                    {data.validationStatus === 'DRAFT' && (
+                    {data.latestCodeGenerationStatus=='IN-PROGRESS' && (
+                       <Text className="not-selectable" color="red.300">
+                       Generation in Progress   <Spinner size='xs' />
+                   </Text> 
+                    )
+
+                    }
+                    {data.latestCodeGenerationStatus!=='IN-PROGRESS'&& data.validationStatus === 'DRAFT' && (
                         <Text className="not-selectable" color="yellow.600">
                             Draft
                         </Text>
                     )}
-                    {data.validationStatus === 'VALIDATED' && (
+                    {data.latestCodeGenerationStatus!=='IN-PROGRESS' && data.validationStatus === 'VALIDATED' && (
                         <Text className="not-selectable" color="green.600">
                             Validated
                         </Text>

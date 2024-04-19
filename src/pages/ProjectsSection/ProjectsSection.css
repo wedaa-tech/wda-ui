@@ -21,7 +21,7 @@
 } */
 
 .create-project:hover,
-.project-card:hover {
+.hover-card:hover {
     box-shadow:
         rgba(0, 0, 0, 0.1) 0px 10px 15px -3px,
         rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
@@ -30,7 +30,7 @@
 }
 
 .create-project:active,
-.project-card:active {
+.hover-card:active {
     /* background-color: #3e8e41; */
     /* box-shadow: 0 5px #666; */
     transform: translateY(4px);
@@ -57,4 +57,9 @@
 
 .simple-grid {
     grid-template-columns: repeat(auto-fit, minmax(380px, 380px));
+}
+
+.chakra-button {
+    min-height: 40px;
+    min-width: 40px;
 }
