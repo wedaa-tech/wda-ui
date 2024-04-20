@@ -114,7 +114,7 @@ const ArchitectureCard = ({
     else{
         toast.close(toastIdRef.current);
         toastIdRef.current = toast({
-            title: `Code Unavailable: Please Generate`,
+            title: `Prototype Updated: Please Generate again`,
             status:'error',
             duration: 3000,
             variant: 'left-accent',
