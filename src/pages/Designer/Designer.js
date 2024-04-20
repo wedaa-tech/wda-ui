@@ -579,7 +579,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         width: '120px',
                         height: '40px',
                         borderRadius: '15px',
-                        fontSize:'8px'
+                        fontSize:'10px'
                     },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
