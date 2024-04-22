@@ -21,6 +21,7 @@ import Editor from '@monaco-editor/react';
 import { FaSync } from 'react-icons/fa';
 import { useKeycloak } from '@react-keycloak/web';
 import './ModalStyle.css';
+import setFieldErrors from '../../utils/setFieldErrors';
 
 const ApplicationModal = ({
     nodeType,
@@ -152,7 +153,6 @@ const ApplicationModal = ({
             return true;
         }
     };
-
     const isThemeFilled = () => {
         if (UiData.applicationFramework === 'docusaurus' && UiData.theme === '') {
             setThemeError(true);
@@ -237,7 +237,6 @@ const ApplicationModal = ({
         }
         onSubmit(ServiceData);
     };
-
     const handleData = (column, value) => {
         if (nodeType === 'UI') {
             if (column === 'applicationName') {
@@ -367,6 +366,50 @@ const ApplicationModal = ({
         Dummy: GroupData,
     };
     const colors = ['#ffc9c9', '#b2f2bb', '#a5d8ff', '#ffec99', '#fff'];
+    const UiFields = [
+        { key: 'label', label: 'Label', placeholder: 'Display Name', maxLength: 32, error: '' },
+        { key: 'applicationName', label: 'Component Name', placeholder: 'Component Name', maxLength: 32, error: '' },
+        { key: 'theme', label: 'Theme', placeholder: 'Select a Theme', options: ['Default', 'Profile'], error: '' },
+        { key: 'serverPort', label: 'Server Port', placeholder: 'Port number', maxLength: 5, error: '' },
+        { key: 'description', label: 'Description', placeholder: 'A small description', maxLength: 45, error: '' },
+    ];
+    const filteredUiFields =
+        UiData.applicationFramework === 'docusaurus'
+            ? UiFields.filter(field => field.key !== 'description')
+            : UiFields.filter(field => field.key !== 'theme');
+
+    const GatewayFields = [
+        { key: 'label', label: 'Label', placeholder: 'Display Name', maxLength: 32, error: '' },
+        { key: 'applicationName', label: 'Component Name', placeholder: 'Component Name', maxLength: 32, error: '' },
+        { key: 'packageName', label: 'Package Name', placeholder: 'com.example', maxLength: 32, error: '' },
+        { key: 'serverPort', label: 'Server Port', placeholder: 'Port number', maxLength: 5, error: '' },
+    ];
+    const ServiceFields = [
+        { key: 'label', label: 'Label', placeholder: 'Display Name', maxLength: 32, error: '' },
+        { key: 'applicationName', label: 'Component Name', placeholder: 'Component Name', maxLength: 32, error: '' },
+        { key: 'packageName', label: 'Package Name', placeholder: 'com.example', maxLength: 32, error: '' },
+        { key: 'serverPort', label: 'Server Port', placeholder: 'Port number', maxLength: 5, error: '' },
+    ];
+    const GroupFields = [{ key: 'label', label: 'Name', placeholder: 'Display Name', maxLength: 32, error: '' }];
+
+    setFieldErrors(UiFields, {
+        duplicateApplicationNameError,
+        appNameCheck,
+        themeError,
+        portValidationError,
+    });
+    setFieldErrors(GatewayFields, {
+        duplicateApplicationNameError,
+        appNameCheck,
+        packageNameCheck,
+        portValidationError,
+    });
+    setFieldErrors(ServiceFields, {
+        duplicateApplicationNameError,
+        appNameCheck,
+        packageNameCheck,
+        portValidationError,
+    });
 
     return (
         <Modal isOpen={isOpen} size={isValidFrameworkAndDB ? '6xl' : ''} onClose={() => onClose(false)}>
@@ -401,221 +444,241 @@ const ApplicationModal = ({
                                     gap: isValidFrameworkAndDB ? '15px' : '',
                                 }}
                             >
-                                {nodeType !== 'Group' && nodeType !== 'Dummy' && (
+                                {nodeType === 'UI' && (
                                     <>
-                                        <FormControl>
-                                            <FormLabel>Label</FormLabel>
-                                            <Input
-                                                mb={4}
-                                                variant="outline"
-                                                id="label"
-                                                placeholder="Display Name"
-                                                borderColor={'black'}
-                                                maxLength="32"
-                                                value={
-                                                    nodeType === 'UI'
-                                                        ? UiData.label
-                                                        : nodeType === 'Gateway'
-                                                        ? GatewayData.label
-                                                        : ServiceData.label
-                                                }
-                                                onChange={e => handleData('label', e.target.value)}
-                                            />
-                                        </FormControl>
-                                        <FormControl>
-                                            <FormLabel className="required">Component Name</FormLabel>
-                                            <Input
-                                                mb={4}
-                                                variant="outline"
-                                                id="applicationName"
-                                                placeholder="Component Name"
-                                                borderColor={
-                                                    (duplicateApplicationNameError && !UiData.applicationName) ||
-                                                    (duplicateApplicationNameError && !GatewayData.applicationName) ||
-                                                    (duplicateApplicationNameError && !ServiceData.applicationName)
-                                                        ? 'red'
-                                                        : 'black'
-                                                }
-                                                maxLength="32"
-                                                value={
-                                                    nodeType === 'UI'
-                                                        ? UiData.applicationName
-                                                        : nodeType === 'Gateway'
-                                                        ? GatewayData.applicationName
-                                                        : ServiceData.applicationName
-                                                }
-                                                onChange={e => handleData('applicationName', e.target.value)}
-                                            />
-                                            {duplicateApplicationNameError && (
-                                                <Alert status="error" padding="4px" fontSize="12px" borderRadius="3px" mb={2}>
-                                                    <AlertIcon style={{ width: '14px', height: '14px' }} />
-                                                    Application name already exists. Please choose a unique name.
-                                                </Alert>
-                                            )}
-                                            {appNameCheck && (
-                                                <Alert status="error" padding="4px" fontSize="12px" borderRadius="3px" mb={2}>
-                                                    <AlertIcon style={{ width: '14px', height: '14px' }} />
-                                                    Application Name should not contain -, _ or numbers.
-                                                </Alert>
-                                            )}
-                                        </FormControl>
+                                        {filteredUiFields.map(field => (
+                                            <FormControl key={field.key}>
+                                                <FormLabel
+                                                    className={
+                                                        field.key === 'applicationName' ||
+                                                        field.key === 'serverPort' ||
+                                                        field.key === 'theme'
+                                                            ? 'required'
+                                                            : ''
+                                                    }
+                                                >
+                                                    {field.label}
+                                                </FormLabel>
+                                                {field.key === 'description' && UiData.applicationFramework !== 'docusaurus' ? (
+                                                    <Textarea
+                                                        mb={4}
+                                                        variant="outline"
+                                                        id={field.key}
+                                                        placeholder={field.placeholder}
+                                                        borderColor={'black'}
+                                                        maxLength={field.maxLength}
+                                                        value={UiData[field.key]}
+                                                        onChange={e => handleData(field.key, e.target.value)}
+                                                    />
+                                                ) : field.key === 'theme' && UiData.applicationFramework === 'docusaurus' ? (
+                                                    <Select
+                                                        mb={4}
+                                                        variant="outline"
+                                                        id="clientFramework"
+                                                        borderColor={themeError ? 'red' : 'black'}
+                                                        value={UiData.theme}
+                                                        onChange={e => handleData('theme', e.target.value)}
+                                                    >
+                                                        <option value="" disabled>
+                                                            Select an option
+                                                        </option>
+                                                        {field.options.map(option => (
+                                                            <option key={option} value={option}>
+                                                                {option}
+                                                            </option>
+                                                        ))}
+                                                    </Select>
+                                                ) : (
+                                                    <Input
+                                                        mb={4}
+                                                        variant="outline"
+                                                        id={field.key}
+                                                        placeholder={field.placeholder}
+                                                        borderColor={
+                                                            field.key === 'serverPort'
+                                                                ? portValidationError.serverPortError ||
+                                                                  portValidationError.portNumberError ||
+                                                                  portValidationError.portRangeError
+                                                                    ? 'red'
+                                                                    : 'black'
+                                                                : field.key === 'applicationName'
+                                                                ? duplicateApplicationNameError && !UiData.applicationName
+                                                                    ? 'red'
+                                                                    : 'black'
+                                                                : 'black'
+                                                        }
+                                                        onKeyPress={field.key === 'serverPort' ? handleKeyPress : ''}
+                                                        maxLength={field.maxLength}
+                                                        value={UiData[field.key]}
+                                                        onChange={e => handleData(field.key, e.target.value)}
+                                                    />
+                                                )}
+                                                {field.error && (
+                                                    <Alert status="error" padding="4px" fontSize="12px" borderRadius="3px" mb={2}>
+                                                        <AlertIcon style={{ width: '14px', height: '14px' }} />
+                                                        {field.error}
+                                                    </Alert>
+                                                )}
+                                            </FormControl>
+                                        ))}
                                     </>
                                 )}
-                                {UiData.applicationFramework === 'docusaurus' && (
-                                    <FormControl>
-                                        <FormLabel className="required">Theme</FormLabel>
-                                        <Select
-                                            mb={4}
-                                            variant="outline"
-                                            id="clientFramework"
-                                            borderColor={themeError ? 'red' : 'black'}
-                                            value={UiData.theme}
-                                            onChange={e => handleData('theme', e.target.value)}
-                                        >
-                                            <option value="" disabled>
-                                                Select an option
-                                            </option>
-                                            <option value="default">Default</option>
-                                            <option value="profile">Profile</option>
-                                        </Select>
-                                    </FormControl>
-                                )}
-                                {UiData.applicationFramework === 'docusaurus' && themeError && (
-                                    <Alert status="error" padding="4px" fontSize="12px" borderRadius="3px" mb={2}>
-                                        <AlertIcon style={{ width: '14px', height: '14px' }} />
-                                        Select a Theme.
-                                    </Alert>
-                                )}
-                                {(nodeType === 'Gateway' || nodeType === 'Service') && (
-                                    <FormControl>
-                                        <FormLabel className="required">Package Name</FormLabel>
-                                        <Input
-                                            mb={4}
-                                            variant="outline"
-                                            id="packagename"
-                                            placeholder="com.example"
-                                            borderColor={packageNameCheck ? 'red' : 'black'}
-                                            maxLength="32"
-                                            value={nodeType === 'Gateway' ? GatewayData.packageName : ServiceData.packageName}
-                                            onChange={e => handleData('packageName', e.target.value)}
-                                        />
-                                    </FormControl>
-                                )}
-                                {packageNameCheck && (
-                                    <Alert status="error" padding="4px" fontSize="12px" borderRadius="3px" mb={2}>
-                                        <AlertIcon style={{ width: '14px', height: '14px' }} />
-                                        Enter a valid package name
-                                    </Alert>
-                                )}
+                                {nodeType === 'Gateway' && (
+                                    <>
+                                        {GatewayFields.map(field => (
+                                            <FormControl key={field.key}>
+                                                <FormLabel
+                                                    className={
+                                                        field.key === 'applicationName' ||
+                                                        field.key === 'serverPort' ||
+                                                        field.key === 'packageName'
+                                                            ? 'required'
+                                                            : ''
+                                                    }
+                                                >
+                                                    {field.label}
+                                                </FormLabel>
+                                                <Input
+                                                    mb={4}
+                                                    variant="outline"
+                                                    id={field.key}
+                                                    placeholder={field.placeholder}
+                                                    borderColor={
+                                                        field.key === 'serverPort'
+                                                            ? portValidationError.serverPortError ||
+                                                              portValidationError.portNumberError ||
+                                                              portValidationError.portRangeError
+                                                                ? 'red'
+                                                                : 'black'
+                                                            : field.key === 'applicationName'
+                                                            ? duplicateApplicationNameError && !GatewayData.applicationName
+                                                                ? 'red'
+                                                                : 'black'
+                                                            : field.key === 'packageName'
+                                                            ? packageNameCheck
+                                                                ? 'red'
+                                                                : 'black'
+                                                            : 'black'
+                                                    }
+                                                    onKeyPress={field.key === 'serverPort' ? handleKeyPress : ''}
+                                                    maxLength={field.maxLength}
+                                                    value={GatewayData[field.key]}
+                                                    onChange={e => handleData(field.key, e.target.value)}
+                                                />
 
-                                {nodeType !== 'Group' && nodeType !== 'Dummy' && (
-                                    <FormControl>
-                                        <FormLabel className="required">Server Port</FormLabel>
-                                        <Input
-                                            mb={4}
-                                            variant="outline"
-                                            id="serverport"
-                                            placeholder="Port number"
-                                            borderColor={
-                                                portValidationError.serverPortError ||
-                                                portValidationError.portNumberError ||
-                                                portValidationError.portRangeError
-                                                    ? 'red'
-                                                    : 'black'
-                                            }
-                                            value={
-                                                nodeType === 'UI'
-                                                    ? UiData.serverPort
-                                                    : nodeType === 'Gateway'
-                                                    ? GatewayData.serverPort
-                                                    : ServiceData.serverPort
-                                            }
-                                            maxLength="5"
-                                            onKeyPress={handleKeyPress}
-                                            onChange={e => handleData('serverPort', e.target.value)}
-                                        />
-                                    </FormControl>
+                                                {field.error && (
+                                                    <Alert status="error" padding="4px" fontSize="12px" borderRadius="3px" mb={2}>
+                                                        <AlertIcon style={{ width: '14px', height: '14px' }} />
+                                                        {field.error}
+                                                    </Alert>
+                                                )}
+                                            </FormControl>
+                                        ))}
+                                    </>
                                 )}
+                                {nodeType === 'Service' && (
+                                    <>
+                                        {ServiceFields.map(field => (
+                                            <FormControl key={field.key}>
+                                                <FormLabel
+                                                    className={
+                                                        field.key === 'applicationName' ||
+                                                        field.key === 'serverPort' ||
+                                                        field.key === 'packageName'
+                                                            ? 'required'
+                                                            : ''
+                                                    }
+                                                >
+                                                    {field.label}
+                                                </FormLabel>
+                                                <Input
+                                                    mb={4}
+                                                    variant="outline"
+                                                    id={field.key}
+                                                    placeholder={field.placeholder}
+                                                    borderColor={
+                                                        field.key === 'serverPort'
+                                                            ? portValidationError.serverPortError ||
+                                                              portValidationError.portNumberError ||
+                                                              portValidationError.portRangeError
+                                                                ? 'red'
+                                                                : 'black'
+                                                            : field.key === 'applicationName'
+                                                            ? duplicateApplicationNameError && !ServiceData.applicationName
+                                                                ? 'red'
+                                                                : 'black'
+                                                            : field.key === 'packageName'
+                                                            ? packageNameCheck
+                                                                ? 'red'
+                                                                : 'black'
+                                                            : 'black'
+                                                    }
+                                                    onKeyPress={field.key === 'serverPort' ? handleKeyPress : ''}
+                                                    maxLength={field.maxLength}
+                                                    value={ServiceData[field.key]}
+                                                    onChange={e => handleData(field.key, e.target.value)}
+                                                />
 
-                                {portValidationError.portRequiredError && (
-                                    <Alert status="error" padding="4px" fontSize="12px" borderRadius="3px" mb={2}>
-                                        <AlertIcon style={{ width: '14px', height: '14px' }} />
-                                        {portValidationError.portRequiredError}
-                                    </Alert>
+                                                {field.error && (
+                                                    <Alert status="error" padding="4px" fontSize="12px" borderRadius="3px" mb={2}>
+                                                        <AlertIcon style={{ width: '14px', height: '14px' }} />
+                                                        {field.error}
+                                                    </Alert>
+                                                )}
+                                            </FormControl>
+                                        ))}
+                                    </>
                                 )}
-                                {portValidationError.serverPortError && (
-                                    <Alert status="error" padding="4px" fontSize="12px" borderRadius="3px" mb={2}>
-                                        <AlertIcon style={{ width: '14px', height: '14px' }} />
-                                        {portValidationError.serverPortError}
-                                    </Alert>
-                                )}
-                                {portValidationError.portNumberError && (
-                                    <Alert status="error" padding="4px" fontSize="12px" borderRadius="3px" mb={2}>
-                                        <AlertIcon style={{ width: '14px', height: '14px' }} />
-                                        {portValidationError.portNumberError}
-                                    </Alert>
-                                )}
-                                {portValidationError.portRangeError && (
-                                    <Alert status="error" padding="4px" fontSize="12px" borderRadius="3px" mb={2}>
-                                        <AlertIcon style={{ width: '14px', height: '14px' }} />
-                                        {portValidationError.portRangeError}
-                                    </Alert>
-                                )}
-                                {nodeType === 'UI' && UiData.applicationFramework !== 'docusaurus' && (
-                                    <FormControl>
-                                        <FormLabel>Description</FormLabel>
-                                        <Textarea
-                                            mb={4}
-                                            variant="outline"
-                                            id="label"
-                                            placeholder="A small description"
-                                            borderColor={'black'}
-                                            maxLength="45"
-                                            value={UiData.description}
-                                            onChange={e => handleData('description', e.target.value)}
-                                        />
-                                    </FormControl>
-                                )}
-
                                 {(nodeType === 'Group' || nodeType === 'Dummy') && (
-                                    <FormControl>
-                                        <FormLabel>Name</FormLabel>
-                                        <Input
-                                            mb={3}
-                                            variant="outline"
-                                            id="groupName"
-                                            placeholder="Display Name"
-                                            borderColor={'black'}
-                                            maxLength="32"
-                                            value={GroupData.label}
-                                            onChange={e => handleData('label', e.target.value)}
-                                        />
-                                    </FormControl>
+                                    <>
+                                        {GroupFields.map(field => (
+                                            <FormControl key={field.key}>
+                                                <FormLabel>{field.label}</FormLabel>
+                                                <Input
+                                                    mb={3}
+                                                    variant="outline"
+                                                    id={field.key}
+                                                    placeholder={field.placeholder}
+                                                    borderColor={'black'}
+                                                    maxLength={field.maxLength}
+                                                    value={GroupData[field.key]}
+                                                    onChange={e => handleData(field.key, e.target.value)}
+                                                />
+                                            </FormControl>
+                                        ))}
+                                    </>
                                 )}
-                                <FormLabel>Background Color</FormLabel>
-                                <div
-                                    style={{
-                                        display: 'flex',
-                                        flexDirection: 'row',
-                                        marginBottom: '20px',
-                                        gap: '15px',
-                                    }}
-                                >
-                                    {colors.map((color, index) => (
+                                {nodeType && (
+                                    <>
+                                        <FormLabel>Background Color</FormLabel>
                                         <div
-                                            key={index}
-                                            className="color"
                                             style={{
-                                                backgroundColor: color,
-                                                border: typeOfNode[nodeType].color === color ? '2px solid #007bff' : '1px solid #cfcfcf',
+                                                display: 'flex',
+                                                flexDirection: 'row',
+                                                marginBottom: '20px',
+                                                gap: '15px',
                                             }}
-                                            onClick={() => {
-                                                handleData('color', color);
-                                                handleColorClick(color);
-                                            }}
-                                        ></div>
-                                    ))}
-                                </div>
+                                        >
+                                            {colors.map((color, index) => (
+                                                <div
+                                                    key={index}
+                                                    className="color"
+                                                    style={{
+                                                        backgroundColor: color,
+                                                        border:
+                                                            typeOfNode[nodeType].color === color
+                                                                ? '2px solid #007bff'
+                                                                : '1px solid #cfcfcf',
+                                                    }}
+                                                    onClick={() => {
+                                                        handleData('color', color);
+                                                        handleColorClick(color);
+                                                    }}
+                                                ></div>
+                                            ))}
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         </div>
                         {isValidFrameworkAndDB && (
