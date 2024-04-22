@@ -26,7 +26,7 @@ import CodeReview from './CodeReview';
 import { useKeycloak } from '@react-keycloak/web';
 import { useHistory, useParams } from 'react-router-dom/cjs/react-router-dom.min';
 import keycloak from '../../Keycloak';
-import { CloseIcon, HamburgerIcon, EditIcon } from '@chakra-ui/icons';
+import { CloseIcon, HamburgerIcon, EditIcon,DownloadIcon } from '@chakra-ui/icons';
 import { FaCode } from 'react-icons/fa6';
 import { saveAs } from 'file-saver';
 import Generating from '../../components/Generating';
@@ -118,7 +118,7 @@ export const ReviewFlow = ({
         [setCenter],
     );
 
-    const handleEditClick = async () => {
+    const handleEditClick = async () => {            
         if (!setViewOnly) {
             try {
                 reviewData.validationStatus = 'DRAFT';
@@ -155,6 +155,35 @@ export const ReviewFlow = ({
         }
     };
 
+    const handleDownload = async () => {
+        if(reviewData.latestCodeGenerationStatus=="COMPLETED"){
+        try {
+            const response = await fetch(process.env.REACT_APP_API_BASE_URL + `/api/download/${reviewData?.project_id}`, {
+                method: 'post',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                },
+                body: JSON.stringify(reviewData),
+            });
+            const blob = await response.blob();
+            saveAs(blob, `${reviewData.request_json.projectName}.zip`);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            if (initialized && keycloak.authenticated) {
+                if (parentId === 'admin') {
+                    history.replace('/prototypes');
+                } else {
+                    history.replace('/architectures');
+                }
+            } else {
+                history.push('/canvasToCode');
+            }
+        }
+    }
+    }
+
     const handlesubmit = async () => {
         setIsGenerating(true);
         if (reviewData?.request_json?.projectName) reviewData.projectName = reviewData?.request_json?.projectName;
@@ -165,7 +194,7 @@ export const ReviewFlow = ({
 
         var blueprintId;
         try {
-            const response = await fetch(process.env.REACT_APP_API_BASE_URL + '/generate', {
+            const response = await fetch(process.env.REACT_APP_API_BASE_URL + '/api/generate', {
                 method: 'post',
                 headers: {
                     'Content-Type': 'application/json',
@@ -173,10 +202,10 @@ export const ReviewFlow = ({
                 },
                 body: JSON.stringify(reviewData),
             });
-            blueprintId = response.headers.get('blueprintid');
-            const blob = await response.blob();
+            const responseData = await response.json();
+            const initialBlueprintId = responseData.blueprintId;        
+            await new Promise(resolve => setTimeout(resolve, 10000));
             setIsGenerating(false);
-            saveAs(blob, `${reviewData.projectName}.zip`);
         } catch (error) {
             console.error(error);
         } finally {
@@ -259,18 +288,6 @@ export const ReviewFlow = ({
                                 icon={<EditIcon />}
                             />
                         </Tooltip>
-                        {!generateMode && (
-                            <Tooltip label="Generate code" placement="left" bg="blue.500" color="white" borderRadius="md" fontSize="sm">
-                                <IconButton
-                                    onClick={handlesubmit}
-                                    colorScheme="blue"
-                                    position="absolute"
-                                    top="60px"
-                                    zIndex={999}
-                                    icon={<FaCode />}
-                                />
-                            </Tooltip>
-                        )}
                         <Button hidden={true} colorScheme="blue" onClick={() => console.log(deploymentData)}>
                             Print
                         </Button>
@@ -304,18 +321,6 @@ export const ReviewFlow = ({
                         mb={2}
                         marginRight={4}
                     />
-                    {/* {!generateMode && (
-                        <IconButton
-                            onClick={handleEditClick}
-                            colorScheme="blue"
-                            position="absolute"
-                            top="50px"
-                            left="-64px"
-                            zIndex={999}
-                            icon={<EditIcon />}
-                            marginTop={4}
-                        />
-                    )} */}
                 </Box>
                 <CodeReview
                     nodeId={nodeId}

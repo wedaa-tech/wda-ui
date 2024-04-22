@@ -31,7 +31,7 @@ import AlertModal from '../../components/Modal/AlertModal';
 import resizeableNode from './../Customnodes/ResizeableNode';
 import groupNode from './../Customnodes/GroupNode';
 import { useLocation } from 'react-router-dom';
-import { useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 import './../../App.css';
 import EdgeModal from '../../components/Modal/EdgeModal';
 import { useKeycloak } from '@react-keycloak/web';
@@ -81,6 +81,7 @@ const nodeTypes = {
 };
 
 const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
+    const history = useHistory();
     const [viewOnly, setViewOnly] = useState(viewMode);
     const { keycloak, initialized } = useKeycloak();
     const [nodes, setNodes] = useState(sharedMetadata?.nodes || {});
@@ -112,7 +113,6 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     const [updated, setUpdated] = useState(false);
     const [isVisibleDialog, setVisibleDialog] = useState(false);
     const [actionModalType, setActionModalType] = useState('clear');
-    const history = useHistory();
     const [triggerExit, setTriggerExit] = useState({
         onOk: false,
         path: '',
@@ -136,6 +136,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     const [uniqueApplicationNames, setUniqueApplicationNames] = useState([]);
     const [uniquePortNumbers, setUniquePortNumbers] = useState([]);
     const [selectedColor, setSelectedColor] = useState('');
+    const [initialData,setInitialData]= useState(null)
 
     const reactFlowWrapper = useRef(null);
     const edgeUpdateSuccessful = useRef(true);
@@ -226,7 +227,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             }
             const fetchData = async () => {
                 const fetchedData = await loadData();
-                console.log("ssssss",fetchedData)
+                setInitialData(fetchedData)
                 if (fetchedData?.metadata?.nodes) {
                     setShowDiv(false);
                     setNodes(fetchedData?.metadata.nodes);
@@ -314,6 +315,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         }
     }, [nodes, edges]);
     useEffect(() => {
+        if(!isLoading  && history.location.pathname!=='/canvasToCode' && history.location.pathname!='/project/admin/architecture/create' && history.location.pathname!=`/project/${projectParentId}/architecture/create`){
         if (triggerExit.onOk) {
             handleGoToIntendedPage(triggerExit.path);
             clear();
@@ -340,6 +342,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 unblock();
             }
         };
+    }
     }, [handleGoToIntendedPage, history, triggerExit.onOk, triggerExit.path, updated,nodes]);
 
     const onPaneClick = useCallback(() => setMenu(false), [setMenu]);
@@ -576,6 +579,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         width: '120px',
                         height: '40px',
                         borderRadius: '15px',
+                        fontSize:'10px'
                     },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
@@ -597,6 +601,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         width: '120px',
                         height: '40px',
                         borderRadius: '15px',
+                        fontSize:'10px'
                     },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
@@ -607,7 +612,8 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     type: 'selectorNode1',
                     position,
                     data: { serviceDiscoveryType: serviceDiscoveryType },
-                    style: { border: '1px solid ', padding: '4px 4px', width: '120px', height: '40px', borderRadius: '15px' },
+                    style: { border: '1px solid ', padding: '4px 4px', width: '120px', height: '40px', borderRadius: '15px',fontSize:'10px'
+                },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
                 setIsServiceDiscovery(true);
@@ -621,7 +627,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     type: 'selectorNode3',
                     position,
                     data: { authenticationType: authenticationType },
-                    style: { border: '1px solid ', padding: '4px 4px', width: '120px', height: '40px', borderRadius: '15px' },
+                    style: { border: '1px solid ', padding: '4px 4px', width: '120px', height: '40px', borderRadius: '15px',fontSize:'10px' },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
                 setAuthProviderCount(1);
@@ -634,7 +640,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     type: 'selectorNode4',
                     position,
                     data: { messageBroker: messageBroker },
-                    style: { border: '1px solid', padding: '4px 4px' },
+                    style: { border: '1px solid', padding: '4px 4px',fontSize:'10px' },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
                 setIsMessageBroker(true);
@@ -651,6 +657,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         width: '120px',
                         height: '40px',
                         zIndex: -1,
+                        fontSize:'10px'
                     },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
@@ -666,6 +673,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         width: '120px',
                         height: '40px',
                         zIndex: -1,
+                        fontSize:'10px'
                     },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
@@ -678,7 +686,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     type: 'selectorNode6',
                     position,
                     data: { logManagementType: logManagementType },
-                    style: { border: '1px solid ', padding: '4px 4px', width: '120px', height: '40px', borderRadius: '15px' },
+                    style: { border: '1px solid ', padding: '4px 4px', width: '120px', height: '40px', borderRadius: '15px',fontSize:'10px' },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
                 setLogManagementCount(1);
@@ -695,6 +703,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         width: '120px',
                         height: '40px',
                         borderRadius: '15px',
+                        fontSize:'10px'
                     },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
@@ -735,6 +744,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         width: '120px',
                         height: '40px',
                         borderRadius: '15px',
+                        fontSize:'10px'
                     },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
@@ -1275,8 +1285,53 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         setopen(false);
     };
 
+    const dataCheck = (Data) => {
+        const projectName1 = Data.projectName;
+        const projectName2 = initialData.projectName ? initialData.projectName : initialData.request_json?.projectName;
+    
+        if (projectName1 !== projectName2) {
+            return true;
+        }
+    
+        const edges1 = Object.values(Data.metadata?.edges || {});
+        const edges2 = Object.values(initialData.metadata?.edges || {});
+    
+        if (edges1.length !== edges2.length) {
+            return true;
+        }
+        for (let i = 0; i < edges1.length; i++) {
+            const edge1 = edges1[i];
+            const edge2 = edges2[i];
+            if (
+                !edge1 ||
+                !edge2 ||
+                edge1.data.client !== edge2.data.client ||
+                edge1.data.server !== edge2.data.server ||
+                edge1.data.framework !== edge2.data.framework
+            ) {
+                return true;
+            }
+        }
+    
+        const nodes1 = Object.values(Data.metadata?.nodes || {});
+        const nodes2 = Object.values(initialData.metadata?.nodes || {});
+        if (nodes1.length !== nodes2.length) {
+            return true;
+        }
+    
+        for (let i = 0; i < nodes1.length; i++) {
+            const node1 = nodes1[i]?.data;
+            const node2 = nodes2[i]?.data;
+            if (JSON.stringify(node1) !== JSON.stringify(node2)) {
+                return true;
+            }
+        }
+    
+        return false;
+    };
+    
+
     const onsubmit = (Data, submit = false) => {
-        setUpdated(false);
         const NewNodes = { ...nodes };
         const NewEdges = { ...edges };
         const authEdges = [];
@@ -1384,6 +1439,19 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         setNodes(NewNodes);
         setGeneratingData(structuredClone(Data));
         Data.validationStatus = 'VALIDATED';
+
+        if(!initialData){
+            Data.version=1;
+        }
+        else {
+            if (dataCheck(Data)) {
+                Data.version = initialData.version + 1;
+            }
+            else{
+                Data.version = initialData.version
+            }
+        }
+        setUpdated(false);
         if (Data?.save) {
             var saved = Data.save;
             delete Data?.save;
@@ -1402,6 +1470,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         const generatedImage = await Functions.CreateImage(Object.values(nodes));
         if (generatedImage) Data.imageUrl = generatedImage;
         if (saved !== 'VALIDATED') data.validationStatus = 'DRAFT';
+        setInitialData(Data)
         try {
             var response;
             if (projectParentId === 'admin') {
@@ -1426,6 +1495,9 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             if (response.ok) {
                 const responseData = await response.json();
                 if (!projectProjectId) setProjectprojectId(responseData.projectId);
+                if(saved=='VALIDATED' && projectParentId=='admin'){
+                    history.replace(`/project/admin/architecture/${responseData.projectId}/details`)
+                }
                 if (saved === 'save') {
                     toast.close(toastIdRef.current);
                     toastIdRef.current = toast({
@@ -1453,42 +1525,47 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         }
     };
 
-    const generateZip = async (e, data = null) => {
-        const Data = data || generatingData;
-        const generatedImage = await Functions.CreateImage(Object.values(nodes));
-        setIsGenerating(true);
-        var blueprintId;
-        if (generatedImage) Data.imageUrl = generatedImage;
-        try {
-            const response = await fetch(process.env.REACT_APP_API_BASE_URL + '/generate', {
-                method: 'post',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
-                },
-                body: JSON.stringify(Data),
-            });         
-            blueprintId = response.headers.get('blueprintid');
-            const blob = await response.blob();
-            setIsGenerating(false);
-            saveAs(blob, `${Data.projectName}.zip`);
-        } catch (error) {
-            console.error(error);
-        } finally {
-            if (initialized && keycloak.authenticated) {
-                clear();
-                if (projectParentId === 'admin') {
-                    history.replace('/architectures');
-                } else {
-                    history.replace('/prototypes');                    
-                }
+    let completedBlueprints = [];
+    let blueprintIds = [];
+
+const generateZip = async (e, data = null) => {
+    const Data = data || generatingData;
+    const generatedImage = await Functions.CreateImage(Object.values(nodes));
+    setIsGenerating(true);
+    if (generatedImage) Data.imageUrl = generatedImage;
+    try {
+        const response = await fetch(process.env.REACT_APP_API_BASE_URL + '/api/generate', {
+            method: 'post',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+            },
+            body: JSON.stringify(Data),
+        });
+
+        const responseData = await response.json();
+        const initialBlueprintId = responseData.blueprintId;        
+        blueprintIds.push(initialBlueprintId);
+        
+        await new Promise(resolve => setTimeout(resolve, 10000));
+        setIsGenerating(false);
+    } catch (error) {
+        console.error(error);
+    } finally {
+        if (initialized && keycloak.authenticated) {
+            clear();
+            if (projectParentId === 'admin') {
+                history.replace('/architectures');
             } else {
-                clear();
-                setIsLoading(false);
-                history.push('/canvasToCode');
+                history.replace('/prototypes');
             }
+        } else {
+            clear();
+            setIsLoading(false);
+            history.push('/canvasToCode');
         }
-    };
+    }
+};
 
     const onEdgeClick = (e, edge) => {
         let updatedEdges = { ...edges };
@@ -1711,6 +1788,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                                 viewOnly={viewOnly}
                                 id={id}
                                 clear={clear}
+                                parentId={projectParentId}
                             />
                             <div
                                 style={{
@@ -1761,9 +1839,6 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                                             handleSave();
                                         }}
                                     />
-                                </Tooltip>
-                                <Tooltip label="Validate Architecture" placement="left" bg="blue.500" color="white" borderRadius="md" fontSize="sm">
-                                    <IconButton hidden={viewOnly} icon={<Icon as={GoCodeReview} />} size="md" onClick={handleSubmit} />
                                 </Tooltip>
                             </VStack>
                         </Panel>

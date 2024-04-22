@@ -105,7 +105,7 @@ function CodeReview({
             setIsGenerating(true);
             var blueprintId;
             try {
-                const response = await fetch(process.env.REACT_APP_API_BASE_URL + '/generate', {
+                const response = await fetch(process.env.REACT_APP_API_BASE_URL + '/api/generate', {
                     method: 'post',
                     headers: {
                         'Content-Type': 'application/json',
@@ -114,17 +114,16 @@ function CodeReview({
                     body: JSON.stringify(Data),
                 });
                 blueprintId = response.headers.get('blueprintid');
-                const blob = await response.blob();
+                await new Promise(resolve => setTimeout(resolve, 10000));
                 setIsGenerating(false);
-                saveAs(blob, `${Data.projectName}.zip`);
             } catch (error) {
                 console.error(error);
             } finally {
                 if (initialized && keycloak.authenticated) {
                     if (parentId === 'admin') {
-                        history.replace('/project/admin/architecture/' + Data.projectId + '/details');
+                        history.replace('/architectures');
                     } else {
-                        history.replace('/project/' + Data.parentId + '/architecture/' + Data.projectId + '/details');
+                        history.replace('/prototypes');
                     }
                 } else {
                     history.push('/canvasToCode');
@@ -158,7 +157,7 @@ function CodeReview({
                     {!docusaurusCheck && (
                         <TabPanel p={0} hidden={docusaurusCheck} height={'100%'}>
                             {!generateMode ? (
-                                <Deployment deploymentData={deploymentData} />
+                                <Deployment deploymentData={deploymentData} onSubmit={handlesubmit} generateZip={onClick} parentId={parentId}/>
                             ) : (
                                 <Infrastructure projectData={deploymentData} onSubmit={handlesubmit} generateZip={onClick} />
                             )}
@@ -174,7 +173,7 @@ function CodeReview({
                 </TabPanels>
             </Tabs>
             <Button
-                hidden={!generateMode || tabIndex === 1 || tabIndex == 2 ||tabIndex== 3 }
+                hidden={tabIndex === 1 || tabIndex == 2 ||tabIndex== 3||parentId=='admin' }
                 mx={4}
                 my={2}
                 colorScheme="blue"

@@ -71,6 +71,7 @@ const Sidebar = ({
     id,
     clear,
     setArchitectureName,
+    parentId
 }) => {
     const location = useLocation();
     const onDragStart = (event, nodeType, Name, metaData = '') => {
@@ -175,6 +176,7 @@ const Sidebar = ({
 
     const handleButtonClick = () => {
         const { isValid, message } = checkDisabled(projectData.projectName, isEmptyUiSubmit, isEmptyServiceSubmit, isEmptyGatewaySubmit, nodes, edges);
+        if (!isValid || (initialized && keycloak.authenticated && parentId!='admin') ) {
         const errorMessage = message || 'Validation failed';
         toast.close(toastIdRef.current);
         toastIdRef.current = toast({
@@ -184,13 +186,21 @@ const Sidebar = ({
             variant: 'left-accent',
             isClosable: true,
         });
+         }
         if (!isValid) {return;}
+        if(initialized && !keycloak.authenticated){
+            keycloak.login({
+                redirectUri: process.env.REACT_APP_UI_BASE_URL + location.pathname,
+            })
+        }
+        else{
         if (Object.keys(nodes).length === 1 && Object.values(nodes)[0]?.data?.applicationFramework === 'docusaurus') {
             setIsLoading(true);
         } else {
             setIsLoading(true);
         }
         onSubmit(projectData);
+    }
     };
 
     const handleToggleContent = () => {
@@ -781,26 +791,8 @@ const Sidebar = ({
                     </TabPanel>
                 </TabPanels>
             </Tabs>
-            {initialized && !keycloak.authenticated && (
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                    <Link
-                        fontSize="14px"
-                        fontWeight="bold"
-                        color="blue.500"
-                        onClick={() =>
-                            keycloak.login({
-                                redirectUri: process.env.REACT_APP_UI_BASE_URL + location.pathname,
-                            })
-                        }
-                        _hover={{ textDecoration: 'none' }}
-                    >
-                        Login to Save Your Prototype
-                    </Link>
-                </div>
-            )}
-
             <Button m={4} onClick={handleButtonClick} type="submit">
-                Validate
+                {keycloak.authenticated ? 'Next':'Login To Proceed'}
             </Button>
             {showModal && (
                 <DeployModal
