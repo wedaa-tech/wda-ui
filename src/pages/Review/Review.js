@@ -288,31 +288,6 @@ export const ReviewFlow = ({
                                 icon={<EditIcon />}
                             />
                         </Tooltip>
-                        {/* {!generateMode && (
-                            <Tooltip label="Generate code" placement="left" bg="blue.500" color="white" borderRadius="md" fontSize="sm">
-                                <IconButton
-                                    onClick={handlesubmit}
-                                    colorScheme="blue"
-                                    position="absolute"
-                                    top="60px"
-                                    zIndex={999}
-                                    icon={<FaCode />}
-                                />
-                            </Tooltip>
-                        )} */}
-                        {/* {!generateMode && reviewData && (
-                            <Tooltip label={reviewData.latestCodeGenerationStatus=="COMPLETED" ? 'Download Code': reviewData.latestCodeGenerationStatus=='IN-PROGRESS'?'Code Generation in progress':'Code not available Please click Generate'} placement="left" bg="blue.500" color="white" borderRadius="md" fontSize="sm">
-                                <IconButton
-                                    onClick={handleDownload}
-                                    colorScheme="blue"
-                                    position="absolute"
-                                    top="120px"
-                                    cursor={reviewData.latestCodeGenerationStatus=="COMPLETED" ? '': 'not-allowed'}
-                                    zIndex={999}
-                                    icon={<DownloadIcon />}
-                                />
-                            </Tooltip>
-                        )} */}
                         <Button hidden={true} colorScheme="blue" onClick={() => console.log(deploymentData)}>
                             Print
                         </Button>
@@ -346,18 +321,6 @@ export const ReviewFlow = ({
                         mb={2}
                         marginRight={4}
                     />
-                    {/* {!generateMode && (
-                        <IconButton
-                            onClick={handleEditClick}
-                            colorScheme="blue"
-                            position="absolute"
-                            top="50px"
-                            left="-64px"
-                            zIndex={999}
-                            icon={<EditIcon />}
-                            marginTop={4}
-                        />
-                    )} */}
                 </Box>
                 <CodeReview
                     nodeId={nodeId}
