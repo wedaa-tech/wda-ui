@@ -116,7 +116,6 @@ function CodeReview({
                 blueprintId = response.headers.get('blueprintid');
                 await new Promise(resolve => setTimeout(resolve, 10000));
                 setIsGenerating(false);
-                // saveAs(blob, `${Data.projectName}.zip`);
             } catch (error) {
                 console.error(error);
             } finally {

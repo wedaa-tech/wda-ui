@@ -791,24 +791,6 @@ const Sidebar = ({
                     </TabPanel>
                 </TabPanels>
             </Tabs>
-            {/* {initialized && !keycloak.authenticated && (
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                    <Link
-                        fontSize="14px"
-                        fontWeight="bold"
-                        color="blue.500"
-                        onClick={() =>
-                            keycloak.login({
-                                redirectUri: process.env.REACT_APP_UI_BASE_URL + location.pathname,
-                            })
-                        }
-                        _hover={{ textDecoration: 'none' }}
-                    >
-                        Login to Save Your Prototype
-                    </Link>
-                </div>
-            )} */}
-
             <Button m={4} onClick={handleButtonClick} type="submit">
                 {keycloak.authenticated ? 'Next':'Login To Proceed'}
             </Button>

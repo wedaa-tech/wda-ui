@@ -1525,46 +1525,6 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         }
     };
 
-    // const generateZip = async (e, data = null) => {
-    //     const Data = data || generatingData;
-    //     const generatedImage = await Functions.CreateImage(Object.values(nodes));
-    //     setIsGenerating(true);
-    //     var blueprintId;
-    //     if (generatedImage) Data.imageUrl = generatedImage;
-    //     try {
-    //         const response = await fetch(process.env.REACT_APP_API_BASE_URL + '/api/generate', {
-    //             method: 'post',
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //                 Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
-    //             },
-    //             body: JSON.stringify(Data),
-    //         });         
-    //         blueprintId = response.headers.get('blueprintid');
-    //         const data=await response.json()
-
-    //         // const blob = await response.blob();
-    //         setIsGenerating(false);
-    //         // saveAs(blob, `${Data.projectName}.zip`);
-    //     } catch (error) {
-    //         console.error(error);
-    //     } finally {
-    //         if (initialized && keycloak.authenticated) {
-    //             clear();
-    //             if (projectParentId === 'admin') {
-    //                 history.replace('/architectures');
-    //             } else {
-    //                 history.replace('/prototypes');                    
-    //             }
-    //         } else {
-    //             clear();
-    //             setIsLoading(false);
-    //             history.push('/canvasToCode');
-    //         }
-    //     }
-    // };
-
-
     let completedBlueprints = [];
     let blueprintIds = [];
 
