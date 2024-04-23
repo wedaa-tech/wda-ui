@@ -501,13 +501,11 @@ const ApplicationModal = ({
                                                         placeholder={field.placeholder}
                                                         borderColor={
                                                             field.key === 'serverPort'
-                                                                ? portValidationError.serverPortError ||
-                                                                  portValidationError.portNumberError ||
-                                                                  portValidationError.portRangeError
+                                                                ? portValidationError.message
                                                                     ? 'red'
                                                                     : 'black'
                                                                 : field.key === 'applicationName'
-                                                                ? duplicateApplicationNameError && !UiData.applicationName
+                                                                ? field.error
                                                                     ? 'red'
                                                                     : 'black'
                                                                 : 'black'
@@ -550,13 +548,11 @@ const ApplicationModal = ({
                                                     placeholder={field.placeholder}
                                                     borderColor={
                                                         field.key === 'serverPort'
-                                                            ? portValidationError.serverPortError ||
-                                                              portValidationError.portNumberError ||
-                                                              portValidationError.portRangeError
+                                                            ? portValidationError.message
                                                                 ? 'red'
                                                                 : 'black'
                                                             : field.key === 'applicationName'
-                                                            ? duplicateApplicationNameError && !GatewayData.applicationName
+                                                            ? field.error
                                                                 ? 'red'
                                                                 : 'black'
                                                             : field.key === 'packageName'
@@ -603,13 +599,11 @@ const ApplicationModal = ({
                                                     placeholder={field.placeholder}
                                                     borderColor={
                                                         field.key === 'serverPort'
-                                                            ? portValidationError.serverPortError ||
-                                                              portValidationError.portNumberError ||
-                                                              portValidationError.portRangeError
+                                                            ? portValidationError.message
                                                                 ? 'red'
                                                                 : 'black'
                                                             : field.key === 'applicationName'
-                                                            ? duplicateApplicationNameError && !ServiceData.applicationName
+                                                            ? field.error
                                                                 ? 'red'
                                                                 : 'black'
                                                             : field.key === 'packageName'
@@ -623,7 +617,6 @@ const ApplicationModal = ({
                                                     value={ServiceData[field.key]}
                                                     onChange={e => handleData(field.key, e.target.value)}
                                                 />
-
                                                 {field.error && (
                                                     <Alert status="error" padding="4px" fontSize="12px" borderRadius="3px" mb={2}>
                                                         <AlertIcon style={{ width: '14px', height: '14px' }} />
