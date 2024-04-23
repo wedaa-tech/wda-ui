@@ -93,22 +93,14 @@ const ApplicationModal = ({
         UiData.applicationName === '' || (UiData.applicationFramework === 'ui' && UiData.packageName === '') || UiData.serverPort === '';
 
     let appNameCheck = false;
-    if (nodeType === 'UI') {
-        appNameCheck = UiData.applicationName && !/^[a-zA-Z](?:[a-zA-Z0-9_-]*[a-zA-Z0-9])?$/g.test(UiData.applicationName);
-    } else if (nodeType === 'Service') {
-        appNameCheck = ServiceData.applicationName && !/^[a-zA-Z](?:[a-zA-Z0-9_-]*[a-zA-Z0-9])?$/g.test(ServiceData.applicationName);
-    } else if (nodeType === 'Gateway') {
-        appNameCheck = GatewayData.applicationName && !/^[a-zA-Z](?:[a-zA-Z0-9_-]*[a-zA-Z0-9])?$/g.test(GatewayData.applicationName);
+    const dataToCheck = nodeType === 'UI' ? UiData : nodeType === 'Service' ? ServiceData : GatewayData;
+    if (dataToCheck.applicationName && !/^[a-zA-Z](?:[a-zA-Z0-9_-]*[a-zA-Z0-9])?$/g.test(dataToCheck.applicationName)) {
+        appNameCheck = true;
     }
 
     const packageNameCheck =
-        nodeType === 'Gateway' && GatewayData.packageName && !/^[a-zA-Z](?:[a-zA-Z0-9_.-]*[a-zA-Z0-9])?$/g.test(GatewayData.packageName)
-            ? true
-            : nodeType === 'Service' &&
-              ServiceData.packageName &&
-              !/^[a-zA-Z](?:[a-zA-Z0-9_.-]*[a-zA-Z0-9])?$/g.test(ServiceData.packageName)
-            ? true
-            : false;
+        (nodeType === 'Gateway' ? GatewayData.packageName : ServiceData.packageName) &&
+        !/^[a-zA-Z](?:[a-zA-Z0-9_.-]*[a-zA-Z0-9])?$/g.test(nodeType === 'Gateway' ? GatewayData.packageName : ServiceData.packageName);
 
     const isSubmitDisabled = GatewayData.applicationName === '' || GatewayData.packageName === '' || GatewayData.serverPort === '';
     const isSubmitDisable = ServiceData.applicationName === '' || ServiceData.packageName === '' || ServiceData.serverPort === '';
@@ -132,27 +124,6 @@ const ApplicationModal = ({
         };
     }, [isOpen, onClose]);
 
-    const isClientFrameworkFilled = () => {
-        if (UiData.applicationFramework === 'ui' && UiData.clientFramework === 'no') {
-            setClientFrameworkError(true);
-            return false;
-        } else {
-            setClientFrameworkError(false);
-            return true;
-        }
-    };
-    const isApplicationFrameworkFilled = () => {
-        if (nodeType === 'UI' && UiData.applicationFramework === '') {
-            setApplicationFrameworkError(true);
-            return false;
-        } else if (nodeType === 'Service' && ServiceData.applicationFramework === '') {
-            setApplicationFrameworkError(true);
-            return false;
-        } else {
-            setApplicationFrameworkError(false);
-            return true;
-        }
-    };
     const isThemeFilled = () => {
         if (UiData.applicationFramework === 'docusaurus' && UiData.theme === '') {
             setThemeError(true);
@@ -165,13 +136,8 @@ const ApplicationModal = ({
     const validateName = value => {
         const currentApplicationName = CurrentNode?.applicationName;
         const isDuplicateName = uniqueApplicationNames.includes(value) && value !== currentApplicationName;
-        if (isDuplicateName && value.length > 0) {
-            setDuplicateApplicationNameError(true);
-            return false;
-        } else {
-            setDuplicateApplicationNameError(false);
-            return true;
-        }
+        setDuplicateApplicationNameError(isDuplicateName);
+        return !isDuplicateName;
     };
     const descriptionValidation = () => {
         const regex = /^(\s*\S+\s+){4,}\s*\S*$/;
@@ -790,8 +756,6 @@ const ApplicationModal = ({
                             <Button
                                 onClick={() =>
                                     !duplicateApplicationNameError &&
-                                    isApplicationFrameworkFilled() &&
-                                    isClientFrameworkFilled() &&
                                     isThemeFilled() &&
                                     onSubmit(UiData)
                                 }
@@ -799,12 +763,11 @@ const ApplicationModal = ({
                                 isDisabled={
                                     isEmptyUiSubmit ||
                                     appNameCheck ||
-                                    portValidationError.serverPortError ||
-                                    portValidationError.portNumberError ||
-                                    portValidationError.portRangeError ||
+                                    portValidationError.message ||
                                     clientFrameworkError ||
                                     applicationFrameworkError ||
-                                    themeError
+                                    themeError ||
+                                    duplicateApplicationNameError
                                 }
                             >
                                 Save
@@ -819,9 +782,9 @@ const ApplicationModal = ({
                                 isDisabled={
                                     isSubmitDisabled ||
                                     appNameCheck ||
-                                    portValidationError.serverPortError ||
-                                    portValidationError.portNumberError ||
-                                    portValidationError.portRangeError
+                                    portValidationError.message ||
+                                    duplicateApplicationNameError ||
+                                    packageNameCheck
                                 }
                             >
                                 Save
@@ -844,7 +807,6 @@ const ApplicationModal = ({
                             <Button
                                 onClick={() =>
                                     !duplicateApplicationNameError &&
-                                    isApplicationFrameworkFilled() &&
                                     descriptionValidation() &&
                                     handleSubmit()
                                 }
@@ -852,11 +814,11 @@ const ApplicationModal = ({
                                 isDisabled={
                                     isSubmitDisable ||
                                     appNameCheck ||
-                                    portValidationError.serverPortError ||
-                                    portValidationError.portNumberError ||
-                                    portValidationError.portRangeError ||
+                                    portValidationError.message ||
                                     applicationFrameworkError ||
-                                    isLoading
+                                    isLoading ||
+                                    duplicateApplicationNameError ||
+                                    packageNameCheck
                                 }
                             >
                                 Save
