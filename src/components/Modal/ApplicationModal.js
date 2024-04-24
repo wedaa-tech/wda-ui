@@ -22,6 +22,7 @@ import { FaSync } from 'react-icons/fa';
 import { useKeycloak } from '@react-keycloak/web';
 import './ModalStyle.css';
 import setFieldErrors from '../../utils/setFieldErrors';
+import { colors, UiFields, GatewayFields, ServiceFields, GroupFields, ServiceDescriptionField } from '../../utils/definingFileds';
 
 const ApplicationModal = ({
     nodeType,
@@ -331,35 +332,10 @@ const ApplicationModal = ({
         Group: GroupData,
         Dummy: GroupData,
     };
-    const colors = ['#ffc9c9', '#b2f2bb', '#a5d8ff', '#ffec99', '#fff'];
-    const UiFields = [
-        { key: 'label', label: 'Label', placeholder: 'Display Name', maxLength: 32, error: '' },
-        { key: 'applicationName', label: 'Component Name', placeholder: 'Component Name', maxLength: 32, error: '' },
-        { key: 'theme', label: 'Theme', placeholder: 'Select a Theme', options: ['Default', 'Profile'], error: '' },
-        { key: 'serverPort', label: 'Server Port', placeholder: 'Port number', maxLength: 5, error: '' },
-        { key: 'description', label: 'Description', placeholder: 'A small description', maxLength: 45, error: '' },
-    ];
     const filteredUiFields =
         UiData.applicationFramework === 'docusaurus'
             ? UiFields.filter(field => field.key !== 'description')
             : UiFields.filter(field => field.key !== 'theme');
-
-    const GatewayFields = [
-        { key: 'label', label: 'Label', placeholder: 'Display Name', maxLength: 32, error: '' },
-        { key: 'applicationName', label: 'Component Name', placeholder: 'Component Name', maxLength: 32, error: '' },
-        { key: 'packageName', label: 'Package Name', placeholder: 'com.example', maxLength: 32, error: '' },
-        { key: 'serverPort', label: 'Server Port', placeholder: 'Port number', maxLength: 5, error: '' },
-    ];
-    const ServiceFields = [
-        { key: 'label', label: 'Label', placeholder: 'Display Name', maxLength: 32, error: '' },
-        { key: 'applicationName', label: 'Component Name', placeholder: 'Component Name', maxLength: 32, error: '' },
-        { key: 'packageName', label: 'Package Name', placeholder: 'com.example', maxLength: 32, error: '' },
-        { key: 'serverPort', label: 'Server Port', placeholder: 'Port number', maxLength: 5, error: '' },
-    ];
-    const GroupFields = [{ key: 'label', label: 'Name', placeholder: 'Display Name', maxLength: 32, error: '' }];
-    const ServiceDescriptionField = [
-        { key: 'description', label: 'Description', placeholder: 'A small description about your service', error:'' },
-    ];
 
     setFieldErrors(UiFields, {
         duplicateApplicationNameError,
@@ -379,7 +355,7 @@ const ApplicationModal = ({
         packageNameCheck,
         portValidationError,
     });
-    setFieldErrors(ServiceDescriptionField, {descriptionError})
+    setFieldErrors(ServiceDescriptionField, { descriptionError });
 
     return (
         <Modal isOpen={isOpen} size={isValidFrameworkAndDB ? '6xl' : ''} onClose={() => onClose(false)}>
@@ -531,7 +507,6 @@ const ApplicationModal = ({
                                                     value={GatewayData[field.key]}
                                                     onChange={e => handleData(field.key, e.target.value)}
                                                 />
-
                                                 {field.error && (
                                                     <Alert status="error" padding="4px" fontSize="12px" borderRadius="3px" mb={2}>
                                                         <AlertIcon style={{ width: '14px', height: '14px' }} />
@@ -668,7 +643,6 @@ const ApplicationModal = ({
                                                 onChange={e => handleData(field.key, e.target.value)}
                                                 style={{ height: '100px', overflowY: 'scroll' }}
                                             />
-
                                             {field.error && (
                                                 <Alert status="error" padding="4px" fontSize="12px" borderRadius="3px" mb={2}>
                                                     <AlertIcon style={{ width: '14px', height: '14px' }} />
@@ -677,7 +651,6 @@ const ApplicationModal = ({
                                             )}
                                         </FormControl>
                                     ))}
-                                    
                                     <FormControl>
                                         <FormLabel
                                             style={{
