@@ -357,6 +357,9 @@ const ApplicationModal = ({
         { key: 'serverPort', label: 'Server Port', placeholder: 'Port number', maxLength: 5, error: '' },
     ];
     const GroupFields = [{ key: 'label', label: 'Name', placeholder: 'Display Name', maxLength: 32, error: '' }];
+    const ServiceDescriptionField = [
+        { key: 'description', label: 'Description', placeholder: 'A small description about your service', error:'' },
+    ];
 
     setFieldErrors(UiFields, {
         duplicateApplicationNameError,
@@ -376,6 +379,7 @@ const ApplicationModal = ({
         packageNameCheck,
         portValidationError,
     });
+    setFieldErrors(ServiceDescriptionField, {descriptionError})
 
     return (
         <Modal isOpen={isOpen} size={isValidFrameworkAndDB ? '6xl' : ''} onClose={() => onClose(false)}>
@@ -649,27 +653,31 @@ const ApplicationModal = ({
                                         gap: '15px',
                                     }}
                                 >
-                                    <FormControl>
-                                        <FormLabel>Description</FormLabel>
-                                        <Textarea
-                                            mb={4}
-                                            variant="outline"
-                                            id="description"
-                                            placeholder="A small description about your service"
-                                            borderColor={'black'}
-                                            value={ServiceData.description}
-                                            disabled={!(initialized && keycloak.authenticated)}
-                                            backgroundColor={initialized && keycloak.authenticated ? 'white' : '#f2f2f2'}
-                                            onChange={e => handleData('description', e.target.value)}
-                                            style={{ height: '100px', overflowY: 'scroll' }}
-                                        />
-                                    </FormControl>
-                                    {descriptionError && (
-                                        <Alert status="error" padding="4px" fontSize="12px" borderRadius="3px" mb={2}>
-                                            <AlertIcon style={{ width: '14px', height: '14px' }} />
-                                            Service description should contain at least 5 words.
-                                        </Alert>
-                                    )}
+                                    {ServiceDescriptionField.map(field => (
+                                        <FormControl key={field.key}>
+                                            <FormLabel>{field.label}</FormLabel>
+                                            <Textarea
+                                                mb={4}
+                                                variant="outline"
+                                                id={field.key}
+                                                placeholder={field.placeholder}
+                                                borderColor={'black'}
+                                                value={ServiceData[field.key]}
+                                                disabled={!(initialized && keycloak.authenticated)}
+                                                backgroundColor={initialized && keycloak.authenticated ? 'white' : '#f2f2f2'}
+                                                onChange={e => handleData(field.key, e.target.value)}
+                                                style={{ height: '100px', overflowY: 'scroll' }}
+                                            />
+
+                                            {field.error && (
+                                                <Alert status="error" padding="4px" fontSize="12px" borderRadius="3px" mb={2}>
+                                                    <AlertIcon style={{ width: '14px', height: '14px' }} />
+                                                    {field.error}
+                                                </Alert>
+                                            )}
+                                        </FormControl>
+                                    ))}
+                                    
                                     <FormControl>
                                         <FormLabel
                                             style={{
@@ -754,11 +762,7 @@ const ApplicationModal = ({
                     {nodeType === 'UI' && (
                         <>
                             <Button
-                                onClick={() =>
-                                    !duplicateApplicationNameError &&
-                                    isThemeFilled() &&
-                                    onSubmit(UiData)
-                                }
+                                onClick={() => !duplicateApplicationNameError && isThemeFilled() && onSubmit(UiData)}
                                 style={{ display: 'block', margin: '0 auto' }}
                                 isDisabled={
                                     isEmptyUiSubmit ||
@@ -805,11 +809,7 @@ const ApplicationModal = ({
                     {nodeType === 'Service' && (
                         <>
                             <Button
-                                onClick={() =>
-                                    !duplicateApplicationNameError &&
-                                    descriptionValidation() &&
-                                    handleSubmit()
-                                }
+                                onClick={() => !duplicateApplicationNameError && descriptionValidation() && handleSubmit()}
                                 style={{ display: 'block', margin: '0 auto' }}
                                 isDisabled={
                                     isSubmitDisable ||

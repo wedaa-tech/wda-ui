@@ -14,8 +14,11 @@ const setFieldErrors = (fields, errors) => {
             case 'serverPort':
                 field.error = errors.portValidationError ? errors.portValidationError.message : '';
                 break;
-            case 'packageName': 
+            case 'packageName':
                 field.error = errors.packageNameCheck ? 'Enter a valid package name' : '';
+                break;
+            case 'description':
+                field.error = errors.descriptionError ? 'Service description should contain at least 5 words.' : '';
                 break;
             default:
                 field.error = '';
