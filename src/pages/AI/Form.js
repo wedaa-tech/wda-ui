@@ -1,13 +1,20 @@
 import React, { useState } from 'react';
-import { VStack, Text, Divider, Box, HStack, IconButton, Spacer, Button, Flex,useStyleConfig } from '@chakra-ui/react';
+import { VStack, Text, Divider, Box, HStack, IconButton, Spacer, Button, Flex,useStyleConfig,useToast } from '@chakra-ui/react';
 import { AddIcon, DeleteIcon, EditIcon } from '@chakra-ui/icons';
 import ServiceFormModal from './ServiceFormModal';
+import { useKeycloak } from '@react-keycloak/web';
 
 function ServiceForm({ serviceData, setServiceData, onNext, onBack, title }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedService, setSelectedService] = useState(null);
     const [modalMode, setModalMode] = useState('add');
-
+    const {initialized,keycloak} = useKeycloak();
+    const toast = useToast({
+        containerStyle: {
+            width: '500px',
+            maxWidth: '100%',
+        },
+    });
     const addService = () => {
         setModalMode('add');
         setSelectedService(null);
@@ -47,7 +54,30 @@ function ServiceForm({ serviceData, setServiceData, onNext, onBack, title }) {
         setIsModalOpen(false);
     };
 
-    const handleNext = () => {
+    const handleNext = async() => {
+        const availableCredits= await fetch(process.env.REACT_APP_API_BASE_URL + '/api/credits', {
+                method: 'get',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                },
+            })
+                .then(response => response.json())
+                .then(result => {
+                    return result.availableCredits;
+                })
+                .catch(error => console.error(error));
+        const aiServices = serviceData.length;
+        if(aiServices > availableCredits){
+            toast({
+                title: 'Not enough Credits to Continue Generation. Recharge to Continue',
+                status: 'error',
+                duration: 3000,
+                variant: 'left-accent',
+                isClosable: true,
+            });
+            return
+        }
         onNext(serviceData);
     };
 

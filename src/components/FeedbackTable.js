@@ -104,7 +104,7 @@ const FeedbackPage = () => {
                     </Table>
                 )}
             </Box>
-            <Pagination FeedbacksPerPage={FeedbacksPerPage} totalFeedbacks={feedbackData.length} paginate={paginate} />
+            <Pagination itemsPerPage={FeedbacksPerPage} totalItems={feedbackData.length} paginate={paginate} />
         </Container>
     );
 };

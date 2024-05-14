@@ -155,35 +155,6 @@ export const ReviewFlow = ({
         }
     };
 
-    const handleDownload = async () => {
-        if(reviewData.latestCodeGenerationStatus=="COMPLETED"){
-        try {
-            const response = await fetch(process.env.REACT_APP_API_BASE_URL + `/api/download/${reviewData?.project_id}`, {
-                method: 'post',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
-                },
-                body: JSON.stringify(reviewData),
-            });
-            const blob = await response.blob();
-            saveAs(blob, `${reviewData.request_json.projectName}.zip`);
-        } catch (error) {
-            console.error(error);
-        } finally {
-            if (initialized && keycloak.authenticated) {
-                if (parentId === 'admin') {
-                    history.replace('/prototypes');
-                } else {
-                    history.replace('/architectures');
-                }
-            } else {
-                history.push('/canvasToCode');
-            }
-        }
-    }
-    }
-
     const handlesubmit = async () => {
         setIsGenerating(true);
         if (reviewData?.request_json?.projectName) reviewData.projectName = reviewData?.request_json?.projectName;

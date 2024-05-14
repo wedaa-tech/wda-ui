@@ -14,6 +14,8 @@ import NavBar from './components/NavBar/NavBar';
 import Generating from './components/Generating';
 import { Box } from '@chakra-ui/react';
 import AIWizard from './pages/AI/AIWizard';
+import Transactions from './pages/Transactions/TransactionView';
+import PendingTransactions from './pages/Transactions/PendingTransactions';
 
 function App() {
     return (
@@ -60,6 +62,12 @@ function App() {
                         </PrivateRoute>
                         <PrivateRoute exact path="/project/:parentId/architecture/:id/details/">
                             <Review />
+                        </PrivateRoute>
+                        <PrivateRoute exact path="/transactions" >
+                            <Transactions/>
+                        </PrivateRoute>
+                        <PrivateRoute exact path="/pendingTransactions">
+                            <PendingTransactions />
                         </PrivateRoute>
                         <Route exact path="/docs">
                             <DocHome />

@@ -13,7 +13,7 @@ import {
     Alert,
     AlertIcon,
     Textarea,
-    IconButton,    
+    IconButton,
     Tooltip,
 } from '@chakra-ui/react';
 import Editor from '@monaco-editor/react';
@@ -21,12 +21,21 @@ import validatePortNumber from '../../utils/portValidation';
 import { FaSync } from 'react-icons/fa';
 import { useKeycloak } from '@react-keycloak/web';
 
-const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick, uniqueApplicationNames, uniquePortNumbers }) => {
-    const validFrameworksAndDBs = [
-        { framework: 'spring', dbType: 'postgresql' },
-    ];
+const ServiceModal = ({
+    isOpen,
+    onClose,
+    onSubmit,
+    CurrentNode,
+    handleColorClick,
+    uniqueApplicationNames,
+    uniquePortNumbers,
+    credits,
+    aiServices,
+}) => {
+    const validFrameworksAndDBs = [{ framework: 'spring', dbType: 'postgresql' }];
 
-    const editorInstruction = '/* Below DBML is auto-generated based on component name and description.\nThis can be edited directly or regenerated for updated description.*/\n\n';
+    const editorInstruction =
+        '/* Below DBML is auto-generated based on component name and description.\nThis can be edited directly or regenerated for updated description.*/\n\n';
     const dbmlData = CurrentNode?.dbmlData ? editorInstruction + CurrentNode?.dbmlData : editorInstruction;
     const IntialState = {
         label: '',
@@ -43,7 +52,10 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
     const { initialized, keycloak } = useKeycloak();
     const [ApplicationData, setApplicationData] = useState(IntialState);
     const [isLoading, setIsLoading] = useState(false);
+    const [aiDisabled, setAiDisabled] = useState(false);
+
     useEffect(() => {
+        if (credits === 0 && !aiServices) setAiDisabled(true);
         const handleDeleteKeyPress = event => {
             if (
                 isOpen &&
@@ -82,7 +94,7 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
     };
 
     const fetchDbmlData = async () => {
-        if (initialized && keycloak.authenticated && descriptionValidation() ) {
+        if (initialized && keycloak.authenticated && descriptionValidation() && !aiDisabled) {
             setIsLoading(true);
 
             await fetch(process.env.REACT_APP_AI_CORE_URL + '/dbml', {
@@ -106,7 +118,7 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                 .then(data => {
                     setApplicationData(prev => ({
                         ...prev,
-                        dbmlData: editorInstruction+data.dbml,
+                        dbmlData: editorInstruction + data.dbml,
                     }));
                 })
                 .catch(error => {
@@ -131,7 +143,7 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
             setApplicationData(prev => ({
                 ...prev,
                 [column]: value,
-            }));            
+            }));
         } else if (column === 'serverPort') {
             const validationErrors = validatePortNumber(value, uniquePortNumbers, CurrentNode?.serverPort);
             setPortValidationError(validationErrors);
@@ -148,7 +160,7 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                     [column]: value,
                 }));
             }
-        } else if (column === 'description' ) {
+        } else if (column === 'description') {
             setApplicationData(prev => ({
                 ...prev,
                 [column]: value,
@@ -162,11 +174,11 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
     };
 
     const handleSubmit = () => {
-        if(ApplicationData?.dbmlData){
-         let dbmlScript = ApplicationData.dbmlData;
-         if (dbmlScript.startsWith(editorInstruction)) {
-            ApplicationData.dbmlData = dbmlScript.replace(editorInstruction, '');
-         }
+        if (ApplicationData?.dbmlData) {
+            let dbmlScript = ApplicationData.dbmlData;
+            if (dbmlScript.startsWith(editorInstruction)) {
+                ApplicationData.dbmlData = dbmlScript.replace(editorInstruction, '');
+            }
         }
         onSubmit(ApplicationData);
     };
@@ -200,17 +212,13 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
     };
 
     const isValidFrameworkAndDB = validFrameworksAndDBs.some(
-        combination => combination.framework === CurrentNode?.applicationFramework && combination.dbType === CurrentNode?.prodDatabaseType
+        combination => combination.framework === CurrentNode?.applicationFramework && combination.dbType === CurrentNode?.prodDatabaseType,
     );
 
     return (
-        <Modal
-            isOpen={isOpen}
-            size={isValidFrameworkAndDB ? '6xl' : ''}
-            onClose={() => onClose(false)}
-        >
+        <Modal isOpen={isOpen} size={isValidFrameworkAndDB ? '6xl' : ''} onClose={() => onClose(false)}>
             <ModalContent
-                 style={{
+                style={{
                     position: 'absolute',
                     top: '100px',
                     right: isValidFrameworkAndDB ? '10%' : '10px',
@@ -223,8 +231,7 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                 <ModalBody>
                     <div
                         style={{
-                            display:
-                                isValidFrameworkAndDB? 'flex' : 'block',
+                            display: isValidFrameworkAndDB ? 'flex' : 'block',
                             flexDirection: 'row',
                             gap: isValidFrameworkAndDB ? '40px' : '0',
                         }}
@@ -424,103 +431,154 @@ const ServiceModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorClick
                         </div>
                         {isValidFrameworkAndDB && (
                             <div style={{ flex: 1 }}>
+                                {(!initialized || !keycloak.authenticated || aiDisabled) && (
+                                    <div
+                                        style={{
+                                            position: 'absolute',
+                                            top: '50%',
+                                            left: '60%',
+                                            transform: 'translate(-50%, -50%)',
+                                            color: 'black',
+                                            zIndex: 9999, 
+                                            textAlign: 'center',
+                                        }}
+                                    >
+                                        Not enough credits, please recharge to continue
+                                    </div>
+                                )}
                                 <div
                                     style={{
                                         display: 'flex',
                                         flexDirection: 'column',
                                         gap: '15px',
+                                        filter: !initialized || !keycloak.authenticated || aiDisabled ? 'blur(4px)' : 'none',
+                                        pointerEvents: !initialized || !keycloak.authenticated || aiDisabled ? 'none' : 'auto',
                                     }}
                                 >
-                                    <FormControl>
-                                        <FormLabel>Description</FormLabel>
-                                        <Textarea
-                                            mb={4}
-                                            variant="outline"
-                                            id="description"
-                                            placeholder="A small description about your service"
-                                            borderColor={'black'}
-                                            value={ApplicationData.description}
-                                            disabled={!(initialized && keycloak.authenticated)}
-                                            backgroundColor={initialized && keycloak.authenticated ? 'white' : '#f2f2f2'}
-                                            onChange={e => handleData('description', e.target.value)}
-                                            style={{ height: '100px', overflowY: 'scroll' }}
-                                        />
-                                    </FormControl>
-                                    {descriptionError && (
-                                        <Alert status="error" padding="4px" fontSize="12px" borderRadius="3px" mb={2}>
-                                            <AlertIcon style={{ width: '14px', height: '14px' }} />
-                                            Service description should contain at least 5 words.
-                                        </Alert>
-                                    )}
-                                    <FormControl>
-                                        <FormLabel
-                                            style={{
-                                                display: 'flex',
-                                                justifyContent: 'space-between',
-                                                alignItems: 'center',
-                                                marginBottom: '0px',
-                                            }}
-                                        >
-                                            <span>DBML Scripts</span>
-                                            <Tooltip label="Generate DBML Scripts" placement="left" bg="blue.500" color="white" borderRadius="md" fontSize="sm">
-                                            <IconButton
-                                                icon={<FaSync />}
-                                                isLoading={isLoading}
-                                                onClick={fetchDbmlData}
-                                                aria-label="Refresh"
-                                                variant="link"
-                                                colorScheme="blue"
-                                                style={{ position: 'relative', fontSize: '15px' }}
-                                                spin={isLoading}
+                                    <div
+                                        style={{
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            gap: '15px',
+                                        }}
+                                    >
+                                        <FormControl>
+                                            <FormLabel>Description</FormLabel>
+                                            <Textarea
+                                                mb={4}
+                                                variant="outline"
+                                                id="description"
+                                                placeholder={
+                                                    aiDisabled
+                                                        ? 'Credits Unavailable Please Recharge'
+                                                        : 'A small description about your service'
+                                                }
+                                                borderColor={'black'}
+                                                value={ApplicationData.description}
+                                                disabled={!(initialized && keycloak.authenticated) || aiDisabled}
+                                                backgroundColor={initialized && keycloak.authenticated && !aiDisabled ? 'white' : '#f2f2f2'}
+                                                onChange={e => handleData('description', e.target.value)}
+                                                style={{ height: '100px', overflowY: 'scroll' }}
                                             />
-                                            </Tooltip>
-                                        </FormLabel>
+                                        </FormControl>
+                                        {descriptionError && (
+                                            <Alert status="error" padding="4px" fontSize="12px" borderRadius="3px" mb={2}>
+                                                <AlertIcon style={{ width: '14px', height: '14px' }} />
+                                                Service description should contain at least 5 words.
+                                            </Alert>
+                                        )}
+                                        <FormControl>
+                                            <FormLabel
+                                                style={{
+                                                    display: 'flex',
+                                                    justifyContent: 'space-between',
+                                                    alignItems: 'center',
+                                                    marginBottom: '0px',
+                                                }}
+                                            >
+                                                <span>DBML Scripts</span>
+                                                <Tooltip
+                                                    label="Generate DBML Scripts"
+                                                    placement="left"
+                                                    bg="blue.500"
+                                                    color="white"
+                                                    borderRadius="md"
+                                                    fontSize="sm"
+                                                >
+                                                    <IconButton
+                                                        icon={<FaSync />}
+                                                        isLoading={isLoading}
+                                                        onClick={fetchDbmlData}
+                                                        aria-label="Refresh"
+                                                        variant="link"
+                                                        colorScheme="blue"
+                                                        style={{ position: 'relative', fontSize: '15px' }}
+                                                        spin={isLoading}
+                                                    />
+                                                </Tooltip>
+                                            </FormLabel>
 
-                                        <div
-                                            style={{
-                                                height: '250px',
-                                                border: '1px solid black',
-                                                borderRadius: '5px',
-                                                padding: '5px',
-                                                marginBottom: '10px',
-                                                backgroundColor: initialized && keycloak.authenticated ? 'white' : '#FAFAFA',
-                                                borderColor: initialized && keycloak.authenticated ? 'black' : 'grey',
-                                                cursor: !(initialized && keycloak.authenticated) && 'not-allowed',
-                                                position: 'relative',
-                                            }}
-                                        >
-                                            {!initialized ||
-                                                (!keycloak.authenticated && (
+                                            <div
+                                                style={{
+                                                    height: '250px',
+                                                    border: '1px solid black',
+                                                    borderRadius: '5px',
+                                                    padding: '5px',
+                                                    marginBottom: '10px',
+                                                    backgroundColor:
+                                                        initialized && keycloak.authenticated && !aiDisabled ? 'white' : '#FAFAFA',
+                                                    borderColor: initialized && keycloak.authenticated && !aiDisabled ? 'black' : 'grey',
+                                                    cursor: (!(initialized && keycloak.authenticated) || aiDisabled) && 'not-allowed',
+                                                    position: 'relative',
+                                                }}
+                                            >
+                                                {!initialized ||
+                                                    (!keycloak.authenticated && (
+                                                        <div
+                                                            style={{
+                                                                position: 'absolute',
+                                                                top: '10%',
+                                                                left: '18%',
+                                                                transform: 'translate(-50%, -50%)',
+                                                                color: '#A0A0A0',
+                                                            }}
+                                                        >
+                                                            Please login to use this feature
+                                                        </div>
+                                                    ))}
+
+                                                {aiDisabled && keycloak.authenticated && (
                                                     <div
                                                         style={{
                                                             position: 'absolute',
                                                             top: '10%',
-                                                            left: '18%',
+                                                            left: '21%',
                                                             transform: 'translate(-50%, -50%)',
-                                                            color: '#E0E0E0',
+                                                            color: '#A0A0A0',
                                                         }}
                                                     >
-                                                        Please login to use this feature
+                                                        Credits Unavailable, please recharge
                                                     </div>
-                                                ))}
+                                                )}
 
-                                            {initialized && keycloak.authenticated && (
-                                                <Editor
-                                                    height="100%"
-                                                    options={{
-                                                        minimap: { enabled: false },
-                                                        lineNumbers: 'on',
-                                                        defaultLanguage: 'sql',
-                                                    }}
-                                                    defaultLanguage="sql"
-                                                    value={ApplicationData.dbmlData}
-                                                    onChange={value => {
-                                                        handleData('dbmlData', value);
-                                                    }}
-                                                />
-                                            )}
-                                        </div>
-                                    </FormControl>
+                                                {initialized && keycloak.authenticated && !aiDisabled && (
+                                                    <Editor
+                                                        height="100%"
+                                                        options={{
+                                                            minimap: { enabled: false },
+                                                            lineNumbers: 'on',
+                                                            defaultLanguage: 'sql',
+                                                        }}
+                                                        defaultLanguage="sql"
+                                                        value={ApplicationData.dbmlData}
+                                                        onChange={value => {
+                                                            handleData('dbmlData', value);
+                                                        }}
+                                                    />
+                                                )}
+                                            </div>
+                                        </FormControl>
+                                    </div>
                                 </div>
                             </div>
                         )}
