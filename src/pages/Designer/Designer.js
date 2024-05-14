@@ -126,6 +126,10 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     const [initialData, setInitialData] = useState(null);
     const [projectNames, setProjectNames] = useState([]);
     const [defaultProjectName, setDefaultProjectName] = useState('');
+    const [credits, setCredits] = useState(0);
+    const [userCredits,setUserCredits]=useState(0);
+    const [aiServices, setAiServices] = useState([]);
+
     const reactFlowWrapper = useRef(null);
     const edgeUpdateSuccessful = useRef(true);
     const toastIdRef = useRef();
@@ -213,6 +217,29 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             }
         }
     }, [initialized, keycloak?.realmAccess?.roles, keycloak?.token]);
+
+    useEffect(()=>{
+        setCredits(userCredits-aiServices.length)
+    },[userCredits,aiServices])
+
+    useEffect(() => {
+        if (initialized && keycloak?.authenticated) {
+            fetch(process.env.REACT_APP_API_BASE_URL + '/api/credits', {
+                method: 'get',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                },
+            })
+                .then(response => response.json())
+                .then(result => {
+                    if(result?.availableCredits)
+                    setUserCredits(result.availableCredits);
+                })
+                .catch(error => console.error(error));
+        }
+    }, [initialized,keycloak?.authenticated]);
+
     useEffect(() => {
         document.title = 'WeDAA';
         setShowDiv(sharedMetadata ? false : true);
@@ -460,6 +487,10 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                                 delete updatedState[change.id];
                                 return updatedState;
                             });
+
+                            if (aiServices.includes(change.id)) {
+                                setAiServices(prev => prev.filter(service => service !== change.id));
+                            }
                         } else if (change.id.startsWith('Gateway')) {
                             setIsEmptyGatewaySubmit(false);
                             setIsGatewayNodeEnabled(false);
@@ -527,8 +558,14 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                             if (UpdatedNodes[targetId]?.style) {
                                 UpdatedNodes[targetId].style.border = '1px solid red';
                             }
-                            if (sourceId.startsWith('Service') || sourceId.startsWith('UI'))
+                            if (sourceId.startsWith('Service')){
+                                if(UpdatedNodes[sourceId].data?.dbmlData)
+                                delete UpdatedNodes[sourceId].data.dbmlData;   
+                                if(UpdatedNodes[sourceId].data?.description)
+                                delete UpdatedNodes[sourceId].data.description;   
                                 delete UpdatedNodes[sourceId].data.prodDatabaseType;
+                                setAiServices(prev => prev.filter(service => service !== sourceId));
+                            }
                             setNodes(UpdatedNodes);
                         }
                         delete updatedEdges[change.id];
@@ -1002,6 +1039,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         setIsServiceDiscovery(false);
         setServiceDiscoveryCount(0);
         setUniqueApplicationNames([]);
+        setAiServices([]);
         setUniquePortNumbers([]);
         setServiceInputCheck([]);
         setUiInputCheck({});
@@ -1106,6 +1144,9 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                             ...prev,
                             [key]: false,
                         }));
+                        if(data.metadata.nodes[key].data?.description && data.metadata.nodes[key].data?.dbmlData){
+                            setAiServices(prev => [...prev,data.metadata.nodes[key].data.Id])
+                        }
                     }
                 } else if (key.toLowerCase().includes('gateway')) {
                     const id = key.split('_');
@@ -1321,6 +1362,14 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 UpdatedNodes[Isopen].style.border = '1px solid black';
             }
         }
+        if (Data?.dbmlData && Data?.description) {
+            const serviceIdExists = aiServices.includes(Data.Id);
+
+            if (!serviceIdExists) {
+                setAiServices([...aiServices, Data.Id]);
+            }
+        }
+
         setNodes(UpdatedNodes);
         setopen(false);
     };
@@ -1495,6 +1544,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             }
         }
         setUpdated(false);
+
         if (Data?.save) {
             var saved = Data.save;
             delete Data?.save;
@@ -1859,48 +1909,64 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         </Flex>
                         <Controls showInteractive={!viewOnly} />
                         <Panel position="top-right">
-                            <VStack spacing={4} alignItems={'stretch'}>
-                                <Button
-                                    hidden={true}
-                                    colorScheme="blackAlpha"
-                                    size="sm"
-                                    onClick={() => console.log(nodes, edges, userData, projectParentId, projectName, generatingData)}
-                                >
-                                    Print
-                                </Button>
-                                <DownloadButton applicationName={projectName} />
-                                <Tooltip label="Clear Canvas" placement="left" bg="blue.500" color="white" borderRadius="md" fontSize="sm">
-                                    <IconButton
-                                        hidden={viewOnly}
-                                        icon={<Icon as={FaEraser} />}
-                                        size="md"
-                                        onClick={() => {
-                                            if (!(Object.keys(nodes).length === 0)) {
-                                                setVisibleDialog(true);
-                                                setActionModalType('clear');
-                                            }
-                                        }}
-                                    />
-                                </Tooltip>
-                                <Tooltip
-                                    label="Save Architecture"
-                                    placement="left"
-                                    bg="blue.500"
-                                    color="white"
-                                    borderRadius="md"
-                                    fontSize="sm"
-                                >
-                                    <IconButton
-                                        hidden={viewOnly}
-                                        icon={<Icon as={AiOutlineSave} />}
-                                        size="md"
-                                        onClick={() => {
-                                            setUpdated(false);
-                                            handleSave();
-                                        }}
-                                    />
-                                </Tooltip>
-                            </VStack>
+                            <HStack justifyContent="flex-end" alignItems="flex-start">
+                                {initialized && keycloak?.authenticated && (
+                                    <Box bg="gray.200" p={2} borderRadius="md" mr={4}>
+                                        <Text fontSize="sm" fontWeight="bold">
+                                            Credits Available: {credits}
+                                        </Text>
+                                    </Box>
+                                )}
+                                <VStack spacing={4} alignItems={'stretch'}>
+                                    <Button
+                                        hidden={true}
+                                        colorScheme="blackAlpha"
+                                        size="sm"
+                                        onClick={() => console.log(nodes, edges, userData, projectParentId, projectName, generatingData)}
+                                    >
+                                        Print
+                                    </Button>
+                                    <DownloadButton applicationName={projectName} />
+                                    <Tooltip
+                                        label="Clear Canvas"
+                                        placement="left"
+                                        bg="blue.500"
+                                        color="white"
+                                        borderRadius="md"
+                                        fontSize="sm"
+                                    >
+                                        <IconButton
+                                            hidden={viewOnly}
+                                            icon={<Icon as={FaEraser} />}
+                                            size="md"
+                                            onClick={() => {
+                                                if (!(Object.keys(nodes).length === 0)) {
+                                                    setVisibleDialog(true);
+                                                    setActionModalType('clear');
+                                                }
+                                            }}
+                                        />
+                                    </Tooltip>
+                                    <Tooltip
+                                        label="Save Architecture"
+                                        placement="left"
+                                        bg="blue.500"
+                                        color="white"
+                                        borderRadius="md"
+                                        fontSize="sm"
+                                    >
+                                        <IconButton
+                                            hidden={viewOnly}
+                                            icon={<Icon as={AiOutlineSave} />}
+                                            size="md"
+                                            onClick={() => {
+                                                setUpdated(false);
+                                                handleSave();
+                                            }}
+                                        />
+                                    </Tooltip>
+                                </VStack>
+                            </HStack>
                         </Panel>
                         <Background gap={10} color="#f2f2f2" variant={BackgroundVariant.Lines} />
                     </ReactFlow>
@@ -1950,6 +2016,8 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         handleColorClick={handleColorClick}
                         uniqueApplicationNames={uniqueApplicationNames}
                         uniquePortNumbers={uniquePortNumbers}
+                        credits={credits}
+                        aiServices={aiServices.includes(Isopen)}
                     />
                 )}
                 {nodeType === 'Gateway' && Isopen && (
