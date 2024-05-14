@@ -110,7 +110,8 @@ const Documentation = ({ nodeData, nodeId, edgeId,dbmlMode }) => {
         Object.keys(nodeData.services).forEach(key => {
             const id= nodeData.services[key].Id
             var applicationFramework=nodeData.services[key].applicationFramework
-            if(!dbmlMode || (id.startsWith('Service') && applicationFramework=='spring')){
+            var dbmlData=nodeData.services[key]?.dbmlData
+            if(!dbmlMode || (id.startsWith('Service') && applicationFramework=='spring' && dbmlData)){
                 const serviceData = extractServiceData(nodeData.services[key]);
                 var label = (dbmlMode) ?`${nodeData.services[key].applicationName}`:`${nodeData.services[key].applicationName} (component)`
                 accordionData.push({ label: label, value: serviceData });
