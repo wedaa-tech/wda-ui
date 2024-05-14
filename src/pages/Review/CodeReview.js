@@ -9,6 +9,7 @@ import Infrastructure from './Infrastructure';
 import { useKeycloak } from '@react-keycloak/web';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 import { saveAs } from 'file-saver';
+import CreditView from './CreditView';
 
 function CodeReview({
     nodeId,
@@ -141,16 +142,24 @@ function CodeReview({
             <Tabs display={'flex'} flexDir={'column'} index={tabIndex} flexGrow={1} onChange={handleTabsChange}>
                 <TabList position={'sticky'}>
                     <Tab>Configuration</Tab>
+                    {!docusaurusCheck && serviceSpringCheck && <Tab> Credits </Tab>}
                     {/* <Tab hidden={generateMode}>Folder Structure</Tab> */}
                     {!docusaurusCheck && <Tab> IaaC </Tab>}
                     <Tab>Components</Tab>
                     {/* dbml */}
                     {!docusaurusCheck && serviceSpringCheck && <Tab> Dbml Scripts </Tab>}
+
                 </TabList>
                 <TabPanels height={'100%'}>
                     <TabPanel height={'100%'}>
                         <Documentation nodeData={deploymentData} nodeId={nodeId} edgeId={edgeId} generateMode />
                     </TabPanel>
+                    
+                    {serviceSpringCheck &&
+                    <TabPanel height={'100%'}>
+                        <CreditView deploymentData={deploymentData} />
+                    </TabPanel>
+                    }
                     {/* <TabPanel height={'inherit'}>
                         <FolderTree nodeType={nodeType} />
                     </TabPanel> */}
@@ -173,11 +182,11 @@ function CodeReview({
                 </TabPanels>
             </Tabs>
             <Button
-                hidden={tabIndex === 1 || tabIndex == 2 ||tabIndex== 3||parentId=='admin' }
+                hidden={ tabIndex==1 && !serviceSpringCheck || tabIndex == 2 ||tabIndex== 3 || tabIndex== 4 ||parentId=='admin' }
                 mx={4}
                 my={2}
                 colorScheme="blue"
-                onClick={tabIndex === 2 || docusaurusCheck ? () => onClick() : () => setTabIndex(1)}
+                onClick={tabIndex === 2 || docusaurusCheck ? () => onClick() : () => setTabIndex(tabIndex+1)}
             >
                 {docusaurusCheck ? 'Generate' : 'Next'}
             </Button>

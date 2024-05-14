@@ -1,19 +1,11 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import ReactFlow, {
-    ReactFlowProvider,
-    Controls,
-    MarkerType,
-    ConnectionLineType,
-    Background,
-    BackgroundVariant,
-    Panel,
-} from 'reactflow';
+import ReactFlow, { ReactFlowProvider, Controls, MarkerType, ConnectionLineType, Background, BackgroundVariant, Panel } from 'reactflow';
 import { AiOutlineSave } from 'react-icons/ai';
 import { saveAs } from 'file-saver';
 import { FaEraser } from 'react-icons/fa6';
 import { GoCodeReview } from 'react-icons/go';
 import 'reactflow/dist/style.css';
-import { Button, Flex, Icon, IconButton, Text, VStack, useToast, Tooltip } from '@chakra-ui/react';
+import { Button, Flex, Icon, IconButton, Text, VStack, useToast, Tooltip, Box, HStack } from '@chakra-ui/react';
 import Sidebar from './../../components/Sidebar';
 import ServiceModal from '../../components/Modal/ServiceModal';
 import UiDataModal from '../../components/Modal/UIModal';
@@ -44,7 +36,7 @@ import CustomNodeModal from '../../components/Modal/CustomNodeModal';
 import Generating from '../../components/Generating';
 import { checkDisabled } from '../../utils/submitButtonValidation';
 import CanvasContent from '../CanvasContent/CanvasContent';
-import Functions from './utils'
+import Functions from './utils';
 
 let serviceId = 1;
 let gatewayId = 1;
@@ -136,13 +128,16 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     const [uniqueApplicationNames, setUniqueApplicationNames] = useState([]);
     const [uniquePortNumbers, setUniquePortNumbers] = useState([]);
     const [selectedColor, setSelectedColor] = useState('');
-    const [initialData,setInitialData]= useState(null)
+    const [initialData, setInitialData] = useState(null);
+    const [credits, setCredits] = useState(0);
+    const [userCredits,setUserCredits]=useState(0);
+    const [aiServices, setAiServices] = useState([]);
 
     const reactFlowWrapper = useRef(null);
     const edgeUpdateSuccessful = useRef(true);
     const toastIdRef = useRef();
     const ref = useRef(null);
-    
+
     const toast = useToast({
         containerStyle: {
             width: '500px',
@@ -156,7 +151,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         },
         [history],
     );
-    
+
     useEffect(() => {
         if (initialized && keycloak?.authenticated && projectParentId !== 'admin') {
             let defaultProjectId;
@@ -201,6 +196,29 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 });
         }
     }, [initialized, keycloak?.realmAccess?.roles, keycloak?.token]);
+
+    useEffect(()=>{
+        setCredits(userCredits-aiServices.length)
+    },[userCredits,aiServices])
+
+    useEffect(() => {
+        if (initialized && keycloak?.authenticated) {
+            fetch(process.env.REACT_APP_API_BASE_URL + '/api/credits', {
+                method: 'get',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                },
+            })
+                .then(response => response.json())
+                .then(result => {
+                    if(result?.availableCredits)
+                    setUserCredits(result.availableCredits);
+                })
+                .catch(error => console.error(error));
+        }
+    }, [initialized,keycloak?.authenticated]);
+
     useEffect(() => {
         document.title = 'WeDAA';
         setShowDiv(sharedMetadata ? false : true);
@@ -227,7 +245,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             }
             const fetchData = async () => {
                 const fetchedData = await loadData();
-                setInitialData(fetchedData)
+                setInitialData(fetchedData);
                 if (fetchedData?.metadata?.nodes) {
                     setShowDiv(false);
                     setNodes(fetchedData?.metadata.nodes);
@@ -315,35 +333,39 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         }
     }, [nodes, edges]);
     useEffect(() => {
-        if(!isLoading  && history.location.pathname!=='/canvasToCode' && history.location.pathname!='/project/admin/architecture/create' && history.location.pathname!=`/project/${projectParentId}/architecture/create`){
-        if (triggerExit.onOk) {
-            handleGoToIntendedPage(triggerExit.path);
-            clear();
-            setShowDiv(true);
-            setProjectName('clear#canvas');
-        }
-        let unblock;
-        var nodesfromstorage
-        if(localStorage?.data)
-        nodesfromstorage=JSON.parse(localStorage.data)?.metadata?.nodes
-        if ((!(Object.keys(nodes).length === 0) && updated)||(nodesfromstorage && !(Object.keys(nodesfromstorage).length === 0))) {
-            unblock = history.block(location => {
-                setVisibleDialog(true);
-                setActionModalType('clearAndNav');
-                setTriggerExit(obj => ({ ...obj, path: location.pathname }));
-                if (triggerExit.onOk) {
-                    return true;
-                }
-                return false;
-            });
-        }
-        return () => {
-            if (unblock) {
-                unblock();
+        if (
+            !isLoading &&
+            history.location.pathname !== '/canvasToCode' &&
+            history.location.pathname != '/project/admin/architecture/create' &&
+            history.location.pathname != `/project/${projectParentId}/architecture/create`
+        ) {
+            if (triggerExit.onOk) {
+                handleGoToIntendedPage(triggerExit.path);
+                clear();
+                setShowDiv(true);
+                setProjectName('clear#canvas');
             }
-        };
-    }
-    }, [handleGoToIntendedPage, history, triggerExit.onOk, triggerExit.path, updated,nodes]);
+            let unblock;
+            var nodesfromstorage;
+            if (localStorage?.data) nodesfromstorage = JSON.parse(localStorage.data)?.metadata?.nodes;
+            if ((!(Object.keys(nodes).length === 0) && updated) || (nodesfromstorage && !(Object.keys(nodesfromstorage).length === 0))) {
+                unblock = history.block(location => {
+                    setVisibleDialog(true);
+                    setActionModalType('clearAndNav');
+                    setTriggerExit(obj => ({ ...obj, path: location.pathname }));
+                    if (triggerExit.onOk) {
+                        return true;
+                    }
+                    return false;
+                });
+            }
+            return () => {
+                if (unblock) {
+                    unblock();
+                }
+            };
+        }
+    }, [handleGoToIntendedPage, history, triggerExit.onOk, triggerExit.path, updated, nodes]);
 
     const onPaneClick = useCallback(() => setMenu(false), [setMenu]);
     const onNodesChange = useCallback((setShowDiv, edges, changes = []) => {
@@ -444,6 +466,10 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                                 delete updatedState[change.id];
                                 return updatedState;
                             });
+
+                            if (aiServices.includes(change.id)) {
+                                setAiServices(prev => prev.filter(service => service !== change.id));
+                            }
                         } else if (change.id.startsWith('Gateway')) {
                             setIsEmptyGatewaySubmit(false);
                             setIsGatewayNodeEnabled(false);
@@ -511,8 +537,14 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                             if (UpdatedNodes[targetId]?.style) {
                                 UpdatedNodes[targetId].style.border = '1px solid red';
                             }
-                            if (sourceId.startsWith('Service') || sourceId.startsWith('UI'))
+                            if (sourceId.startsWith('Service')){
+                                if(UpdatedNodes[sourceId].data?.dbmlData)
+                                delete UpdatedNodes[sourceId].data.dbmlData;   
+                                if(UpdatedNodes[sourceId].data?.description)
+                                delete UpdatedNodes[sourceId].data.description;   
                                 delete UpdatedNodes[sourceId].data.prodDatabaseType;
+                                setAiServices(prev => prev.filter(service => service !== sourceId));
+                            }
                             setNodes(UpdatedNodes);
                         }
                         delete updatedEdges[change.id];
@@ -579,7 +611,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         width: '120px',
                         height: '40px',
                         borderRadius: '15px',
-                        fontSize:'10px'
+                        fontSize: '10px',
                     },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
@@ -601,7 +633,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         width: '120px',
                         height: '40px',
                         borderRadius: '15px',
-                        fontSize:'10px'
+                        fontSize: '10px',
                     },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
@@ -612,8 +644,14 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     type: 'selectorNode1',
                     position,
                     data: { serviceDiscoveryType: serviceDiscoveryType },
-                    style: { border: '1px solid ', padding: '4px 4px', width: '120px', height: '40px', borderRadius: '15px',fontSize:'10px'
-                },
+                    style: {
+                        border: '1px solid ',
+                        padding: '4px 4px',
+                        width: '120px',
+                        height: '40px',
+                        borderRadius: '15px',
+                        fontSize: '10px',
+                    },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
                 setIsServiceDiscovery(true);
@@ -627,7 +665,14 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     type: 'selectorNode3',
                     position,
                     data: { authenticationType: authenticationType },
-                    style: { border: '1px solid ', padding: '4px 4px', width: '120px', height: '40px', borderRadius: '15px',fontSize:'10px' },
+                    style: {
+                        border: '1px solid ',
+                        padding: '4px 4px',
+                        width: '120px',
+                        height: '40px',
+                        borderRadius: '15px',
+                        fontSize: '10px',
+                    },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
                 setAuthProviderCount(1);
@@ -640,7 +685,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     type: 'selectorNode4',
                     position,
                     data: { messageBroker: messageBroker },
-                    style: { border: '1px solid', padding: '4px 4px',fontSize:'10px' },
+                    style: { border: '1px solid', padding: '4px 4px', fontSize: '10px' },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
                 setIsMessageBroker(true);
@@ -657,7 +702,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         width: '120px',
                         height: '40px',
                         zIndex: -1,
-                        fontSize:'10px'
+                        fontSize: '10px',
                     },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
@@ -673,7 +718,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         width: '120px',
                         height: '40px',
                         zIndex: -1,
-                        fontSize:'10px'
+                        fontSize: '10px',
                     },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
@@ -686,7 +731,14 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     type: 'selectorNode6',
                     position,
                     data: { logManagementType: logManagementType },
-                    style: { border: '1px solid ', padding: '4px 4px', width: '120px', height: '40px', borderRadius: '15px',fontSize:'10px' },
+                    style: {
+                        border: '1px solid ',
+                        padding: '4px 4px',
+                        width: '120px',
+                        height: '40px',
+                        borderRadius: '15px',
+                        fontSize: '10px',
+                    },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
                 setLogManagementCount(1);
@@ -703,7 +755,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         width: '120px',
                         height: '40px',
                         borderRadius: '15px',
-                        fontSize:'10px'
+                        fontSize: '10px',
                     },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
@@ -744,7 +796,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         width: '120px',
                         height: '40px',
                         borderRadius: '15px',
-                        fontSize:'10px'
+                        fontSize: '10px',
                     },
                 };
                 setNodes(nds => ({ ...nds, [newNode.id]: newNode }));
@@ -958,7 +1010,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     );
 
     const clear = () => {
-        localStorage.removeItem("data");
+        localStorage.removeItem('data');
         setProjectName('clear#canvas');
         setuserData({});
         setNodes({});
@@ -966,6 +1018,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         setIsServiceDiscovery(false);
         setServiceDiscoveryCount(0);
         setUniqueApplicationNames([]);
+        setAiServices([]);
         setUniquePortNumbers([]);
         setServiceInputCheck([]);
         setUiInputCheck({});
@@ -1066,6 +1119,9 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                             ...prev,
                             [key]: false,
                         }));
+                        if(data.metadata.nodes[key].data?.description && data.metadata.nodes[key].data?.dbmlData){
+                            setAiServices(prev => [...prev,data.metadata.nodes[key].data.Id])
+                        }
                     }
                 } else if (key.toLowerCase().includes('gateway')) {
                     const id = key.split('_');
@@ -1146,7 +1202,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             if (max_dummyId !== -1) dummyId = max_dummyId + 1;
         }
     };
-    
+
     const onChange = Data => {
         setUpdated(true);
         if (Data.applicationFramework === 'ui' || Data.applicationFramework === 'docusaurus') {
@@ -1281,21 +1337,29 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 UpdatedNodes[Isopen].style.border = '1px solid black';
             }
         }
+        if (Data?.dbmlData && Data?.description) {
+            const serviceIdExists = aiServices.includes(Data.Id);
+
+            if (!serviceIdExists) {
+                setAiServices([...aiServices, Data.Id]);
+            }
+        }
+
         setNodes(UpdatedNodes);
         setopen(false);
     };
 
-    const dataCheck = (Data) => {
+    const dataCheck = Data => {
         const projectName1 = Data.projectName;
         const projectName2 = initialData.projectName ? initialData.projectName : initialData.request_json?.projectName;
-    
+
         if (projectName1 !== projectName2) {
             return true;
         }
-    
+
         const edges1 = Object.values(Data.metadata?.edges || {});
         const edges2 = Object.values(initialData.metadata?.edges || {});
-    
+
         if (edges1.length !== edges2.length) {
             return true;
         }
@@ -1314,13 +1378,13 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 return true;
             }
         }
-    
+
         const nodes1 = Object.values(Data.metadata?.nodes || {});
         const nodes2 = Object.values(initialData.metadata?.nodes || {});
         if (nodes1.length !== nodes2.length) {
             return true;
         }
-    
+
         for (let i = 0; i < nodes1.length; i++) {
             const node1 = nodes1[i]?.data;
             const node2 = nodes2[i]?.data;
@@ -1328,10 +1392,9 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 return true;
             }
         }
-    
+
         return false;
     };
-    
 
     const onsubmit = (Data, submit = false) => {
         const NewNodes = { ...nodes };
@@ -1442,18 +1505,17 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         setGeneratingData(structuredClone(Data));
         Data.validationStatus = 'VALIDATED';
 
-        if(!initialData){
-            Data.version=1;
-        }
-        else {
+        if (!initialData) {
+            Data.version = 1;
+        } else {
             if (dataCheck(Data)) {
                 Data.version = initialData.version + 1;
-            }
-            else{
-                Data.version = initialData.version
+            } else {
+                Data.version = initialData.version;
             }
         }
         setUpdated(false);
+
         if (Data?.save) {
             var saved = Data.save;
             delete Data?.save;
@@ -1472,7 +1534,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         const generatedImage = await Functions.CreateImage(Object.values(nodes));
         if (generatedImage) Data.imageUrl = generatedImage;
         if (saved !== 'VALIDATED') data.validationStatus = 'DRAFT';
-        setInitialData(Data)
+        setInitialData(Data);
         try {
             var response;
             if (projectParentId === 'admin') {
@@ -1497,8 +1559,8 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             if (response.ok) {
                 const responseData = await response.json();
                 if (!projectProjectId) setProjectprojectId(responseData.projectId);
-                if(saved=='VALIDATED' && projectParentId=='admin'){
-                    history.replace(`/project/admin/architecture/${responseData.projectId}/details`)
+                if (saved == 'VALIDATED' && projectParentId == 'admin') {
+                    history.replace(`/project/admin/architecture/${responseData.projectId}/details`);
                 }
                 if (saved === 'save') {
                     toast.close(toastIdRef.current);
@@ -1530,44 +1592,44 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     let completedBlueprints = [];
     let blueprintIds = [];
 
-const generateZip = async (e, data = null) => {
-    const Data = data || generatingData;
-    const generatedImage = await Functions.CreateImage(Object.values(nodes));
-    setIsGenerating(true);
-    if (generatedImage) Data.imageUrl = generatedImage;
-    try {
-        const response = await fetch(process.env.REACT_APP_API_BASE_URL + '/api/generate', {
-            method: 'post',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
-            },
-            body: JSON.stringify(Data),
-        });
+    const generateZip = async (e, data = null) => {
+        const Data = data || generatingData;
+        const generatedImage = await Functions.CreateImage(Object.values(nodes));
+        setIsGenerating(true);
+        if (generatedImage) Data.imageUrl = generatedImage;
+        try {
+            const response = await fetch(process.env.REACT_APP_API_BASE_URL + '/api/generate', {
+                method: 'post',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                },
+                body: JSON.stringify(Data),
+            });
 
-        const responseData = await response.json();
-        const initialBlueprintId = responseData.blueprintId;        
-        blueprintIds.push(initialBlueprintId);
-        
-        await new Promise(resolve => setTimeout(resolve, 10000));
-        setIsGenerating(false);
-    } catch (error) {
-        console.error(error);
-    } finally {
-        if (initialized && keycloak.authenticated) {
-            clear();
-            if (projectParentId === 'admin') {
-                history.replace('/architectures');
+            const responseData = await response.json();
+            const initialBlueprintId = responseData.blueprintId;
+            blueprintIds.push(initialBlueprintId);
+
+            await new Promise(resolve => setTimeout(resolve, 10000));
+            setIsGenerating(false);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            if (initialized && keycloak.authenticated) {
+                clear();
+                if (projectParentId === 'admin') {
+                    history.replace('/architectures');
+                } else {
+                    history.replace('/prototypes');
+                }
             } else {
-                history.replace('/prototypes');
+                clear();
+                setIsLoading(false);
+                history.push('/canvasToCode');
             }
-        } else {
-            clear();
-            setIsLoading(false);
-            history.push('/canvasToCode');
         }
-    }
-};
+    };
 
     const onEdgeClick = (e, edge) => {
         let updatedEdges = { ...edges };
@@ -1706,7 +1768,7 @@ const generateZip = async (e, data = null) => {
             isClosable: true,
         });
     };
-    
+
     if (isLoading) {
         if (isGenerating) return <Generating generatingData={generatingData} />;
         return (
@@ -1740,7 +1802,9 @@ const generateZip = async (e, data = null) => {
                         onEdgesChange={changes => onEdgesChange(nodes, changes)}
                         onConnect={params => onConnect(params, nodes)}
                         onInit={setReactFlowInstance}
-                        onNodeDoubleClick={(e,node) => Functions.onclick(e, node, setNodeType, setCurrentNode, setopen, setNodeClick, nodes)}
+                        onNodeDoubleClick={(e, node) =>
+                            Functions.onclick(e, node, setNodeType, setCurrentNode, setopen, setNodeClick, nodes)
+                        }
                         onDrop={e =>
                             onDrop(e, ServiceDiscoveryCount, MessageBrokerCount, LogManagemntCount, AuthProviderCount, UICount, docsCount)
                         }
@@ -1749,7 +1813,7 @@ const generateZip = async (e, data = null) => {
                         deleteKeyCode={['Backspace', 'Delete']}
                         fitView
                         // onEdgeUpdate={(oldEdge, newConnection) => onEdgeUpdate(nodes, oldEdge, newConnection)}
-                        onEdgeUpdateStart={()=>Functions.onEdgeUpdateStart(edgeUpdateSuccessful)}
+                        onEdgeUpdateStart={() => Functions.onEdgeUpdateStart(edgeUpdateSuccessful)}
                         onEdgeUpdateEnd={(_, edge) => Functions.onEdgeUpdateEnd(nodes, edge)}
                         onEdgeClick={!viewOnly ? onEdgeClick : ''}
                         defaultViewport={defaultViewport}
@@ -1757,7 +1821,7 @@ const generateZip = async (e, data = null) => {
                         elementsSelectable={!viewOnly}
                         nodesConnectable={!viewOnly}
                         onPaneClick={onPaneClick}
-                        onNodeContextMenu={()=>Functions.onNodeContextMenu(setMenu)}
+                        onNodeContextMenu={() => Functions.onNodeContextMenu(setMenu)}
                     >
                         {menu && <ContextMenu onClick={onPaneClick} {...menu} onEditClick={!viewOnly ? onclick : () => {}} />}
                         <Flex height={'inherit'}>
@@ -1800,49 +1864,72 @@ const generateZip = async (e, data = null) => {
                                     width: '100%',
                                     height: '100%',
                                     backgroundColor: Isopen ? 'rgba(0, 0, 0, 0.6)' : 'transparent',
-                                    zIndex: 9999, 
+                                    zIndex: 9999,
                                     display: Isopen ? 'block' : 'none',
                                 }}
                             />
-                            {showDiv && <CanvasContent/>}
+                            {showDiv && <CanvasContent />}
                         </Flex>
                         <Controls showInteractive={!viewOnly} />
                         <Panel position="top-right">
-                            <VStack spacing={4} alignItems={'stretch'}>
-                                <Button
-                                    hidden={true}
-                                    colorScheme="blackAlpha"
-                                    size="sm"
-                                    onClick={() => console.log(nodes, edges, userData, projectParentId, projectName, generatingData)}
-                                >
-                                    Print
-                                </Button>
-                                <DownloadButton applicationName={projectName} />
-                                <Tooltip label="Clear Canvas" placement="left" bg="blue.500" color="white" borderRadius="md" fontSize="sm">
-                                    <IconButton
-                                        hidden={viewOnly}
-                                        icon={<Icon as={FaEraser} />}
-                                        size="md"
-                                        onClick={() => {
-                                            if (!(Object.keys(nodes).length === 0)) {
-                                                setVisibleDialog(true);
-                                                setActionModalType('clear');
-                                            }
-                                        }}
-                                    />
-                                </Tooltip>
-                                <Tooltip label="Save Architecture" placement="left" bg="blue.500" color="white" borderRadius="md" fontSize="sm">
-                                    <IconButton
-                                        hidden={viewOnly}
-                                        icon={<Icon as={AiOutlineSave} />}
-                                        size="md"
-                                        onClick={() => {
-                                            setUpdated(false);
-                                            handleSave();
-                                        }}
-                                    />
-                                </Tooltip>
-                            </VStack>
+                            <HStack justifyContent="flex-end" alignItems="flex-start">
+                                {initialized && keycloak?.authenticated && (
+                                    <Box bg="gray.200" p={2} borderRadius="md" mr={4}>
+                                        <Text fontSize="sm" fontWeight="bold">
+                                            Credits Available: {credits}
+                                        </Text>
+                                    </Box>
+                                )}
+                                <VStack spacing={4} alignItems={'stretch'}>
+                                    <Button
+                                        hidden={true}
+                                        colorScheme="blackAlpha"
+                                        size="sm"
+                                        onClick={() => console.log(nodes, edges, userData, projectParentId, projectName, generatingData)}
+                                    >
+                                        Print
+                                    </Button>
+                                    <DownloadButton applicationName={projectName} />
+                                    <Tooltip
+                                        label="Clear Canvas"
+                                        placement="left"
+                                        bg="blue.500"
+                                        color="white"
+                                        borderRadius="md"
+                                        fontSize="sm"
+                                    >
+                                        <IconButton
+                                            hidden={viewOnly}
+                                            icon={<Icon as={FaEraser} />}
+                                            size="md"
+                                            onClick={() => {
+                                                if (!(Object.keys(nodes).length === 0)) {
+                                                    setVisibleDialog(true);
+                                                    setActionModalType('clear');
+                                                }
+                                            }}
+                                        />
+                                    </Tooltip>
+                                    <Tooltip
+                                        label="Save Architecture"
+                                        placement="left"
+                                        bg="blue.500"
+                                        color="white"
+                                        borderRadius="md"
+                                        fontSize="sm"
+                                    >
+                                        <IconButton
+                                            hidden={viewOnly}
+                                            icon={<Icon as={AiOutlineSave} />}
+                                            size="md"
+                                            onClick={() => {
+                                                setUpdated(false);
+                                                handleSave();
+                                            }}
+                                        />
+                                    </Tooltip>
+                                </VStack>
+                            </HStack>
                         </Panel>
                         <Background gap={10} color="#f2f2f2" variant={BackgroundVariant.Lines} />
                     </ReactFlow>
@@ -1889,6 +1976,8 @@ const generateZip = async (e, data = null) => {
                         handleColorClick={handleColorClick}
                         uniqueApplicationNames={uniqueApplicationNames}
                         uniquePortNumbers={uniquePortNumbers}
+                        credits={credits}
+                        aiServices={aiServices.includes(Isopen)}
                     />
                 )}
                 {nodeType === 'Gateway' && Isopen && (
