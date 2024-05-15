@@ -1305,6 +1305,8 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             if (
                 !edge1 ||
                 !edge2 ||
+                !edge1.data ||
+                !edge2.data ||
                 edge1.data.client !== edge2.data.client ||
                 edge1.data.server !== edge2.data.server ||
                 edge1.data.framework !== edge2.data.framework
