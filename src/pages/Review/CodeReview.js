@@ -45,7 +45,7 @@ function CodeReview({
         for (const serviceId in deploymentData.services) {
             if (deploymentData.services[serviceId].Id.startsWith("Service")) {
                 const service = deploymentData.services[serviceId];
-                if (service.applicationFramework === "spring" && service.prodDatabaseType === "postgresql" && service?.dbmlData!='') {
+                if (service.applicationFramework === "spring" && service.prodDatabaseType === "postgresql" && service?.dbmlData) {
                     setServiceSpringCheck(true);
                     break;
                 }

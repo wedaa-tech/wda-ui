@@ -10,7 +10,7 @@ function TitleDescriptionForm({ title: initialTitle, description: initialDescrip
     const containsNoSpecialCharacters = /^[a-zA-Z0-9 ]+$/;
     const { initialized, keycloak } = useKeycloak();
     const [isLoading, setIsLoading] = useState(false);
-    const [isEditorAvailable, setIsEditorAvailable] = useState(false);
+    const [isEditorAvailable, setIsEditorAvailable] = useState(initialDescription);
 
     const toast = useToast({
         containerStyle: {

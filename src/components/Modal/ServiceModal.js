@@ -443,7 +443,7 @@ const ServiceModal = ({
                                             textAlign: 'center',
                                         }}
                                     >
-                                        Not enough credits, please recharge to continue
+                                        Not enough credits for AI assisted Generation, Please recharge to continue.
                                     </div>
                                 )}
                                 <div

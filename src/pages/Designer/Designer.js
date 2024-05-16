@@ -153,7 +153,9 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     );
 
     useEffect(() => {
-        if (initialized && keycloak?.authenticated && projectParentId !== 'admin') {
+        if(initialized && keycloak?.authenticated){
+            loadCredits();
+        if (projectParentId !== 'admin') {
             let defaultProjectId;
             fetch(process.env.REACT_APP_API_BASE_URL + '/api/projects', {
                 method: 'get',
@@ -195,29 +197,12 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     console.error(error);
                 });
         }
+    }
     }, [initialized, keycloak?.realmAccess?.roles, keycloak?.token]);
 
     useEffect(()=>{
         setCredits(userCredits-aiServices.length)
     },[userCredits,aiServices])
-
-    useEffect(() => {
-        if (initialized && keycloak?.authenticated) {
-            fetch(process.env.REACT_APP_API_BASE_URL + '/api/credits', {
-                method: 'get',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
-                },
-            })
-                .then(response => response.json())
-                .then(result => {
-                    if(result?.availableCredits)
-                    setUserCredits(result.availableCredits);
-                })
-                .catch(error => console.error(error));
-        }
-    }, [initialized,keycloak?.authenticated]);
 
     useEffect(() => {
         document.title = 'WeDAA';
@@ -294,6 +279,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             setUpdated(false);
         };
     }, []);
+
     useEffect(() => {
         if (update && userData.project_id) {
             var data = { ...userData };
@@ -332,6 +318,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             }
         }
     }, [nodes, edges]);
+    
     useEffect(() => {
         if (
             !isLoading &&
@@ -1049,6 +1036,34 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         });
     };
 
+        const loadCredits = async () => {
+        if (initialized && keycloak?.authenticated) {
+            try{
+                var response = await fetch(process.env.REACT_APP_API_BASE_URL + '/api/credits', {
+                method: 'get',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                },
+            })
+            if(response.ok){
+                const result= await response.json();
+                if(result?.availableCredits){
+                    setUserCredits(()=> result.availableCredits);
+                    return result.availableCredits;
+                }
+                else return 0;
+            }
+            else {
+                throw new Error(`Fetch request failed with status: ${response.status}`);
+            }
+            }
+            catch(error){ 
+                console.error(error)
+            };
+        }
+    }
+
     const loadData = async () => {
         if (initialized && projectParentId && id) {
             try {
@@ -1087,8 +1102,9 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         }
     };
 
-    const initData = data => {
+    const initData = async(data) => {
         if (data != null && !(Object.keys(data).length === 0) && data?.metadata?.nodes) {
+            var fetchedCredits = await loadCredits();
             const nodes = data?.metadata?.nodes;
             if (data?.projectName) setProjectName(data.projectName);
             if (!(Object.keys(nodes).length === 0)) setShowDiv(false);
@@ -1119,8 +1135,9 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                             ...prev,
                             [key]: false,
                         }));
-                        if(data.metadata.nodes[key].data?.description && data.metadata.nodes[key].data?.dbmlData){
+                        if(data.metadata.nodes[key].data?.description && data.metadata.nodes[key].data?.dbmlData && fetchedCredits>0){
                             setAiServices(prev => [...prev,data.metadata.nodes[key].data.Id])
+                            fetchedCredits--;
                         }
                     }
                 } else if (key.toLowerCase().includes('gateway')) {
@@ -1340,7 +1357,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         if (Data?.dbmlData && Data?.description) {
             const serviceIdExists = aiServices.includes(Data.Id);
 
-            if (!serviceIdExists) {
+            if (!serviceIdExists && credits>0) {
                 setAiServices([...aiServices, Data.Id]);
             }
         }
@@ -1424,6 +1441,14 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         for (const key in NewNodes) {
             const Node = NewNodes[key];
             delete Node.data?.color;
+            if(Node.id.startsWith('Service') && !aiServices.includes(Node.id)){
+                if(Node.data?.description){
+                    delete Node.data.description;
+                }
+                if(Node.data?.dbmlData){
+                    delete Node.data.dbmlData;
+                }
+            }
             if (Node.id.startsWith('Service') || Node.id.startsWith('UI') || Node.id.startsWith('Gateway')) {
                 if (Service_Discovery_Data && (serviceRegistryEdges.length === 0 || serviceRegistryEdges.includes(Node.id))) {
                     Node.data.serviceDiscoveryType = Service_Discovery_Data;
@@ -1515,14 +1540,12 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             }
         }
         setUpdated(false);
-
         if (Data?.save) {
             var saved = Data.save;
             delete Data?.save;
             SaveData(Data, saved);
         } else {
             SaveData(Data, 'VALIDATED');
-            setIsLoading(true);
         }
         if (submit) {
             generateZip(null, Data);
@@ -1562,6 +1585,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 if (saved == 'VALIDATED' && projectParentId == 'admin') {
                     history.replace(`/project/admin/architecture/${responseData.projectId}/details`);
                 }
+                if (!projectProjectId) setProjectprojectId(responseData.projectId);
                 if (saved === 'save') {
                     toast.close(toastIdRef.current);
                     toastIdRef.current = toast({

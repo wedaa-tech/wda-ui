@@ -194,10 +194,12 @@ const Sidebar = ({
             })
         }
         else{
+        if(parentId!="admin"){
         if (Object.keys(nodes).length === 1 && Object.values(nodes)[0]?.data?.applicationFramework === 'docusaurus') {
             setIsLoading(true);
         } else {
             setIsLoading(true);
+        }
         }
         onSubmit(projectData);
     }
