@@ -23,7 +23,7 @@ const NavBar = () => {
     useEffect(() => {
         if (initialized && keycloak?.authenticated) {
         const fetchData = async () => {
-                fetch(process.env.REACT_APP_API_BASE_URL + '/api/credits', {
+            fetch(process.env.REACT_APP_API_BASE_URL + '/api/credits', {
                     method: 'get',
                     headers: {
                         'Content-Type': 'application/json',
@@ -39,8 +39,7 @@ const NavBar = () => {
             }
     
         fetchData();
-    
-        const intervalId = setInterval(fetchData, 3000); 
+        const intervalId = setInterval(fetchData, 10000); 
     
         return () => clearInterval(intervalId);
     };

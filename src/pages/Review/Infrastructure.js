@@ -321,10 +321,10 @@ const Infrastructure = ({ onSubmit, projectData, generateZip }) => {
 
     return (
         <Flex direction={'column'} width={'100%'} h={'100%'}>
-            <Text fontSize="md" pt={2} px={8} font="15px">
+            <Text fontSize="md" pt={2} px={8} font="14px">
                 Select, Customize and Deploy Your Infrastructure with Ease!
             </Text>
-            <Box maxH={'calc(100vh - 242px)'} overflowY={'hidden'} px={4} py={1} flexGrow={1}>
+            <Box maxH={'calc(100vh - 242px)'} overflowY={'hidden'} px={4} flexGrow={1}>
                 {/* <Box shadow={'md'}> */}
                 <HStack height={'120px'} justifyContent={'space-evenly'}>
                     <Box

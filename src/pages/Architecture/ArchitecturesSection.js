@@ -197,7 +197,27 @@ function ArchitecturesSection() {
                               });
                               setArchitectures(updatedArchitectures);
                             return false;
-                        } else if (status.status === codeGenerationStatus.IN_PROGRESS) {
+                        } else if(status.status === codeGenerationStatus.FAILED) {
+                            toast.close(toastIdRef.current);
+                            const projectName = archslist.find(project => project.project_id === blueprintId)?.projectName || blueprintId;
+                            toastIdRef.current = toast({
+                                title: `${projectName} failed to generate.Please Try again after some time.`,
+                                status: 'error',
+                                duration: 3000,
+                                variant: 'left-accent',
+                                isClosable: true,
+                            });
+                            completedBlueprints.push(blueprintId);
+                            const updatedArchitectures = archslist.map(architecture => {
+                                if (architecture.project_id === blueprintId) {
+                                  return { ...architecture, latestCodeGenerationStatus: codeGenerationStatus.FAILED };
+                                } else {
+                                  return architecture;
+                                }
+                              });
+                              setArchitectures(updatedArchitectures);
+                            return false;
+                        }else if (status.status === codeGenerationStatus.IN_PROGRESS) {
                             return true;
                         }
                     }
