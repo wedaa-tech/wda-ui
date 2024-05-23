@@ -8,18 +8,18 @@ const validatePortNumber = (port, uniquePortNumbers, currentPort) => {
         const portNumberRangeCheck = Number(port) < 1024 || Number(port) > 65535;
 
         if (isDuplicatePort) {
-            portValidationError.portNumberError = 'Port Number already exists. Please choose a unique Port Number.';
+            portValidationError.message = 'Port Number already exists. Please choose a unique Port Number.';
         }
 
         if (serverPortCheck) {
-            portValidationError.serverPortError = 'The input cannot contain a reserved port number.';
+            portValidationError.message = 'The input cannot contain a reserved port number.';
         }
 
         if (portNumberRangeCheck) {
-            portValidationError.portRangeError = 'Port Number is out of the valid range.';
+            portValidationError.message = 'Port Number is out of the valid range.';
         }
     } else {
-        portValidationError.portRequiredError = 'Port number is required.';
+        portValidationError.message = 'Port number is required.';
     }
 
     return portValidationError;
