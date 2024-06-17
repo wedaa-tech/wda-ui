@@ -129,7 +129,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     const [credits, setCredits] = useState(0);
     const [userCredits,setUserCredits]=useState(0);
     const [aiServices, setAiServices] = useState([]);
-
+    const [spinner,setSpinner]=useState(false);
     const reactFlowWrapper = useRef(null);
     const edgeUpdateSuccessful = useRef(true);
     const toastIdRef = useRef();
@@ -1057,7 +1057,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         const loadCredits = async () => {
         if (initialized && keycloak?.authenticated) {
             try{
-                var response = await fetch(process.env.REACT_APP_API_BASE_URL + '/api/credits', {
+                var response = await fetch(process.env.REACT_APP_CREDIT_SERVICE_URL + '/head', {
                 method: 'get',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1066,9 +1066,9 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             })
             if(response.ok){
                 const result= await response.json();
-                if(result?.availableCredits){
-                    setUserCredits(()=> result.availableCredits);
-                    return result.availableCredits;
+                if(result?.creditsAvailable){
+                    setUserCredits(()=> result.creditsAvailable);
+                    return result.creditsAvailable;
                 }
                 else return 0;
             }
@@ -1158,6 +1158,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                             [key]: false,
                         }));
                         if(data.metadata.nodes[key].data?.description && data.metadata.nodes[key].data?.dbmlData && fetchedCredits>0){
+                            // console.log(srviceCombinations,"combinations")
                             setAiServices(prev => [...prev,data.metadata.nodes[key].data.Id])
                             fetchedCredits--;
                         }
@@ -1516,7 +1517,6 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             let communicationIndex = 0;
             for (const edgeInfo in NewEdges) {
                 const Edge = NewEdges[edgeInfo];
-
                 const targetIsExcluded =
                     Edge.target.startsWith('Database') ||
                     Edge.target.startsWith('authenticationType') ||
@@ -1581,7 +1581,9 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     const SaveData = async (data, saved) => {
         const Data = data || generatingData;
         const generatedImage = await Functions.CreateImage(Object.values(nodes));
-        if (generatedImage) Data.imageUrl = generatedImage;
+        if (generatedImage){ 
+            Data.imageUrl = generatedImage;
+        }
         if (saved !== 'VALIDATED') data.validationStatus = 'DRAFT';
         setInitialData(Data);
         try {
@@ -1823,6 +1825,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             isClosable: true,
         });
     };
+
 
     if (isLoading) {
         if (isGenerating) return <Generating generatingData={generatingData} />;

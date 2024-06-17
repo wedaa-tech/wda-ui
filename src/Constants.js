@@ -9,11 +9,16 @@ const transactionStatus = {
     REQUESTED: 'REQUESTED',
     CREDITED: 'CREDITED',
     DEBITED: 'DEBITED',
-    REJECTED: 'REJECTED',
+    FAILED: 'FAILED',
     PENDING: 'PENDING',
 };
+
+const defaultCredits = {
+    CREDITS : 20
+}
 
 export default {
     codeGenerationStatus,
     transactionStatus,
+    defaultCredits
 };

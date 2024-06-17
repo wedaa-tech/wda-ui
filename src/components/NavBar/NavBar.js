@@ -12,38 +12,63 @@ import { useLocation } from 'react-router-dom/cjs/react-router-dom.min';
 import './NavBar.css';
 import { FaCoins } from 'react-icons/fa';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
-
+import Constants from '../../Constants';
 const NavBar = () => {
     const { initialized,keycloak } = useKeycloak();
     const location = useLocation();
     const [userCredits,setUserCredits]=useState(0);
     const [isFeedbackModalOpen, setFeedbackModalOpen] = useState(false);
     const history = useHistory();
+    const { defaultCredits } = Constants;
 
     useEffect(() => {
         if (initialized && keycloak?.authenticated) {
-        const fetchData = async () => {
-            fetch(process.env.REACT_APP_API_BASE_URL + '/api/credits', {
-                    method: 'get',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
-                    },
-                })
-                    .then(response => response.json())
-                    .then(result => {
-                        if(result?.availableCredits)
-                        setUserCredits(result.availableCredits);
-                    })
-                    .catch(error => console.error(error));
-            }
+            const fetchData = async () => {
+                try {
+                    const response = await fetch(process.env.REACT_APP_CREDIT_SERVICE_URL + '/head', {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                        },
+                    });
     
-        fetchData();
-        const intervalId = setInterval(fetchData, 10000); 
+                    const result = await response.json();
     
-        return () => clearInterval(intervalId);
-    };
-      }, [initialized,keycloak?.authenticated]);
+                    if (result?.creditsAvailable) {
+                        setUserCredits(result.creditsAvailable);
+                    } else if ('found' in result && result.found === false) {
+                        let userData = {
+                            "userId": keycloak.tokenParsed.sub,
+                            "creditsAvailable": defaultCredits.CREDITS,
+                            "creditsUsed": 0
+                        };
+    
+                        const createResponse = await fetch(process.env.REACT_APP_CREDIT_SERVICE_URL + '/api/credits', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                            },
+                            body: JSON.stringify(userData)
+                        });
+    
+                        if (createResponse.ok) {
+                            setUserCredits(defaultCredits.CREDITS);
+                        }
+                    }
+                } catch (error) {
+                    console.error(error);
+                }
+            };
+    
+            fetchData();
+            const intervalId = setInterval(fetchData, 10000);
+    
+            return () => clearInterval(intervalId);
+        }
+    }, [initialized, keycloak?.authenticated]);
+    
 
     const handleFeedbackClick = () => {
         setFeedbackModalOpen(true);
