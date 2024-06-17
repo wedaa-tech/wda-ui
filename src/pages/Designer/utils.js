@@ -151,7 +151,7 @@ const useOnNodeContextMenu = setMenu => {
 };
 const CreateImage = async nodes => {
     const nodesBounds = getRectOfNodes(nodes);
-    const transform = getTransformForBounds(nodesBounds, imageWidth, imageHeight, 0, 2, 0.7);
+    const transform = getTransformForBounds(nodesBounds, imageWidth, imageHeight, 0, 2, 0.9);
     try {
         const response = await toPng(document.querySelector('.react-flow__viewport'), {
             backgroundColor: '#ffffff',
@@ -168,6 +168,7 @@ const CreateImage = async nodes => {
         return null;
     }
 };
+
 const Functions = {
     onclick: onclick,
     addEdge: addEdge,

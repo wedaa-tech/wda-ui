@@ -5,7 +5,7 @@ import { saveAs } from 'file-saver';
 import { FaEraser } from 'react-icons/fa6';
 import { GoCodeReview } from 'react-icons/go';
 import 'reactflow/dist/style.css';
-import { Button, Flex, Icon, IconButton, Text, VStack, useToast, Tooltip, Box, HStack } from '@chakra-ui/react';
+import { Button, Flex, Icon, IconButton, Text, VStack, useToast, Tooltip, Box, HStack,Spinner } from '@chakra-ui/react';
 import Sidebar from './../../components/Sidebar';
 import ServiceModal from '../../components/Modal/ServiceModal';
 import UiDataModal from '../../components/Modal/UIModal';
@@ -132,11 +132,39 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     const [credits, setCredits] = useState(0);
     const [userCredits,setUserCredits]=useState(0);
     const [aiServices, setAiServices] = useState([]);
-
+    const [spinner,setSpinner]=useState(false);
     const reactFlowWrapper = useRef(null);
     const edgeUpdateSuccessful = useRef(true);
     const toastIdRef = useRef();
     const ref = useRef(null);
+    // const [serviceCombinations, setServiceCombinations] = useState([]);
+
+    // useEffect(() => {
+    //     // Call your function to fetch data here
+    //     fetchServiceCombinations();
+    // }, []); // Empty dependency array means this effect runs once after initial render
+
+    // const fetchServiceCombinations = async () => {
+    //     try {
+    //         const response = await fetch(process.env.REACT_APP_CREDIT_SERVICE_URL + '/api/services', {
+    //             method: 'GET',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //             }
+    //         });
+
+    //         if (!response.ok) {
+    //             throw new Error(`HTTP error! Status: ${response.status}`);
+    //         }
+
+    //         const data = await response.json();
+    //         console.log(data,"data")
+    //         setServiceCombinations(data); // Update state with fetched data
+    //     } catch (error) {
+    //         console.error('Error fetching service combinations:', error);
+    //         // Handle error state or display error message
+    //     }
+    // };
 
     const toast = useToast({
         containerStyle: {
@@ -1039,7 +1067,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         const loadCredits = async () => {
         if (initialized && keycloak?.authenticated) {
             try{
-                var response = await fetch(process.env.REACT_APP_API_BASE_URL + '/api/credits', {
+                var response = await fetch(process.env.REACT_APP_CREDIT_SERVICE_URL + '/head', {
                 method: 'get',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1048,9 +1076,9 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             })
             if(response.ok){
                 const result= await response.json();
-                if(result?.availableCredits){
-                    setUserCredits(()=> result.availableCredits);
-                    return result.availableCredits;
+                if(result?.creditsAvailable){
+                    setUserCredits(()=> result.creditsAvailable);
+                    return result.creditsAvailable;
                 }
                 else return 0;
             }
@@ -1136,6 +1164,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                             [key]: false,
                         }));
                         if(data.metadata.nodes[key].data?.description && data.metadata.nodes[key].data?.dbmlData && fetchedCredits>0){
+                            // console.log(srviceCombinations,"combinations")
                             setAiServices(prev => [...prev,data.metadata.nodes[key].data.Id])
                             fetchedCredits--;
                         }
@@ -1494,13 +1523,11 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             let communicationIndex = 0;
             for (const edgeInfo in NewEdges) {
                 const Edge = NewEdges[edgeInfo];
-
                 const targetIsExcluded =
                     Edge.target.startsWith('Database') ||
                     Edge.target.startsWith('authenticationType') ||
                     Edge.target.startsWith('logManagement') ||
                     Edge.target.startsWith('serviceDiscoveryType');
-
                 if (!targetIsExcluded) {
                     Edge.data = Edge.data || {};
                     Edge.data.client = nodes[Edge.source].data.applicationName;
@@ -1555,7 +1582,9 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     const SaveData = async (data, saved) => {
         const Data = data || generatingData;
         const generatedImage = await Functions.CreateImage(Object.values(nodes));
-        if (generatedImage) Data.imageUrl = generatedImage;
+        if (generatedImage){ 
+            Data.imageUrl = generatedImage;
+        }
         if (saved !== 'VALIDATED') data.validationStatus = 'DRAFT';
         setInitialData(Data);
         try {
@@ -1580,6 +1609,10 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 });
             }
             if (response.ok) {
+                if(projectParentId!='admin' && data.validationStatus=='VALIDATED'){
+                    setIsLoading(true)
+                }
+                setSpinner(false);
                 const responseData = await response.json();
                 if (!projectProjectId) setProjectprojectId(responseData.projectId);
                 if (saved == 'VALIDATED' && projectParentId == 'admin') {
@@ -1732,6 +1765,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     redirectUri: process.env.REACT_APP_UI_BASE_URL + 'canvasToCode',
                 });
             }
+            setSpinner(true);
             saveData('save');
         } else {
             handleInvalidProjectName();
@@ -1792,6 +1826,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             isClosable: true,
         });
     };
+
 
     if (isLoading) {
         if (isGenerating) return <Generating generatingData={generatingData} />;
@@ -1879,6 +1914,8 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                                 id={id}
                                 clear={clear}
                                 parentId={projectParentId}
+                                setSpinner={setSpinner}
+                                spinner={spinner}
                             />
                             <div
                                 style={{
@@ -2090,6 +2127,30 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 {AuthProviderCount === 2 && <AlertModal isOpen={true} onClose={() => setAuthProviderCount(1)} />}
                 {UICount === 2 && <AlertModal isOpen={true} onClose={() => setUiCount(1)} />}
                 {docsCount === 2 && <AlertModal isOpen={true} onClose={() => setDocsCount(1)} />}
+                {spinner && (
+            <Flex
+              position="fixed"
+              top="62"
+              left="0"
+              right="0"
+              bottom="0"
+              backgroundColor={""}
+              alignItems="center"
+              justifyContent="center"
+              zIndex="9999"
+              display="flex"
+              flexDirection="column"
+            >
+              <Spinner
+                thickness="8px"
+                speed="0.9s"
+                emptyColor="gray.200"
+                color="#3182CE"
+                height="250px"
+                width="250px"
+              />
+            </Flex>
+          )}
             </ReactFlowProvider>
         </div>
     );

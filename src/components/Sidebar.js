@@ -71,7 +71,9 @@ const Sidebar = ({
     id,
     clear,
     setArchitectureName,
-    parentId
+    parentId,
+    setSpinner,
+    spinner
 }) => {
     const location = useLocation();
     const onDragStart = (event, nodeType, Name, metaData = '') => {
@@ -174,7 +176,7 @@ const Sidebar = ({
 
     const toastIdRef = useRef();
 
-    const handleButtonClick = () => {
+    const handleButtonClick = async () => {
         const { isValid, message } = checkDisabled(projectData.projectName, isEmptyUiSubmit, isEmptyServiceSubmit, isEmptyGatewaySubmit, nodes, edges);
         if (!isValid || (initialized && keycloak.authenticated && parentId!='admin') ) {
         const errorMessage = message || 'Validation failed';
@@ -194,13 +196,7 @@ const Sidebar = ({
             })
         }
         else{
-        if(parentId!="admin"){
-        if (Object.keys(nodes).length === 1 && Object.values(nodes)[0]?.data?.applicationFramework === 'docusaurus') {
-            setIsLoading(true);
-        } else {
-            setIsLoading(true);
-        }
-        }
+        setSpinner(()=>true)
         onSubmit(projectData);
     }
     };

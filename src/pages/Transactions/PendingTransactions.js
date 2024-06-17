@@ -23,7 +23,7 @@ const PendingTransactions = () => {
     const [data, setData] = useState([]);
 
     async function fetchPendingTransactions() {
-        fetch(process.env.REACT_APP_API_BASE_URL + `/api/transactions/${transactionStatus.REQUESTED}?page=${currentPage}&limit=${limit}`, {
+        fetch(process.env.REACT_APP_CREDIT_SERVICE_URL + `/api/request/${transactionStatus.REQUESTED}?page=${currentPage}&limit=${limit}`, {
             method: 'get',
             headers: {
                 'Content-Type': 'application/json',
@@ -43,23 +43,23 @@ const PendingTransactions = () => {
     }, [currentPage]);
 
     const handleSubmit = (transaction, status) => {
-        fetch(process.env.REACT_APP_API_BASE_URL + '/api/transaction', {
-            method: 'post',
+        fetch(process.env.REACT_APP_CREDIT_SERVICE_URL + '/api/request', {
+            method: 'put',
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
             },
             body: JSON.stringify({
-                transactionId: transaction._id,
+                id: transaction.id,
                 status: status,
-                userId: transaction.user_id,
+                userId: transaction.userId,
                 credits: transaction.credits,
             }),
         })
             .then(result => {
                 if (result.ok) {
                     toast({
-                        title: `${status === transactionStatus.CREDITED ? 'Approval' : 'Rejection'} Successful: User ID ${transaction.user_id}, Credits ${transaction.credits}`,
+                        title: `${status === transactionStatus.CREDITED ? 'Approval' : 'Rejection'} Successful: User ID ${transaction.userId}, Credits ${transaction.credits}`,
                         status: 'success',
                         duration: 3000,
                         variant: 'left-accent',
@@ -103,7 +103,8 @@ const PendingTransactions = () => {
                                     {data.map((transaction, index) => (
                                         <Tr key={transaction.id}>
                                             <Td>{(currentPage - 1) * limit + index + 1}</Td>
-                                            <Td style={{ whiteSpace: 'nowrap' }}>{transaction.user_id}</Td>                                            <Td>{transaction.credits}</Td>
+                                            <Td style={{ whiteSpace: 'nowrap' }}>{transaction.userId}</Td>                                            
+                                            <Td>{transaction.credits}</Td>
                                             <Td>{transaction?.creditsUsed || 0}</Td>
                                             <Td>{transaction?.creditsAvailable || 0}</Td>
                                             <Td>
@@ -121,7 +122,7 @@ const PendingTransactions = () => {
                                                         size="sm"
                                                         colorScheme="red"
                                                         leftIcon={<FaTimes />}
-                                                        onClick={() => handleSubmit(transaction, transactionStatus.REJECTED)}
+                                                        onClick={() => handleSubmit(transaction, transactionStatus.FAILED)}
                                                     >
                                                         Reject
                                                     </Button>

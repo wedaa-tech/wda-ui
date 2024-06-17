@@ -5,6 +5,7 @@ import { useKeycloak } from '@react-keycloak/web';
 import wedaa from '../../assets/wedaa_logo.png';
 import Pagination from '../../components/Pagination';
 import Constants from '../../Constants';
+import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 
 const Transactions = () => {
     const { initialized, keycloak } = useKeycloak();
@@ -17,6 +18,17 @@ const Transactions = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalTransactions, setTotalTransactions] = useState(0);
     const { transactionStatus } = Constants;
+    const history = useHistory();
+
+    const handleChange = (transaction) => {
+        var isAiGeneration = transaction?.blueprintId;
+        if(isAiGeneration && transaction?.parentId){
+        const projectId = isAiGeneration;
+        const architectureId = transaction.parentId;
+        history.push(`/project/${architectureId}/architecture/${projectId}/details`);
+        }
+    };
+
     const paginate = pageNumber => setCurrentPage(pageNumber);
     const toast = useToast({
         containerStyle: {
@@ -35,20 +47,23 @@ const Transactions = () => {
 
     const fetchTransactions = async () => {
         try {
-            const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/transactions?page=${currentPage}&limit=${limit}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+            const response = await fetch(
+                `${process.env.REACT_APP_CREDIT_SERVICE_URL}/api/usertransactions?page=${currentPage}&limit=${limit}`,
+                {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                    },
                 },
-            });
+            );
             const result = await response.json();
             const modifiedTransactions = result.transactions.map(transaction => ({
                 ...transaction,
                 imageUrl: transaction.imageUrl || wedaa,
-                projectName: transaction.projectName
-                    ? `Prototype: ${transaction.projectName}`
-                    : `Request For ${transaction.credits} Credits`,
+                services: transaction?.services,
+                blueprintId: transaction?.blueprintId,
+                parentId:transaction?.parentId
             }));
             setTransactions(modifiedTransactions);
             setTotalTransactions(result.length);
@@ -59,15 +74,15 @@ const Transactions = () => {
 
     const fetchCredits = async () => {
         try {
-            const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/credits`, {
+            const response = await fetch(`${process.env.REACT_APP_CREDIT_SERVICE_URL}/head`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
                 },
             });
-            const { availableCredits } = await response.json();
-            setUserCredits(availableCredits || 0);
+            const { creditsAvailable } = await response.json();
+            setUserCredits(creditsAvailable || 0);
         } catch (error) {
             console.error(error);
         }
@@ -81,40 +96,39 @@ const Transactions = () => {
         const options = {
             year: 'numeric',
             month: 'long',
-            day: 'numeric',
-            hour: 'numeric',
+            day: '2-digit',
+            hour: '2-digit',
             minute: '2-digit',
             hour12: true,
         };
 
         const date = new Date(timestamp);
-        const formatter = new Intl.DateTimeFormat('en-US', options);
-        const formattedDate = formatter.format(date).replace('at', '');
+        const formattedDate = date.toLocaleDateString('en-US', options).replace(',', '');
+        const format = formattedDate.replace('at', ',');
 
-        const [datePart, timeYearPart] = formattedDate.split(',');
-        const [yearPart, timePart] = timeYearPart.split('  ');
-        return `${datePart} ${yearPart}, ${timePart}`;
+        return `${format} `;
     }
 
     const handleRecharge = async () => {
-        if(!rechargeAmount) return;
+        if (!rechargeAmount) return;
         try {
-            const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/credits/request`, {
+            var requestBody = {
+                credits: parseInt(rechargeAmount),
+                status: transactionStatus.REQUESTED,
+            };
+            const response = await fetch(`${process.env.REACT_APP_CREDIT_SERVICE_URL}/api/request`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
                 },
-                body: JSON.stringify({
-                    credits: rechargeAmount,
-                    status: transactionStatus.REQUESTED,
-                }),
+                body: JSON.stringify(requestBody),
             });
             if (response.ok) {
-                const res = await response.json();
-                res.projectName = `Request for ${rechargeAmount} Credits.`;
-                res.imageUrl = wedaa;
+                var res = await response.json();
+                res = { ...requestBody, id: res.result.InsertedID, imageUrl: wedaa, updatedAt: res.updatedAt };
                 setTransactions(prev => [res, ...prev.slice(0, limit - 1)]);
+
                 setTotalTransactions(prev => prev + 1);
                 toast({
                     title: `Request for ${rechargeAmount} Credits is submitted. Waiting for Approval from Admin.`,
@@ -143,7 +157,7 @@ const Transactions = () => {
         [transactionStatus.PENDING]: 'Services are being Generated.',
         [transactionStatus.REQUESTED]: 'Waiting for Approval from Admin.',
         [transactionStatus.CREDITED]: credits => `Admin credited ${credits} credits.`,
-        [transactionStatus.REJECTED]: 'Transaction Failed.',
+        [transactionStatus.FAILED]: 'Transaction Failed.',
     };
 
     return (
@@ -156,7 +170,7 @@ const Transactions = () => {
                     {transactions.length > 0 ? (
                         transactions.map((transaction, index) => (
                             <Box
-                                key={transaction._id}
+                                key={transaction.id}
                                 p={4}
                                 mb={0}
                                 width="100%"
@@ -171,14 +185,19 @@ const Transactions = () => {
                                             src={transaction.imageUrl}
                                             border="1px"
                                             borderRadius="20%"
-                                            alt={transaction.projectName}
+                                            alt={transaction.id}
                                             boxSize="50px"
                                             borderColor={'#D3D3D3'}
                                             mr={4}
                                         />
                                         <Flex flexDirection="column">
-                                            <Text fontSize="lg" mb={'1'}>
-                                                {transaction.projectName}
+                                            <Text
+                                                fontSize="lg"
+                                                mb="1"
+                                                onClick={()=>handleChange(transaction)}
+                                                style={{ cursor: transaction?.services ? 'pointer' : 'default' }}
+                                            >
+                                                {`Transaction Id: ${transaction.id}`}
                                             </Text>
                                             {/* <Text color="gray.600">{"Admin"}</Text> */}
                                             <Text color="gray.600">{formatDateTime(transaction.updatedAt)}</Text>
@@ -190,7 +209,8 @@ const Transactions = () => {
                                                 ml="10px"
                                                 mr={2}
                                                 style={{
-                                                    textDecoration: transaction.status === transactionStatus.REJECTED ? 'line-through' : 'none',
+                                                    textDecoration:
+                                                        transaction.status === transactionStatus.FAILED ? 'line-through' : 'none',
                                                     textDecorationThickness: '0.1em',
                                                 }}
                                             >
@@ -202,7 +222,7 @@ const Transactions = () => {
                                                                 ? 'green'
                                                                 : transaction.status === transactionStatus.DEBITED
                                                                 ? 'red'
-                                                                : transaction.status === transactionStatus.REJECTED
+                                                                : transaction.status === transactionStatus.FAILED
                                                                 ? 'black'
                                                                 : 'orange',
                                                     }}
@@ -215,7 +235,7 @@ const Transactions = () => {
                                                     {Math.abs(transaction.credits)}
                                                 </div>
                                             </Box>
-                                            {transaction.status === transactionStatus.REJECTED && (
+                                            {transaction.status === transactionStatus.FAILED && (
                                                 <div
                                                     style={{
                                                         fontSize: '10px',
@@ -235,21 +255,21 @@ const Transactions = () => {
                                 </Flex>
                                 <Box mt={4} style={{ display: expandedIndex === index ? 'block' : 'none' }}>
                                     <Box bg="#F3F3F3" p={4} borderRadius="md">
-                                        {transaction.status !== transactionStatus.PENDING && transaction.status !== transactionStatus.REJECTED && transaction.services && (
-                                            <>
-                                                Services Generated :
-                                                <Text color="gray.600">
-                                                    {Object.values(transaction.services).map(
-                                                        (service, serviceIndex) =>
-                                                            service?.dbmlData && (
-                                                                <React.Fragment key={serviceIndex}>
-                                                                    {service.applicationName + ' '}
-                                                                </React.Fragment>
-                                                            ),
-                                                    )}
-                                                </Text>
-                                            </>
-                                        )}
+                                        {transaction.status !== transactionStatus.PENDING &&
+                                            transaction.status !== transactionStatus.FAILED &&
+                                            transaction.services && (
+                                                <>
+                                                    Services Generated :
+                                                    <Text as={'span'} color="gray.600" fontSize={12}>
+                                                        {transaction.services.map((service, index) => (
+                                                            <>
+                                                                {' ' + service}
+                                                                {index < transaction.services.length - 1 && ', '}
+                                                            </>
+                                                        ))}
+                                                    </Text>
+                                                </>
+                                            )}
                                         {transaction.status in transactionStatusMessages && (
                                             <>
                                                 {typeof transactionStatusMessages[transaction.status] === 'function'
@@ -301,7 +321,7 @@ const Transactions = () => {
                                     h="24px"
                                 />
                             </Flex>
-                            <Flex alignItems="center" >
+                            <Flex alignItems="center">
                                 <Button
                                     onClick={handleRecharge}
                                     disabled={!rechargeAmount}
