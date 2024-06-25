@@ -71,9 +71,41 @@ const ArchitectureCard = ({
         setIsModalOpen(false);
     };
 
-    const handleCloneConfirm = () => {
+    const fetchProjectNames = async () => {
+        try {
+            const response = await fetch(process.env.REACT_APP_API_BASE_URL + '/api/project-names', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                },
+            });
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            const data = await response.json();
+            return data.ProjectNames;
+        } catch (error) {
+            console.error('Error fetching Project Names:', error);
+        }
+    };
+
+    const handleCloneConfirm = async() => {
+        var projectNames = await fetchProjectNames();
         setNewPrototypeName('');
         var updatedData;
+        if(projectNames.includes(newPrototypeName)){
+            toast.close(toastIdRef.current);
+        toastIdRef.current = toast({
+            title: `Prototype with Name: ${newPrototypeName} already Exists.`,
+            status:'error',
+            duration: 3000,
+            variant: 'left-accent',
+            isClosable: true,
+        }); 
+            return ;
+        }
+
         if (data?.request_json?.parentId === 'admin') {
             const { _id, id, name, projectName, request_json, ...rest } = data;
             const updatedRequestJson = {

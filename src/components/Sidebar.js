@@ -73,7 +73,9 @@ const Sidebar = ({
     setArchitectureName,
     parentId,
     projectNames,
-    defaultProjectName
+    defaultProjectName,
+    setSpinner,
+    spinner
 }) => {
     const location = useLocation();
     const onDragStart = (event, nodeType, Name, metaData = '') => {
@@ -197,11 +199,7 @@ const Sidebar = ({
             })
         }
         else{
-        if (Object.keys(nodes).length === 1 && Object.values(nodes)[0]?.data?.applicationFramework === 'docusaurus') {
-            setIsLoading(true);
-        } else {
-            setIsLoading(true);
-        }
+        setSpinner(()=>true)
         onSubmit(projectData);
     }
     };

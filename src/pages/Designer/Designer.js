@@ -5,7 +5,7 @@ import { saveAs } from 'file-saver';
 import { FaEraser } from 'react-icons/fa6';
 import { GoCodeReview } from 'react-icons/go';
 import 'reactflow/dist/style.css';
-import { Button, Flex, Icon, IconButton, Text, VStack, useToast, Tooltip } from '@chakra-ui/react';
+import { Button, Flex, Icon, IconButton, Text, VStack, useToast, Tooltip, Spinner } from '@chakra-ui/react';
 import Sidebar from './../../components/Sidebar';
 import CustomImageNode from './../Customnodes/CustomImageNode';
 import CustomServiceNode from './../Customnodes/CustomServiceNode';
@@ -130,6 +130,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     const edgeUpdateSuccessful = useRef(true);
     const toastIdRef = useRef();
     const ref = useRef(null);
+    const [spinner, setSpinner] = useState(false);
 
     const toast = useToast({
         containerStyle: {
@@ -1500,7 +1501,6 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             SaveData(Data, saved);
         } else {
             SaveData(Data, 'VALIDATED');
-            setIsLoading(true);
         }
         if (submit) {
             generateZip(null, Data);
@@ -1535,6 +1535,10 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 });
             }
             if (response.ok) {
+                if (projectParentId != 'admin' && data.validationStatus == 'VALIDATED') {
+                    setIsLoading(true);
+                }
+                setSpinner(false);
                 const responseData = await response.json();
                 if (!projectProjectId) setProjectprojectId(responseData.projectId);
                 if (saved == 'VALIDATED' && projectParentId == 'admin') {
@@ -1686,6 +1690,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     redirectUri: process.env.REACT_APP_UI_BASE_URL + 'canvasToCode',
                 });
             }
+            setSpinner(true);
             saveData('save');
         } else {
             handleInvalidProjectName();
@@ -1835,6 +1840,8 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                                 parentId={projectParentId}
                                 projectNames={projectNames}
                                 defaultProjectName={defaultProjectName}
+                                setSpinner={setSpinner}
+                                spinner={spinner}
                             />
                             <div
                                 style={{
@@ -2033,6 +2040,23 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 {AuthProviderCount === 2 && <AlertModal isOpen={true} onClose={() => setAuthProviderCount(1)} />}
                 {UICount === 2 && <AlertModal isOpen={true} onClose={() => setUiCount(1)} />}
                 {docsCount === 2 && <AlertModal isOpen={true} onClose={() => setDocsCount(1)} />}
+                {spinner && (
+                    <Flex
+                        position="fixed"
+                        top="62"
+                        left="0"
+                        right="0"
+                        bottom="0"
+                        backgroundColor={''}
+                        alignItems="center"
+                        justifyContent="center"
+                        zIndex="9999"
+                        display="flex"
+                        flexDirection="column"
+                    >
+                        <Spinner thickness="8px" speed="0.9s" emptyColor="gray.200" color="#3182CE" height="250px" width="250px" />
+                    </Flex>
+                )}
             </ReactFlowProvider>
         </div>
     );

@@ -9,7 +9,6 @@ const projectNameCheck = (projectName) => {
 };
 
 const duplicateArchitectureNameCheck = (currentProjectName,projectNames,defaultProjectName) => {
-   console.log(defaultProjectName,"default",currentProjectName)
     if(currentProjectName == defaultProjectName)
         return false;
     return  projectNames.includes(currentProjectName);
