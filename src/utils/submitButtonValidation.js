@@ -8,6 +8,12 @@ const projectNameCheck = (projectName) => {
     return !/^[a-zA-Z](?:[a-zA-Z0-9_ -]*[a-zA-Z0-9])? *$/.test(projectName);
 };
 
+const duplicateArchitectureNameCheck = (currentProjectName,projectNames,defaultProjectName) => {
+    if(currentProjectName == defaultProjectName)
+        return false;
+    return  projectNames.includes(currentProjectName);
+}
+
 const isDatabaseConnectedAndFilled = (nodes) => {
     let dbConnected = false;
     let dbFilled = false;
@@ -52,7 +58,7 @@ const checkEdge = (edges, nodes) => {
     }
 };
 
-const checkDisabled = (projectName, isEmptyUiSubmit, isEmptyServiceSubmit, isEmptyGatewaySubmit, nodes, edges) => {
+const checkDisabled = (projectName, isEmptyUiSubmit, isEmptyServiceSubmit, isEmptyGatewaySubmit, nodes, edges,projectNames,authenticated,defaultProjectName) => {
     const databaseStatus = isDatabaseConnectedAndFilled(nodes);
 
     if (!checkNodeExists(nodes)) {
@@ -65,6 +71,10 @@ const checkDisabled = (projectName, isEmptyUiSubmit, isEmptyServiceSubmit, isEmp
 
     if (projectName === '') {
         return { isValid: false, message: 'Architecture name is empty.' };
+    }
+
+    if(authenticated && duplicateArchitectureNameCheck(projectName,projectNames,defaultProjectName)){
+        return {isValid:false, message:'Architecture name already exists. Please Change.'}
     }
 
     if (isEmptyUiSubmit) {
