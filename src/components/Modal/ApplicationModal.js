@@ -113,8 +113,8 @@ const ApplicationModal = ({
             if (
                 isOpen &&
                 (event.key === 'Backspace' || event.key === 'Delete') &&
-                event.target.tagName !== 'INPUT' &&
-                (nodeType !== 'UI' || nodeType !== 'Service' || event.target.tagName !== 'TEXTAREA')
+                (event.target.tagName !== 'INPUT' && event.target.tagName !== 'TEXTAREA') &&
+                (nodeType !== 'UI' || nodeType !== 'Service')
             ) {
                 onClose();
             }
