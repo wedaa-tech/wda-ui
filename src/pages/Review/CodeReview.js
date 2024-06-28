@@ -10,6 +10,8 @@ import { useKeycloak } from '@react-keycloak/web';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 import { saveAs } from 'file-saver';
 import CreditView from './CreditView';
+import Functions from '../Designer/utils';
+import RefArchModal from './RefArchModal'; 
 
 function CodeReview({
     nodeId,
@@ -22,7 +24,7 @@ function CodeReview({
     parentId,
     setIsGenerating = null,
 }) {
-    const { getNode } = useReactFlow();
+    const { getNode,getNodes,getEdges } = useReactFlow();
     const { initialized, keycloak } = useKeycloak();
     const [nodeData, setNodeData] = useState(null);
     const [nodeType, setNodeType] = useState(null);
@@ -32,6 +34,8 @@ function CodeReview({
     const [isArchPublished, setArchPublished] = useState(published);
     const [node, setNode] = useState(null);
     const history = useHistory();
+    const [isModalOpen,setIsModalOpen] = useState(false);
+    const [refArchData,setRefArchData] = useState({});
 
     useEffect(() => {
         if (
@@ -98,6 +102,12 @@ function CodeReview({
             isClosable: true,
         });
     };
+    
+    const handleRefArch = async (Data) => {
+        setRefArchData(Data);    
+        setIsModalOpen(true);
+
+    };
 
     const handlesubmit = async (Data, submit) => {
         if (onSubmit) onSubmit(Data, submit);
@@ -137,6 +147,57 @@ function CodeReview({
         setTabIndex(index);
     };
 
+    const handlePublish = async (projectName) => {
+        var blueprintId;
+        var Data = { ...refArchData };
+        var nodes = getNodes();
+        var edges = getEdges();
+        const generatedImage = await Functions.CreateImage(Object.values(nodes));
+        if (generatedImage) Data.imageUrl = generatedImage;
+
+        const nodesMetadata = nodes.reduce((acc, node) => {
+            acc[node.id] = node;
+            return acc;
+        }, {});
+    
+        const edgesMetadata = edges.reduce((acc, edge) => {
+            acc[edge.id] = edge;
+            return acc;
+        }, {});
+    
+        Data.metadata = { nodes: nodesMetadata, edges: edgesMetadata };
+        Data.projectName = projectName;
+        if (Data?.projectId) delete Data.projectId;
+    
+        var response;
+        try {
+            response = await fetch(process.env.REACT_APP_API_BASE_URL + '/api/refArchs', {
+                method: 'post',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                },
+                body: JSON.stringify(Data),
+            });
+            blueprintId = response.headers.get('blueprintid');
+        } catch (error) {
+            console.error(error);
+        } finally {
+            toast.close(toastIdRef.current);
+            if (response) {
+                var res = await response.json();
+            }
+            toast({
+                title: response?.ok ? 'Architecture published as Ref Architecture' : res.message,
+                status: response?.ok ? 'success' : 'error',
+                duration: 3000,
+                variant: 'left-accent',
+                isClosable: true,
+            });
+        }
+    };
+    
+
     return (
         <Flex direction={'column'} height={'inherit'} px={10} py={4} overflowY={'auto'}>
             <Tabs display={'flex'} flexDir={'column'} index={tabIndex} flexGrow={1} onChange={handleTabsChange}>
@@ -166,9 +227,9 @@ function CodeReview({
                     {!docusaurusCheck && (
                         <TabPanel p={0} hidden={docusaurusCheck} height={'100%'}>
                             {!generateMode ? (
-                                <Deployment deploymentData={deploymentData} onSubmit={handlesubmit} generateZip={onClick} parentId={parentId}/>
+                                <Deployment deploymentData={deploymentData} onSubmit={handlesubmit} generateZip={onClick} parentId={parentId} handleRefArch={handleRefArch} adminView={keycloak?.realmAccess?.roles.includes('ADMIN')}/>
                             ) : (
-                                <Infrastructure projectData={deploymentData} onSubmit={handlesubmit} generateZip={onClick} />
+                                <Infrastructure projectData={deploymentData} onSubmit={handlesubmit} generateZip={onClick} handleRefArch={handleRefArch} adminView={keycloak?.realmAccess?.roles.includes('ADMIN')}/>
                             )}
                         </TabPanel>
                     )}
@@ -199,6 +260,11 @@ function CodeReview({
             >
                 {isArchPublished ? 'Revoke' : 'Publish'}
             </Button>
+            <RefArchModal 
+                isOpen={isModalOpen} 
+                onClose={() => setIsModalOpen(false)} 
+                onSubmit={handlePublish} 
+            />
         </Flex>
     );
 }

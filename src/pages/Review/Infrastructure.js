@@ -5,7 +5,7 @@ import aws from '../../../src/assets/aws.png';
 import minikube from '../../assets/minikube.png';
 import none from '../../assets/none-icon.jpg';
 
-const Infrastructure = ({ onSubmit, projectData, generateZip }) => {
+const Infrastructure = ({ onSubmit, projectData, generateZip,handleRefArch, adminView }) => {
     const [selectedImage, setSelectedImage] = useState('none');
     const [checkLength, setCheckLength] = useState(false);
     const [DeploymentData, setDeploymentData] = useState({});
@@ -807,18 +807,32 @@ const Infrastructure = ({ onSubmit, projectData, generateZip }) => {
                     </Box>
                 )}
             </Box>
-            <Button
-                mx={4}
-                my={2}
-                colorScheme="blue"
-                onClick={() => {
-                    selectedImage !== 'none' ? handleSubmit(DeploymentData) : onSubmit(projectData, true);
-                }}
-                minH={'48px'}
-                isDisabled={selectedImage !== 'none' && (!selectedImage || isCheckEmpty() || checkValidation())}
-            >
-                Generate Code
-            </Button>
+            <Box display="flex" justifyContent="center" alignItems="center" gap={4} my={2}>
+    <Button
+        colorScheme="blue"
+        onClick={() => {
+            selectedImage !== 'none' ? handleSubmit(DeploymentData) : onSubmit(projectData, true);
+        }}
+        minH="48px"
+        flexGrow={1}
+        isDisabled={selectedImage !== 'none' && (!selectedImage || isCheckEmpty() || checkValidation())}
+    >
+        Generate Code
+    </Button>
+    <Button
+        colorScheme="blue"
+        onClick={() => {
+             handleRefArch(projectData);
+        }}
+        hidden={!adminView}
+        flexGrow={1}
+        minH="48px"
+    >
+        Publish as RefArch
+    </Button>
+</Box>
+
+
         </Flex>
     );
 };
