@@ -134,7 +134,7 @@ function ServiceForm({ serviceData, setServiceData, onNext, onBack, title }) {
                 </VStack>
             </Box>
             {serviceData.length>0 &&
-                    <Text marginLeft={"6%"} marginBottom={"2%"} fontSize={"14px"} >* This Architecture Utilizes {serviceData.length} Credits for the code Generation</Text>
+                    <Text marginLeft={"6%"} marginBottom={"2%"} fontSize={"14px"} color={'red'}>* This Architecture Utilizes {serviceData.length} Credits for the code Generation</Text>
             }
             <Box mt="auto">
                 <HStack justify="space-between" w="100%">
