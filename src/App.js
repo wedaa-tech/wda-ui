@@ -18,8 +18,18 @@ import Transactions from './pages/Transactions/TransactionView';
 import PendingTransactions from './pages/Transactions/PendingTransactions';
 
 function App() {
+
+    const eventLogger = (event, error) => { //need to implement refresh token expiry redirect to login
+        // console.log('onKeycloakEvent', event, error);
+    };
+      
     return (
-        <ReactKeycloakProvider authClient={keycloak}>
+        <ReactKeycloakProvider authClient={keycloak}  
+        onEvent={eventLogger}
+        initOptions={{
+          onLoad: 'check-sso',
+          silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html',
+        }}>
             <Router className="flex h-screen">
                 <NavBar />
                 <Box className='screen-body'>
