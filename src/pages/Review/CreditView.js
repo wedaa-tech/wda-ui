@@ -36,7 +36,7 @@ const CreditView = ({ deploymentData, onSubmit, generateZip, parentId }) => {
                 </Table>
             </Box>
             {aiServiceData.length > 0 && (
-                <Text style={{ position: 'absolute', bottom: '10%', left: '8%', fontSize: '15px' }}>
+                <Text style={{ position: 'absolute', bottom: '10%', left: '8%', fontSize: '15px',color:'red' }}>
                     * This Architecture Utilizes {aiServiceData.length} Credits for the code Generation
                 </Text>
             )}
