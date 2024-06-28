@@ -55,7 +55,7 @@ function ServiceForm({ serviceData, setServiceData, onNext, onBack, title }) {
     };
 
     const handleNext = async() => {
-        const availableCredits= await fetch(process.env.REACT_APP_API_BASE_URL + '/api/credits', {
+        const availableCredits= await fetch(process.env.REACT_APP_CREDIT_SERVICE_URL + '/head', {
                 method: 'get',
                 headers: {
                     'Content-Type': 'application/json',
@@ -64,7 +64,10 @@ function ServiceForm({ serviceData, setServiceData, onNext, onBack, title }) {
             })
                 .then(response => response.json())
                 .then(result => {
-                    return result.availableCredits;
+                    if(result?.creditsAvailable){
+                    return result.creditsAvailable;
+                    }
+                    else return 0;
                 })
                 .catch(error => console.error(error));
         const aiServices = serviceData.length;

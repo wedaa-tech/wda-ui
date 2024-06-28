@@ -33,6 +33,8 @@ const ApplicationModal = ({
     uniqueApplicationNames,
     uniquePortNumbers,
     handleColorClick,
+    credits,
+    aiServices,
 }) => {
     const UiInitialState = {
         label: '',
@@ -107,8 +109,10 @@ const ApplicationModal = ({
     const isSubmitDisable = ServiceData.applicationName === '' || ServiceData.packageName === '' || ServiceData.serverPort === '';
     const groupNameCheck = !GroupData.label;
     const [descriptionError, setDescriptionError] = useState(false);
+    const [aiDisabled, setAiDisabled] = useState(false);
 
     useEffect(() => {
+        if (credits === 0 && !aiServices) setAiDisabled(true);
         const handleDeleteKeyPress = event => {
             if (
                 isOpen &&
@@ -154,7 +158,7 @@ const ApplicationModal = ({
         combination => combination.framework === CurrentNode?.applicationFramework && combination.dbType === CurrentNode?.prodDatabaseType,
     );
     const fetchDbmlData = async () => {
-        if (initialized && keycloak.authenticated && descriptionValidation()) {
+        if (initialized && keycloak.authenticated && descriptionValidation() && !aiDisabled) {
             setIsLoading(true);
 
             await fetch(process.env.REACT_APP_AI_CORE_URL + '/dbml', {
@@ -621,7 +625,31 @@ const ApplicationModal = ({
                         </div>
                         {isValidFrameworkAndDB && (
                             <div style={{ flex: 1 }}>
+                                 {(!initialized || !keycloak.authenticated || aiDisabled) && (
+                                    <div
+                                        style={{
+                                            position: 'absolute',
+                                            top: '50%',
+                                            left: '60%',
+                                            transform: 'translate(-50%, -50%)',
+                                            color: 'black',
+                                            zIndex: 9999, 
+                                            textAlign: 'center',
+                                        }}
+                                    >
+                                       {keycloak?.authenticated ?`Not enough credits, please recharge to continue`:`Login to Access AI Assisted Code Generation.`}
+                                    </div>
+                                )}
                                 <div
+                                    style={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        gap: '15px',
+                                        filter: !initialized || !keycloak.authenticated || aiDisabled ? 'blur(4px)' : 'none',
+                                        pointerEvents: !initialized || !keycloak.authenticated || aiDisabled ? 'none' : 'auto',
+                                    }}
+                                >
+                                     <div
                                     style={{
                                         display: 'flex',
                                         flexDirection: 'column',
@@ -689,9 +717,9 @@ const ApplicationModal = ({
                                                 borderRadius: '5px',
                                                 padding: '5px',
                                                 marginBottom: '10px',
-                                                backgroundColor: initialized && keycloak.authenticated ? 'white' : '#FAFAFA',
-                                                borderColor: initialized && keycloak.authenticated ? 'black' : 'grey',
-                                                cursor: !(initialized && keycloak.authenticated) && 'not-allowed',
+                                                backgroundColor: initialized && keycloak.authenticated && !aiDisabled ? 'white' : '#FAFAFA',
+                                                borderColor: initialized && keycloak.authenticated && !aiDisabled? 'black' : 'grey',
+                                                cursor: (!(initialized && keycloak.authenticated)|| !aiDisabled) && 'not-allowed',
                                                 position: 'relative',
                                             }}
                                         >
@@ -710,7 +738,7 @@ const ApplicationModal = ({
                                                     </div>
                                                 ))}
 
-                                            {initialized && keycloak.authenticated && (
+                                            {initialized && keycloak.authenticated && !aiDisabled && (
                                                 <Editor
                                                     height="100%"
                                                     options={{
@@ -727,6 +755,7 @@ const ApplicationModal = ({
                                             )}
                                         </div>
                                     </FormControl>
+                                    </div>
                                 </div>
                             </div>
                         )}
