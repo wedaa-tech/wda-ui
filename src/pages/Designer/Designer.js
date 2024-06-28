@@ -5,7 +5,7 @@ import { saveAs } from 'file-saver';
 import { FaEraser } from 'react-icons/fa6';
 import { GoCodeReview } from 'react-icons/go';
 import 'reactflow/dist/style.css';
-import { Button, Flex, Icon, IconButton, Text, VStack, useToast, Tooltip, Spinner } from '@chakra-ui/react';
+import { Button, Flex, Icon, IconButton, Text, VStack, useToast, Tooltip, Box, HStack,Spinner } from '@chakra-ui/react';
 import Sidebar from './../../components/Sidebar';
 import CustomImageNode from './../Customnodes/CustomImageNode';
 import CustomServiceNode from './../Customnodes/CustomServiceNode';
@@ -129,7 +129,6 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     const [credits, setCredits] = useState(0);
     const [userCredits,setUserCredits]=useState(0);
     const [aiServices, setAiServices] = useState([]);
-    const [spinner,setSpinner]=useState(false);
     const reactFlowWrapper = useRef(null);
     const edgeUpdateSuccessful = useRef(true);
     const toastIdRef = useRef();
