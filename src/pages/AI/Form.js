@@ -1,13 +1,20 @@
 import React, { useState } from 'react';
-import { VStack, Text, Divider, Box, HStack, IconButton, Spacer, Button, Flex,useStyleConfig } from '@chakra-ui/react';
+import { VStack, Text, Divider, Box, HStack, IconButton, Spacer, Button, Flex,useStyleConfig,useToast } from '@chakra-ui/react';
 import { AddIcon, DeleteIcon, EditIcon } from '@chakra-ui/icons';
 import ServiceFormModal from './ServiceFormModal';
+import { useKeycloak } from '@react-keycloak/web';
 
 function ServiceForm({ serviceData, setServiceData, onNext, onBack, title }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedService, setSelectedService] = useState(null);
     const [modalMode, setModalMode] = useState('add');
-
+    const {initialized,keycloak} = useKeycloak();
+    const toast = useToast({
+        containerStyle: {
+            width: '500px',
+            maxWidth: '100%',
+        },
+    });
     const addService = () => {
         setModalMode('add');
         setSelectedService(null);
@@ -47,7 +54,33 @@ function ServiceForm({ serviceData, setServiceData, onNext, onBack, title }) {
         setIsModalOpen(false);
     };
 
-    const handleNext = () => {
+    const handleNext = async() => {
+        const availableCredits= await fetch(process.env.REACT_APP_CREDIT_SERVICE_URL + '/head', {
+                method: 'get',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                },
+            })
+                .then(response => response.json())
+                .then(result => {
+                    if(result?.creditsAvailable){
+                    return result.creditsAvailable;
+                    }
+                    else return 0;
+                })
+                .catch(error => console.error(error));
+        const aiServices = serviceData.length;
+        if(aiServices > availableCredits){
+            toast({
+                title: 'Not enough Credits to Continue Generation. Recharge to Continue',
+                status: 'error',
+                duration: 3000,
+                variant: 'left-accent',
+                isClosable: true,
+            });
+            return
+        }
         onNext(serviceData);
     };
 
@@ -103,6 +136,9 @@ function ServiceForm({ serviceData, setServiceData, onNext, onBack, title }) {
                     </Box>
                 </VStack>
             </Box>
+            {serviceData.length>0 &&
+                    <Text marginLeft={"6%"} marginBottom={"2%"} fontSize={"14px"} color={'red'}>* This Architecture Utilizes {serviceData.length} Credits for the code Generation</Text>
+            }
             <Box mt="auto">
                 <HStack justify="space-between" w="100%">
                     <Button colorScheme="blue" onClick={handleBack}>

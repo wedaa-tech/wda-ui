@@ -23,6 +23,8 @@ import {
 import { useKeycloak } from '@react-keycloak/web';
 import React from 'react';
 import "../ProjectsSection/ProjectsSection.css";
+import Constants from '../../Constants';
+
 
 const GreenCheckIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="green">
@@ -60,6 +62,8 @@ const ArchitectureCard = ({
             maxWidth: '100%',
         },
     });
+    const {codeGenerationStatus }= Constants;
+
     const toastIdRef = useRef();
 
     const handleCloneClick = () => {
@@ -128,7 +132,7 @@ const ArchitectureCard = ({
     };
 
     const handleDownload = async () => {
-        if(data.latestCodeGenerationStatus=="COMPLETED"){
+        if(data.latestCodeGenerationStatus==codeGenerationStatus.COMPLETED){
         try {
             const response = await fetch(process.env.REACT_APP_API_BASE_URL + `/api/download/${data?.project_id}`, {
                 method: 'get',
@@ -161,7 +165,7 @@ const ArchitectureCard = ({
                 maxWidth={96}
                 minWidth={96}
                 maxW="sm"
-                className={`project-card ${data.latestCodeGenerationStatus !='IN-PROGRESS' ? 'hover-card':''}`}
+                className={`project-card ${data.latestCodeGenerationStatus !=codeGenerationStatus.IN_PROGRESS ? 'hover-card':''}`}
                 height={'300px'}
                 borderWidth="1px"
                 borderRadius="lg"
@@ -170,8 +174,8 @@ const ArchitectureCard = ({
                 position="relative"
                 p="6"
                 zIndex="1"
-                backgroundColor={data.latestCodeGenerationStatus=='IN-PROGRESS'?'#f8f8f8':'#fff'}
-                onClick={() => {data.latestCodeGenerationStatus!='IN-PROGRESS' && onClick(projectId, data)}}
+                backgroundColor={data.latestCodeGenerationStatus==codeGenerationStatus.IN_PROGRESS ?'#f8f8f8':'#fff'}
+                onClick={() => {data.latestCodeGenerationStatus!=codeGenerationStatus.IN_PROGRESS && onClick(projectId, data)}}
             >
                 <Image
                     style={{
@@ -182,7 +186,7 @@ const ArchitectureCard = ({
                     height="65%"
                     src={imageUrl}
                 />
-                {data.latestCodeGenerationStatus!=='IN-PROGRESS' && (<>
+                {data.latestCodeGenerationStatus!==codeGenerationStatus.IN_PROGRESS && (<>
                 {parentId!= 'admin' &&
                 <Tooltip label="Download Prototype" placement="top" color="white" borderRadius="md" fontSize="sm">
                 <IconButton
@@ -264,19 +268,19 @@ const ArchitectureCard = ({
                     >
                         {title}
                     </Text>
-                    {data.latestCodeGenerationStatus=='IN-PROGRESS' && (
+                    {data.latestCodeGenerationStatus==codeGenerationStatus.IN_PROGRESS && (
                        <Text className="not-selectable" color="red.300">
                        Generation in Progress   <Spinner size='xs' />
                    </Text> 
                     )
 
                     }
-                    {data.latestCodeGenerationStatus!=='IN-PROGRESS'&& data.validationStatus === 'DRAFT' && (
+                    {data.latestCodeGenerationStatus!==codeGenerationStatus.IN_PROGRESS && data.validationStatus === 'DRAFT' && (
                         <Text className="not-selectable" color="yellow.600">
                             Draft
                         </Text>
                     )}
-                    {data.latestCodeGenerationStatus!=='IN-PROGRESS' && data.validationStatus === 'VALIDATED' && (
+                    {data.latestCodeGenerationStatus!==codeGenerationStatus.IN_PROGRESS && data.validationStatus === 'VALIDATED' && (
                         <Text className="not-selectable" color="green.600">
                             Validated
                         </Text>

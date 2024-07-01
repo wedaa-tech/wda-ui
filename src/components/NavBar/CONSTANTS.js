@@ -1,5 +1,7 @@
 import { Box1, DocumentSketch, CardEdit, Flash, Graph, Home2, Chart2, Setting3 } from 'iconsax-react';
 import { LuSparkle } from "react-icons/lu";
+import { LiaUserClockSolid } from "react-icons/lia";
+
 export const menuData = {
     Home: {
         icon: <Home2 />,
@@ -33,4 +35,9 @@ export const menuData = {
         admin: true,
         path: '/feedbacks',
     },
+    'Pending Requests': {
+       icon: <LiaUserClockSolid />,
+       admin:true,
+       path:'/pendingTransactions'
+    }
 };

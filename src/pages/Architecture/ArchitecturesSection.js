@@ -7,7 +7,7 @@ import { useHistory } from 'react-router-dom';
 import { useKeycloak } from '@react-keycloak/web';
 import ActionModal from '../../components/Modal/ActionModal';
 import { dummyarchs } from './Constants';
-
+import Constants from '../../Constants';
 function ArchitecturesSection() {
     let location = useLocation();
     const history = useHistory();
@@ -18,6 +18,7 @@ function ArchitecturesSection() {
     const { initialized, keycloak } = useKeycloak();
     const [isLoaded, setIsLoaded] = useState(false);
     const cancelRef = React.useRef();
+    const {codeGenerationStatus }= Constants;
 
     // if (parentId === undefined) {
     //     history.push('/projects');
@@ -79,7 +80,7 @@ function ArchitecturesSection() {
                             setTotalArchitectures(archslist.length);
                             blueprintIds = archslist
                                 .map(entry =>
-                                    entry.project_id && entry.latestCodeGenerationStatus === 'IN-PROGRESS' ? entry.project_id : null,
+                                    entry.project_id && entry.latestCodeGenerationStatus === codeGenerationStatus.IN_PROGRESS ? entry.project_id : null,
                                 )
                                 .filter(id => id !== null);
                             pollCodeGenerationStatus(blueprintIds,archslist);
@@ -138,7 +139,7 @@ function ArchitecturesSection() {
                                             setTotalArchitectures(archslist.length);
                                             blueprintIds = archslist
                                                 .map(entry =>
-                                                    entry.project_id && entry.latestCodeGenerationStatus === 'IN-PROGRESS'
+                                                    entry.project_id && entry.latestCodeGenerationStatus === codeGenerationStatus.IN_PROGRESS
                                                         ? entry.project_id
                                                         : null,
                                                 )
@@ -176,7 +177,7 @@ function ArchitecturesSection() {
                 blueprintIds = blueprintIds.filter(blueprintId => {
                     const status = statuses.find(status => status.blueprintId === blueprintId);
                     if (status) {
-                        if (status.status === 'COMPLETED') {
+                        if (status.status === codeGenerationStatus.COMPLETED) {
                             toast.close(toastIdRef.current);
                             const projectName = archslist.find(project => project.project_id === blueprintId)?.projectName || blueprintId;
                             toastIdRef.current = toast({
@@ -189,14 +190,34 @@ function ArchitecturesSection() {
                             completedBlueprints.push(blueprintId);
                             const updatedArchitectures = archslist.map(architecture => {
                                 if (architecture.project_id === blueprintId) {
-                                  return { ...architecture, latestCodeGenerationStatus: "COMPLETED" };
+                                  return { ...architecture, latestCodeGenerationStatus: codeGenerationStatus.COMPLETED };
                                 } else {
                                   return architecture;
                                 }
                               });
                               setArchitectures(updatedArchitectures);
                             return false;
-                        } else if (status.status === 'IN-PROGRESS') {
+                        } else if(status.status === codeGenerationStatus.FAILED) {
+                            toast.close(toastIdRef.current);
+                            const projectName = archslist.find(project => project.project_id === blueprintId)?.projectName || blueprintId;
+                            toastIdRef.current = toast({
+                                title: `${projectName} failed to generate.Please Try again after some time.`,
+                                status: 'error',
+                                duration: 3000,
+                                variant: 'left-accent',
+                                isClosable: true,
+                            });
+                            completedBlueprints.push(blueprintId);
+                            const updatedArchitectures = archslist.map(architecture => {
+                                if (architecture.project_id === blueprintId) {
+                                  return { ...architecture, latestCodeGenerationStatus: codeGenerationStatus.FAILED };
+                                } else {
+                                  return architecture;
+                                }
+                              });
+                              setArchitectures(updatedArchitectures);
+                            return false;
+                        }else if (status.status === codeGenerationStatus.IN_PROGRESS) {
                             return true;
                         }
                     }
