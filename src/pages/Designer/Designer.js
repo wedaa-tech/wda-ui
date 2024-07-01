@@ -1825,6 +1825,39 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         });
     };
 
+    const onclick = (e, node) => {
+        var Id = e.target.dataset.id || e.target.name || node.id;
+        if (Id === 'spring' || Id === 'gomicro' || Id === 'react' || Id === 'angular' || Id === 'docusaurus' || Id === 'gateway') Id = node.id;
+        if (Id) {
+            if (Id === 'oauth2') Id = 'authenticationType';
+            if (Id === 'eck') Id = 'logManagement';
+            if (Id === 'eureka') Id = 'serviceDiscoveryType';
+            const type = Id.split('_')[0];
+            setNodeType(type);
+            if (type === 'aws' || type === 'azure') {
+                setCurrentNode(nodes['cloudProvider'].data);
+            } else {
+                const nodeData = nodes[Id].data;
+                nodeData.Id = Id;
+                setCurrentNode({ ...nodeData });
+            }
+            setopen(Id);
+        }
+        setNodeClick(Id);
+    };
+
+    const useOnNodeContextMenu =useCallback(
+            (event, node) => {
+                event.preventDefault();
+                setMenu({
+                    id: node.id,
+                    node: node,
+                    top: event.clientY - 50,
+                    left: event.clientX + 10,
+                });
+            },
+            [setMenu],
+        );
 
     if (isLoading) {
         if (isGenerating) return <Generating generatingData={generatingData} />;
@@ -1860,7 +1893,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         onConnect={params => onConnect(params, nodes)}
                         onInit={setReactFlowInstance}
                         onNodeDoubleClick={(e, node) =>
-                            Functions.onclick(e, node, setNodeType, setCurrentNode, setopen, setNodeClick, nodes)
+                            onclick(e, node)
                         }
                         onDrop={e =>
                             onDrop(e, ServiceDiscoveryCount, MessageBrokerCount, LogManagemntCount, AuthProviderCount, UICount, docsCount)
@@ -1878,7 +1911,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         elementsSelectable={!viewOnly}
                         nodesConnectable={!viewOnly}
                         onPaneClick={onPaneClick}
-                        onNodeContextMenu={() => Functions.onNodeContextMenu(setMenu)}
+                        onNodeContextMenu={useOnNodeContextMenu}
                     >
                         {menu && <ContextMenu onClick={onPaneClick} {...menu} onEditClick={!viewOnly ? onclick : () => {}} />}
                         <Flex height={'inherit'}>

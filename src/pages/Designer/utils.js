@@ -6,26 +6,6 @@ const imageWidth = 1024;
 const imageHeight = 768;
 const MarkerType = { ArrowClosed: 'arrowclosed' };
 
-const onclick = (e, node, setNodeType, setCurrentNode, setopen, setNodeClick, nodes) => {
-    var Id = e.target.dataset.id || e.target.name || node.id;
-    if (Id === 'spring' || Id === 'gomicro' || Id === 'react' || Id === 'angular' || Id === 'docusaurus' || Id === 'gateway') Id = node.id;
-    if (Id) {
-        if (Id === 'oauth2') Id = 'authenticationType';
-        if (Id === 'eck') Id = 'logManagement';
-        if (Id === 'eureka') Id = 'serviceDiscoveryType';
-        const type = Id.split('_')[0];
-        setNodeType(type);
-        if (type === 'aws' || type === 'azure') {
-            setCurrentNode(nodes['cloudProvider'].data);
-        } else {
-            const nodeData = nodes[Id].data;
-            nodeData.Id = Id;
-            setCurrentNode({ ...nodeData });
-        }
-        setopen(Id);
-    }
-    setNodeClick(Id);
-};
 const addEdge = (edgeParams, edges, updated) => {
     updated = true;
     const edgeId = `${edgeParams.source}-${edgeParams.target}`;
@@ -135,20 +115,7 @@ const useOnEdgeUpdateStart = edgeUpdateSuccessful => {
         edgeUpdateSuccessful.current = false;
     }, []);
 };
-const useOnNodeContextMenu = setMenu => {
-    return useCallback(
-        (event, node) => {
-            event.preventDefault();
-            setMenu({
-                id: node.id,
-                node: node,
-                top: event.clientY - 50,
-                left: event.clientX + 10,
-            });
-        },
-        [setMenu],
-    );
-};
+
 const CreateImage = async nodes => {
     const nodesBounds = getRectOfNodes(nodes);
     const transform = getTransformForBounds(nodesBounds, imageWidth, imageHeight, 0, 2, 0.9);
@@ -170,13 +137,11 @@ const CreateImage = async nodes => {
 };
 
 const Functions = {
-    onclick: onclick,
     addEdge: addEdge,
     MergeData: MergeData,
     onCheckEdge: onCheckEdge,
     onEdgeUpdateEnd: useOnEdgeUpdateEnd,
     onEdgeUpdateStart: useOnEdgeUpdateStart,
-    onNodeContextMenu: useOnNodeContextMenu,
     CreateImage: CreateImage,
 };
 
