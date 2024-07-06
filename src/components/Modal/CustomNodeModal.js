@@ -122,9 +122,7 @@ const CustomNodeModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorCl
                                         id="dbPort"
                                         placeholder="Port number"
                                         borderColor={
-                                            portValidationError.serverPortError ||
-                                            portValidationError.portNumberError ||
-                                            portValidationError.portRangeError
+                                            Object.keys(portValidationError).length > 0
                                                 ? 'red'
                                                 : 'black'
                                         }
@@ -134,33 +132,14 @@ const CustomNodeModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorCl
                                         onChange={e => handleData('databasePort', e.target.value)}
                                     />
                                 </FormControl>
-                                {portValidationError.portRequiredError && (
+                                {Object.keys(portValidationError).length > 0 && (
                                     <Alert status="error" padding="4px" fontSize="12px" borderRadius="3px" mb={2}>
                                         <AlertIcon style={{ width: '14px', height: '14px' }} />
-                                        {portValidationError.portRequiredError}
-                                    </Alert>
-                                )}
-                                {portValidationError.serverPortError && (
-                                    <Alert status="error" padding="4px" fontSize="12px" borderRadius="3px" mb={2}>
-                                        <AlertIcon style={{ width: '14px', height: '14px' }} />
-                                        {portValidationError.serverPortError}
-                                    </Alert>
-                                )}
-                                {portValidationError.portNumberError && (
-                                    <Alert status="error" padding="4px" fontSize="12px" borderRadius="3px" mb={2}>
-                                        <AlertIcon style={{ width: '14px', height: '14px' }} />
-                                        {portValidationError.portNumberError}
-                                    </Alert>
-                                )}
-                                {portValidationError.portRangeError && (
-                                    <Alert status="error" padding="4px" fontSize="12px" borderRadius="3px" mb={2}>
-                                        <AlertIcon style={{ width: '14px', height: '14px' }} />
-                                        {portValidationError.portRangeError}
+                                        {portValidationError.message} 
                                     </Alert>
                                 )}
                             </>
                         )}
-
                         <FormLabel>Background Color</FormLabel>
                         <div
                             style={{
@@ -230,13 +209,10 @@ const CustomNodeModal = ({ isOpen, onClose, onSubmit, CurrentNode, handleColorCl
                     <Button
                         onClick={() => onSubmit(customData)}
                         isDisabled={
-                            Object.keys(portValidationError).length ||
                             ((nodeType === 'mongoDB' || nodeType === 'PostgreSQL') &&
                                 (!customData.databasePort ||
                                     customData.databasePort === '' ||
-                                    portValidationError.serverPortError ||
-                                    portValidationError.portNumberError ||
-                                    portValidationError.portRangeError))
+                                    Object.keys(portValidationError).length > 0))
                         }
                         style={{ display: 'block', margin: '0 auto' }}
                     >
