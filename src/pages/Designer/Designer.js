@@ -2180,7 +2180,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         display="flex"
                         flexDirection="column"
                     >
-                        <Spinner thickness="8px" speed="0.9s" emptyColor="gray.200" color="#3182CE" height="250px" width="250px" />
+                        <Spinner thickness="2px" speed="0.4s" emptyColor="gray.200" color="#3182CE" height="150px" width="150px" />
                     </Flex>
                 )}
             </ReactFlowProvider>

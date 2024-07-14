@@ -1,31 +1,44 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Flex, Image, Input, Text, Button, useToast } from '@chakra-ui/react';
+import { Box, Flex, Image, Input, Text, Button, useToast, FormControl, FormLabel, Icon, FormHelperText } from '@chakra-ui/react';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import { useKeycloak } from '@react-keycloak/web';
 import wedaa from '../../assets/wedaa_logo.png';
 import Pagination from '../../components/Pagination';
 import Constants from '../../Constants';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
+import { InfoIcon } from '@chakra-ui/icons';
 
 const Transactions = () => {
     const { initialized, keycloak } = useKeycloak();
     const [transactions, setTransactions] = useState([]);
     const [userCredits, setUserCredits] = useState(0);
-    const [rechargeAmount, setRechargeAmount] = useState('');
+    const [rechargeAmount, setRechargeAmount] = useState(20);
     const [showRechargeInput, setShowRechargeInput] = useState(false);
     const [expandedIndex, setExpandedIndex] = useState(null);
     const limit = 7;
     const [currentPage, setCurrentPage] = useState(1);
     const [totalTransactions, setTotalTransactions] = useState(0);
     const { transactionStatus } = Constants;
+    const [isFocused, setIsFocused] = useState(false);
+    const [isError, setIsError] = useState(false);
     const history = useHistory();
 
-    const handleChange = (transaction) => {
+    const handleRechargeChange = e => {
+        const value = e.target.value;
+        setRechargeAmount(value);
+        if (!value || value <= 0 || value > 99) {
+            setIsError(true);
+        } else {
+            setIsError(false);
+        }
+    };
+
+    const handleChange = transaction => {
         var isAiGeneration = transaction?.blueprintId;
-        if(isAiGeneration && transaction?.parentId){
-        const projectId = isAiGeneration;
-        const architectureId = transaction.parentId;
-        history.push(`/project/${architectureId}/architecture/${projectId}/details`);
+        if (isAiGeneration && transaction?.parentId) {
+            const projectId = isAiGeneration;
+            const architectureId = transaction.parentId;
+            history.push(`/project/${architectureId}/architecture/${projectId}/details`);
         }
     };
 
@@ -63,7 +76,7 @@ const Transactions = () => {
                 imageUrl: transaction.imageUrl || wedaa,
                 services: transaction?.services,
                 blueprintId: transaction?.blueprintId,
-                parentId:transaction?.parentId
+                parentId: transaction?.parentId,
             }));
             setTransactions(modifiedTransactions);
             setTotalTransactions(result.length);
@@ -194,7 +207,7 @@ const Transactions = () => {
                                             <Text
                                                 fontSize="lg"
                                                 mb="1"
-                                                onClick={()=>handleChange(transaction)}
+                                                onClick={() => handleChange(transaction)}
                                                 style={{ cursor: transaction?.services ? 'pointer' : 'default' }}
                                             >
                                                 {`Transaction Id: ${transaction.id}`}
@@ -293,7 +306,7 @@ const Transactions = () => {
             <Box ml={4}>
                 <Box
                     p={4}
-                    width="200px"
+                    width="240px"
                     bg={'white'}
                     borderColor="transparent"
                     borderTop="1px solid #D3D3D3"
@@ -307,25 +320,48 @@ const Transactions = () => {
                     </Flex>
                     {showRechargeInput ? (
                         <>
-                            <Flex alignItems="center" mb={4}>
-                                <Text color="blue.500" fontSize="sm">
-                                    Credits:
+                            <Box mb={4}>
+                                <Text fontSize="sm">Recharge</Text>
+                                <FormControl position="relative" mt={2}>
+                                    <FormLabel
+                                        position="absolute"
+                                        top={isFocused || rechargeAmount ? '9px' : '14%'}
+                                        left="10px"
+                                        fontSize={isFocused || rechargeAmount ? '10px' : '16px'}
+                                        color={'gray.400'}
+                                        transform={isFocused || rechargeAmount ? 'translateY(-50%)' : 'translateY(0)'}
+                                        transition="all 0.2s"
+                                        pointerEvents="none"
+                                    >
+                                        Enter Credits
+                                    </FormLabel>
+                                    <Input
+                                        type="number"
+                                        value={rechargeAmount}
+                                        paddingTop={4}
+                                        onChange={e => handleRechargeChange(e)}
+                                        onFocus={() => setIsFocused(true)}
+                                        onBlur={() => setIsFocused(false)}
+                                        _placeholder={{ color: 'transparent' }}
+                                        borderColor={isError ? 'red.500' : 'gray.300'}
+                                        focusBorderColor={isError ? 'red.500' : 'blue.500'}
+                                    />
+                                    {isError && (
+                                        <FormHelperText fontSize="10px" color="red.500">
+                                            Please enter valid credits between 1 and 99
+                                        </FormHelperText>
+                                    )}
+                                </FormControl>
+                                <Text mt={2} fontSize="11px" color="gray.500">
+                                    <Icon as={InfoIcon} mr={1} />
+                                    You can request up to 99 credits.
                                 </Text>
-                                <Input
-                                    type="number"
-                                    value={rechargeAmount}
-                                    onChange={e => setRechargeAmount(e.target.value)}
-                                    ml={2}
-                                    p={1.5}
-                                    w="90px"
-                                    h="24px"
-                                />
-                            </Flex>
+                            </Box>
                             <Flex alignItems="center">
                                 <Button
                                     onClick={handleRecharge}
-                                    disabled={!rechargeAmount}
-                                    cursor={rechargeAmount ? 'pointer' : 'not-allowed'}
+                                    isDisabled={(!rechargeAmount || isError)}
+                                    cursor={ 'pointer'}
                                     colorScheme="blue"
                                     size="sm"
                                     borderRadius="md"
