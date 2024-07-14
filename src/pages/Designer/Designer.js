@@ -171,6 +171,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
 
     useEffect(() => {
         if (initialized && keycloak?.authenticated) {
+            loadCredits();
             fetchProjectNames();
             if (projectParentId !== 'admin') {
                 let defaultProjectId;
