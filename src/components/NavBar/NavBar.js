@@ -179,7 +179,7 @@ const NavBar = () => {
                                 borderRadius={6}
                                 _hover={{ backgroundColor: '#E5E4E9', cursor: 'pointer' }}
                                 onClick={() => {
-                                    window.open('https://github.com/orgs/wedaa-tech/discussions', '_blank');
+                                    window.open('https://github.com/orgs/wedaa-tech/discussions/categories/q-a', '_blank');
                                 }}
                             >
                                 <Flex alignItems="center" gap={4} padding={1} paddingLeft={2}>
