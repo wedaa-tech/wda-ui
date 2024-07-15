@@ -1971,7 +1971,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                                 {initialized && keycloak?.authenticated && (
                                     <Box bg="gray.200" p={2} borderRadius="md" mr={4}>
                                         <Text fontSize="sm" fontWeight="bold">
-                                            Credits Available: {credits}
+                                            Credits Used: {aiServices.length}
                                         </Text>
                                     </Box>
                                 )}
