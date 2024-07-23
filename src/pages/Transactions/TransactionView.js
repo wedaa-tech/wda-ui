@@ -139,7 +139,7 @@ const Transactions = () => {
             });
             if (response.ok) {
                 var res = await response.json();
-                res = { ...requestBody, id: res.result.InsertedID, imageUrl: wedaa, updatedAt: res.updatedAt };
+                res = { ...requestBody, id: res.result, imageUrl: wedaa, updatedAt: res.updatedAt };
                 setTransactions(prev => [res, ...prev.slice(0, limit - 1)]);
 
                 setTotalTransactions(prev => prev + 1);

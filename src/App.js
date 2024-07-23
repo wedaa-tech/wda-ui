@@ -18,21 +18,11 @@ import Transactions from './pages/Transactions/TransactionView';
 import PendingTransactions from './pages/Transactions/PendingTransactions';
 
 function App() {
-
-    const eventLogger = (event, error) => { //need to implement refresh token expiry redirect to login
-        // console.log('onKeycloakEvent', event, error);
-    };
-      
     return (
-        <ReactKeycloakProvider authClient={keycloak}  
-        onEvent={eventLogger}
-        initOptions={{
-          onLoad: 'check-sso',
-          silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html',
-        }}>
+        <ReactKeycloakProvider authClient={keycloak}>
             <Router className="flex h-screen">
                 <NavBar />
-                <Box className='screen-body'>
+                <Box className="screen-body">
                     <Switch>
                         <Route exact path="/canvasToCode">
                             <Designer update={false} />
@@ -50,7 +40,7 @@ function App() {
                             <Generating />
                         </Route>
                         <PrivateRoute exact path="/aiwizard">
-                            <AIWizard/>
+                            <AIWizard />
                         </PrivateRoute>
                         <PrivateRoute exact path="/projects">
                             <ArchitecturesSection />
@@ -73,8 +63,8 @@ function App() {
                         <PrivateRoute exact path="/project/:parentId/architecture/:id/details/">
                             <Review />
                         </PrivateRoute>
-                        <PrivateRoute exact path="/transactions" >
-                            <Transactions/>
+                        <PrivateRoute exact path="/transactions">
+                            <Transactions />
                         </PrivateRoute>
                         <PrivateRoute exact path="/pendingTransactions">
                             <PendingTransactions />
