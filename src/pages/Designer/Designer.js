@@ -5,7 +5,7 @@ import { saveAs } from 'file-saver';
 import { FaEraser } from 'react-icons/fa6';
 import { GoCodeReview } from 'react-icons/go';
 import 'reactflow/dist/style.css';
-import { Button, Flex, Icon, IconButton, Text, VStack, useToast, Tooltip, Spinner } from '@chakra-ui/react';
+import { Button, Flex, Icon, IconButton, Text, VStack, useToast, Tooltip, Box, HStack,Spinner } from '@chakra-ui/react';
 import Sidebar from './../../components/Sidebar';
 import CustomImageNode from './../Customnodes/CustomImageNode';
 import CustomServiceNode from './../Customnodes/CustomServiceNode';
@@ -126,6 +126,9 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     const [initialData, setInitialData] = useState(null);
     const [projectNames, setProjectNames] = useState([]);
     const [defaultProjectName, setDefaultProjectName] = useState('');
+    const [credits, setCredits] = useState(0);
+    const [userCredits,setUserCredits]=useState(0);
+    const [aiServices, setAiServices] = useState([]);
     const reactFlowWrapper = useRef(null);
     const edgeUpdateSuccessful = useRef(true);
     const toastIdRef = useRef();
@@ -168,6 +171,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
 
     useEffect(() => {
         if (initialized && keycloak?.authenticated) {
+            loadCredits();
             fetchProjectNames();
             if (projectParentId !== 'admin') {
                 let defaultProjectId;
@@ -213,6 +217,11 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             }
         }
     }, [initialized, keycloak?.realmAccess?.roles, keycloak?.token]);
+
+    useEffect(()=>{
+        setCredits(userCredits-aiServices.length)
+    },[userCredits,aiServices])
+
     useEffect(() => {
         document.title = 'WeDAA';
         setShowDiv(sharedMetadata ? false : true);
@@ -288,6 +297,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             setUpdated(false);
         };
     }, []);
+
     useEffect(() => {
         if (update && userData.project_id) {
             var data = { ...userData };
@@ -326,6 +336,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             }
         }
     }, [nodes, edges]);
+    
     useEffect(() => {
         if (
             !isLoading &&
@@ -460,6 +471,10 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                                 delete updatedState[change.id];
                                 return updatedState;
                             });
+
+                            if (aiServices.includes(change.id)) {
+                                setAiServices(prev => prev.filter(service => service !== change.id));
+                            }
                         } else if (change.id.startsWith('Gateway')) {
                             setIsEmptyGatewaySubmit(false);
                             setIsGatewayNodeEnabled(false);
@@ -527,8 +542,14 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                             if (UpdatedNodes[targetId]?.style) {
                                 UpdatedNodes[targetId].style.border = '1px solid red';
                             }
-                            if (sourceId.startsWith('Service') || sourceId.startsWith('UI'))
+                            if (sourceId.startsWith('Service')){
+                                if(UpdatedNodes[sourceId].data?.dbmlData)
+                                delete UpdatedNodes[sourceId].data.dbmlData;   
+                                if(UpdatedNodes[sourceId].data?.description)
+                                delete UpdatedNodes[sourceId].data.description;   
                                 delete UpdatedNodes[sourceId].data.prodDatabaseType;
+                                setAiServices(prev => prev.filter(service => service !== sourceId));
+                            }
                             setNodes(UpdatedNodes);
                         }
                         delete updatedEdges[change.id];
@@ -1002,6 +1023,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         setIsServiceDiscovery(false);
         setServiceDiscoveryCount(0);
         setUniqueApplicationNames([]);
+        setAiServices([]);
         setUniquePortNumbers([]);
         setServiceInputCheck([]);
         setUiInputCheck({});
@@ -1031,6 +1053,34 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             path: '',
         });
     };
+
+        const loadCredits = async () => {
+        if (initialized && keycloak?.authenticated) {
+            try{
+                var response = await fetch(process.env.REACT_APP_CREDIT_SERVICE_URL + '/head', {
+                method: 'get',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                },
+            })
+            if(response.ok){
+                const result= await response.json();
+                if(result?.creditsAvailable){
+                    setUserCredits(()=> result.creditsAvailable);
+                    return result.creditsAvailable;
+                }
+                else return 0;
+            }
+            else {
+                throw new Error(`Fetch request failed with status: ${response.status}`);
+            }
+            }
+            catch(error){ 
+                console.error(error)
+            };
+        }
+    }
 
     const loadData = async () => {
         if (initialized && projectParentId && id) {
@@ -1071,8 +1121,9 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         }
     };
 
-    const initData = data => {
+    const initData = async(data) => {
         if (data != null && !(Object.keys(data).length === 0) && data?.metadata?.nodes) {
+            var fetchedCredits = await loadCredits();
             const nodes = data?.metadata?.nodes;
             if (data?.projectName) {
                 setProjectName(data.projectName);
@@ -1106,6 +1157,11 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                             ...prev,
                             [key]: false,
                         }));
+                        if(data.metadata.nodes[key].data?.description && data.metadata.nodes[key].data?.dbmlData && fetchedCredits>0){
+                            // console.log(srviceCombinations,"combinations")
+                            setAiServices(prev => [...prev,data.metadata.nodes[key].data.Id])
+                            fetchedCredits--;
+                        }
                     }
                 } else if (key.toLowerCase().includes('gateway')) {
                     const id = key.split('_');
@@ -1321,6 +1377,14 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 UpdatedNodes[Isopen].style.border = '1px solid black';
             }
         }
+        if (Data?.dbmlData && Data?.description) {
+            const serviceIdExists = aiServices.includes(Data.Id);
+
+            if (!serviceIdExists && credits>0) {
+                setAiServices([...aiServices, Data.Id]);
+            }
+        }
+
         setNodes(UpdatedNodes);
         setopen(false);
     };
@@ -1400,6 +1464,14 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         for (const key in NewNodes) {
             const Node = NewNodes[key];
             delete Node.data?.color;
+            if(Node.id.startsWith('Service') && !aiServices.includes(Node.id)){
+                if(Node.data?.description){
+                    delete Node.data.description;
+                }
+                if(Node.data?.dbmlData){
+                    delete Node.data.dbmlData;
+                }
+            }
             if (Node.id.startsWith('Service') || Node.id.startsWith('UI') || Node.id.startsWith('Gateway')) {
                 if (Service_Discovery_Data && (serviceRegistryEdges.length === 0 || serviceRegistryEdges.includes(Node.id))) {
                     Node.data.serviceDiscoveryType = Service_Discovery_Data;
@@ -1445,7 +1517,6 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             let communicationIndex = 0;
             for (const edgeInfo in NewEdges) {
                 const Edge = NewEdges[edgeInfo];
-
                 const targetIsExcluded =
                     Edge.target.startsWith('Database') ||
                     Edge.target.startsWith('authenticationType') ||
@@ -1510,7 +1581,9 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     const SaveData = async (data, saved) => {
         const Data = data || generatingData;
         const generatedImage = await Functions.CreateImage(Object.values(nodes));
-        if (generatedImage) Data.imageUrl = generatedImage;
+        if (generatedImage){ 
+            Data.imageUrl = generatedImage;
+        }
         if (saved !== 'VALIDATED') data.validationStatus = 'DRAFT';
         setInitialData(Data);
         try {
@@ -1544,6 +1617,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 if (saved == 'VALIDATED' && projectParentId == 'admin') {
                     history.replace(`/project/admin/architecture/${responseData.projectId}/details`);
                 }
+                if (!projectProjectId) setProjectprojectId(responseData.projectId);
                 if (saved === 'save') {
                     toast.close(toastIdRef.current);
                     toastIdRef.current = toast({
@@ -1752,6 +1826,40 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         });
     };
 
+    const onclick = (e, node) => {
+        var Id = e.target.dataset.id || e.target.name || node.id;
+        if (Id === 'spring' || Id === 'gomicro' || Id === 'react' || Id === 'angular' || Id === 'docusaurus' || Id === 'gateway') Id = node.id;
+        if (Id) {
+            if (Id === 'oauth2') Id = 'authenticationType';
+            if (Id === 'eck') Id = 'logManagement';
+            if (Id === 'eureka') Id = 'serviceDiscoveryType';
+            const type = Id.split('_')[0];
+            setNodeType(type);
+            if (type === 'aws' || type === 'azure') {
+                setCurrentNode(nodes['cloudProvider'].data);
+            } else {
+                const nodeData = nodes[Id].data;
+                nodeData.Id = Id;
+                setCurrentNode({ ...nodeData });
+            }
+            setopen(Id);
+        }
+        setNodeClick(Id);
+    };
+
+    const useOnNodeContextMenu =useCallback(
+            (event, node) => {
+                event.preventDefault();
+                setMenu({
+                    id: node.id,
+                    node: node,
+                    top: event.clientY - 50,
+                    left: event.clientX + 10,
+                });
+            },
+            [setMenu],
+        );
+
     if (isLoading) {
         if (isGenerating) return <Generating generatingData={generatingData} />;
         return (
@@ -1786,7 +1894,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         onConnect={params => onConnect(params, nodes)}
                         onInit={setReactFlowInstance}
                         onNodeDoubleClick={(e, node) =>
-                            Functions.onclick(e, node, setNodeType, setCurrentNode, setopen, setNodeClick, nodes)
+                            onclick(e, node)
                         }
                         onDrop={e =>
                             onDrop(e, ServiceDiscoveryCount, MessageBrokerCount, LogManagemntCount, AuthProviderCount, UICount, docsCount)
@@ -1804,7 +1912,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         elementsSelectable={!viewOnly}
                         nodesConnectable={!viewOnly}
                         onPaneClick={onPaneClick}
-                        onNodeContextMenu={() => Functions.onNodeContextMenu(setMenu)}
+                        onNodeContextMenu={useOnNodeContextMenu}
                     >
                         {menu && <ContextMenu onClick={onPaneClick} {...menu} onEditClick={!viewOnly ? onclick : () => {}} />}
                         <Flex height={'inherit'}>
@@ -1859,48 +1967,64 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         </Flex>
                         <Controls showInteractive={!viewOnly} />
                         <Panel position="top-right">
-                            <VStack spacing={4} alignItems={'stretch'}>
-                                <Button
-                                    hidden={true}
-                                    colorScheme="blackAlpha"
-                                    size="sm"
-                                    onClick={() => console.log(nodes, edges, userData, projectParentId, projectName, generatingData)}
-                                >
-                                    Print
-                                </Button>
-                                <DownloadButton applicationName={projectName} />
-                                <Tooltip label="Clear Canvas" placement="left" bg="blue.500" color="white" borderRadius="md" fontSize="sm">
-                                    <IconButton
-                                        hidden={viewOnly}
-                                        icon={<Icon as={FaEraser} />}
-                                        size="md"
-                                        onClick={() => {
-                                            if (!(Object.keys(nodes).length === 0)) {
-                                                setVisibleDialog(true);
-                                                setActionModalType('clear');
-                                            }
-                                        }}
-                                    />
-                                </Tooltip>
-                                <Tooltip
-                                    label="Save Architecture"
-                                    placement="left"
-                                    bg="blue.500"
-                                    color="white"
-                                    borderRadius="md"
-                                    fontSize="sm"
-                                >
-                                    <IconButton
-                                        hidden={viewOnly}
-                                        icon={<Icon as={AiOutlineSave} />}
-                                        size="md"
-                                        onClick={() => {
-                                            setUpdated(false);
-                                            handleSave();
-                                        }}
-                                    />
-                                </Tooltip>
-                            </VStack>
+                            <HStack justifyContent="flex-end" alignItems="flex-start">
+                                {initialized && keycloak?.authenticated && (
+                                    <Box bg="gray.200" p={2} borderRadius="md" mr={4}>
+                                        <Text fontSize="sm" fontWeight="bold">
+                                            Credits Used: {aiServices.length}
+                                        </Text>
+                                    </Box>
+                                )}
+                                <VStack spacing={4} alignItems={'stretch'}>
+                                    <Button
+                                        hidden={true}
+                                        colorScheme="blackAlpha"
+                                        size="sm"
+                                        onClick={() => console.log(nodes, edges, userData, projectParentId, projectName, generatingData)}
+                                    >
+                                        Print
+                                    </Button>
+                                    <DownloadButton applicationName={projectName} />
+                                    <Tooltip
+                                        label="Clear Canvas"
+                                        placement="left"
+                                        bg="blue.500"
+                                        color="white"
+                                        borderRadius="md"
+                                        fontSize="sm"
+                                    >
+                                        <IconButton
+                                            hidden={viewOnly}
+                                            icon={<Icon as={FaEraser} />}
+                                            size="md"
+                                            onClick={() => {
+                                                if (!(Object.keys(nodes).length === 0)) {
+                                                    setVisibleDialog(true);
+                                                    setActionModalType('clear');
+                                                }
+                                            }}
+                                        />
+                                    </Tooltip>
+                                    <Tooltip
+                                        label="Save Architecture"
+                                        placement="left"
+                                        bg="blue.500"
+                                        color="white"
+                                        borderRadius="md"
+                                        fontSize="sm"
+                                    >
+                                        <IconButton
+                                            hidden={viewOnly}
+                                            icon={<Icon as={AiOutlineSave} />}
+                                            size="md"
+                                            onClick={() => {
+                                                setUpdated(false);
+                                                handleSave();
+                                            }}
+                                        />
+                                    </Tooltip>
+                                </VStack>
+                            </HStack>
                         </Panel>
                         <Background gap={10} color="#f2f2f2" variant={BackgroundVariant.Lines} />
                     </ReactFlow>
@@ -1950,6 +2074,8 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         handleColorClick={handleColorClick}
                         uniqueApplicationNames={uniqueApplicationNames}
                         uniquePortNumbers={uniquePortNumbers}
+                        credits={credits}
+                        aiServices={aiServices.includes(Isopen)}
                     />
                 )}
                 {nodeType === 'Gateway' && Isopen && (
@@ -2054,7 +2180,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         display="flex"
                         flexDirection="column"
                     >
-                        <Spinner thickness="8px" speed="0.9s" emptyColor="gray.200" color="#3182CE" height="250px" width="250px" />
+                        <Spinner thickness="2px" speed="0.4s" emptyColor="gray.200" color="#3182CE" height="150px" width="150px" />
                     </Flex>
                 )}
             </ReactFlowProvider>

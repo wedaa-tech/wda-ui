@@ -14,10 +14,22 @@ import NavBar from './components/NavBar/NavBar';
 import Generating from './components/Generating';
 import { Box } from '@chakra-ui/react';
 import AIWizard from './pages/AI/AIWizard';
+import Transactions from './pages/Transactions/TransactionView';
+import PendingTransactions from './pages/Transactions/PendingTransactions';
 
 function App() {
+
+    const eventLogger = (event, error) => { //need to implement refresh token expiry redirect to login
+        // console.log('onKeycloakEvent', event, error);
+    };
+      
     return (
-        <ReactKeycloakProvider authClient={keycloak}>
+        <ReactKeycloakProvider authClient={keycloak}  
+        onEvent={eventLogger}
+        initOptions={{
+          onLoad: 'check-sso',
+          silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html',
+        }}>
             <Router className="flex h-screen">
                 <NavBar />
                 <Box className='screen-body'>
@@ -60,6 +72,12 @@ function App() {
                         </PrivateRoute>
                         <PrivateRoute exact path="/project/:parentId/architecture/:id/details/">
                             <Review />
+                        </PrivateRoute>
+                        <PrivateRoute exact path="/transactions" >
+                            <Transactions/>
+                        </PrivateRoute>
+                        <PrivateRoute exact path="/pendingTransactions">
+                            <PendingTransactions />
                         </PrivateRoute>
                         <Route exact path="/docs">
                             <DocHome />

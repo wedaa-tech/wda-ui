@@ -1,5 +1,5 @@
 import { CopyIcon, DeleteIcon, DownloadIcon } from '@chakra-ui/icons';
-import { useState,useRef } from 'react';
+import { useState, useRef } from 'react';
 import { saveAs } from 'file-saver';
 import {
     Box,
@@ -18,11 +18,12 @@ import {
     Button,
     Input,
     Spinner,
-    Tooltip
+    Tooltip,
 } from '@chakra-ui/react';
 import { useKeycloak } from '@react-keycloak/web';
 import React from 'react';
-import "../ProjectsSection/ProjectsSection.css";
+import '../ProjectsSection/ProjectsSection.css';
+import Constants from '../../Constants';
 
 const GreenCheckIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="green">
@@ -60,6 +61,8 @@ const ArchitectureCard = ({
             maxWidth: '100%',
         },
     });
+    const { codeGenerationStatus } = Constants;
+
     const toastIdRef = useRef();
 
     const handleCloneClick = () => {
@@ -90,20 +93,20 @@ const ArchitectureCard = ({
         }
     };
 
-    const handleCloneConfirm = async() => {
+    const handleCloneConfirm = async () => {
         var projectNames = await fetchProjectNames();
         setNewPrototypeName('');
         var updatedData;
-        if(projectNames.includes(newPrototypeName)){
+        if (projectNames.includes(newPrototypeName)) {
             toast.close(toastIdRef.current);
-        toastIdRef.current = toast({
-            title: `Prototype with Name: ${newPrototypeName} already Exists.`,
-            status:'error',
-            duration: 3000,
-            variant: 'left-accent',
-            isClosable: true,
-        }); 
-            return ;
+            toastIdRef.current = toast({
+                title: `Prototype with Name: ${newPrototypeName} already Exists.`,
+                status: 'error',
+                duration: 3000,
+                variant: 'left-accent',
+                isClosable: true,
+            });
+            return;
         }
 
         if (data?.request_json?.parentId === 'admin') {
@@ -128,32 +131,31 @@ const ArchitectureCard = ({
     };
 
     const handleDownload = async () => {
-        if(data.latestCodeGenerationStatus=="COMPLETED"){
-        try {
-            const response = await fetch(process.env.REACT_APP_API_BASE_URL + `/api/download/${data?.project_id}`, {
-                method: 'get',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
-                },
-            })
-            const blob = await response.blob();
-            saveAs(blob, `${data.projectName}.zip`);
-        } catch (error) {
-            console.error(error);
+        if (data.latestCodeGenerationStatus == codeGenerationStatus.COMPLETED) {
+            try {
+                const response = await fetch(process.env.REACT_APP_API_BASE_URL + `/api/download/${data?.project_id}`, {
+                    method: 'get',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                    },
+                });
+                const blob = await response.blob();
+                saveAs(blob, `${data.projectName}.zip`);
+            } catch (error) {
+                console.error(error);
+            }
+        } else {
+            toast.close(toastIdRef.current);
+            toastIdRef.current = toast({
+                title: `Prototype Updated: Please Generate again`,
+                status: 'error',
+                duration: 3000,
+                variant: 'left-accent',
+                isClosable: true,
+            });
         }
-    }
-    else{
-        toast.close(toastIdRef.current);
-        toastIdRef.current = toast({
-            title: `Prototype Updated: Please Generate again`,
-            status:'error',
-            duration: 3000,
-            variant: 'left-accent',
-            isClosable: true,
-        });
-    }
-    }
+    };
 
     return (
         <Skeleton isLoaded={isLoaded} fadeDuration={1}>
@@ -161,7 +163,7 @@ const ArchitectureCard = ({
                 maxWidth={96}
                 minWidth={96}
                 maxW="sm"
-                className={`project-card ${data.latestCodeGenerationStatus !='IN-PROGRESS' ? 'hover-card':''}`}
+                className={`project-card ${data.latestCodeGenerationStatus != codeGenerationStatus.IN_PROGRESS ? 'hover-card' : ''}`}
                 height={'300px'}
                 borderWidth="1px"
                 borderRadius="lg"
@@ -170,8 +172,10 @@ const ArchitectureCard = ({
                 position="relative"
                 p="6"
                 zIndex="1"
-                backgroundColor={data.latestCodeGenerationStatus=='IN-PROGRESS'?'#f8f8f8':'#fff'}
-                onClick={() => {data.latestCodeGenerationStatus!='IN-PROGRESS' && onClick(projectId, data)}}
+                backgroundColor={data.latestCodeGenerationStatus == codeGenerationStatus.IN_PROGRESS ? '#f8f8f8' : '#fff'}
+                onClick={() => {
+                    data.latestCodeGenerationStatus != codeGenerationStatus.IN_PROGRESS && onClick(projectId, data);
+                }}
             >
                 <Image
                     style={{
@@ -182,74 +186,76 @@ const ArchitectureCard = ({
                     height="65%"
                     src={imageUrl}
                 />
-                {data.latestCodeGenerationStatus!=='IN-PROGRESS' && (<>
-                {parentId!= 'admin' &&
-                <Tooltip label="Download Prototype" placement="top" color="white" borderRadius="md" fontSize="sm">
-                <IconButton
-                    top="5%"
-                    size={"md"}
-                    right="33%"
-                    variant="outline"
-                    colorScheme="blackAlpha"
-                    className='prototype-icons'
-                    aria-label="Download Prototype"
-                    position="absolute"
-                    zIndex={99}
-                    icon={<DownloadIcon />}
-                    onClick={e => {
-                        // onDelete(title, projectId);
-                        handleDownload()
-                        e.stopPropagation();
-                    }}
-                />
-                </Tooltip>
-                }
-                <Tooltip label="Delete Prototype" placement="top" color="white" borderRadius="md" fontSize="sm">
-                <IconButton
-                    top="5%"
-                    right="5%"
-                    size='md'
-                    minheight='10px'
-                    minwidth='10px'
-                    fontSize='14px'
-                    variant="outline"
-                    colorScheme="blackAlpha"
-                    aria-label="Delete Architecture"
-                    className='prototype-icons'
-                    position="absolute"
-                    zIndex={99}
-                    icon={<DeleteIcon />}
-                    onClick={e => {
-                        onDelete(title, projectId);
-                        e.stopPropagation();
-                    }}
-                />
-                </Tooltip>
-                <Tooltip label="Clone Prototype" placement="top" color="white" borderRadius="md" fontSize="sm">
-                <IconButton
-                    top="5%"
-                    size={"md"}
-                    right="19%"
-                    variant="outline"
-                    colorScheme="blackAlpha"
-                    aria-label="Clone Prototype"
-                    className='prototype-icons'
-                    position="absolute"
-                    zIndex={99}
-                    icon={<CopyIcon />}
-                    onClick={e => {
-                        handleCloneClick();
-                        e.stopPropagation();
-                    }}
-                />
-                </Tooltip>
-                </>)}
+                {data.latestCodeGenerationStatus !== codeGenerationStatus.IN_PROGRESS && (
+                    <>
+                        {parentId != 'admin' && (
+                            <Tooltip label="Download Prototype" placement="top" color="white" borderRadius="md" fontSize="sm">
+                                <IconButton
+                                    top="5%"
+                                    size={'md'}
+                                    right="33%"
+                                    variant="outline"
+                                    colorScheme="blackAlpha"
+                                    className="prototype-icons"
+                                    aria-label="Download Prototype"
+                                    position="absolute"
+                                    zIndex={99}
+                                    icon={<DownloadIcon />}
+                                    onClick={e => {
+                                        // onDelete(title, projectId);
+                                        handleDownload();
+                                        e.stopPropagation();
+                                    }}
+                                />
+                            </Tooltip>
+                        )}
+                        <Tooltip label="Delete Prototype" placement="top" color="white" borderRadius="md" fontSize="sm">
+                            <IconButton
+                                top="5%"
+                                right="5%"
+                                size="md"
+                                minheight="10px"
+                                minwidth="10px"
+                                fontSize="14px"
+                                variant="outline"
+                                colorScheme="blackAlpha"
+                                aria-label="Delete Architecture"
+                                className="prototype-icons"
+                                position="absolute"
+                                zIndex={99}
+                                icon={<DeleteIcon />}
+                                onClick={e => {
+                                    onDelete(title, projectId);
+                                    e.stopPropagation();
+                                }}
+                            />
+                        </Tooltip>
+                        <Tooltip label="Clone Prototype" placement="top" color="white" borderRadius="md" fontSize="sm">
+                            <IconButton
+                                top="5%"
+                                size={'md'}
+                                right="19%"
+                                variant="outline"
+                                colorScheme="blackAlpha"
+                                aria-label="Clone Prototype"
+                                className="prototype-icons"
+                                position="absolute"
+                                zIndex={99}
+                                icon={<CopyIcon />}
+                                onClick={e => {
+                                    handleCloneClick();
+                                    e.stopPropagation();
+                                }}
+                            />
+                        </Tooltip>
+                    </>
+                )}
                 {parentId === 'admin' && (
                     <Box position="absolute" top="24%" right="9%" zIndex={99}>
                         {published ? <GreenCheckIcon /> : <RedCloseIcon />}
                     </Box>
                 )}
-        
+
                 <Box p="6">
                     <Text
                         className="not-selectable"
@@ -264,23 +270,28 @@ const ArchitectureCard = ({
                     >
                         {title}
                     </Text>
-                    {data.latestCodeGenerationStatus=='IN-PROGRESS' && (
-                       <Text className="not-selectable" color="red.300">
-                       Generation in Progress   <Spinner size='xs' />
-                   </Text> 
-                    )
-
-                    }
-                    {data.latestCodeGenerationStatus!=='IN-PROGRESS'&& data.validationStatus === 'DRAFT' && (
-                        <Text className="not-selectable" color="yellow.600">
+                    {data.latestCodeGenerationStatus == codeGenerationStatus.FAILED && (
+                        <Text className="not-selectable" color="red.500">
+                            Generation Failed
+                        </Text>
+                    )}
+                    {data.latestCodeGenerationStatus == codeGenerationStatus.IN_PROGRESS && (
+                        <Text className="not-selectable" color="orange.400">
+                            Generation in Progress <Spinner size="xs" />
+                        </Text>
+                    )}
+                    {data.latestCodeGenerationStatus !== codeGenerationStatus.IN_PROGRESS && data.validationStatus === 'DRAFT' && (
+                        <Text className="not-selectable" color="yellow.500">
                             Draft
                         </Text>
                     )}
-                    {data.latestCodeGenerationStatus!=='IN-PROGRESS' && data.validationStatus === 'VALIDATED' && (
-                        <Text className="not-selectable" color="green.600">
-                            Validated
-                        </Text>
-                    )}
+                    {data.latestCodeGenerationStatus !== 'IN_PROGRESS' &&
+                        data.latestCodeGenerationStatus !== 'FAILED' &&
+                        data.validationStatus === 'VALIDATED' && (
+                            <Text className="not-selectable" color="green.600">
+                                Validated
+                            </Text>
+                        )}
                     {/* <Text className="not-selectable" color="gray.600">
                         {description}
                     </Text> */}

@@ -1,16 +1,28 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FormControl, FormLabel, Input, Textarea, Button, Divider, Text, VStack, Flex, useToast, IconButton,Tooltip } from '@chakra-ui/react';
+import {
+    FormControl,
+    FormLabel,
+    Input,
+    Button,
+    Text,
+    VStack,
+    Flex,
+    useToast,
+    IconButton,
+    Tooltip,
+    Spinner
+} from '@chakra-ui/react';
 import Editor from '@monaco-editor/react';
 import { FaSync } from 'react-icons/fa';
 import { useKeycloak } from '@react-keycloak/web';
-
+import { HiSparkles } from "react-icons/hi2";
 function TitleDescriptionForm({ title: initialTitle, description: initialDescription, onNext }) {
     const [title, setTitle] = useState(initialTitle || '');
     const [description, setDescription] = useState(initialDescription || '');
+    const [descriptionFetched, setDescriptionFetched] = useState(initialDescription);
     const containsNoSpecialCharacters = /^[a-zA-Z0-9 ]+$/;
     const { initialized, keycloak } = useKeycloak();
     const [isLoading, setIsLoading] = useState(false);
-    const [isEditorAvailable, setIsEditorAvailable] = useState(false);
 
     const toast = useToast({
         containerStyle: {
@@ -62,15 +74,13 @@ function TitleDescriptionForm({ title: initialTitle, description: initialDescrip
                 })
                 .then(data => {
                     setDescription(data);
+                    setDescriptionFetched(true); 
                 })
                 .catch(error => {
                     console.error('Error adding descrition to service:', error);
                 });
-                setIsEditorAvailable(true);
-            }
+        }
     };
-
-
 
     const checkTitleValidity = () => {
         if (title.trim() === '') {
@@ -90,102 +100,98 @@ function TitleDescriptionForm({ title: initialTitle, description: initialDescrip
             return false;
         }
         return true;
-    }
-    const checkFormValidity = () =>{
-        return checkTitleValidity() && checkDescriptionValidity()
-    }
+    };
+    const checkFormValidity = () => {
+        return checkTitleValidity() && checkDescriptionValidity();
+    };
 
     const handleNext = () => {
         if (checkFormValidity(title)) onNext({ title, description });
     };
 
     return (
-        <VStack spacing={4}>
-            <Text fontSize="xl" fontWeight="bold">
-                Describe Your Application
+        <VStack spacing={6} align="center">
+            <Text fontSize="2xl" fontWeight="bold">
+                AI Wizard
             </Text>
-            <Divider />
+            <Text fontSize="l" color="gray.600">
+                Craft a scalable microservice architecture with a custom title.
+            </Text>
             <FormControl>
-                <FormLabel marginLeft={"6"} >Title</FormLabel>
-                <Input marginLeft={"7"} maxWidth={"800"} placeholder="Enter Application Name" value={title} onChange={handleTitleChange} />
+                <FormLabel marginLeft={"6"}>Title</FormLabel>
+                <Input marginLeft={"8"} maxWidth="800" placeholder="Enter Application Name" value={title} onChange={handleTitleChange} />
             </FormControl>
-            <FormControl>
-                <FormLabel
-                    style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        marginBottom: '0px',
-                    }}
-                    marginLeft={"6"}
-                >
-                    <span>Description</span>
-                    <Tooltip label="Generate" placement="right"  bg="blue.500" color="white" fontSize="sm" offset={[0, -4]} borderRadius="md" >
-                    <IconButton
-                        icon={<FaSync />}
-                        isLoading={isLoading}
-                        onClick={fetchDescriptionData}
-                        aria-label="Refresh"
-                        variant="link"
-                        colorScheme="blue"
-                        style={{ position: 'relative', fontSize: '15px' }}
-                        spin={isLoading}
-                    />
-                    </Tooltip>
-                </FormLabel>
+            {!descriptionFetched ? ( 
+                <Flex justify="center" w="100%">
+                    <Button colorScheme="blue" rightIcon={<HiSparkles />} onClick={fetchDescriptionData} size={"md"} isLoading={isLoading} borderRadius={isLoading ? 'full' : '3xl'} loadingText={"Generating ..."} >
+                    {isLoading ? ' ' : 'Generate'}
+                    </Button>
+                </Flex>
+            ) : (
+                <>
+                    <FormControl>
+                        <FormLabel
+                            style={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                marginBottom: '0px',
+                            }}
+                            marginLeft={"6"}
+                        >
+                            <span>Description</span>
+                            <Tooltip label="Regenerate" placement="right"  bg="blue.500" color="white" fontSize="sm" offset={[0, -4]} borderRadius="md" >
+                                <IconButton
+                                    icon={<FaSync />}
+                                    isLoading={isLoading}
+                                    onClick={fetchDescriptionData}
+                                    aria-label="Refresh"
+                                    variant="link"
+                                    colorScheme="blue"
+                                    style={{ position: 'relative', fontSize: '15px' }}
+                                    spin={isLoading}
+                                />
+                            </Tooltip>
+                        </FormLabel>
 
-                <div
-                    style={{
-                        height: '270px',
-                        maxWidth:'800px',
-                        border: '1px solid #D3D3D3',
-                        borderRadius: '5px',
-                        padding: '5px',
-                        marginBottom: '10px',
-                        backgroundColor: isEditorAvailable ? 'white' : '#FAFAFA',
-                        borderColor: '#D3D3D3',
-                        cursor: !isEditorAvailable && 'not-allowed',
-                        position: 'relative',
-                        marginLeft:'29px'
-                    }}
-                >
-                    {!isEditorAvailable && (
                         <div
                             style={{
-                                position: 'absolute',
-                                top: '10%',
-                                left: '32%',
-                                transform: 'translate(-50%, -50%)',
-                                color: '#A0A0A0',
+                                height: '240px',
+                                maxWidth:'800px',
+                                border: '1px solid #D3D3D3',
+                                borderRadius: '5px',
+                                padding: '5px',
+                                marginBottom: '10px',
+                                borderColor: '#D3D3D3',
+                                position: 'relative',
+                                marginLeft:'29px'
                             }}
                         >
-                            Click the Generate button to populate the description field
+                                <Editor
+                                    height="100%"
+                                    options={{
+                                        minimap: { enabled: false },
+                                        lineNumbers: 'off',
+                                        wordWrap: 'on',
+                                        renderLineHighlight: 'none',
+                                        language:'markdown' 
+                                    }}
+                                    defaultLanguage="markdown"
+                                    value={description}
+                                    onChange={value => {
+                                        handleDescriptionChange(value);
+                                    }}
+                                    style={{ overflowX: 'hidden' }}
+                                />
                         </div>
-                    )}
-
-                    {isEditorAvailable && (
-                        <Editor
-                            height="100%"
-                            options={{
-                                minimap: { enabled: false },
-                                lineNumbers: 'off',
-                                wordWrap: 'on',
-                                renderLineHighlight: 'none' 
-                            }}
-                            value={description}
-                            onChange={value => {
-                                handleDescriptionChange(value);
-                            }}
-                            style={{ overflowX: 'hidden' }}
-                        />
-                    )}
-                </div>
-            </FormControl>
-            <Flex justify="flex-end" w="100%">
-                <Button colorScheme="blue" onClick={handleNext} mt={4}>
+                    </FormControl>
+                    <Flex justify="flex-end" w="100%">
+                <Button colorScheme="blue" onClick={handleNext} mt={-2}>
                     Next
                 </Button>
             </Flex>
+                </>
+            )}
         </VStack>
     );
 }
