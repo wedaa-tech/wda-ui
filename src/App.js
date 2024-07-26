@@ -19,7 +19,14 @@ import PendingTransactions from './pages/Transactions/PendingTransactions';
 
 function App() {
     return (
-        <ReactKeycloakProvider authClient={keycloak}>
+        <ReactKeycloakProvider authClient={keycloak}
+        initOptions={{
+            onLoad: 'check-sso',
+            silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html',
+            checkLoginIframe: false
+          }}
+        >
+            
             <Router className="flex h-screen">
                 <NavBar />
                 <Box className="screen-body">
