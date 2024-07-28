@@ -1914,7 +1914,8 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         onPaneClick={onPaneClick}
                         onNodeContextMenu={useOnNodeContextMenu}
                     >
-                        {menu && <ContextMenu onClick={onPaneClick} {...menu} onEditClick={!viewOnly ? onclick : () => {}} />}
+                        {menu && <ContextMenu onClick={onPaneClick} {...menu} onEditClick={!viewOnly ? onclick : () => {}} setNodes={setNodes}
+                            setEdges={setEdges}/>}
                         <Flex height={'inherit'}>
                             <Sidebar
                                 isUINodeEnabled={isUINodeEnabled}
