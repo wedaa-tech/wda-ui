@@ -1,18 +1,29 @@
 import React, { useCallback } from 'react';
-import { useReactFlow } from 'reactflow';
 import './ContextMenu.css';
 
-export default function ContextMenu({ id, node, top, left, right, bottom, onEditClick, ...props }) {
-    const { setNodes, setEdges } = useReactFlow();
+export default function ContextMenu({ id, node, top, left, right, bottom, onEditClick, setNodes, setEdges, ...props }) {
 
     const selectedNode = node;
 
     const deleteNode = useCallback(() => {
         setNodes(nodes => {
-            const filteredNodes = nodes.filter(nd => nd.id !== id);
-            return [...structuredClone(filteredNodes)];
+            const filteredNodes = Object.keys(nodes)
+                .filter(key => nodes[key].id !== id)
+                .reduce((result, key) => {
+                    result[key] = nodes[key];
+                    return result;
+                }, {});
+            return { ...structuredClone(filteredNodes) };
         });
-        setEdges(edges => edges.filter(ed => ed.source !== id));
+        setEdges(edges => {
+            const filteredEdges = Object.keys(edges)
+                .filter(key => edges[key].source !== id)
+                .reduce((result, key) => {
+                    result[key] = edges[key];
+                    return result;
+                }, {});
+                return { ...structuredClone(filteredEdges) };
+        });
     }, [id, setNodes, setEdges]);
 
     return (
