@@ -232,8 +232,8 @@ const ApplicationModal = ({
             if (!response.ok) {
                 const result = await response.json();
                 console.log(result, 'result');
-                setDbmlError(true); 
-                highlightErrors(result); 
+                setDbmlError(true);
+                highlightErrors(result);
                 toast.close(toastIdRef.current);
                 toastIdRef.current = toast({
                     title: `DBML validation failed. Please review.`,
@@ -275,7 +275,7 @@ const ApplicationModal = ({
             }
         }
 
-        onSubmit(ServiceData); 
+        onSubmit(ServiceData);
     };
 
     const unsetMarkers = () => {
@@ -814,7 +814,6 @@ const ApplicationModal = ({
                                                 </Tooltip>
                                             </FormLabel>
 
-                                            {/* DBML Editor */}
                                             <div
                                                 style={{
                                                     height: '250px',
@@ -868,7 +867,6 @@ const ApplicationModal = ({
                                                 )}
                                             </div>
 
-                                            {/* Button aligned to the right */}
                                             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                                                 <Button
                                                     onClick={() => validateDbml(ServiceData.dbmlData)}
