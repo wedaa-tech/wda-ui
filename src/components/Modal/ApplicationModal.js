@@ -285,7 +285,6 @@ const ApplicationModal = ({
 
             monaco.editor.setModelMarkers(model, 'owner', []);
 
-            const allMarkers = monaco.editor.getModelMarkers({ resource: model.uri });
         }
     };
 
@@ -304,7 +303,6 @@ const ApplicationModal = ({
                 },
             ];
             monaco.editor.setModelMarkers(model, 'owner', marker);
-            const allMarkers = monaco.editor.getModelMarkers(model);
         }
     };
 
@@ -865,17 +863,6 @@ const ApplicationModal = ({
                                                         />
                                                     )
                                                 )}
-                                            </div>
-
-                                            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                                                <Button
-                                                    onClick={() => validateDbml(ServiceData.dbmlData)}
-                                                    colorScheme="blue"
-                                                    variant="solid"
-                                                    size="sm"
-                                                >
-                                                    Validate DBML
-                                                </Button>
                                             </div>
                                         </FormControl>
                                     </div>
