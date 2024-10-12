@@ -11,7 +11,7 @@ function CanvasContent() {
                 <div className="content">
                     <Image 
                         src={project_icon} 
-                        alt="Custom Icon" 
+                        alt="Software Architecture freepik icon" 
                         boxSize="100px" 
                         className="cloud-icon"
                     />
