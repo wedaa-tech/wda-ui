@@ -12,9 +12,11 @@ import eurkea from '../assets/eureka.png';
 import keycloakIcon from '../assets/keycloak.png';
 import eck from '../assets/eck.png';
 import dummy from '../assets/dummy.png';
+import srv3 from '../assets/fast-api.png';
+
 // import mini from "../assets/mini.png";
 // import docker from "../assets/docker.png";
-import {  projectNameCheck,  checkDisabled } from '../utils/submitButtonValidation';
+import { projectNameCheck, checkDisabled } from '../utils/submitButtonValidation';
 import './../App.css';
 import {
     Input,
@@ -75,7 +77,7 @@ const Sidebar = ({
     projectNames,
     defaultProjectName,
     setSpinner,
-    spinner
+    spinner,
 }) => {
     const location = useLocation();
     const onDragStart = (event, nodeType, Name, metaData = '') => {
@@ -101,12 +103,11 @@ const Sidebar = ({
     };
 
     useEffect(() => {
-        const images = [db1, db2, srv1, srv2, ui1, ui2, grp, gateway, docs, eurkea, keycloakIcon, eck];
+        const images = [db1, db2, srv1, srv2, srv3, ui1, ui2, grp, gateway, docs, eurkea, keycloakIcon, eck];
         images.forEach(image => {
             new Image().src = image;
         });
     }, []);
-
 
     const [projectData, setprojectData] = useState(IntialState);
 
@@ -140,7 +141,6 @@ const Sidebar = ({
     const handleCloseModal = () => {
         setShowModal(false);
     };
-
 
     const [refArch, setRefArch] = useState([]);
     const [isContentVisible, setContentVisible] = useState(false);
@@ -180,28 +180,39 @@ const Sidebar = ({
     const toastIdRef = useRef();
 
     const handleButtonClick = () => {
-        const { isValid, message } = checkDisabled(projectData.projectName, isEmptyUiSubmit, isEmptyServiceSubmit, isEmptyGatewaySubmit, nodes, edges,projectNames,keycloak?.authenticated,defaultProjectName);
-        if (!isValid || (initialized && keycloak.authenticated && parentId!='admin') ) {
-        const errorMessage = message || 'Validation failed';
-        toast.close(toastIdRef.current);
-        toastIdRef.current = toast({
-            title: errorMessage,
-            status: isValid ? 'success' : 'error',
-            duration: 3000,
-            variant: 'left-accent',
-            isClosable: true,
-        });
-         }
-        if (!isValid) {return;}
-        if(initialized && !keycloak.authenticated){
+        const { isValid, message } = checkDisabled(
+            projectData.projectName,
+            isEmptyUiSubmit,
+            isEmptyServiceSubmit,
+            isEmptyGatewaySubmit,
+            nodes,
+            edges,
+            projectNames,
+            keycloak?.authenticated,
+            defaultProjectName,
+        );
+        if (!isValid || (initialized && keycloak.authenticated && parentId != 'admin')) {
+            const errorMessage = message || 'Validation failed';
+            toast.close(toastIdRef.current);
+            toastIdRef.current = toast({
+                title: errorMessage,
+                status: isValid ? 'success' : 'error',
+                duration: 3000,
+                variant: 'left-accent',
+                isClosable: true,
+            });
+        }
+        if (!isValid) {
+            return;
+        }
+        if (initialized && !keycloak.authenticated) {
             keycloak.login({
                 redirectUri: process.env.REACT_APP_UI_BASE_URL + location.pathname,
-            })
+            });
+        } else {
+            setSpinner(() => true);
+            onSubmit(projectData);
         }
-        else{
-        setSpinner(()=>true)
-        onSubmit(projectData);
-    }
     };
 
     const handleToggleContent = () => {
@@ -478,14 +489,14 @@ const Sidebar = ({
                                 </>
                             )}
                             <Divider />
-
+                            {/* 
                             <h1
                                 style={{
                                     cursor: 'pointer',
                                     fontSize: '20px',
                                     display: 'flex',
                                     alignItems: 'center',
-                                    paddingBottom: '3px',
+                                    paddingBottom: '5px',
                                     paddingTop: '3px',
                                     // justifyContent: 'space-between',
                                 }}
@@ -501,23 +512,78 @@ const Sidebar = ({
                                 Service
                             </h1>
                             {selectedOption === 'Service' && (
-                                <>
-                                    <div
-                                        className="selectorNode"
-                                        onDragStart={event => onDragStart(event, 'default', 'Service_spring')}
-                                        draggable
-                                    >
-                                        <img width="130px" style={{ margin: '-10px -50px -30px 10px' }} src={srv1} alt="springlogo"></img>
+                                <div className="service-container">
+                                    <div className="image-row">
+                                        <div
+                                            className="selectorNode service-box"
+                                            onDragStart={event => onDragStart(event, 'default', 'Service_spring')}
+                                            draggable
+                                        >
+                                            <img className="service-image" src={srv1} alt="springlogo" />
+                                        </div>
+                                        <div
+                                            className="selectorNode service-box"
+                                            onDragStart={event => onDragStart(event, 'default', 'Service_gomicro')}
+                                            draggable
+                                        >
+                                            <img className="service-image" src={srv2} alt="gologo" />
+                                        </div>
                                     </div>
-                                    <div
-                                        className="selectorNode"
-                                        onDragStart={event => onDragStart(event, 'default', 'Service_gomicro')}
-                                        draggable
-                                    >
-                                        <img width="100px" style={{ margin: '-30px 0px -20px 8px' }} src={srv2} alt="gologo"></img>
+                                    <div className="image-row">
+                                        <div
+                                            className="selectorNode service-box"
+                                            onDragStart={event => onDragStart(event, 'default', 'Service_fastapi')}
+                                            draggable
+                                        >
+                                            <img className="service-image" src={srv3} alt="pythonlogo" />
+                                        </div>
                                     </div>
-                                </>
+                                </div>
+                            )} */}
+
+                            {/* <h1
+                                className="service-header"
+                                onClick={() => toggleOption('Service')}
+                                onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#f3f2f2')}
+                                onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+                            >
+                                {selectedOption === 'Service' ? (
+                                    <span className="toggle-icon">&#x25BC;</span>
+                                ) : (
+                                    <span className="toggle-icon">&#x25B6;</span>
+                                )}
+                                Service
+                            </h1>
+                            {selectedOption === 'Service' && (
+                                <div className="service-container">
+                                    <div className="image-row">
+                                        <div
+                                            className="selectorNode service-box"
+                                            onDragStart={event => onDragStart(event, 'default', 'Service_spring')}
+                                            draggable
+                                        >
+                                            <img className="service-image" src={srv1} alt="springlogo" />
+                                        </div>
+                                        <div
+                                            className="selectorNode service-box"
+                                            onDragStart={event => onDragStart(event, 'default', 'Service_gomicro')}
+                                            draggable
+                                        >
+                                            <img className="service-image" src={srv2} alt="gologo" />
+                                        </div>
+                                    </div>
+                                    <div className="image-row">
+                                        <div
+                                            className="selectorNode service-box"
+                                            onDragStart={event => onDragStart(event, 'default', 'Service_fastapi')}
+                                            draggable
+                                        >
+                                            <img className="service-image" src={srv3} alt="pythonlogo" />
+                                        </div>
+                                    </div>
+                                </div>
                             )}
+
                             <Divider />
 
                             <h1
@@ -552,6 +618,75 @@ const Sidebar = ({
                                     </div>
                                 </>
                             )}
+                            <Divider /> */}
+                            <h1
+                                className="service-header"
+                                onClick={() => toggleOption('Service')}
+                                onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#f3f2f2')}
+                                onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+                            >
+                                {selectedOption === 'Service' ? (
+                                    <span className="toggle-icon">&#x25BC;</span>
+                                ) : (
+                                    <span className="toggle-icon">&#x25B6;</span>
+                                )}
+                                Service
+                            </h1>
+                            {selectedOption === 'Service' && (
+                                <div className="service-container">
+                                    <div className="image-row">
+                                        <div
+                                            className="selectorNode service-box"
+                                            onDragStart={event => onDragStart(event, 'default', 'Service_spring')}
+                                            draggable
+                                        >
+                                            <img className="service-image" src={srv1} alt="springlogo" />
+                                        </div>
+                                        <div
+                                            className="selectorNode service-box"
+                                            onDragStart={event => onDragStart(event, 'default', 'Service_gomicro')}
+                                            draggable
+                                        >
+                                            <img className="service-image" src={srv2} alt="gologo" />
+                                        </div>
+                                    </div>
+                                    <div className="image-row">
+                                        <div
+                                            className="selectorNode service-box"
+                                            onDragStart={event => onDragStart(event, 'default', 'Service_fastapi')}
+                                            draggable
+                                        >
+                                            <img className="service-image" src={srv3} alt="pythonlogo" />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            <Divider />
+
+                            <h1
+                                className="service-header"
+                                onClick={() => toggleOption('Documentation')}
+                                onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#f3f2f2')}
+                                onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+                            >
+                                {selectedOption === 'Documentation' ? (
+                                    <span className="toggle-icon">&#x25BC;</span>
+                                ) : (
+                                    <span className="toggle-icon">&#x25B6;</span>
+                                )}
+                                Documentation
+                            </h1>
+                            {selectedOption === 'Documentation' && (
+                                <div
+                                    className="selectorNode service-box"
+                                    onDragStart={event => onDragStart(event, 'default', 'UI_docusaurus')}
+                                    draggable
+                                >
+                                    <img className="docusaurus-image" src={docs} alt="docusauruslogo" />
+                                </div>
+                            )}
+
                             <Divider />
 
                             <h1
@@ -793,7 +928,7 @@ const Sidebar = ({
                 </TabPanels>
             </Tabs>
             <Button m={4} onClick={handleButtonClick} type="submit">
-                {keycloak.authenticated ? 'Next':'Login To Proceed'}
+                {keycloak.authenticated ? 'Next' : 'Login To Proceed'}
             </Button>
             {showModal && (
                 <DeployModal

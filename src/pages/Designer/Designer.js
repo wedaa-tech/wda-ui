@@ -1828,7 +1828,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
 
     const onclick = (e, node) => {
         var Id = e.target.dataset.id || e.target.name || node.id;
-        if (Id === 'spring' || Id === 'gomicro' || Id === 'react' || Id === 'angular' || Id === 'docusaurus' || Id === 'gateway') Id = node.id;
+        if (Id === 'spring' || Id === 'gomicro' || Id === 'fastapi' || Id === 'react' || Id === 'angular' || Id === 'docusaurus' || Id === 'gateway') Id = node.id;
         if (Id) {
             if (Id === 'oauth2') Id = 'authenticationType';
             if (Id === 'eck') Id = 'logManagement';

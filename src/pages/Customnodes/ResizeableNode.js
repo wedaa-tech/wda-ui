@@ -2,6 +2,7 @@ import React from 'react';
 import { Handle, Position, useStore, NodeResizer } from 'reactflow';
 import srv1 from '../../assets/spring.png';
 import srv2 from '../../assets/go.png';
+import srv3 from '../../assets/fast-api.png';
 import ui1 from '../../assets/react.png';
 import ui2 from '../../assets/angular.png';
 import gateway from '../../assets/cloud gateway.png';
@@ -39,6 +40,11 @@ export default function ResizableNode({ id, data, selected }) {
                 if (componentWidth >= 40) return 40;
                 if (componentWidth >= 22) return componentWidth;
                 return 22;
+            case 'fastapi':
+                    componentWidth = size.width / 3.5;
+                    if (componentWidth >= 50) return 50;
+                    if (componentWidth >= 32) return componentWidth;
+                    return 32;
             case 'react':
                 componentWidth = size.width / 3.5;
                 if (componentWidth >= 50) return 50;
@@ -83,6 +89,15 @@ export default function ResizableNode({ id, data, selected }) {
                         src={srv2}
                         alt={nodeType}
                     />
+                );
+            case 'fastapi':
+                return (
+                        <img
+                            style={{ position: 'absolute', top: '3px', left: '3px', width: calculatedWidth(), marginTop: '-4px' }}
+                            name={nodeType}
+                            src={srv3}
+                            alt={nodeType}
+                        />
                 );
             case 'react':
                 return (
@@ -145,6 +160,12 @@ export default function ResizableNode({ id, data, selected }) {
                     <div style={{ display: 'flex', justifyContent: 'center' }}>
                         <img style={{ width: '65px', marginTop: '-2px', marginLeft: '-12px' }} name={nodeType} src={srv2} alt={nodeType} />
                     </div>
+                );
+            case 'fastapi':
+                return (
+                        <div style={{ display: 'flex', justifyContent: 'center' }}>
+                            <img style={{ width: '90px', marginTop: '-2px', marginLeft: '-12px' }} name={nodeType} src={srv3} alt={nodeType} />
+                        </div>
                 );
             case 'react':
                 return (
