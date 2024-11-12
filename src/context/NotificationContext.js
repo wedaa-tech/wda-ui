@@ -26,7 +26,6 @@ export const NotificationProvider = ({ children }) => {
                 return response.json();
             })
             .then(data =>{ 
-                console.log('Notification API Response:', data);
                 if(data?.notifications){
                 setNotifications(data.notifications);
                 }

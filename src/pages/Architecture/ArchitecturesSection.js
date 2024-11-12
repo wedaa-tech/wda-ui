@@ -195,7 +195,7 @@ function ArchitecturesSection() {
                                 }
                                 return response.json();
                             })
-                            .then(data => {console.log('Notification API Response:', data)
+                            .then(data => {
                                 setNotifications(data.notifications);
                             })
                             .catch(error => console.error('Error fetching notification:', error));

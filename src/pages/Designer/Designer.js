@@ -1158,7 +1158,6 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                             [key]: false,
                         }));
                         if(data.metadata.nodes[key].data?.description && data.metadata.nodes[key].data?.dbmlData && fetchedCredits>0){
-                            // console.log(srviceCombinations,"combinations")
                             setAiServices(prev => [...prev,data.metadata.nodes[key].data.Id])
                             fetchedCredits--;
                         }

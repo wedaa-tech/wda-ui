@@ -147,9 +147,6 @@ const NavBar = () => {
         return () => clearInterval(interval);
     }, [initialized, keycloak?.authenticated]);
 
-    useEffect(() => {
-        console.log(notifications, notifications.length, 'aaaaaaa');
-    }, []);
 
     const markNotificationAsRead = async notificationdata => {
         if(!notificationdata.read){
@@ -162,7 +159,6 @@ const NavBar = () => {
                 },
             });
             if (response.ok) {
-                console.log(notificationdata.subject.length, 'length');
                 if (notificationdata.subject.length > 90) {
                     setModalContent(notificationdata.subject);
                     onOpen();
@@ -172,7 +168,6 @@ const NavBar = () => {
                         notification.id === notificationdata.id ? { ...notification, read: true } : notification,
                     ),
                 );
-                console.log(`Notification ${notificationdata.id} marked as read`);
             } else {
                 console.error(`Failed to mark notification ${notificationdata.id} as read:`, response.statusText);
             }
@@ -205,7 +200,6 @@ const NavBar = () => {
                         read: true,
                     })),
                 );
-                console.log('All notifications marked as read');
             } else {
                 console.error('Failed to mark all notifications as read:', response.statusText);
             }
