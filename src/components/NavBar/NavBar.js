@@ -64,10 +64,12 @@ const NavBar = () => {
                 return response.json();
             })
             .then(data => {
-                if (data.notifications.length && data.notifications[0] !== notifications[0]) {
-                    sendSystemNotification(data.notifications[0].subject);
+                if (data.notifications > 0) {
+                    if (data.notifications.length && data.notifications[0] !== notifications[0]) {
+                        sendSystemNotification(data.notifications[0].subject);
+                    }
+                    setNotifications(data.notifications);
                 }
-                setNotifications(data.notifications);
             })
             .catch(error => console.error('Error fetching notification:', error));
     };
@@ -75,7 +77,7 @@ const NavBar = () => {
     const formatTimestamp = timestamp => {
         const now = new Date();
         const notificationDate = new Date(timestamp.seconds * 1000 + timestamp.nanos / 1000000);
-        const timeDifference = Math.floor((now - notificationDate) / 1000); 
+        const timeDifference = Math.floor((now - notificationDate) / 1000);
         if (timeDifference < 60) {
             return `${timeDifference} seconds ago`;
         } else if (timeDifference < 3600) {
@@ -90,7 +92,7 @@ const NavBar = () => {
         }
     };
 
-    const unreadCount = notifications.filter(notification => !notification.read).length;
+    const unreadCount = (notifications || []).filter(notification => !notification.read).length;
 
     const fetchCredits = async () => {
         try {
@@ -150,6 +152,7 @@ const NavBar = () => {
     }, []);
 
     const markNotificationAsRead = async notificationdata => {
+        if(!notificationdata.read){
         try {
             const response = await fetch(`${process.env.REACT_APP_NOTIFICATION_SERVICE_URL}/api/notification/read/${notificationdata.id}`, {
                 method: 'PATCH',
@@ -159,10 +162,10 @@ const NavBar = () => {
                 },
             });
             if (response.ok) {
-                console.log(notificationdata.subject.length,"length")
-                if(notificationdata.subject.length>90){
-                setModalContent(notificationdata.subject);
-                onOpen();
+                console.log(notificationdata.subject.length, 'length');
+                if (notificationdata.subject.length > 90) {
+                    setModalContent(notificationdata.subject);
+                    onOpen();
                 }
                 setNotifications(prevNotifications =>
                     prevNotifications.map(notification =>
@@ -176,6 +179,7 @@ const NavBar = () => {
         } catch (error) {
             console.error(`Failed to mark notification ${notificationdata.id} as read:`, error);
         }
+    }
     };
 
     useEffect(() => {
@@ -185,6 +189,7 @@ const NavBar = () => {
     }, []);
 
     const markAllNotificationsAsRead = async () => {
+        if(unreadCount>0){
         try {
             const response = await fetch(`${process.env.REACT_APP_NOTIFICATION_SERVICE_URL}/api/notification/read`, {
                 method: 'PATCH',
@@ -207,6 +212,7 @@ const NavBar = () => {
         } catch (error) {
             console.error('Failed to mark all notifications as read:', error);
         }
+    }
     };
 
     const handleFeedbackClick = () => {
@@ -306,8 +312,8 @@ const NavBar = () => {
                             borderRadius={12}
                             boxShadow="lg"
                             minWidth="300px"
-                            maxHeight="280px" 
-                            overflowY="auto" 
+                            maxHeight="280px"
+                            overflowY="auto"
                         >
                             <Flex
                                 justifyContent="space-between"
@@ -329,9 +335,8 @@ const NavBar = () => {
                                     Mark all as Read
                                 </Text>
                             </Flex>
-
                             {/* Notification List */}
-                            {notifications.length ? (
+                            {notifications.length > 0 ? (
                                 notifications.map((notification, index) => {
                                     const message = notification.subject;
 
@@ -391,14 +396,7 @@ const NavBar = () => {
                                                     </Text>
                                                 </Flex>
                                                 {!notification.read && (
-                                                    <Box
-                                                        as="span"
-                                                        width="8px"
-                                                        height="8px"
-                                                        bg="blue.500"
-                                                        borderRadius="full"
-                                                        ml={2} 
-                                                    />
+                                                    <Box as="span" width="8px" height="8px" bg="blue.500" borderRadius="full" ml={2} />
                                                 )}
                                             </MenuItem>
 
@@ -407,7 +405,7 @@ const NavBar = () => {
                                     );
                                 })
                             ) : (
-                                <MenuItem width={'100%'} bgColor={'#FFFFFF'} flexDirection="column">
+                                <MenuItem width={'100%'} color={'grey'} flexDirection="column" backgroundColor= {'#ffffff'} _hover={{ bg: '#ffffff' }} cursor={"auto"}>
                                     No new notifications
                                 </MenuItem>
                             )}
@@ -520,7 +518,7 @@ const NavBar = () => {
                     Login
                 </Button>
             )}
-            <Modal  isCentered isOpen={isOpen} onClose={onClose} >
+            <Modal isCentered isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay />
                 <ModalContent>
                     <ModalHeader>Notification</ModalHeader>

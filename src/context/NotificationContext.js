@@ -27,7 +27,10 @@ export const NotificationProvider = ({ children }) => {
             })
             .then(data =>{ 
                 console.log('Notification API Response:', data);
+                if(data?.notifications){
                 setNotifications(data.notifications);
+                }
+                else {setNotifications([])};
             })
             .catch(error => console.error('Error fetching notification:', error));
         } catch (error) {
