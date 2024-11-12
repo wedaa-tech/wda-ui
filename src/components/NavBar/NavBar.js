@@ -1,5 +1,26 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Flex, Text, Menu, MenuButton, MenuList, MenuItem, Image, Button, VStack, Divider, Badge, IconButton } from '@chakra-ui/react';
+import {
+    Box,
+    Flex,
+    Text,
+    Menu,
+    MenuButton,
+    MenuList,
+    MenuItem,
+    Image,
+    Button,
+    VStack,
+    Divider,
+    Badge,
+    IconButton,
+    useDisclosure,
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalHeader,
+    ModalBody,
+    ModalCloseButton,
+} from '@chakra-ui/react';
 import MenuOption from './MenuOption';
 import { Message } from 'iconsax-react';
 import { menuData } from './CONSTANTS';
@@ -14,6 +35,7 @@ import { FaCoins } from 'react-icons/fa';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 import Constants from '../../Constants';
 import { IoNotificationsOutline } from 'react-icons/io5';
+import { useNotification } from '../../context/NotificationContext';
 
 const NavBar = () => {
     const { initialized, keycloak } = useKeycloak();
@@ -22,61 +44,170 @@ const NavBar = () => {
     const [isFeedbackModalOpen, setFeedbackModalOpen] = useState(false);
     const history = useHistory();
     const { defaultCredits } = Constants;
+    const { notifications, setNotifications } = useNotification();
+    const [modalContent, setModalContent] = useState(null);
+    const { isOpen, onOpen, onClose } = useDisclosure();
 
-    // Dummy notifications
-    const [notifications, setNotifications] = useState([
-        { id: 1, message: 'Prototype Generated Successfully. Checkout for more details about this in Prototypes Section. ' },
-        { id: 2, message: 'Your credits are running low.' },
-        { id: 3, message: 'A rule was updated.' },
-    ]);
+    const fetchNotifications = () => {
+        const notificationUrl = `${process.env.REACT_APP_NOTIFICATION_SERVICE_URL}/api/notification`;
+        fetch(notificationUrl, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: keycloak?.token ? `Bearer ${keycloak.token}` : undefined,
+            },
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.notifications.length && data.notifications[0] !== notifications[0]) {
+                    sendSystemNotification(data.notifications[0].subject);
+                }
+                setNotifications(data.notifications);
+            })
+            .catch(error => console.error('Error fetching notification:', error));
+    };
+
+    const formatTimestamp = timestamp => {
+        const now = new Date();
+        const notificationDate = new Date(timestamp.seconds * 1000 + timestamp.nanos / 1000000);
+        const timeDifference = Math.floor((now - notificationDate) / 1000); 
+        if (timeDifference < 60) {
+            return `${timeDifference} seconds ago`;
+        } else if (timeDifference < 3600) {
+            const minutes = Math.floor(timeDifference / 60);
+            return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+        } else if (timeDifference < 86400) {
+            const hours = Math.floor(timeDifference / 3600);
+            return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+        } else {
+            const days = Math.floor(timeDifference / 86400);
+            return `${days} day${days > 1 ? 's' : ''} ago`;
+        }
+    };
+
+    const unreadCount = notifications.filter(notification => !notification.read).length;
+
+    const fetchCredits = async () => {
+        try {
+            const response = await fetch(process.env.REACT_APP_CREDIT_SERVICE_URL + '/head', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                },
+            });
+
+            const result = await response.json();
+
+            if (result?.creditsAvailable) {
+                setUserCredits(result.creditsAvailable);
+            } else if ('found' in result && result.found === false) {
+                let userData = {
+                    userId: keycloak.tokenParsed.sub,
+                    creditsAvailable: defaultCredits.CREDITS,
+                    creditsUsed: 0,
+                };
+
+                const createResponse = await fetch(process.env.REACT_APP_CREDIT_SERVICE_URL + '/api/credits', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                    },
+                    body: JSON.stringify(userData),
+                });
+
+                if (createResponse.ok) {
+                    setUserCredits(defaultCredits.CREDITS);
+                }
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const sendSystemNotification = notification => {
+        if (Notification.permission === 'granted') {
+            new Notification('New Notification', {
+                body: notification.message,
+            });
+        }
+    };
 
     useEffect(() => {
-        if (initialized && keycloak?.authenticated) {
-            const fetchData = async () => {
-                try {
-                    const response = await fetch(process.env.REACT_APP_CREDIT_SERVICE_URL + '/head', {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
-                        },
-                    });
-
-                    const result = await response.json();
-
-                    if (result?.creditsAvailable) {
-                        setUserCredits(result.creditsAvailable);
-                    } else if ('found' in result && result.found === false) {
-                        let userData = {
-                            userId: keycloak.tokenParsed.sub,
-                            creditsAvailable: defaultCredits.CREDITS,
-                            creditsUsed: 0,
-                        };
-
-                        const createResponse = await fetch(process.env.REACT_APP_CREDIT_SERVICE_URL + '/api/credits', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
-                            },
-                            body: JSON.stringify(userData),
-                        });
-
-                        if (createResponse.ok) {
-                            setUserCredits(defaultCredits.CREDITS);
-                        }
-                    }
-                } catch (error) {
-                    console.error(error);
-                }
-            };
-
-            fetchData();
-            const intervalId = setInterval(fetchData, 10000);
-
-            return () => clearInterval(intervalId);
-        }
+        fetchCredits();
+        const interval = setInterval(fetchNotifications, 10000);
+        return () => clearInterval(interval);
     }, [initialized, keycloak?.authenticated]);
+
+    useEffect(() => {
+        console.log(notifications, notifications.length, 'aaaaaaa');
+    }, []);
+
+    const markNotificationAsRead = async notificationdata => {
+        try {
+            const response = await fetch(`${process.env.REACT_APP_NOTIFICATION_SERVICE_URL}/api/notification/read/${notificationdata.id}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                },
+            });
+            if (response.ok) {
+                console.log(notificationdata.subject.length,"length")
+                if(notificationdata.subject.length>90){
+                setModalContent(notificationdata.subject);
+                onOpen();
+                }
+                setNotifications(prevNotifications =>
+                    prevNotifications.map(notification =>
+                        notification.id === notificationdata.id ? { ...notification, read: true } : notification,
+                    ),
+                );
+                console.log(`Notification ${notificationdata.id} marked as read`);
+            } else {
+                console.error(`Failed to mark notification ${notificationdata.id} as read:`, response.statusText);
+            }
+        } catch (error) {
+            console.error(`Failed to mark notification ${notificationdata.id} as read:`, error);
+        }
+    };
+
+    useEffect(() => {
+        if (Notification.permission !== 'granted') {
+            Notification.requestPermission();
+        }
+    }, []);
+
+    const markAllNotificationsAsRead = async () => {
+        try {
+            const response = await fetch(`${process.env.REACT_APP_NOTIFICATION_SERVICE_URL}/api/notification/read`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                },
+            });
+            if (response.ok) {
+                setNotifications(prevNotifications =>
+                    prevNotifications.map(notification => ({
+                        ...notification,
+                        read: true,
+                    })),
+                );
+                console.log('All notifications marked as read');
+            } else {
+                console.error('Failed to mark all notifications as read:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Failed to mark all notifications as read:', error);
+        }
+    };
 
     const handleFeedbackClick = () => {
         setFeedbackModalOpen(true);
@@ -149,7 +280,7 @@ const NavBar = () => {
                                 _active={{ bg: 'transparent' }}
                             />
 
-                            {notifications.length > 0 && (
+                            {unreadCount > 0 && (
                                 <Badge
                                     colorScheme="red"
                                     borderRadius="full"
@@ -160,7 +291,7 @@ const NavBar = () => {
                                     fontSize="0.75rem"
                                     zIndex={1}
                                 >
-                                    {notifications.length}
+                                    {unreadCount}
                                 </Badge>
                             )}
                         </Box>
@@ -175,6 +306,8 @@ const NavBar = () => {
                             borderRadius={12}
                             boxShadow="lg"
                             minWidth="300px"
+                            maxHeight="280px" 
+                            overflowY="auto" 
                         >
                             <Flex
                                 justifyContent="space-between"
@@ -186,7 +319,13 @@ const NavBar = () => {
                                 <Text fontSize="lg" fontWeight="bold" color="black">
                                     Notifications
                                 </Text>
-                                <Text fontSize="xs" fontWeight="medium" color="blue.500" cursor="pointer" onClick={() => {}}>
+                                <Text
+                                    fontSize="xs"
+                                    fontWeight="medium"
+                                    color="blue.500"
+                                    cursor="pointer"
+                                    onClick={markAllNotificationsAsRead}
+                                >
                                     Mark all as Read
                                 </Text>
                             </Flex>
@@ -194,7 +333,7 @@ const NavBar = () => {
                             {/* Notification List */}
                             {notifications.length ? (
                                 notifications.map((notification, index) => {
-                                    const message = notification.message;
+                                    const message = notification.subject;
 
                                     const splitMessage = (text, maxChars) => {
                                         const words = text.split(' ');
@@ -233,18 +372,34 @@ const NavBar = () => {
                                                 flexDirection="row"
                                                 alignItems="center"
                                                 gap={3}
+                                                onClick={() => markNotificationAsRead(notification)}
                                                 _hover={{ bg: 'rgba(0, 0, 0, 0.05)' }}
                                             >
-                                                <Flex flexDirection="column">
+                                                <Flex flexDirection="column" flex="1">
                                                     {lines.map((line, lineIndex) => (
-                                                        <Text key={lineIndex} fontSize="sm" fontWeight="medium" color="black">
+                                                        <Text
+                                                            key={lineIndex}
+                                                            fontSize="sm"
+                                                            color="black"
+                                                            fontWeight={!notification.read ? 'bold' : 'medium'}
+                                                        >
                                                             {line}
                                                         </Text>
                                                     ))}
                                                     <Text fontSize="xs" color="gray.500">
-                                                        {'10 mins ago'}
+                                                        {formatTimestamp(notification.createdAt)}
                                                     </Text>
                                                 </Flex>
+                                                {!notification.read && (
+                                                    <Box
+                                                        as="span"
+                                                        width="8px"
+                                                        height="8px"
+                                                        bg="blue.500"
+                                                        borderRadius="full"
+                                                        ml={2} 
+                                                    />
+                                                )}
                                             </MenuItem>
 
                                             {index !== notifications.length - 1 && <Divider borderColor="gray.200" />}
@@ -261,7 +416,7 @@ const NavBar = () => {
 
                     {/* Profile Section */}
                     <Menu closeOnBlur={true} closeOnSelect={true}>
-                        <MenuButton>
+                        <MenuButton onClick={fetchCredits}>
                             <ProfilePicture size="smd" name={keycloak.tokenParsed.email} />
                         </MenuButton>
                         <MenuList
@@ -365,6 +520,16 @@ const NavBar = () => {
                     Login
                 </Button>
             )}
+            <Modal  isCentered isOpen={isOpen} onClose={onClose} >
+                <ModalOverlay />
+                <ModalContent>
+                    <ModalHeader>Notification</ModalHeader>
+                    <ModalCloseButton />
+                    <ModalBody>
+                        <p>{modalContent}</p>
+                    </ModalBody>
+                </ModalContent>
+            </Modal>
             <FeedbackModal isOpen={isFeedbackModalOpen} onClose={handleFeedbackModalClose} />
         </Box>
     );

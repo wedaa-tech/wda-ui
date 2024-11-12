@@ -8,6 +8,7 @@ import { useKeycloak } from '@react-keycloak/web';
 import ActionModal from '../../components/Modal/ActionModal';
 import { dummyarchs } from './Constants';
 import Constants from '../../Constants';
+import { useNotification } from '../../context/NotificationContext';
 function ArchitecturesSection() {
     let location = useLocation();
     const history = useHistory();
@@ -35,6 +36,7 @@ function ArchitecturesSection() {
     const [architectureTitle, setArchitectureTitle] = useState(null);
     var blueprintIds = [];
     var completedBlueprints = [];
+    const {setNotifications} = useNotification();
 
     const handleOpenNewArchitectureModal = () => {
         setNewArchitectureModalOpen(true);
@@ -159,7 +161,7 @@ function ArchitecturesSection() {
         }
     }, [initialized, keycloak?.realmAccess?.roles, keycloak?.token, location.pathname]);
 
-    const pollCodeGenerationStatus = async (blueprintIds,archslist) => {
+    const pollCodeGenerationStatus = async (blueprintIds, archslist) => {
         const statusUrl = process.env.REACT_APP_API_BASE_URL + '/api/code-generation-status';
         while (blueprintIds.length !== 0) {
             try {
@@ -171,13 +173,33 @@ function ArchitecturesSection() {
                     },
                     body: JSON.stringify({ blueprintIds }),
                 });
-
+    
                 const statuses = await response.json();
-
+    
                 blueprintIds = blueprintIds.filter(blueprintId => {
                     const status = statuses.find(status => status.blueprintId === blueprintId);
                     if (status) {
                         if (status.status === codeGenerationStatus.COMPLETED) {
+                            const notificationUrl = process.env.REACT_APP_NOTIFICATION_SERVICE_URL+'/api/notification';
+                            // Fetch and log notification API response
+                            fetch(notificationUrl, {
+                                method: 'GET',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                                },
+                            })
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error(`HTTP error! status: ${response.status}`);
+                                }
+                                return response.json();
+                            })
+                            .then(data => {console.log('Notification API Response:', data)
+                                setNotifications(data.notifications);
+                            })
+                            .catch(error => console.error('Error fetching notification:', error));
+    
                             toast.close(toastIdRef.current);
                             const projectName = archslist.find(project => project.project_id === blueprintId)?.projectName || blueprintId;
                             toastIdRef.current = toast({
@@ -190,18 +212,18 @@ function ArchitecturesSection() {
                             completedBlueprints.push(blueprintId);
                             const updatedArchitectures = archslist.map(architecture => {
                                 if (architecture.project_id === blueprintId) {
-                                  return { ...architecture, latestCodeGenerationStatus: codeGenerationStatus.COMPLETED };
+                                    return { ...architecture, latestCodeGenerationStatus: codeGenerationStatus.COMPLETED };
                                 } else {
-                                  return architecture;
+                                    return architecture;
                                 }
-                              });
-                              setArchitectures(updatedArchitectures);
+                            });
+                            setArchitectures(updatedArchitectures);
                             return false;
-                        } else if(status.status === codeGenerationStatus.FAILED) {
+                        } else if (status.status === codeGenerationStatus.FAILED) {
                             toast.close(toastIdRef.current);
                             const projectName = archslist.find(project => project.project_id === blueprintId)?.projectName || blueprintId;
                             toastIdRef.current = toast({
-                                title: `${projectName} failed to generate.Please Try again after some time.`,
+                                title: `${projectName} failed to generate. Please try again later.`,
                                 status: 'error',
                                 duration: 3000,
                                 variant: 'left-accent',
@@ -210,20 +232,20 @@ function ArchitecturesSection() {
                             completedBlueprints.push(blueprintId);
                             const updatedArchitectures = archslist.map(architecture => {
                                 if (architecture.project_id === blueprintId) {
-                                  return { ...architecture, latestCodeGenerationStatus: codeGenerationStatus.FAILED };
+                                    return { ...architecture, latestCodeGenerationStatus: codeGenerationStatus.FAILED };
                                 } else {
-                                  return architecture;
+                                    return architecture;
                                 }
-                              });
-                              setArchitectures(updatedArchitectures);
+                            });
+                            setArchitectures(updatedArchitectures);
                             return false;
-                        }else if (status.status === codeGenerationStatus.IN_PROGRESS) {
+                        } else if (status.status === codeGenerationStatus.IN_PROGRESS) {
                             return true;
                         }
                     }
                     return false;
                 });
-
+    
                 if (blueprintIds.length !== 0) {
                     await new Promise(resolve => setTimeout(resolve, 5000));
                 }
@@ -232,7 +254,7 @@ function ArchitecturesSection() {
             }
         }
     };
-
+    
     const handleOpenArchitecture = (project_id, data) => {
         if (data.validationStatus === 'VALIDATED')
             history.push('/project/' + parentId + '/architecture/' + project_id + '/details', {
