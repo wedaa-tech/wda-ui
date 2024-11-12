@@ -89,7 +89,7 @@ const FeedbackPage = () => {
                                                         {feedback.description.slice(0, 10) + '...'}
                                                     </Box>
                                                 </PopoverTrigger>
-                                                <PopoverContent>
+                                                <PopoverContent maxHeight="200px" overflowY="auto">
                                                     <PopoverBody>{feedback.description}</PopoverBody>
                                                 </PopoverContent>
                                             </Popover>
