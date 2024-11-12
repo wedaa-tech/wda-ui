@@ -280,13 +280,13 @@ const ArchitectureCard = ({
                             Generation in Progress <Spinner size="xs" />
                         </Text>
                     )}
-                    {data.latestCodeGenerationStatus !== codeGenerationStatus.IN_PROGRESS && data.validationStatus === 'DRAFT' && (
+                    {data.latestCodeGenerationStatus !== codeGenerationStatus.IN_PROGRESS && data.validationStatus === codeGenerationStatus.DRAFT && (
                         <Text className="not-selectable" color="yellow.500">
                             Draft
                         </Text>
                     )}
-                    {data.latestCodeGenerationStatus !== 'IN_PROGRESS' &&
-                        data.latestCodeGenerationStatus !== 'FAILED' &&
+                    {data.latestCodeGenerationStatus !== codeGenerationStatus.IN_PROGRESS &&
+                        data.latestCodeGenerationStatus !== codeGenerationStatus.FAILED &&
                         data.validationStatus === 'VALIDATED' && (
                             <Text className="not-selectable" color="green.600">
                                 Validated

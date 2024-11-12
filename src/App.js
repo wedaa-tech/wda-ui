@@ -16,6 +16,7 @@ import { Box } from '@chakra-ui/react';
 import AIWizard from './pages/AI/AIWizard';
 import Transactions from './pages/Transactions/TransactionView';
 import PendingTransactions from './pages/Transactions/PendingTransactions';
+import { NotificationProvider } from './context/NotificationContext';
 
 function App() {
     return (
@@ -26,7 +27,7 @@ function App() {
             checkLoginIframe: false
           }}
         >
-            
+        <NotificationProvider>
             <Router className="flex h-screen">
                 <NavBar />
                 <Box className="screen-body">
@@ -85,6 +86,7 @@ function App() {
                     </Switch>
                 </Box>
             </Router>
+            </NotificationProvider>
         </ReactKeycloakProvider>
     );
 }

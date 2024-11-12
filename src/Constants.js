@@ -3,6 +3,7 @@ const codeGenerationStatus = {
     IN_PROGRESS: 'IN-PROGRESS',
     COMPLETED: 'COMPLETED',
     FAILED: 'FAILED',
+    DRAFT: 'DRAFT',
 };
 
 const transactionStatus = {
