@@ -181,7 +181,6 @@ function ArchitecturesSection() {
                     if (status) {
                         if (status.status === codeGenerationStatus.COMPLETED) {
                             const notificationUrl = process.env.REACT_APP_NOTIFICATION_SERVICE_URL+'/api/notification';
-                            // Fetch and log notification API response
                             fetch(notificationUrl, {
                                 method: 'GET',
                                 headers: {
