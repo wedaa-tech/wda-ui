@@ -121,6 +121,7 @@ const ArchitectureCard = ({
                 request_json: updatedRequestJson,
                 projectName: newPrototypeName,
                 parentId: updatedRequestJson.parentId,
+                published: false,
             };
         } else {
             const { project_id, _id, projectName, ...rest } = data;

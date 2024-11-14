@@ -219,6 +219,9 @@ const ApplicationModal = ({
     };
 
     const validateDbml = async dbmlScript => {
+        if (dbmlScript === editorInstruction) {
+            return true;
+        }
         try {
             const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/validate-dbml`, {
                 method: 'post',
@@ -284,7 +287,6 @@ const ApplicationModal = ({
             const model = editor.getModel();
 
             monaco.editor.setModelMarkers(model, 'owner', []);
-
         }
     };
 

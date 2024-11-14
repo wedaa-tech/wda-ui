@@ -1628,10 +1628,22 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                     });
                 }
             } else {
-                if (saved === 'save') {
+                setSpinner(false);
+                var res = await response.json();
+                if(res.message){
                     toast.close(toastIdRef.current);
                     toastIdRef.current = toast({
-                        title: `Unable to save prototype.Please try again`,
+                        title: `${res.message}`,
+                        status: 'error',
+                        duration: 3000,
+                        variant: 'left-accent',
+                        isClosable: true,
+                    });
+                }
+                else if (saved === 'save') {
+                    toast.close(toastIdRef.current);
+                    toastIdRef.current = toast({
+                        title: `Unable to save prototype. Please try again`,
                         status: 'error',
                         duration: 3000,
                         variant: 'left-accent',
