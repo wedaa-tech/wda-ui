@@ -566,11 +566,12 @@ body,
     margin-right: 10px;
 }
 
-.service-container {
+.sidebar-icon-container {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     margin-top: 6px;
+    margin-left: 20px;
 }
 
 .image-row {
@@ -579,8 +580,8 @@ body,
     gap: 20px; 
 }
 
-.service-box {
-    width: 100px; 
+.sidebar-icon-box {
+    width: 103px; 
     height: 60px; 
     display: flex;
     justify-content: center;
@@ -594,13 +595,32 @@ body,
     margin-bottom: 15px; 
 }
 
-.service-box:hover {
+.sidebar-icon-box:hover {
     transform: scale(1.05);
 }
 
-.service-image {
-    width: 70px;
-    height: 60px;
+.sidebar-icon-image {
+    width: 90px;
+    height: 80px;
+    object-fit: contain;
+}
+
+.group-image {
+    width: 200px;
+    height: 200px;
+    object-fit: contain;
+    margin-top: 12px;
+}
+
+.eureka-image {
+    width: 80px;
+    height: 50px;
+    object-fit: contain;
+}
+
+.eck-image {
+    width: 80px;
+    height: 50px;
     object-fit: contain;
 }
 
