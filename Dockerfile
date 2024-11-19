@@ -1,5 +1,6 @@
 # Use the official Node.js image as a build stage
-FROM node:alpine as builder
+# Use a specific Node.js LTS version
+FROM node:22.11.0-alpine AS builder
 
 # Set the working directory
 WORKDIR /app
