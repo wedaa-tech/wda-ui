@@ -142,9 +142,11 @@ const NavBar = () => {
     };
 
     useEffect(() => {
+        if(initialized && keycloak?.authenticated){
         fetchCredits();
         const interval = setInterval(fetchNotifications, 10000);
         return () => clearInterval(interval);
+        }
     }, [initialized, keycloak?.authenticated]);
 
 
