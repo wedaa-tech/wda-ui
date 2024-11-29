@@ -5,7 +5,7 @@ import { saveAs } from 'file-saver';
 import { FaEraser } from 'react-icons/fa6';
 import { GoCodeReview } from 'react-icons/go';
 import 'reactflow/dist/style.css';
-import { Button, Flex, Icon, IconButton, Text, VStack, useToast, Tooltip, Box, HStack,Spinner } from '@chakra-ui/react';
+import { Button, Flex, Icon, IconButton, Text, VStack, useToast, Tooltip, Box, HStack, Spinner } from '@chakra-ui/react';
 import Sidebar from './../../components/Sidebar';
 import CustomImageNode from './../Customnodes/CustomImageNode';
 import CustomServiceNode from './../Customnodes/CustomServiceNode';
@@ -127,13 +127,14 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     const [projectNames, setProjectNames] = useState([]);
     const [defaultProjectName, setDefaultProjectName] = useState('');
     const [credits, setCredits] = useState(0);
-    const [userCredits,setUserCredits]=useState(0);
+    const [userCredits, setUserCredits] = useState(0);
     const [aiServices, setAiServices] = useState([]);
     const reactFlowWrapper = useRef(null);
     const edgeUpdateSuccessful = useRef(true);
     const toastIdRef = useRef();
     const ref = useRef(null);
     const [spinner, setSpinner] = useState(false);
+    const [buildTool, setBuildTool] = useState('maven');
 
     const toast = useToast({
         containerStyle: {
@@ -218,9 +219,9 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         }
     }, [initialized, keycloak?.realmAccess?.roles, keycloak?.token]);
 
-    useEffect(()=>{
-        setCredits(userCredits-aiServices.length)
-    },[userCredits,aiServices])
+    useEffect(() => {
+        setCredits(userCredits - aiServices.length);
+    }, [userCredits, aiServices]);
 
     useEffect(() => {
         document.title = 'WeDAA';
@@ -336,7 +337,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             }
         }
     }, [nodes, edges]);
-    
+
     useEffect(() => {
         if (
             !isLoading &&
@@ -542,11 +543,9 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                             if (UpdatedNodes[targetId]?.style) {
                                 UpdatedNodes[targetId].style.border = '1px solid red';
                             }
-                            if (sourceId.startsWith('Service')){
-                                if(UpdatedNodes[sourceId].data?.dbmlData)
-                                delete UpdatedNodes[sourceId].data.dbmlData;   
-                                if(UpdatedNodes[sourceId].data?.description)
-                                delete UpdatedNodes[sourceId].data.description;   
+                            if (sourceId.startsWith('Service')) {
+                                if (UpdatedNodes[sourceId].data?.dbmlData) delete UpdatedNodes[sourceId].data.dbmlData;
+                                if (UpdatedNodes[sourceId].data?.description) delete UpdatedNodes[sourceId].data.description;
                                 delete UpdatedNodes[sourceId].data.prodDatabaseType;
                                 setAiServices(prev => prev.filter(service => service !== sourceId));
                             }
@@ -1054,33 +1053,30 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         });
     };
 
-        const loadCredits = async () => {
+    const loadCredits = async () => {
         if (initialized && keycloak?.authenticated) {
-            try{
+            try {
                 var response = await fetch(process.env.REACT_APP_CREDIT_SERVICE_URL + '/head', {
-                method: 'get',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
-                },
-            })
-            if(response.ok){
-                const result= await response.json();
-                if(result?.creditsAvailable){
-                    setUserCredits(()=> result.creditsAvailable);
-                    return result.creditsAvailable;
+                    method: 'get',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: initialized ? `Bearer ${keycloak?.token}` : undefined,
+                    },
+                });
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result?.creditsAvailable) {
+                        setUserCredits(() => result.creditsAvailable);
+                        return result.creditsAvailable;
+                    } else return 0;
+                } else {
+                    throw new Error(`Fetch request failed with status: ${response.status}`);
                 }
-                else return 0;
+            } catch (error) {
+                console.error(error);
             }
-            else {
-                throw new Error(`Fetch request failed with status: ${response.status}`);
-            }
-            }
-            catch(error){ 
-                console.error(error)
-            };
         }
-    }
+    };
 
     const loadData = async () => {
         if (initialized && projectParentId && id) {
@@ -1121,7 +1117,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         }
     };
 
-    const initData = async(data) => {
+    const initData = async data => {
         if (data != null && !(Object.keys(data).length === 0) && data?.metadata?.nodes) {
             var fetchedCredits = await loadCredits();
             const nodes = data?.metadata?.nodes;
@@ -1157,8 +1153,8 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                             ...prev,
                             [key]: false,
                         }));
-                        if(data.metadata.nodes[key].data?.description && data.metadata.nodes[key].data?.dbmlData && fetchedCredits>0){
-                            setAiServices(prev => [...prev,data.metadata.nodes[key].data.Id])
+                        if (data.metadata.nodes[key].data?.description && data.metadata.nodes[key].data?.dbmlData && fetchedCredits > 0) {
+                            setAiServices(prev => [...prev, data.metadata.nodes[key].data.Id]);
                             fetchedCredits--;
                         }
                     }
@@ -1379,7 +1375,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         if (Data?.dbmlData && Data?.description) {
             const serviceIdExists = aiServices.includes(Data.Id);
 
-            if (!serviceIdExists && credits>0) {
+            if (!serviceIdExists && credits > 0) {
                 setAiServices([...aiServices, Data.Id]);
             }
         }
@@ -1463,11 +1459,11 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         for (const key in NewNodes) {
             const Node = NewNodes[key];
             delete Node.data?.color;
-            if(Node.id.startsWith('Service') && !aiServices.includes(Node.id)){
-                if(Node.data?.description){
+            if (Node.id.startsWith('Service') && !aiServices.includes(Node.id)) {
+                if (Node.data?.description) {
                     delete Node.data.description;
                 }
-                if(Node.data?.dbmlData){
+                if (Node.data?.dbmlData) {
                     delete Node.data.dbmlData;
                 }
             }
@@ -1580,7 +1576,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     const SaveData = async (data, saved) => {
         const Data = data || generatingData;
         const generatedImage = await Functions.CreateImage(Object.values(nodes));
-        if (generatedImage){ 
+        if (generatedImage) {
             Data.imageUrl = generatedImage;
         }
         if (saved !== 'VALIDATED') data.validationStatus = 'DRAFT';
@@ -1630,7 +1626,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             } else {
                 setSpinner(false);
                 var res = await response.json();
-                if(res.message){
+                if (res.message) {
                     toast.close(toastIdRef.current);
                     toastIdRef.current = toast({
                         title: `${res.message}`,
@@ -1639,8 +1635,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         variant: 'left-accent',
                         isClosable: true,
                     });
-                }
-                else if (saved === 'save') {
+                } else if (saved === 'save') {
                     toast.close(toastIdRef.current);
                     toastIdRef.current = toast({
                         title: `Unable to save prototype. Please try again`,
@@ -1839,7 +1834,16 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
 
     const onclick = (e, node) => {
         var Id = e.target.dataset.id || e.target.name || node.id;
-        if (Id === 'spring' || Id === 'gomicro' || Id === 'fastapi' || Id === 'react' || Id === 'angular' || Id === 'docusaurus' || Id === 'gateway') Id = node.id;
+        if (
+            Id === 'spring' ||
+            Id === 'gomicro' ||
+            Id === 'fastapi' ||
+            Id === 'react' ||
+            Id === 'angular' ||
+            Id === 'docusaurus' ||
+            Id === 'gateway'
+        )
+            Id = node.id;
         if (Id) {
             if (Id === 'oauth2') Id = 'authenticationType';
             if (Id === 'eck') Id = 'logManagement';
@@ -1858,18 +1862,18 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         setNodeClick(Id);
     };
 
-    const useOnNodeContextMenu =useCallback(
-            (event, node) => {
-                event.preventDefault();
-                setMenu({
-                    id: node.id,
-                    node: node,
-                    top: event.clientY - 50,
-                    left: event.clientX + 10,
-                });
-            },
-            [setMenu],
-        );
+    const useOnNodeContextMenu = useCallback(
+        (event, node) => {
+            event.preventDefault();
+            setMenu({
+                id: node.id,
+                node: node,
+                top: event.clientY - 50,
+                left: event.clientX + 10,
+            });
+        },
+        [setMenu],
+    );
 
     if (isLoading) {
         if (isGenerating) return <Generating generatingData={generatingData} />;
@@ -1904,9 +1908,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         onEdgesChange={changes => onEdgesChange(nodes, changes)}
                         onConnect={params => onConnect(params, nodes)}
                         onInit={setReactFlowInstance}
-                        onNodeDoubleClick={(e, node) =>
-                            onclick(e, node)
-                        }
+                        onNodeDoubleClick={(e, node) => onclick(e, node)}
                         onDrop={e =>
                             onDrop(e, ServiceDiscoveryCount, MessageBrokerCount, LogManagemntCount, AuthProviderCount, UICount, docsCount)
                         }
@@ -1925,8 +1927,15 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         onPaneClick={onPaneClick}
                         onNodeContextMenu={useOnNodeContextMenu}
                     >
-                        {menu && <ContextMenu onClick={onPaneClick} {...menu} onEditClick={!viewOnly ? onclick : () => {}} setNodes={setNodes}
-                            setEdges={setEdges}/>}
+                        {menu && (
+                            <ContextMenu
+                                onClick={onPaneClick}
+                                {...menu}
+                                onEditClick={!viewOnly ? onclick : () => {}}
+                                setNodes={setNodes}
+                                setEdges={setEdges}
+                            />
+                        )}
                         <Flex height={'inherit'}>
                             <Sidebar
                                 isUINodeEnabled={isUINodeEnabled}
@@ -2088,6 +2097,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         uniquePortNumbers={uniquePortNumbers}
                         credits={credits}
                         aiServices={aiServices.includes(Isopen)}
+                        buildTool={buildTool}
                     />
                 )}
                 {nodeType === 'Gateway' && Isopen && (

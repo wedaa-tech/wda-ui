@@ -25,7 +25,15 @@ import './ModalStyle.css';
 import setFieldErrors from '../../utils/setFieldErrors';
 import { GiMagnifyingGlass } from 'react-icons/gi';
 
-import { colors, UiFields, GatewayFields, ServiceFields, GroupFields, ServiceDescriptionField } from '../../utils/definingFileds';
+import {
+    colors,
+    UiFields,
+    GatewayFields,
+    ServiceFields,
+    GroupFields,
+    ServiceDescriptionField,
+    buildTool,
+} from '../../utils/definingFileds';
 
 const ApplicationModal = ({
     nodeType,
@@ -81,6 +89,7 @@ const ApplicationModal = ({
         applicationType: 'microservice',
         color: '#fff',
         description: '',
+        ...(CurrentNode?.applicationFramework === 'spring' ? { buildTool: 'maven' } : {}),
         ...CurrentNode,
         dbmlData,
     };
@@ -106,7 +115,6 @@ const ApplicationModal = ({
 
     const isEmptyUiSubmit =
         UiData.applicationName === '' || (UiData.applicationFramework === 'ui' && UiData.packageName === '') || UiData.serverPort === '';
-
     let appNameCheck = false;
     const dataToCheck = nodeType === 'UI' ? UiData : nodeType === 'Service' ? ServiceData : GatewayData;
     if (dataToCheck.applicationName && !/^[a-zA-Z](?:[a-zA-Z0-9_-]*[a-zA-Z0-9])?$/g.test(dataToCheck.applicationName)) {
@@ -175,6 +183,7 @@ const ApplicationModal = ({
     const isValidFrameworkAndDB = validFrameworksAndDBs.some(
         combination => combination.framework === CurrentNode?.applicationFramework && combination.dbType === CurrentNode?.prodDatabaseType,
     );
+    const isSpringFramework = CurrentNode?.applicationFramework === 'spring';
     const fetchDbmlData = async () => {
         if (initialized && keycloak.authenticated && descriptionValidation() && !aiDisabled) {
             setIsLoading(true);
@@ -407,6 +416,11 @@ const ApplicationModal = ({
                     ...prev,
                     [column]: value,
                     serverPort: value,
+                }));
+            } else if (column === 'buildTool') {
+                setServiceData(prev => ({
+                    ...prev,
+                    [column]: value,
                 }));
             } else if (column === 'applicationFramework') {
                 if (value.length > 0) {
@@ -671,8 +685,39 @@ const ApplicationModal = ({
                                                 )}
                                             </FormControl>
                                         ))}
+
+                                        {isSpringFramework && (
+                                            <>
+                                                <FormLabel>Build Tool</FormLabel>
+                                                <div
+                                                    style={{
+                                                        display: 'flex',
+                                                        flexDirection: 'row',
+                                                        marginBottom: '20px',
+                                                        gap: '10px',
+                                                    }}
+                                                >
+                                                    {/* Render Radio Buttons */}
+                                                    {buildTool.map((build, index) => (
+                                                        <label key={index} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                            <input
+                                                                type="radio"
+                                                                name="buildTool"
+                                                                value={ServiceData.buildTool}
+                                                                checked={ServiceData.buildTool === build}
+                                                                onChange={() => {
+                                                                    handleData('buildTool', build);
+                                                                }}
+                                                            />
+                                                            {build}
+                                                        </label>
+                                                    ))}
+                                                </div>
+                                            </>
+                                        )}
                                     </>
                                 )}
+
                                 {(nodeType === 'Group' || nodeType === 'Dummy') && (
                                     <>
                                         {GroupFields.map(field => (
