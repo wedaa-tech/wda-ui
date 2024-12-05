@@ -134,7 +134,6 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
     const toastIdRef = useRef();
     const ref = useRef(null);
     const [spinner, setSpinner] = useState(false);
-    const [buildTool, setBuildTool] = useState('maven');
 
     const toast = useToast({
         containerStyle: {
@@ -2097,7 +2096,6 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                         uniquePortNumbers={uniquePortNumbers}
                         credits={credits}
                         aiServices={aiServices.includes(Isopen)}
-                        buildTool={buildTool}
                     />
                 )}
                 {nodeType === 'Gateway' && Isopen && (
