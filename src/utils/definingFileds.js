@@ -24,5 +24,6 @@ const GroupFields = [{ key: 'label', label: 'Name', placeholder: 'Display Name',
 const ServiceDescriptionField = [
     { key: 'description', label: 'Description', placeholder: 'A small description about your service', error: '' },
 ];
+const buildTool = ['maven', 'gradle']
 
-export { colors, UiFields, GatewayFields, ServiceFields, GroupFields, ServiceDescriptionField };
+export { colors, UiFields, GatewayFields, ServiceFields, GroupFields, ServiceDescriptionField, buildTool };

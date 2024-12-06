@@ -16,13 +16,13 @@ const Documentation = ({ nodeData, nodeId, edgeId,dbmlMode }) => {
             const label = item.label;
             if(!dbmlMode || (item.Id.startsWith('Service') && item.applicationFramework=="spring" && item.prodDatabaseType=="postgresql")){
             nodeMap[item.Id] =(dbmlMode)? serviceIndex++ :idx;
-            delete item.Id;
-            if (!separatedData[label]) {
-                separatedData[label] = [];
-            }
+                delete item.Id;
+                if (!separatedData[label]) {
+                    separatedData[label] = [];
+                }
             item={"DbmlData":item?.dbmlData}
-            separatedData[label].push(item);
-        }
+                separatedData[label].push(item);
+            }
         });
         if (nodeData.communications) {
             Object.keys(nodeData.communications).forEach((key, idx) => {
@@ -69,6 +69,7 @@ const Documentation = ({ nodeData, nodeId, edgeId,dbmlMode }) => {
             authenticationType,
             logManagementType,
             serviceDiscoveryType,
+            buildTool,
         } = service;
 
         const extractedData = {
@@ -77,6 +78,7 @@ const Documentation = ({ nodeData, nodeId, edgeId,dbmlMode }) => {
             packageName,
             serverPort,
             applicationType,
+            buildTool,
         };
 
         if (authenticationType) {
@@ -87,6 +89,9 @@ const Documentation = ({ nodeData, nodeId, edgeId,dbmlMode }) => {
         }
         if (serviceDiscoveryType) {
             extractedData.serviceDiscoveryType = serviceDiscoveryType;
+        }
+        if (buildTool) {
+            extractedData.buildTool = buildTool;
         }
 
         return extractedData;
