@@ -281,7 +281,7 @@ const ArchitectureCard = ({
                             Generation in Progress <Spinner size="xs" />
                         </Text>
                     )}
-                    {data.latestCodeGenerationStatus !== codeGenerationStatus.IN_PROGRESS && data.validationStatus === codeGenerationStatus.DRAFT && (
+                    {data.latestCodeGenerationStatus !== codeGenerationStatus.IN_PROGRESS && data.latestCodeGenerationStatus !== codeGenerationStatus.FAILED && data.validationStatus === codeGenerationStatus.DRAFT && (
                         <Text className="not-selectable" color="yellow.500">
                             Draft
                         </Text>
