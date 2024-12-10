@@ -115,7 +115,7 @@ function TitleDescriptionForm({ title: initialTitle, description: initialDescrip
                 AI Wizard
             </Text>
             <Text fontSize="l" color="gray.600">
-                Craft a scalable microservice architecture with a custom title.
+                Kickstart your modern application development with WeDAA AI
             </Text>
             <FormControl>
                 <FormLabel marginLeft={"6"}>Title</FormLabel>

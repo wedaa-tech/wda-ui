@@ -543,10 +543,9 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                                 UpdatedNodes[targetId].style.border = '1px solid red';
                             }
                             if (sourceId.startsWith('Service')) {
-                                if (UpdatedNodes[sourceId].data?.dbmlData) delete UpdatedNodes[sourceId].data.dbmlData;
-                                if (UpdatedNodes[sourceId].data?.description) delete UpdatedNodes[sourceId].data.description;
-                                delete UpdatedNodes[sourceId].data.prodDatabaseType;
-                                setAiServices(prev => prev.filter(service => service !== sourceId));
+                                if(UpdatedNodes[sourceId].data?.dbmlData || UpdatedNodes[sourceId].data?.description){
+                                    UpdatedNodes[sourceId].data.prodDatabaseType="h2Memory";
+                                } else delete UpdatedNodes[sourceId].data.prodDatabaseType;
                             }
                             setNodes(UpdatedNodes);
                         }
@@ -971,7 +970,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             ) {
                 if (targetNode.id.startsWith('Database')) {
                     let isServiceConnected = Nodes[params.source]?.data['prodDatabaseType'];
-                    if (!isServiceConnected && !targetNode.data.isConnected && !sourceNode.id.startsWith('UI')) {
+                    if ((!isServiceConnected || isServiceConnected=="h2Memory") && !targetNode.data.isConnected && !sourceNode.id.startsWith('UI')) {
                         targetNode.data.isConnected = true;
                         setEdges(eds => Functions.addEdge(params, eds, Nodes));
                         Functions.MergeData(params.source, params.target, Nodes, setNodes);
@@ -1378,7 +1377,11 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 setAiServices([...aiServices, Data.Id]);
             }
         }
-
+        if(Data?.prodDatabaseType==""){
+            delete UpdatedNodes[Isopen].dbmlData;
+            delete UpdatedNodes[Isopen].description;
+            setAiServices(prev => prev.filter(service => service !== Data.Id));
+        }
         setNodes(UpdatedNodes);
         setopen(false);
     };

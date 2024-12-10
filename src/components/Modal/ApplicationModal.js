@@ -76,7 +76,10 @@ const ApplicationModal = ({
         color: '#fff',
         ...CurrentNode,
     };
-    const validFrameworksAndDBs = [{ framework: 'spring', dbType: 'postgresql' }];
+    const validFrameworksAndDBs = [
+        { framework: 'spring', dbType: 'postgresql' },
+        { framework: 'spring', dbType: 'h2Memory' },
+    ];
     const editorInstruction =
         '/* Below DBML is auto-generated based on component name and description.\nThis can be edited directly or regenerated for updated description.*/\n\n';
     const dbmlData = CurrentNode?.dbmlData ? editorInstruction + CurrentNode?.dbmlData : editorInstruction;
@@ -181,7 +184,7 @@ const ApplicationModal = ({
         return false;
     };
     const isValidFrameworkAndDB = validFrameworksAndDBs.some(
-        combination => combination.framework === CurrentNode?.applicationFramework && combination.dbType === CurrentNode?.prodDatabaseType,
+        combination => combination.framework === ServiceData?.applicationFramework && combination.dbType === ServiceData?.prodDatabaseType,
     );
     const isSpringFramework = CurrentNode?.applicationFramework === 'spring';
     const fetchDbmlData = async () => {
@@ -268,7 +271,7 @@ const ApplicationModal = ({
             });
             return true;
         } catch (error) {
-            console.error('Error fetching feedback data:', error);
+            console.error('Error Verifying dbml data:', error);
             return false;
         }
     };
@@ -403,7 +406,26 @@ const ApplicationModal = ({
                 }));
             }
         } else if (nodeType === 'Service') {
-            if (column === 'applicationName') {
+            if (column === 'prodDatabaseType') {
+                if (value === 'Yes') {
+                    setServiceData(prev => ({
+                        ...prev,
+                        [column]: 'h2Memory',
+                    }));
+                } else if (value === 'No') {
+                    if (CurrentNode.prodDatabaseType == 'h2Memory') {
+                        setServiceData(prev => ({
+                            ...prev,
+                            [column]: '',
+                        }));
+                    } else {
+                        setServiceData(prev => ({
+                            ...prev,
+                            [column]: CurrentNode.prodDatabaseType,
+                        }));
+                    }
+                }
+            } else if (column === 'applicationName') {
                 validateName(value);
                 setServiceData(prev => ({
                     ...prev,
@@ -482,7 +504,7 @@ const ApplicationModal = ({
             <ModalContent
                 style={{
                     position: 'absolute',
-                    top: '100px',
+                    top: isSpringFramework ? '20px' : '100px',
                     right: isValidFrameworkAndDB ? '10%' : '10px',
                     transform: 'translate(-50%, -50%)',
                     width: isValidFrameworkAndDB ? '90%' : '300px',
@@ -507,7 +529,6 @@ const ApplicationModal = ({
                                 style={{
                                     display: 'flex',
                                     flexDirection: 'column',
-                                    gap: isValidFrameworkAndDB ? '15px' : '',
                                 }}
                             >
                                 {nodeType === 'UI' && (
@@ -713,6 +734,30 @@ const ApplicationModal = ({
                                                         </label>
                                                     ))}
                                                 </div>
+                                                <FormLabel>In-Memory DB</FormLabel>
+                                                <Select
+                                                    mb={4}
+                                                    variant="outline"
+                                                    id="InMemmoryDB"
+                                                    value={ServiceData.prodDatabaseType === 'h2Memory' ? 'Yes' : 'No'}
+                                                    disabled={
+                                                        ServiceData.prodDatabaseType === 'postgresql' ||
+                                                        ServiceData.prodDatabaseType === 'mongodb'
+                                                    }
+                                                    onChange={e => {
+                                                        handleData('prodDatabaseType', e.target.value);
+                                                    }}
+                                                >
+                                                    <option value="" disabled>
+                                                        Select an option
+                                                    </option>
+                                                    <option key={'Yes'} value={'Yes'}>
+                                                        Yes
+                                                    </option>
+                                                    <option key={'No'} value={'No'}>
+                                                        No
+                                                    </option>
+                                                </Select>
                                             </>
                                         )}
                                     </>
@@ -818,7 +863,7 @@ const ApplicationModal = ({
                                                     disabled={!(initialized && keycloak.authenticated)}
                                                     backgroundColor={initialized && keycloak.authenticated ? 'white' : '#f2f2f2'}
                                                     onChange={e => handleData(field.key, e.target.value)}
-                                                    style={{ height: '100px', overflowY: 'scroll' }}
+                                                    style={{ height: '130px', overflowY: 'scroll' }}
                                                 />
                                                 {field.error && (
                                                     <Alert status="error" padding="4px" fontSize="12px" borderRadius="3px" mb={2}>
@@ -861,7 +906,7 @@ const ApplicationModal = ({
 
                                             <div
                                                 style={{
-                                                    height: '250px',
+                                                    height: '265px',
                                                     border: '1px solid black',
                                                     borderRadius: '5px',
                                                     padding: '5px',
