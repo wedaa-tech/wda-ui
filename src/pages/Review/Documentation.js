@@ -14,7 +14,7 @@ const Documentation = ({ nodeData, nodeId, edgeId,dbmlMode }) => {
         Object.keys(data).forEach((key, idx) => {
             var item = structuredClone(data[key]);
             const label = item.label;
-            if(!dbmlMode || (item.Id.startsWith('Service') && item.applicationFramework=="spring" && item.prodDatabaseType=="postgresql")){
+            if(!dbmlMode || (item.Id.startsWith('Service') && item.applicationFramework=="spring" && (item.prodDatabaseType=="postgresql" || item.prodDatabaseType=="h2Memory"))){
             nodeMap[item.Id] =(dbmlMode)? serviceIndex++ :idx;
                 delete item.Id;
                 if (!separatedData[label]) {
@@ -55,7 +55,7 @@ const Documentation = ({ nodeData, nodeId, edgeId,dbmlMode }) => {
 
         if(dbmlMode)
         {
-            if(service.applicationFramework=="spring" && service.prodDatabaseType=="postgresql"){
+            if(service.applicationFramework=="spring" && (service.prodDatabaseType=="postgresql"|| service.prodDatabaseType=="h2Memory")){
                 return service.dbmlData
             }
             return
@@ -70,6 +70,7 @@ const Documentation = ({ nodeData, nodeId, edgeId,dbmlMode }) => {
             logManagementType,
             serviceDiscoveryType,
             buildTool,
+            prodDatabaseType,
         } = service;
 
         const extractedData = {
@@ -79,10 +80,14 @@ const Documentation = ({ nodeData, nodeId, edgeId,dbmlMode }) => {
             serverPort,
             applicationType,
             buildTool,
+            prodDatabaseType
         };
 
         if (authenticationType) {
             extractedData.authenticationType = authenticationType;
+        }
+        if(prodDatabaseType) {
+            extractedData.prodDatabaseType = prodDatabaseType;
         }
         if (logManagementType) {
             extractedData.logManagementType = logManagementType;
