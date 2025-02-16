@@ -9,9 +9,6 @@ import { RepeatIcon, AddIcon, ArrowForwardIcon } from '@chakra-ui/icons';
  *   keycloak: object      (Keycloak instance)
  */
 const SandboxActions = ({ data, initialized, keycloak }) => {
-    // console log a variable
-    console.log("SandboxActions data:", process.env.REACT_APP_API_BASE_URL);
-    console.log("================", process.env.REACT_APP_SANDBOX_BASE_URL);
     const [isCreatingSandbox, setIsCreatingSandbox] = useState(false);
     const [sandboxUrl, setSandboxUrl] = useState(null);
     const [isConnected, setIsConnected] = useState(false);
@@ -29,13 +26,13 @@ const SandboxActions = ({ data, initialized, keycloak }) => {
     useEffect(() => {
         const fetchStatus = async () => {
             try {
-                const resp = await fetch(`${process.env.REACT_APP_API_BASE_URL}/sandbox/${data.project_id}/status`);
+                const resp = await fetch(`${process.env.REACT_APP_SANDBOX_BASE_URL}/sandbox/${data.project_id}/status`);
                 const result = await resp.json();
 
                 console.log("Sandbox Status:", result);
 
-                // Possible statuses: "active", "exited", "expired", "initialize", "error"
-                if (result.status === "active") {
+                // Possible statuses: "running", "exited", "expired", "initialize", "error"
+                if (result.status === "running") {
                     setSandboxState("start");      // show "start" icon
                     setSandboxUrl(result.url);
                 } else if (result.status === "expired" || result.status === "exited") {
@@ -83,7 +80,7 @@ const SandboxActions = ({ data, initialized, keycloak }) => {
                 console.log("WebSocket disconnected, retrying in 5 seconds...");
                 setIsConnected(false);
                 setShowReconnect(true);
-                setTimeout(connectWebSocket, 5000); // retry
+                setTimeout(connectWebSocket, 10000); // retry
             };
 
             wsRef.current.onerror = (error) => {
@@ -117,7 +114,7 @@ const SandboxActions = ({ data, initialized, keycloak }) => {
     const handleSandboxClick = async (e) => {
         e.stopPropagation();
 
-        // If we already have a URL and the container is "active" (start), just open it
+        // If we already have a URL and the container is "running" (start), just open it
         if (sandboxUrl && sandboxState === "start") {
             window.open(sandboxUrl, '_blank');
             return;
