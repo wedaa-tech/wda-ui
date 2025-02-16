@@ -1,4 +1,4 @@
-import { CopyIcon, DeleteIcon, DownloadIcon } from '@chakra-ui/icons';
+import { CopyIcon, DeleteIcon, DownloadIcon, ExternalLinkIcon } from '@chakra-ui/icons';
 import { useState, useRef } from 'react';
 import { saveAs } from 'file-saver';
 import {
@@ -24,6 +24,7 @@ import { useKeycloak } from '@react-keycloak/web';
 import React from 'react';
 import '../ProjectsSection/ProjectsSection.css';
 import Constants from '../../Constants';
+import SandboxActions from './SandboxActions';
 
 const GreenCheckIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="green">
@@ -54,6 +55,9 @@ const ArchitectureCard = ({
 }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [newPrototypeName, setNewPrototypeName] = useState('');
+    // const [isCreatingSandbox, setIsCreatingSandbox] = useState(false);
+    // const [sandboxUrl, setSandboxUrl] = useState(null);
+
     const { initialized, keycloak } = useKeycloak();
     const toast = useToast({
         containerStyle: {
@@ -210,6 +214,10 @@ const ArchitectureCard = ({
                                 />
                             </Tooltip>
                         )}
+
+
+{parentId != 'admin' && <SandboxActions data={data} initialized={initialized} keycloak={keycloak} />}
+
                         <Tooltip label="Delete Prototype" placement="top" color="white" borderRadius="md" fontSize="sm">
                             <IconButton
                                 top="5%"
