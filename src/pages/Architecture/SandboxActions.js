@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { IconButton, Tooltip, useToast } from '@chakra-ui/react';
-import { RepeatIcon, AddIcon, ArrowForwardIcon } from '@chakra-ui/icons';
+import { AddIcon, ArrowForwardIcon } from '@chakra-ui/icons';
 
 /**
  * Props:
@@ -10,201 +10,96 @@ import { RepeatIcon, AddIcon, ArrowForwardIcon } from '@chakra-ui/icons';
  */
 const SandboxActions = ({ data, initialized, keycloak }) => {
     const [isCreatingSandbox, setIsCreatingSandbox] = useState(false);
-    const [sandboxUrl, setSandboxUrl] = useState(null);
-    const [isConnected, setIsConnected] = useState(false);
-    const [sandboxState, setSandboxState] = useState("loading");
-    const [showReconnect, setShowReconnect] = useState(false);
-
+    const [codeServerUrl, setCodeServerUrl] = useState(null);
     const toast = useToast();
-    const wsRef = useRef(null);
-    const fetchIntervalRef = useRef(null);
 
-    /**
-     * Fetch the sandbox status from the server (Redis/Mongo).
-     * This runs immediately on mount and every 30 seconds.
-     */
-    useEffect(() => {
-        const fetchStatus = async () => {
-            try {
-                const resp = await fetch(`${process.env.REACT_APP_SANDBOX_BASE_URL}/sandbox/${data.project_id}/status`);
-                const result = await resp.json();
-
-                console.log("Sandbox Status:", result);
-
-                // Possible statuses: "running", "exited", "expired", "initialize", "error"
-                if (result.status === "running") {
-                    setSandboxState("start");      // show "start" icon
-                    setSandboxUrl(result.url);
-                } else if (result.status === "expired" || result.status === "exited") {
-                    setSandboxState("reconnect");  // show "reconnect" icon
-                    setSandboxUrl(null);
-                } else {
-                    // "initialize", "error", or "notfound"
-                    setSandboxState("initialize"); // show "initialize" icon
-                    setSandboxUrl(null);
-                }
-            } catch (error) {
-                console.error("Error fetching sandbox status:", error);
-                // Fallback to "initialize" if there's an error
-                setSandboxState("initialize");
-            }
-        };
-
-        // Fetch when component mounts
-        fetchStatus();
-
-        // Fetch status every 30s
-        fetchIntervalRef.current = setInterval(fetchStatus, 30000);
-
-        // Cleanup the interval on unmount
-        return () => clearInterval(fetchIntervalRef.current);
-    }, [data.project_id]);
-
-    /**
-     * WebSocket connection to keep container alive
-     * and detect disconnections.
-     */
-    useEffect(() => {
-        const connectWebSocket = () => {
-            if (wsRef.current?.readyState === WebSocket.OPEN) return;
-
-            wsRef.current = new WebSocket("ws://localhost:8765");
-
-            wsRef.current.onopen = () => {
-                console.log("WebSocket connected");
-                setIsConnected(true);
-                setShowReconnect(false);
-            };
-
-            wsRef.current.onclose = () => {
-                console.log("WebSocket disconnected, retrying in 5 seconds...");
-                setIsConnected(false);
-                setShowReconnect(true);
-                setTimeout(connectWebSocket, 10000); // retry
-            };
-
-            wsRef.current.onerror = (error) => {
-                console.error("WebSocket error:", error);
-                setIsConnected(false);
-                setShowReconnect(true);
-            };
-        };
-
-        connectWebSocket();
-
-        // Send a "ping" every 30 seconds
-        const heartbeatInterval = setInterval(() => {
-            if (wsRef.current?.readyState === WebSocket.OPEN) {
-                wsRef.current.send("ping");
-            }
-        }, 30000);
-
-        // Cleanup
-        return () => {
-            if (wsRef.current) {
-                wsRef.current.close();
-            }
-            clearInterval(heartbeatInterval);
-        };
-    }, []);
-
-    /**
-     * Create or Reconnect the sandbox on button click.
-     */
     const handleSandboxClick = async (e) => {
         e.stopPropagation();
 
-        // If we already have a URL and the container is "running" (start), just open it
-        if (sandboxUrl && sandboxState === "start") {
-            window.open(sandboxUrl, '_blank');
+        // If we already have a code server URL, just open it
+        if (codeServerUrl) {
+            window.open(codeServerUrl, '_blank');
             return;
         }
 
-        // If we're already doing something, prevent double-click
         if (isCreatingSandbox) return;
-
         setIsCreatingSandbox(true);
-        setSandboxUrl(null);
+        setCodeServerUrl(null);
 
         try {
-            const userId = keycloak?.tokenParsed?.sub || "unknown-user-id";
-            const headers = {
-                'Content-Type': 'application/json',
-            };
-            if (initialized && keycloak?.token) {
-                headers.Authorization = `Bearer ${keycloak.token}`;
-            }
+            const userId = keycloak?.tokenParsed?.sub || "test-user";
+            const username = keycloak?.tokenParsed?.preferred_username || undefined;
+            const projectId = data.project_id || "test-project";
+            const token = keycloak?.token;
+            // The project ZIP URL (should be accessible with the provided token)
+            const projectZipUrl = `${process.env.REACT_APP_API_BASE_URL}/api/download/${projectId}`;
 
-            let endpoint;
-            let method;
-            let actionMessage;
-            let successMessage;
+            const endpoint = `${process.env.REACT_APP_SANDBOX_BASE_URL}/environments/from-url`;
+            const actionMessage = "Starting Remote Environment...";
+            const successMessage = "Remote Environment Ready!";
 
-            // Decide if we're reconnecting or initializing
-            if (sandboxState === "reconnect") {
-                endpoint = `${process.env.REACT_APP_SANDBOX_BASE_URL}/sandbox/${data.project_id}/reconnect`;
-                method = 'PUT';
-                actionMessage = "Reconnecting Sandbox...";
-                successMessage = "Sandbox Reconnected!";
-            } else {
-                // "initialize" or "error"
-                endpoint = `${process.env.REACT_APP_SANDBOX_BASE_URL}/sandbox/${data.project_id}/create-with-code`;
-                method = 'POST';
-                actionMessage = "Creating Sandbox...";
-                successMessage = "Sandbox Ready!";
-            }
-
-            // Show toast to indicate action
             toast({
                 title: actionMessage,
-                description: "Please wait while your sandbox is being prepared.",
+                description: "Please wait while your environment is being prepared.",
                 status: "info",
                 duration: 4000,
                 variant: "left-accent",
                 isClosable: true,
             });
 
-            // (Optional) small wait for UX
             await new Promise((resolve) => setTimeout(resolve, 1000));
 
-            // Make the API call
+            // Prepare the payload as per the API spec
+            const payload = {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                },
+                project_id: projectId,
+                project_zip_url: projectZipUrl,
+                user_id: userId,
+            };
+            if (username) payload.username = username;
+
             const resp = await fetch(endpoint, {
-                method,
-                headers,
-                body: JSON.stringify({
-                    user_id: userId,
-                    project_id: data.project_id,
-                    data,
-                }),
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify(payload),
             });
 
             if (!resp.ok) {
-                throw new Error(`Failed to ${method === 'POST' ? 'create' : 'reconnect'} sandbox: ${resp.status}`);
+                let errorText;
+                try {
+                    errorText = await resp.text();
+                } catch (e) {
+                    errorText = '<Could not parse error body>';
+                }
+                console.error('Failed to start remote environment:', resp.status, errorText);
+                throw new Error(`Failed to start remote environment: ${resp.status} - ${errorText}`);
             }
 
             const result = await resp.json();
 
-            if (!result?.url || result.url === 'http://0.0.0.0:None/') {
-                throw new Error("Invalid sandbox URL received.");
+            if (!result?.code_server_url) {
+                throw new Error("Invalid code_server_url received.");
             }
 
-            // If it worked, we have a fresh container
-            setSandboxUrl(result.url);
-            setSandboxState("start");
+            setCodeServerUrl(result.code_server_url);
 
             toast({
                 title: successMessage,
-                description: "Click the same button again to open the sandbox.",
+                description: "Click the same button again to open the code server.",
                 status: "success",
-                duration: 3000,
+                duration: 4000,
                 variant: "left-accent",
                 isClosable: true,
             });
-
         } catch (err) {
-            console.error('Error opening/reconnecting sandbox:', err);
+            console.error('Error starting remote environment:', err);
             toast({
-                title: "Sandbox Error",
+                title: "Environment Error",
                 description: err.message || "Something went wrong.",
                 status: "error",
                 duration: 4000,
@@ -216,64 +111,52 @@ const SandboxActions = ({ data, initialized, keycloak }) => {
         }
     };
 
-    /**
-     * Choose the icon based on our local sandboxState:
-     *  - "reconnect" => <RepeatIcon />
-     *  - "start"     => <ArrowForwardIcon />
-     *  - otherwise   => <AddIcon />
-     */
-    const getIcon = () => {
-        if (sandboxState === "loading") return null;
-        switch (sandboxState) {
-            case "reconnect":
-                return <RepeatIcon boxSize={5} />;
-            case "start":
-                return <ArrowForwardIcon boxSize={5} />;
-            default:
-                // "initialize" or "error"
-                return <AddIcon boxSize={5} />;
+    useEffect(() => {
+        async function checkExistingSandbox() {
+            if (!initialized || !keycloak?.tokenParsed?.sub || !keycloak?.token || !data?.project_id) return;
+            const userId = keycloak.tokenParsed.sub;
+            const token = keycloak.token;
+            const projectId = data.project_id;
+            try {
+                const resp = await fetch(`${process.env.REACT_APP_SANDBOX_BASE_URL}/environments/user/${userId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+                if (resp.ok) {
+                    const result = await resp.json();
+                    // result.environments is an array
+                    const env = result.environments?.find(e => e.project_id === projectId && e.status === 'running' && e.url);
+                    if (env && env.url) {
+                        setCodeServerUrl(env.url);
+                    }
+                }
+            } catch (err) {
+                // Optionally handle error
+                console.error('Error checking existing sandbox:', err);
+            }
         }
-    };
+        checkExistingSandbox();
+    }, [initialized, keycloak, data?.project_id]);
 
     return (
-        <>
-            {sandboxState !== "loading" && (
-                <Tooltip
-                    label={
-                        sandboxState === "reconnect"
-                            ? "Reconnect Sandbox"
-                            : sandboxState === "start"
-                                ? "Open Sandbox"
-                                : "Initialize Sandbox"
-                    }
-                    placement="top"
-                    color="white"
-                    borderRadius="md"
-                    fontSize="sm"
-                >
-                    <IconButton
-                        isDisabled={isCreatingSandbox}
-                        top="5%"
-                        size="md"
-                        right="47%"
-                        variant="outline"
-                        colorScheme={
-                            sandboxState === "reconnect"
-                                ? "red"
-                                : sandboxState === "start"
-                                    ? "blue"
-                                    : "blackAlpha"
-                        }
-                        className="prototype-icons"
-                        aria-label="Sandbox Action"
-                        position="absolute"
-                        zIndex={99}
-                        icon={getIcon()}
-                        onClick={handleSandboxClick}
-                    />
-                </Tooltip>
-            )}
-        </>
+        <Tooltip label={codeServerUrl ? "Open Code Server" : "Start Remote Environment"} placement="top" color="white" borderRadius="md" fontSize="sm">
+            <IconButton
+                isDisabled={isCreatingSandbox}
+                top="5%"
+                size="md"
+                right="47%"
+                variant="outline"
+                colorScheme={codeServerUrl ? "blue" : "blackAlpha"}
+                className="prototype-icons"
+                aria-label="Sandbox Action"
+                position="absolute"
+                zIndex={99}
+                icon={codeServerUrl ? <ArrowForwardIcon boxSize={5} /> : <AddIcon boxSize={5} />}
+                onClick={handleSandboxClick}
+            />
+        </Tooltip>
     );
 };
 
