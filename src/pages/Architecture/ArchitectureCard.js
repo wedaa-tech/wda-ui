@@ -216,7 +216,7 @@ const ArchitectureCard = ({
                         )}
 
 
-{parentId != 'admin' && <SandboxActions data={data} initialized={initialized} keycloak={keycloak} />}
+                    {keycloak?.realmAccess?.roles.includes('ADMIN') && <SandboxActions data={data} initialized={initialized} keycloak={keycloak} />}
 
                         <Tooltip label="Delete Prototype" placement="top" color="white" borderRadius="md" fontSize="sm">
                             <IconButton

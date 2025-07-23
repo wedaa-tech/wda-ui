@@ -26,11 +26,12 @@ const SandboxActions = ({ data, initialized, keycloak }) => {
         setIsCreatingSandbox(true);
         setCodeServerUrl(null);
 
+        const userId = keycloak?.tokenParsed?.sub || "test-user";
+        const username = keycloak?.tokenParsed?.preferred_username || undefined;
+        const projectId = data.project_id || "test-project";
+        const token = keycloak?.token;
+
         try {
-            const userId = keycloak?.tokenParsed?.sub || "test-user";
-            const username = keycloak?.tokenParsed?.preferred_username || undefined;
-            const projectId = data.project_id || "test-project";
-            const token = keycloak?.token;
             // The project ZIP URL (should be accessible with the provided token)
             const projectZipUrl = `${process.env.REACT_APP_API_BASE_URL}/api/download/${projectId}`;
 
@@ -57,6 +58,7 @@ const SandboxActions = ({ data, initialized, keycloak }) => {
                 project_id: projectId,
                 project_zip_url: projectZipUrl,
                 user_id: userId,
+                mount_type: "volume",
             };
             if (username) payload.username = username;
 
@@ -98,6 +100,42 @@ const SandboxActions = ({ data, initialized, keycloak }) => {
             });
         } catch (err) {
             console.error('Error starting remote environment:', err);
+            
+            // If it's a container name conflict, try to find existing environment
+            if (err.message.includes('container name') && err.message.includes('already in use')) {
+                console.log('Container name conflict detected, checking for existing environment...');
+                try {
+                    const userId = keycloak?.tokenParsed?.sub;
+                    const token = keycloak?.token;
+                    const resp = await fetch(`${process.env.REACT_APP_SANDBOX_BASE_URL}/environments/user/${userId}`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json',
+                        },
+                    });
+                    if (resp.ok) {
+                        const result = await resp.json();
+                        const env = result.environments?.find(e => e.project_id === projectId && (e.domain || e.local_domain));
+                        if (env && (env.domain || env.local_domain)) {
+                            // Construct the code server URL from domain
+                            const codeServerUrl = `http://${env.domain || env.local_domain}`;
+                            setCodeServerUrl(codeServerUrl);
+                            toast({
+                                title: "Environment Already Running",
+                                description: "Found your existing environment. Click the arrow to open it.",
+                                status: "success",
+                                duration: 4000,
+                                variant: "left-accent",
+                                isClosable: true,
+                            });
+                            return; // Exit early, don't show error
+                        }
+                    }
+                } catch (recheckErr) {
+                    console.error('Error rechecking for existing environment:', recheckErr);
+                }
+            }
+            
             toast({
                 title: "Environment Error",
                 description: err.message || "Something went wrong.",
@@ -126,10 +164,16 @@ const SandboxActions = ({ data, initialized, keycloak }) => {
                 });
                 if (resp.ok) {
                     const result = await resp.json();
+                    console.log('Existing sandboxes check:', result);
                     // result.environments is an array
-                    const env = result.environments?.find(e => e.project_id === projectId && e.status === 'running' && e.url);
-                    if (env && env.url) {
-                        setCodeServerUrl(env.url);
+                    // Check for any environment matching this project
+                    const env = result.environments?.find(e => e.project_id === projectId && (e.domain || e.local_domain));
+                    console.log('Found matching environment:', env);
+                    if (env && (env.domain || env.local_domain)) {
+                        // Construct the code server URL from domain
+                        const codeServerUrl = `https://${env.domain || env.local_domain}`;
+                        setCodeServerUrl(codeServerUrl);
+                        console.log('Set existing codeServerUrl:', codeServerUrl);
                     }
                 }
             } catch (err) {
