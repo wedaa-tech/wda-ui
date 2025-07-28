@@ -1,5 +1,5 @@
 import { CopyIcon, DeleteIcon, DownloadIcon } from '@chakra-ui/icons';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { saveAs } from 'file-saver';
 import {
     Box,
@@ -43,6 +43,7 @@ const ArchitectureCard = ({
     title,
     description,
     imageUrl,
+    imagePresignedUrl,
     projectId,
     onClick,
     data,
@@ -52,6 +53,8 @@ const ArchitectureCard = ({
     parentId,
     isLoaded = false,
 }) => {
+    const [imageSrc, setImageSrc] = useState(imageUrl);
+    const [isImageLoading, setIsImageLoading] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [newPrototypeName, setNewPrototypeName] = useState('');
     const { initialized, keycloak } = useKeycloak();
@@ -62,8 +65,39 @@ const ArchitectureCard = ({
         },
     });
     const { codeGenerationStatus } = Constants;
-
     const toastIdRef = useRef();
+
+    // Load image from presigned URL if imageUrl is not available
+    useEffect(() => {
+        const loadImage = async () => {
+            if (!imageUrl && imagePresignedUrl) {
+                setIsImageLoading(true);
+                try {
+                    const response = await fetch(imagePresignedUrl);
+                    if (!response.ok) throw new Error('Failed to load image');
+                    const blob = await response.blob();
+                    const objectUrl = URL.createObjectURL(blob);
+                    setImageSrc(objectUrl);
+                } catch (error) {
+                    console.error('Error loading image:', error);
+                    setImageSrc(null);
+                } finally {
+                    setIsImageLoading(false);
+                }
+            } else {
+                setImageSrc(imageUrl);
+            }
+        };
+
+        loadImage();
+
+        // Cleanup function to revoke object URL
+        return () => {
+            if (imageSrc && imageSrc.startsWith('blob:')) {
+                URL.revokeObjectURL(imageSrc);
+            }
+        };
+    }, [imageUrl, imagePresignedUrl]);
 
     const handleCloneClick = () => {
         setIsModalOpen(true);
@@ -178,15 +212,26 @@ const ArchitectureCard = ({
                     data.latestCodeGenerationStatus != codeGenerationStatus.IN_PROGRESS && onClick(projectId, data);
                 }}
             >
-                <Image
-                    style={{
-                        width: '100%',
-                        objectFit: 'contain',
-                        mixBlendMode: 'darken',
-                    }}
-                    height="65%"
-                    src={imageUrl}
-                />
+                {isImageLoading ? (
+                    <Box height="65%" display="flex" alignItems="center" justifyContent="center">
+                        <Spinner size="xl" />
+                    </Box>
+                ) : (
+                    <Image
+                        style={{
+                            width: '100%',
+                            objectFit: 'contain',
+                            mixBlendMode: 'darken',
+                        }}
+                        height="65%"
+                        src={imageSrc}
+                        fallback={
+                            <Box height="65%" display="flex" alignItems="center" justifyContent="center">
+                                <Text color="gray.500">No image available</Text>
+                            </Box>
+                        }
+                    />
+                )}
                 {data.latestCodeGenerationStatus !== codeGenerationStatus.IN_PROGRESS && (
                     <>
                         {parentId != 'admin' && (

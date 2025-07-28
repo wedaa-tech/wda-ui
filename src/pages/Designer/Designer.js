@@ -33,6 +33,11 @@ import { checkDisabled } from '../../utils/submitButtonValidation';
 import CanvasContent from '../CanvasContent/CanvasContent';
 import Functions from './utils';
 import ApplicationModal from '../../components/Modal/ApplicationModal';
+import { toPng } from 'html-to-image';
+import { getRectOfNodes, getTransformForBounds } from 'reactflow';
+
+// Import imageWidth and imageHeight from utils.js
+const { imageWidth, imageHeight } = Functions;
 
 let serviceId = 1;
 let gatewayId = 1;
@@ -1575,9 +1580,34 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
         }
     };
 
+    const handleS3Upload = async (responseData) => {
+        if (responseData.imageUploadUrl) {
+            try {
+                // Ensure we have nodes to process
+                const currentNodes = Object.values(nodes);
+                if (!currentNodes || currentNodes.length === 0) {
+                    console.warn('No nodes available for image generation');
+                    return;
+                }
+
+                await Functions.uploadImageToS3(currentNodes, responseData.imageUploadUrl);
+            } catch (uploadError) {
+                console.error('Error uploading image to S3:', uploadError);
+                toast.close(toastIdRef.current);
+                toastIdRef.current = toast({
+                    title: uploadError.message || 'Failed to upload image to S3',
+                    status: 'warning',
+                    duration: 3000,
+                    variant: 'left-accent',
+                    isClosable: true,
+                });
+            }
+        }
+    };
+
     const SaveData = async (data, saved) => {
         const Data = data || generatingData;
-        const generatedImage = await Functions.CreateImage(Object.values(nodes));
+        const generatedImage = await Functions.CreateImage(Object.values(nodes), keycloak?.token);
         if (generatedImage) {
             Data.imageUrl = generatedImage;
         }
@@ -1605,11 +1635,16 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 });
             }
             if (response.ok) {
+                const responseData = await response.json();
+                
+                // Handle S3 upload if we have a presigned URL
+                await handleS3Upload(responseData);
+
                 if (projectParentId != 'admin' && data.validationStatus == 'VALIDATED') {
                     setIsLoading(true);
                 }
                 setSpinner(false);
-                const responseData = await response.json();
+                
                 if (!projectProjectId) setProjectprojectId(responseData.projectId);
                 if (saved == 'VALIDATED' && projectParentId == 'admin') {
                     history.replace(`/project/admin/architecture/${responseData.projectId}/details`);
@@ -1618,7 +1653,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 if (saved === 'save') {
                     toast.close(toastIdRef.current);
                     toastIdRef.current = toast({
-                        title: `Prototype ${projectName}  is saved as draft.`,
+                        title: `Prototype ${projectName} is saved as draft.`,
                         status: 'success',
                         duration: 3000,
                         variant: 'left-accent',
@@ -1649,7 +1684,16 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
                 }
             }
         } catch (error) {
-            console.error(error);
+            console.error('Error saving data:', error);
+            setSpinner(false);
+            toast.close(toastIdRef.current);
+            toastIdRef.current = toast({
+                title: `Error saving prototype: ${error.message}`,
+                status: 'error',
+                duration: 3000,
+                variant: 'left-accent',
+                isClosable: true,
+            });
         }
     };
 
@@ -1658,7 +1702,7 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
 
     const generateZip = async (e, data = null) => {
         const Data = data || generatingData;
-        const generatedImage = await Functions.CreateImage(Object.values(nodes));
+        const generatedImage = await Functions.CreateImage(Object.values(nodes), keycloak?.token);
         setIsGenerating(true);
         if (generatedImage) Data.imageUrl = generatedImage;
         try {
@@ -1672,6 +1716,10 @@ const Designer = ({ update, viewMode = false, sharedMetadata = undefined }) => {
             });
 
             const responseData = await response.json();
+            
+            // Handle S3 upload if we have a presigned URL
+            await handleS3Upload(responseData);
+            
             const initialBlueprintId = responseData.blueprintId;
             blueprintIds.push(initialBlueprintId);
 
