@@ -5,7 +5,7 @@ import aws from '../../../src/assets/aws.png';
 import minikube from '../../assets/minikube.png';
 import none from '../../assets/none-icon.jpg';
 
-const Infrastructure = ({ onSubmit, projectData, generateZip,handleRefArch, adminView }) => {
+const Infrastructure = ({ onSubmit, projectData, generateZip, handleRefArch, adminView }) => {
     const [selectedImage, setSelectedImage] = useState('none');
     const [checkLength, setCheckLength] = useState(false);
     const [DeploymentData, setDeploymentData] = useState({});
@@ -162,6 +162,11 @@ const Infrastructure = ({ onSubmit, projectData, generateZip,handleRefArch, admi
     const azureClusterNameCheck = DeploymentData.cloudProvider === 'azure' && forbiddenWords.includes(DeploymentData.clusterName);
 
     const handleImageClick = image => {
+        // Disable minikube and azure
+        if (image === 'minikube' || image === 'azure') {
+            return;
+        }
+
         setSelectedImage(image);
 
         let ProviderStates;
@@ -321,6 +326,17 @@ const Infrastructure = ({ onSubmit, projectData, generateZip,handleRefArch, admi
 
     return (
         <Flex direction={'column'} width={'100%'} h={'100%'}>
+            <Alert status="info" mb={4} mx={4} mt={4} borderRadius="md">
+                <AlertIcon />
+                <Box maxW={'calc(100vh - 242px)'} overflowX={'hidden'} px={4} flexGrow={1}>
+                    <Text fontWeight="bold">Coming Soon!</Text>
+                    <Text fontSize="sm">
+                        Minikube and Microsoft Azure options are temporarily unavailable. We're working to bring them back soon. AWS and
+                        None options are still available for your deployments.
+                    </Text>
+                </Box>
+            </Alert>
+
             <Text fontSize="md" pt={2} px={8} font="14px">
                 Select, Customize and Deploy Your Infrastructure with Ease!
             </Text>
@@ -330,40 +346,74 @@ const Infrastructure = ({ onSubmit, projectData, generateZip,handleRefArch, admi
                     <Box
                         onClick={() => handleImageClick('minikube')}
                         rounded={'2xl'}
-                        // backgroundColor={'#9e9e9e30'}
                         overflow={'hidden'}
                         padding={'7px'}
-                        border={` ${selectedImage === 'minikube' ? '2px solid #0fadff' : '1px solid #9e9e9e80'}`}
+                        border={`${selectedImage === 'minikube' ? '2px solid #0fadff' : '1px solid #9e9e9e80'}`}
+                        opacity={0.5}
+                        cursor="not-allowed"
+                        position="relative"
                     >
                         <Image mixBlendMode={'darken'} height={'70px'} src={minikube} />
+                        <Box
+                            position="absolute"
+                            top="50%"
+                            left="50%"
+                            transform="translate(-50%, -50%)"
+                            bg="rgba(0,0,0,0.7)"
+                            color="white"
+                            px={2}
+                            py={1}
+                            borderRadius="md"
+                            fontSize="xs"
+                            fontWeight="bold"
+                        >
+                            COMING SOON
+                        </Box>
                     </Box>
                     <Box
                         onClick={() => handleImageClick('aws')}
                         rounded={'2xl'}
-                        // backgroundColor={'#9e9e9e30'}
                         overflow={'hidden'}
                         padding={'7px'}
-                        border={` ${selectedImage === 'aws' ? '2px solid #0fadff' : '1px solid #9e9e9e80'}`}
+                        border={`${selectedImage === 'aws' ? '2px solid #0fadff' : '1px solid #9e9e9e80'}`}
+                        cursor="pointer"
                     >
                         <Image mixBlendMode={'darken'} height={'70px'} src={aws} />
                     </Box>
                     <Box
                         onClick={() => handleImageClick('azure')}
                         rounded={'2xl'}
-                        // backgroundColor={'#9e9e9e30'}
                         overflow={'hidden'}
                         padding={'7px'}
                         border={`${selectedImage === 'azure' ? '2px solid #0fadff' : '1px solid #9e9e9e80'}`}
+                        opacity={0.5}
+                        cursor="not-allowed"
+                        position="relative"
                     >
                         <Image mixBlendMode={'darken'} height={'70px'} src={azure} />
+                        <Box
+                            position="absolute"
+                            top="50%"
+                            left="50%"
+                            transform="translate(-50%, -50%)"
+                            bg="rgba(0,0,0,0.7)"
+                            color="white"
+                            px={2}
+                            py={1}
+                            borderRadius="md"
+                            fontSize="xs"
+                            fontWeight="bold"
+                        >
+                            COMING SOON
+                        </Box>
                     </Box>
                     <Box
                         onClick={() => handleImageClick('none')}
                         rounded={'2xl'}
-                        // backgroundColor={'#9e9e9e30'}
                         overflow={'hidden'}
                         padding={'7px'}
                         border={`${selectedImage === 'none' ? '2px solid #0fadff' : '1px solid #9e9e9e80'}`}
+                        cursor="pointer"
                     >
                         <Image mixBlendMode={'darken'} height={'70px'} src={none} />
                     </Box>
@@ -808,31 +858,29 @@ const Infrastructure = ({ onSubmit, projectData, generateZip,handleRefArch, admi
                 )}
             </Box>
             <Box display="flex" justifyContent="center" alignItems="center" gap={4} my={2}>
-    <Button
-        colorScheme="blue"
-        onClick={() => {
-            selectedImage !== 'none' ? handleSubmit(DeploymentData) : onSubmit(projectData, true);
-        }}
-        minH="48px"
-        flexGrow={1}
-        isDisabled={selectedImage !== 'none' && (!selectedImage || isCheckEmpty() || checkValidation())}
-    >
-        Generate Code
-    </Button>
-    <Button
-        colorScheme="blue"
-        onClick={() => {
-             handleRefArch(projectData);
-        }}
-        hidden={!adminView}
-        flexGrow={1}
-        minH="48px"
-    >
-        Publish as RefArch
-    </Button>
-</Box>
-
-
+                <Button
+                    colorScheme="blue"
+                    onClick={() => {
+                        selectedImage !== 'none' ? handleSubmit(DeploymentData) : onSubmit(projectData, true);
+                    }}
+                    minH="48px"
+                    flexGrow={1}
+                    isDisabled={selectedImage !== 'none' && (!selectedImage || isCheckEmpty() || checkValidation())}
+                >
+                    Generate Code
+                </Button>
+                <Button
+                    colorScheme="blue"
+                    onClick={() => {
+                        handleRefArch(projectData);
+                    }}
+                    hidden={!adminView}
+                    flexGrow={1}
+                    minH="48px"
+                >
+                    Publish as RefArch
+                </Button>
+            </Box>
         </Flex>
     );
 };

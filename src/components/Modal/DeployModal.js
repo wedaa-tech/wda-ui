@@ -17,6 +17,8 @@ import {
     Spinner,
     ModalCloseButton,
     Tooltip,
+    Box,
+    Text,
 } from '@chakra-ui/react';
 import azure from '../../../src/assets/Azure.png';
 import aws from '../../../src/assets/aws.png';
@@ -180,6 +182,11 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose, update }) => {
     const azureClusterNameCheck = DeploymentData.cloudProvider === 'azure' && forbiddenWords.includes(DeploymentData.clusterName);
 
     const handleImageClick = image => {
+        // Disable minikube and azure
+        if (image === 'minikube' || image === 'azure') {
+            return;
+        }
+        
         setSelectedImage(image);
 
         let ProviderStates;
@@ -339,32 +346,24 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose, update }) => {
     const [isOpen, setIsOpen] = useState(true);
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose}>
+        <Modal isOpen={isOpen} onClose={onClose} size="6xl" isCentered>
             <ModalOverlay />
             <ModalContent>
-                <ModalHeader
-                // style={{ display: "flex", justifyContent: "space-between" }}
-                >
-                    <h2 style={{ display: 'inline', marginRight: '10px' }}>Deployment Infrastructure</h2>
-                    <Tooltip
-                        hasArrow
-                        label="Select your infrastructure and provide required configuration"
-                        bg="gray.300"
-                        color="black"
-                        placement="bottom"
-                        width="250px"
-                    >
-                        <InfoIcon marginRight="20px" style={{ fontSize: '16px', color: '#a6a6a6' }} />
-                    </Tooltip>
-                </ModalHeader>
-                <ModalCloseButton onClick={onClose} />
-                <ModalBody
-                    style={{
-                        maxHeight: 'calc(100vh - 200px)',
-                        overflowY: 'auto',
-                        maxHeight: '600px',
-                    }}
-                >
+                <ModalHeader>Deploy Your Application</ModalHeader>
+                <ModalCloseButton />
+                <ModalBody>
+                    {/* Banner Message */}
+                    <Alert status="info" mb={4} borderRadius="md">
+                        <AlertIcon />
+                        <Box>
+                            <Text fontWeight="bold">Coming Soon!</Text>
+                            <Text fontSize="sm">
+                                Minikube and Microsoft Azure options are temporarily unavailable. 
+                                We're working to bring them back soon. AWS option is still available for your deployments.
+                            </Text>
+                        </Box>
+                    </Alert>
+                    
                     <div
                         style={{
                             display: 'flex',
@@ -381,11 +380,29 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose, update }) => {
                                 padding: '10px',
                                 marginBottom: '10px',
                                 width: '120px',
-                                cursor: 'pointer',
+                                cursor: 'not-allowed',
                                 marginRight: '10px',
                                 border: selectedImage === 'azure' ? '2px solid #ebaf24' : '2px solid #d9d9d9',
+                                opacity: 0.5,
+                                position: 'relative',
                             }}
                         />
+                        <div
+                            style={{
+                                position: 'absolute',
+                                top: '50%',
+                                left: '50%',
+                                transform: 'translate(-50%, -50%)',
+                                backgroundColor: 'rgba(0,0,0,0.7)',
+                                color: 'white',
+                                padding: '4px 8px',
+                                borderRadius: '4px',
+                                fontSize: '10px',
+                                fontWeight: 'bold',
+                            }}
+                        >
+                            COMING SOON
+                        </div>
                         <img
                             width="120px"
                             src={aws}
@@ -409,11 +426,30 @@ const DeployModal = ({ onSubmit, isLoading, projectData, onClose, update }) => {
                                 padding: '10px',
                                 marginBottom: '10px',
                                 width: '120px',
-                                cursor: 'pointer',
+                                cursor: 'not-allowed',
                                 border: selectedImage === 'minikube' ? '2px solid #ebaf24' : '2px solid #d9d9d9',
+                                opacity: 0.5,
+                                position: 'relative',
                             }}
                         />
+                        <div
+                            style={{
+                                position: 'absolute',
+                                top: '50%',
+                                left: '50%',
+                                transform: 'translate(-50%, -50%)',
+                                backgroundColor: 'rgba(0,0,0,0.7)',
+                                color: 'white',
+                                padding: '4px 8px',
+                                borderRadius: '4px',
+                                fontSize: '10px',
+                                fontWeight: 'bold',
+                            }}
+                        >
+                            COMING SOON
+                        </div>
                     </div>
+                    
                     {selectedImage === 'azure' && (
                         <div>
                             <FormControl>
