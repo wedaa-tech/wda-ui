@@ -1,6 +1,9 @@
 import { useCallback } from 'react';
 import { getRectOfNodes, getTransformForBounds } from 'reactflow';
 import { toPng } from 'html-to-image';
+import ReactFlow from 'reactflow';
+import React from 'react';
+import { createRoot } from 'react-dom/client';
 
 const imageWidth = 1024;
 const imageHeight = 768;
@@ -116,11 +119,13 @@ const useOnEdgeUpdateStart = edgeUpdateSuccessful => {
     }, []);
 };
 
-const CreateImage = async nodes => {
+let lastGeneratedImage = null;
+
+const CreateImage = async (nodes, token = null) => {
     const nodesBounds = getRectOfNodes(nodes);
     const transform = getTransformForBounds(nodesBounds, imageWidth, imageHeight, 0, 2, 0.9);
     try {
-        const response = await toPng(document.querySelector('.react-flow__viewport'), {
+        const base64Image = await toPng(document.querySelector('.react-flow__viewport'), {
             backgroundColor: '#ffffff',
             width: imageWidth,
             height: imageHeight,
@@ -128,11 +133,52 @@ const CreateImage = async nodes => {
                 transform: `translate(${transform[0]}px, ${transform[1]}px) scale(${transform[2]})`,
             },
         });
-
-        return response;
+        // Store the generated image
+        lastGeneratedImage = base64Image;
+        
+        if(token) {
+            return null;
+        }
+        return base64Image;
     } catch (error) {
-        console.error(error);
+        console.error('Error creating image:', error);
         return null;
+    }
+};
+
+const uploadImageToS3 = async (nodes, presignedUrl) => {
+    try {
+        // Use the cached image if available, otherwise generate new one
+        const base64Image = lastGeneratedImage || await CreateImage(nodes, null);
+        if (!base64Image) {
+            throw new Error('Failed to generate image');
+        }
+
+        // Convert base64 to blob
+        const base64Response = await fetch(base64Image);
+        const blob = await base64Response.blob();
+
+        // Upload to S3 using presigned URL
+        const uploadResponse = await fetch(presignedUrl, {
+            method: 'PUT',
+            body: blob,
+            headers: {
+                'Content-Type': 'image/png'
+            }
+        });
+
+        if (!uploadResponse.ok) {
+            throw new Error('Failed to upload image to S3');
+        }
+
+        // Clear the cached image after successful upload
+        lastGeneratedImage = null;
+        return true;
+    } catch (error) {
+        console.error('Error uploading image to S3:', error);
+        // Clear the cached image on error as well
+        lastGeneratedImage = null;
+        throw error;
     }
 };
 
@@ -143,6 +189,9 @@ const Functions = {
     onEdgeUpdateEnd: useOnEdgeUpdateEnd,
     onEdgeUpdateStart: useOnEdgeUpdateStart,
     CreateImage: CreateImage,
+    imageWidth: imageWidth,
+    imageHeight: imageHeight,
+    uploadImageToS3: uploadImageToS3,
 };
 
 export default Functions;

@@ -472,6 +472,7 @@ function ArchitecturesSection() {
                         parentId={parentId}
                         description={architecture.description}
                         imageUrl={architecture.imageUrl}
+                        imagePresignedUrl={architecture.imagePresignedUrl}
                         published={architecture.published}
                         handleSubmit={createArchitecture}
                         onClick={handleOpenArchitecture}
